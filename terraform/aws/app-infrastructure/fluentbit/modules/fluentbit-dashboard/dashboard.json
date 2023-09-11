@@ -1,0 +1,17 @@
+{
+    "widgets": [
+        {
+            "height": 6,
+            "width": 24,
+            "y": 0,
+            "x": 0,
+            "type": "log",
+            "properties": {
+                "query": "SOURCE '${log_group_name}' | fields @timestamp, @message, kubernetes.pod_name\n| parse @message “[*]  *” as loggingType, loggingMessage\n| filter kubernetes.pod_name like /${pod_name}/\n| sort @timestamp desc\n| limit 200",
+                "region": "us-east-1",
+                "title": "${panel_title}",
+                "view": "table"
+            }
+        }
+    ]
+}

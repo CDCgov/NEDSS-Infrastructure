@@ -1,0 +1,63 @@
+
+Deploying Fluentbit helm chart to forward container logs to a local S3 bucket.
+Solution was tested in the Sandbox account.
+
+CHART INFO:
+The Fluentbit helm chart Github repo:
+https://github.com/fluent/helm-charts
+
+The chart name:
+fluent-bit
+
+The image location:
+repository: cr.fluentbit.io/fluent/fluent-bit
+
+PREREQUISITES:
+- An AWS Role with proper access permissions attached to the Worker node in the EKS cluster with the following policy:
+{
+	"Version": "2012-10-17",
+	"Statement": [{
+		"Effect": "Allow",
+		"Action": [
+			"s3:PutObject"
+		],
+		"Resource": "*"
+	}]
+}
+
+CONFIGMAP CONFIGURAITON:
+    - Fluentbit ServiceAccount configuration:
+        - configure the aws role arn in values.yaml as shown below by adding the aws role ARN under annotations:
+        serviceAccount:
+            create: true
+            annotations:
+                eks.amazonaws.com/role-arn: arn:aws:iam::accountID:role/roleName
+
+    - Fluentbit S3 plugin configuration:
+        - include the following output plugin in the values.yaml file, under the config section:
+    outputs: |
+        [OUTPUT]
+            Name                         s3
+            Match                        *
+            bucket                       your-bucketname
+            region                       us-east-1
+            total_file_size              250M
+            s3_key_format                /$TAG[2]/$TAG[0]/%Y/%m/%d/%H/%M/%S/$UUID.gz
+            s3_key_format_tag_delimiters .-
+
+- NOTE: Above s3 output plugin is customizable depending on the requirement. Refer to this page to learn to how to customize it:
+    - https://docs.fluentbit.io/manual/pipeline/outputs/s3
+
+
+DEPLOYMENT STEPS:
+    Review the following Terraform files and change the parameter values for your environment:
+    - locals.tf
+        - change the common tag values to match your environment
+
+    - terraform.tfvars
+        - change the bucket name
+
+    Run the following Terraform commands to deploy the solution:
+    - terraform init
+    - terraform plan
+    - terraform apply

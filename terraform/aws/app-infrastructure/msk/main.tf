@@ -1,0 +1,179 @@
+locals {
+  module_name = "msk"
+  module_serial_number = "2023071301" # update with each commit?  Date plus two digit increment
+  instance_type  = var.environment == "development" ? "kafka.t3.small" : "kafka.m5.large"
+  instance_count = var.environment == "development" ? 2 : 3
+  msk_ebs_volume_size = var.msk_ebs_volume_size
+}
+
+# Create an IAM role for MSK
+resource "aws_iam_role" "msk" {
+  name = "${var.environment}-msk-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "kafka.amazonaws.com"
+        }
+      }
+    ]
+  })
+  tags = {
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
+  }
+}
+
+# Create an IAM policy for MSK
+resource "aws_iam_policy" "msk" {
+  name   = "${var.environment}-msk-policy"
+  policy = jsonencode({
+    Version: "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "cloudwatch:PutMetricData",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents",
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface",
+          "kms:Decrypt"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+  tags = {
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
+  }
+}
+
+# Attach the IAM policy to the MSK role
+resource "aws_iam_role_policy_attachment" "msk" {
+  policy_arn = aws_iam_policy.msk.arn
+  role       = aws_iam_role.msk.name
+}
+
+resource "aws_cloudwatch_log_group" "test" {
+  name = "msk_broker_logs"
+  tags = {
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
+  }
+}
+
+# MSK Cluster Security Group
+resource "aws_security_group" "msk_cluster_sg" {
+  name        = "msk-cluster-sg"
+  description = "Cluster communication with worker nodes"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "msk-cluster-sg"
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
+  }
+}
+
+resource "aws_security_group_rule" "msk_cluster_plaintext" {
+  description              = "Allow world to communicate with the cluster"
+  from_port                = 9092
+  # allow connection from modern vpc and VPN
+  cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.msk_cluster_sg.id
+  to_port                  = 9092
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "msk_cluster_tls" {
+  description              = "Allow world to communicate with the cluster"
+  from_port                = 9094
+  cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.msk_cluster_sg.id
+  to_port                  = 9094
+  type                     = "ingress"
+}
+
+resource "aws_security_group_rule" "cluster_outbound" {
+  description              = "Allow cluster to communicate to vpc"
+  from_port                = 1024
+  cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.msk_cluster_sg.id
+  to_port                  = 65535
+  type                     = "egress"
+}
+
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/msk_cluster
+resource "aws_msk_cluster" "this" {
+  cluster_name  = "msk-cluster-${var.environment}"
+  kafka_version = "2.8.1"
+
+  number_of_broker_nodes = local.instance_count
+  #iam_instance_profile = aws_iam_role.msk.arn
+
+  broker_node_group_info {
+    instance_type   = local.instance_type
+    client_subnets  = var.msk_subnet_ids
+    #security_groups = var.msk_security_groups
+    security_groups = [aws_security_group.msk_cluster_sg.id]
+    storage_info {
+      ebs_storage_info {
+        volume_size = local.msk_ebs_volume_size
+      }
+    }
+  }
+
+  encryption_info {
+        encryption_in_transit {
+            client_broker = "TLS_PLAINTEXT"
+            in_cluster = true
+        }
+  }
+
+  open_monitoring {
+    prometheus {
+      jmx_exporter {
+        enabled_in_broker = true
+      }
+      node_exporter {
+        enabled_in_broker = true
+      }
+    }
+  }
+
+  logging_info {
+    broker_logs {
+      cloudwatch_logs {
+        enabled   = true
+        log_group = aws_cloudwatch_log_group.test.name
+      }
+    }
+  }
+
+
+  tags = {
+    Environment = var.environment
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
+  }
+}
+
+output "bootstrap_brokers" {
+  description = "The bootstrap brokers for the MSK cluster"
+  value       = aws_msk_cluster.this.bootstrap_brokers
+}
+
+output "zookeeper_connect_string" {
+  description = "The Zookeeper connect string for the MSK cluster"
+  value       = aws_msk_cluster.this.zookeeper_connect_string
+}
+
