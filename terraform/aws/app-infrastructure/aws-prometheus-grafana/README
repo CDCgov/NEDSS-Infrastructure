@@ -1,0 +1,40 @@
+prometheus helm repo on github
+- "https://prometheus-community.github.io/helm-charts/
+
+The following components in the helm chart were disabled as they were not needed for the AMP.
+- alertmanager
+- prometheus-kube-state-metrics
+- prometheus-prometheus-node-exporter
+
+Per AWS instructions, only prometheus server is needed
+- prometheus-server
+
+
+FOR REMOTE WRITE TO AMP, ADDED THE FOLLOWING UNDER SERVER:
+server:
+  ## Prometheus server container name
+  name: server
+  remoteWrite:
+    - url: https://aps-workspaces.${AWS_REGION}.amazonaws.com/workspaces/${WORKSPACE_ID}/api/v1/remote_write 
+      sigv4:
+        region: ${AWS_REGION}
+      queue_config:
+        max_samples_per_send: 1000
+        max_shards: 200 
+        capacity: 2500
+
+NEED TO ADD THIS UNDER SERVICE ACCOUNT. THIS IS THE ROLE USED:
+serviceAccounts:
+  server:
+    create: true
+    name: "prometheus-service-account"
+    annotations: 
+      eks.amazonaws.com/role-arn: ${IAM_PROXY_PROMETHEUS_ROLE_ARN}
+
+
+FOR WINDOWS TOLERATION THIS WAS ADDED:
+  tolerations:
+    - key: node.kubernetes.io/os
+      operator: Equal
+      value: windows
+      effect: NoSchedule
