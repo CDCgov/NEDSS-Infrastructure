@@ -3,7 +3,7 @@ module "efs" {
 
   name           = var.name
   encrypted      = true
-  kms_key_arn    = module.kms.kms_key_arn
+  kms_key_arn    = var.kms_key_arn
 
   # File system policy
   attach_policy                      = true

@@ -26,3 +26,8 @@ variable "mount_targets" {
   type        = any
   default     = {}
 }
+
+variable "kms_key_arn" {
+  description = "AWS KMS key resource name to be used for EFS encryption"
+  type        = string
+}
