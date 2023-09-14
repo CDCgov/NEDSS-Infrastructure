@@ -2,7 +2,7 @@
 
 ## Description
 
-This package is used to deploy and configure ...
+This package is used to deploy and configure the environment.
 
 
 
