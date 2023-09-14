@@ -20,17 +20,3 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
-
-resource "aws_s3_bucket_acl" "log_bucket_acl" {
-  depends_on = [aws_s3_bucket.log_bucket, aws_s3_bucket_public_access_block.public_access_block]
-  bucket     = aws_s3_bucket.log_bucket.id
-  acl        = "private"
-}
-resource "aws_s3_bucket_ownership_controls" "bucket_ownership" {
-  depends_on = [aws_s3_bucket.log_bucket]
-  bucket     = aws_s3_bucket.log_bucket.id
-
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-}
