@@ -8,7 +8,7 @@ This package is used to deploy and configure ...
 
 ## Inputs
 
-Below are the input parameter variables the environement:
+Below are the input parameter variables for the environement.
 
 
 Domain name:
