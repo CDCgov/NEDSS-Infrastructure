@@ -113,7 +113,8 @@ Set-Location -Path "D:\wildfly-10.0.0.Final\bin\service"
 .\service.bat install
 
 #Set service to start automatically and start the service
-Set-Service Wildfly -StartupType Automatic
+#Set-Service Wildfly -StartupType Automatic
+sc.exe config Wildfly start= delayed-auto
 Start-Service Wildfly
 </powershell>
 EOF
