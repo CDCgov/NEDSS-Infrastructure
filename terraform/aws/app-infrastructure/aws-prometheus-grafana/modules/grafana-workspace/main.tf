@@ -62,6 +62,9 @@ resource "aws_grafana_workspace_api_key" "api_key" {
   key_role        = "ADMIN"
   seconds_to_live = 2592000 # 3600
   workspace_id    = aws_grafana_workspace.amg.id
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ####
