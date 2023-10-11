@@ -117,10 +117,12 @@ resource "aws_security_group_rule" "cluster_outbound" {
 resource "aws_msk_cluster" "this" {
   cluster_name  = "msk-cluster-${var.environment}"
   kafka_version = "2.8.1"
-  configuration_info = aws_msk_configuration.msk_configuration_environment.arn
-
   number_of_broker_nodes = local.instance_count
   #iam_instance_profile = aws_iam_role.msk.arn
+  
+  configuration_info {
+    arn = aws_msk_configuration.msk_configuration_environment.arn
+  }
 
   broker_node_group_info {
     instance_type   = local.instance_type
