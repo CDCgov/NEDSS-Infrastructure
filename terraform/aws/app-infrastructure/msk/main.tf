@@ -119,9 +119,10 @@ resource "aws_msk_cluster" "this" {
   kafka_version = "2.8.1"
   number_of_broker_nodes = local.instance_count
   #iam_instance_profile = aws_iam_role.msk.arn
-  
+
   configuration_info {
     arn = aws_msk_configuration.msk_configuration_environment.arn
+    revision = 1 
   }
 
   broker_node_group_info {
