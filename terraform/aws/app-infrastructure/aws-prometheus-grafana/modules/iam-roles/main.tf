@@ -32,9 +32,7 @@ resource "aws_iam_role" "prommetheus_role" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "",
       "Effect": "Allow",
-      "Action": "sts:AssumeRole",
   "Principal": {
     "Federated": "${var.OIDC_PROVIDER_ARN}"
     },
