@@ -39,7 +39,6 @@ resource "aws_iam_role" "fluentbit-role" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "assume-role-web-identity",
       "Effect": "Allow",
     "Action": "sts:AssumeRoleWithWebIdentity",
       "Principal": {
