@@ -50,7 +50,7 @@ resource "aws_iam_role" "fluentbit-role" {
       },
       "Condition": {
         "StringEquals": {
-          "${var.OIDC_PROVIDER}:sub": ["system:serviceaccount:${var.SERVICE_ACCOUNT_NAMESPACE}:${var.SERVICE_ACCOUNT_AMP_INGEST_NAME}"]
+          "${var.OIDC_PROVIDER}:sub": ["system:serviceaccount:${var.SERVICE_ACCOUNT_NAMESPACE}:${var.SERVICE_ACCOUNT_NAME}"]
         }
       }
     }
