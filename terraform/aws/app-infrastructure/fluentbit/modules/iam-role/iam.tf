@@ -41,17 +41,18 @@ resource "aws_iam_role" "fluentbit-role" {
     {
       "Sid": "",
       "Effect": "Allow",
-      "Action": "sts:AssumeRole",
-  "Principal": {
-    "Federated": "${var.OIDC_PROVIDER_ARN}"
-    },
-    "Action": "sts:AssumeRoleWithWebIdentity",
-    "Condition": {
-    "StringEquals": {
-    "${var.OIDC_PROVIDER}:sub":["system:serviceaccount:${var.SERVICE_ACCOUNT_NAMESPACE}:${var.SERVICE_ACCOUNT_NAME}"
-    ]
-    }
-    }
+      "Action": [
+        "sts:AssumeRole",
+        "sts:AssumeRoleWithWebIdentity"
+      ],
+      "Principal": {
+        "Federated": "${var.OIDC_PROVIDER_ARN}"
+      },
+      "Condition": {
+        "StringEquals": {
+          "${var.OIDC_PROVIDER}:sub": ["system:serviceaccount:${var.SERVICE_ACCOUNT_NAMESPACE}:${var.SERVICE_ACCOUNT_AMP_INGEST_NAME}"]
+        }
+      }
     }
   ]
 }
