@@ -78,9 +78,4 @@ resource "aws_grafana_workspace_api_key" "api_key" {
   key_role        = "ADMIN"
   seconds_to_live =  local.expiration_seconds
   workspace_id    = aws_grafana_workspace.amg.id
-  lifecycle {
-    replace_triggered_by = [
-      time_static.rotate
-    ]
-  }
 }
