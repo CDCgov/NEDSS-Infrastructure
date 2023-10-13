@@ -1,21 +1,21 @@
-# resource "grafana_service_account" "admin-sa" {
-#   name        = "admin-service-account"
-#   role        = "Admin"
-#   is_disabled = false
-# }
+resource "grafana_service_account" "admin-sa" {
+  name        = "admin-service-account"
+  role        = "Admin"
+  is_disabled = false
+}
 
-# resource "grafana_service_account_token" "admin-sa-token" {
-#   name               = "admin-service-account-token"
-#   service_account_id = grafana_service_account.admin-sa.id
-#   seconds_to_live    = 200000
-# }
+resource "grafana_service_account_token" "admin-sa-token" {
+  name               = "admin-service-account-token"
+  service_account_id = grafana_service_account.admin-sa.id
+  seconds_to_live    = 200000
+}
 
-# output "service_account_token_key_only" {
-#   value     = grafana_service_account_token.admin-sa-token.key
-#   sensitive = true
-# }
+output "service_account_token_key_only" {
+  value     = grafana_service_account_token.admin-sa-token.key
+  sensitive = true
+}
 
-
+###########
 #https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/folder
 resource "grafana_folder" "data" {
   provider = grafana.cloud
