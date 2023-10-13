@@ -60,7 +60,7 @@ resource "aws_iam_policy_attachment" "grafana-attach" {
 ##########################################
 # https://github.com/hashicorp/terraform-provider-aws/issues/27043
 locals {
-  expiration_days    = 30
+  expiration_days    = 1
   expiration_seconds = 60 * 60 * 24 * local.expiration_days
 }
 
