@@ -4,8 +4,9 @@
 #
 #  $Id: single_script.sh,v 1.6 2023/10/16 17:54:19 mossc Exp mossc $
 #
-#  Description: This script logs into nbs, creates a user, searches a user
-#  and then deletes the user, we should create a readonly version
+#  Description: This script logs into nbs, creates a Patient, searches a
+#  Patient
+#  and then deletes the Patient, we should create a readonly version
 #
 #  Args:        $1 is 
 #               $2 is 
@@ -240,9 +241,9 @@ do
             if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
             if patient_search ${BASE_URL} ${TMP_TOKEN} | grep "error" 
             then
-                echo "ERROR:  searching for user"
+                echo "ERROR:  searching for Patient"
             else
-                echo "NOTICE: user found, good!"
+                echo "NOTICE: Patient found, good!"
             fi
             echo
             
