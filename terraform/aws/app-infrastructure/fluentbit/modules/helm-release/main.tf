@@ -11,7 +11,7 @@ resource "helm_release" "fluentbit" {
   repository = var.repository 
   chart      = var.chart 
   values = [
-    templatefile(local.values_file_path, { AWS_REGION = "${data.aws_caller_identity.current.account_id}", FLUENTBIT_ROLE_ARN = "${var.FLUENTBIT_ROLE_ARN}", bucket = "${var.bucket}", SERVICE_ACCOUNT_NAME ="${var.SERVICE_ACCOUNT_NAME}"})
+    templatefile(local.values_file_path, { AWS_REGION = "${data.aws_caller_identity.current.account_id}", FLUENTBIT_ROLE_ARN = "${var.fluentbit_role_arn}", bucket = "${var.bucket}", SERVICE_ACCOUNT_NAME ="${var.service_account_name}"})
   ]
   namespace  = var.namespace
 }

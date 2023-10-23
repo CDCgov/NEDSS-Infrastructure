@@ -1,5 +1,3 @@
-# data "aws_caller_identity" "current" {}
-
 resource "aws_iam_policy" "fluentbit-policy" {
   name = "fluentbit-policy"
   lifecycle {
@@ -42,11 +40,11 @@ resource "aws_iam_role" "fluentbit-role" {
       "Effect": "Allow",
     "Action": "sts:AssumeRoleWithWebIdentity",
       "Principal": {
-    "Federated": "${var.OIDC_PROVIDER_ARN}"
+    "Federated": "${var.oidc_provider_arn}"
     },
     "Condition": {
     "StringEquals": {
-    "${var.OIDC_PROVIDER}:sub":["system:serviceaccount:${var.SERVICE_ACCOUNT_NAMESPACE}:${var.SERVICE_ACCOUNT_NAME}"
+    "${var.oidc_provider}:sub":["system:serviceaccount:${var.service_account_namespace}:${var.service_account_name}"
     ]
     }
     }
@@ -62,16 +60,3 @@ resource "aws_iam_policy_attachment" "test-attach" {
   roles      = [aws_iam_role.fluentbit-role.name]
   policy_arn = aws_iam_policy.fluentbit-policy.arn
 }
-
-
-# "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${var.OIDC_PROVIDER}"
-
-
-
-  #   {
-  #     "Sid": "assume-role",
-  #     "Effect": "Allow",
-  #     "Action": "sts:AssumeRole",
-  # "Principal": {
-  #   "Federated": "${var.OIDC_PROVIDER_ARN}"
-  #   }},
