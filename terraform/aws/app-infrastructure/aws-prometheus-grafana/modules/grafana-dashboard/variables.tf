@@ -16,6 +16,6 @@ variable "amp_url" {
 }
 
 variable "data_source_uid" {
-  type = string
+  type    = string
   default = "prom_ds_uid"
 }

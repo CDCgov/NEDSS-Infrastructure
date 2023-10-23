@@ -13,7 +13,7 @@ Below are the available Variables contained within this aws-prometheus-grafana m
 | alias | string | "cdc-nbs-prometheus-metrics" | Alias for prometheus workspace |
 | chart | string | "prometheus" | Prometheus helm chart name |
 | cluster_certificate_authority_data | string |  | TBase64 encoded certificate data required to communicate with the cluster |
-| data_sources | list | ["PROMETHEUS"] | The datasource for AWS Grafana; in this case Prometheus |
+| data_sources | list(any) | ["PROMETHEUS"] | The datasource for AWS Grafana; in this case Prometheus |
 | dependency_update | boolean | true | Updates all dependencies for Prometheus helm chart |
 | eks_aws_role_arn | string |  | IAM role ARN of the EKS cluster |
 | eks_cluster_endpoint | string |  | The endpoint of the EKS cluster |
@@ -24,8 +24,8 @@ Below are the available Variables contained within this aws-prometheus-grafana m
 | grafana_workspace_name | string | "cdc-nbs-grafana-metrics" | The AWS Grafana workspace name |
 | lint | boolean | true | Lints the Prometheus helm chart |
 | namespace_name | string | "observability" | Namespace name |
-| OIDC_PROVIDER_ARN | string |  | The ARN of the OIDC provider |
-| OIDC_PROVIDER_URL | string |  | The URL of the OIDC provider |
+| oidc_provider_arn | string |  | The ARN of the OIDC provider |
+| oidc_provider_url | string |  | The URL of the OIDC provider |
 | private_subnet_ids | list |  | List subnets for the prometheus workspace |
 | prometheus_endpoint | string | "prometheus_vpc_endpoint" | VPC endpoint name for AWS Prometheus |
 | prometheus_sg_name | string | "amp_vpc_endpoint_sg" | AWS prometheus vpc endpoint security group name |
@@ -33,7 +33,7 @@ Below are the available Variables contained within this aws-prometheus-grafana m
 | repository | string | "https://prometheus-community.github.io/helm-charts/" | Prometheus remote repository location |
 | resource_prefix | string | "cdc-nbs" | Prefix for resource names |
 | retention_in_days | number | 30 | Number of days to retain logs |
-| SERVICE_ACCOUNT_NAMESPACE | string | "observability" | Service account namespace name |
+| service_account_namespace | string | "observability" | Service account namespace name |
 | tags | map(string) |  | The tags added to the resources |
 | values_file_path | string | "../modules/aws-prometheus-grafana/modules/prometheus-helm/values.yaml" | Path to the values.yaml file |
 | vpc_cidr_block | string |  | CIDR block of your VPC |

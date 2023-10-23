@@ -10,6 +10,6 @@ terraform {
 
 provider "grafana" {
   alias = "cloud"
-  url  = var.grafana_workspace_url
-  auth =  var.amg_api_token  #grafana_service_account_token.admin-sa-token.key #
+  url   = var.grafana_workspace_url
+  auth  = var.amg_api_token #grafana_service_account_token.admin-sa-token.key #
 }

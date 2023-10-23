@@ -1,15 +1,15 @@
 resource "aws_grafana_workspace" "amg" {
-  name = var.grafana_workspace_name
+  name                     = var.grafana_workspace_name
   account_access_type      = "CURRENT_ACCOUNT"
   authentication_providers = ["AWS_SSO"]
   permission_type          = "SERVICE_MANAGED"
   role_arn                 = aws_iam_role.grafana_role.arn
-  data_sources = var.data_sources
-  tags = var.tags
+  data_sources             = var.data_sources
+  tags                     = var.tags
 }
 
 resource "aws_iam_policy" "policy" {
-  name        = "grafana-policy"
+  name = "grafana-policy"
   lifecycle {
     create_before_destroy = true
   }
@@ -17,19 +17,19 @@ resource "aws_iam_policy" "policy" {
   description = "IAM policy for ingestion into Amazon Managed Service for Grafana"
   policy = jsonencode({
     Version = "2012-10-17"
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "aps:ListWorkspaces",
-                "aps:DescribeWorkspace",
-                "aps:QueryMetrics",
-                "aps:GetLabels",
-                "aps:GetSeries",
-                "aps:GetMetricMetadata"
-            ],
-            "Resource": "*"
-        }
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "aps:ListWorkspaces",
+          "aps:DescribeWorkspace",
+          "aps:QueryMetrics",
+          "aps:GetLabels",
+          "aps:GetSeries",
+          "aps:GetMetricMetadata"
+        ],
+        "Resource" : "*"
+      }
     ]
   })
 }
@@ -76,9 +76,9 @@ resource "time_static" "rotate" {
 resource "aws_grafana_workspace_api_key" "api_key" {
   key_name        = "amg_api_key"
   key_role        = "ADMIN"
-  seconds_to_live =  local.expiration_seconds
+  seconds_to_live = local.expiration_seconds
   workspace_id    = aws_grafana_workspace.amg.id
-    lifecycle {
+  lifecycle {
     replace_triggered_by = [
       time_static.rotate
     ]
