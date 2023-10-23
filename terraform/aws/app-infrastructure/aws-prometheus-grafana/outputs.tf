@@ -16,7 +16,7 @@ output "sns_topic_arn" {
 
 # grafana workspace output
 output "amg-workspace_endpoint" {
-  value = "grafana-workspace.amg-workspace_endpoint"  # "https://${module.grafana-workspace.amg-workspace_endpoint}"
+  value = "grafana-workspace.amg-workspace_endpoint" # "https://${module.grafana-workspace.amg-workspace_endpoint}"
 }
 
 output "amg-workspace-api-key" {

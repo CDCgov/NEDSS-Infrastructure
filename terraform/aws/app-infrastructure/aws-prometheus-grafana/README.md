@@ -31,6 +31,7 @@ Below are the available Variables contained within this aws-prometheus-grafana m
 | prometheus_sg_name | string | "amp_vpc_endpoint_sg" | AWS prometheus vpc endpoint security group name |
 | region | string | "us-east-1" | AWS Region |
 | repository | string | "https://prometheus-community.github.io/helm-charts/" | Prometheus remote repository location |
+| resource_prefix | string | "cdc-nbs" | Prefix for resource names |
 | retention_in_days | number | 30 | Number of days to retain logs |
 | SERVICE_ACCOUNT_NAMESPACE | string | "observability" | Service account namespace name |
 | tags | map(string) |  | The tags added to the resources |
