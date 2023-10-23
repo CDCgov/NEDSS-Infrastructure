@@ -25,6 +25,7 @@ Below are the input parameter variables for Fluentbit:
 | path_to_fluentbit | string | `../modules/fluentbit` | Path to the fluentbit module (No trailing slash needed) |
 | release_name | string | `fluentbit` | The of the helm release |
 | repository | string | `https://fluent.github.io/helm-charts/` | The fluentbit repo name |
+| resource_prefix | string | "cdc-nbs" | Prefix for resource names |
 | service_account_name | string | `fluentbit-service-account` | The name of the service account for fluentbit |
 | tags | map(string) |  | Tags applied to all resources  |
 
