@@ -144,15 +144,22 @@ variable "force_update" {
   default     = true
 }
 
-variable "eks_cluster_endpoint" {}               # = module.eks_nbs.eks_cluster_endpoint
-variable "cluster_certificate_authority_data" {} #= module.eks_nbs.cluster_certificate_authority_data
-variable "eks_cluster_name" {}                   # = module.eks_nbs.eks_cluster_name
-variable "eks_aws_role_arn" {}                   # = module.eks_nbs.eks_aws_role_arn
+variable "cluster_certificate_authority_data" {
+  type = string
+  description = "TBase64 encoded certificate data required to communicate with the cluster"
+}
 
+variable "eks_cluster_endpoint" {
+  type = string
+  description = "The endpoint of the EKS cluster"
+} 
 
+variable "eks_cluster_name" {
+  type = string
+  description = "Name of the EKS cluster"
+} 
 
-
-
-
-
-
+variable "eks_aws_role_arn" {
+  type = string
+  description = "IAM role ARN of the EKS cluster"
+}
