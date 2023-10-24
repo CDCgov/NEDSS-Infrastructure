@@ -2,20 +2,10 @@
 
 ##########################################################################
 #
-#  $Id: single_script.sh,v 1.6 2023/10/16 17:54:19 mossc Exp mossc $
-#
 #  Description: This script logs into nbs, creates a Patient, searches a
 #  Patient
-#  and then deletes the Patient, we should create a readonly version
-#
-#  Args:        $1 is 
-#               $2 is 
-#
-#  Called by: 
-#  Calls:
-#
-#  TODO: 1.
-#        2.
+#  and then deletes the Patient, 
+#  TODO: we should create a readonly version
 #
 ##########################################################################
 
@@ -206,7 +196,11 @@ do
             echo "logging in and fetching token"
             #echo  login_nbs ${BASE_URL} ${LOGIN_USER} 
             TMP_TOKEN=$(login_nbs ${BASE_URL} ${LOGIN_USER} | jq -r .token)
+            RETURN_CODE=$?"
+            if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
+
             echo "RETURN_CODE=$?"
+
             echo TMP_TOKEN=${TMP_TOKEN}
             echo 
             
@@ -218,7 +212,8 @@ do
             #echo patient_create.sh ${BASE_URL} ${TMP_TOKEN}
             #TMP_PATIENT_ID=$(./Patient/Create.sh ${BASE_URL} ${TMP_TOKEN} |  jq -r .data.createPatient.id)
             TMP_PATIENT_ID=$(patient_create ${BASE_URL} ${TMP_TOKEN} |  jq -r .data.createPatient.id)
-            echo "RETURN_CODE=$?"
+            RETURN_CODE=$?"
+            if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
             echo "Patient with last name Brea created with Patient ID = ${TMP_PATIENT_ID}"
             echo
             
@@ -226,6 +221,7 @@ do
             echo "#################################################################"
             echo "now searching patient with last name Brea"
             if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
+
             if patient_search ${BASE_URL} ${TMP_TOKEN} | grep "error" 
             then
                 echo "ERROR:  searching for Patient"
@@ -240,7 +236,8 @@ do
             if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
             #echo patient_delete.sh ${BASE_URL} ${TMP_TOKEN} ${TMP_PATIENT_ID}
             patient_delete ${BASE_URL} ${TMP_TOKEN} ${TMP_PATIENT_ID} | jq
-            echo "RETURN_CODE=$?"
+            RETURN_CODE=$?"
+            if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
             echo
             echo "#################################################################"
                         
