@@ -1,5 +1,6 @@
 locals {
   eks_name = var.name != "" ? var.name : "${var.resource_prefix}-eks"
+  eks_node_group_name = var.name != "" ? "eks-nbs-main" : "${var.resource_prefix}-node-group-main"
 }
 
 module "eks" {
@@ -28,7 +29,7 @@ module "eks" {
 
   eks_managed_node_groups = {
       main = {
-        name         = "eks-nbs-main"
+        name         = local.eks_node_group_name
         min_size     = var.min_nodes_count
         max_size     = var.max_nodes_count
         desired_size = var.desired_nodes_count

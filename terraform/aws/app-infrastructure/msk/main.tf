@@ -8,7 +8,7 @@ locals {
 
 # Create an IAM role for MSK
 resource "aws_iam_role" "msk" {
-  name = "${var.environment}-msk-role"
+  name = "${var.resource_prefix}-${var.environment}-msk-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -29,7 +29,7 @@ resource "aws_iam_role" "msk" {
 
 # Create an IAM policy for MSK
 resource "aws_iam_policy" "msk" {
-  name   = "${var.environment}-msk-policy"
+  name   = "${var.resource_prefix}-${var.environment}-msk-policy"
   policy = jsonencode({
     Version: "2012-10-17"
     Statement = [
@@ -64,7 +64,7 @@ resource "aws_iam_role_policy_attachment" "msk" {
 }
 
 resource "aws_cloudwatch_log_group" "test" {
-  name = "msk_broker_logs"
+  name = "${var.resource_prefix}-msk-broker-logs"
   tags = {
     ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
@@ -72,7 +72,7 @@ resource "aws_cloudwatch_log_group" "test" {
 
 # MSK Cluster Security Group
 resource "aws_security_group" "msk_cluster_sg" {
-  name        = "msk-cluster-sg"
+  name        = "${var.resource_prefix}-msk-cluster-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = var.vpc_id
 
@@ -115,7 +115,7 @@ resource "aws_security_group_rule" "cluster_outbound" {
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/msk_cluster
 resource "aws_msk_cluster" "this" {
-  cluster_name  = "msk-cluster-${var.environment}"
+  cluster_name  = "${var.resource_prefix}-${var.environment}-msk-cluster"
   kafka_version = "2.8.1"
   number_of_broker_nodes = local.instance_count
   #iam_instance_profile = aws_iam_role.msk.arn
@@ -183,7 +183,7 @@ output "zookeeper_connect_string" {
 
 resource "aws_msk_configuration" "msk_configuration_environment" {
   kafka_versions = ["2.8.1"]
-  name           = "msk-configuration-environment"
+  name           = "${var.resource_prefix}-${var.environment}-msk-cluster-config"
 
   server_properties = <<PROPERTIES
 auto.create.topics.enable = true
