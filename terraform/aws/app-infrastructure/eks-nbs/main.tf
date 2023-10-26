@@ -1,8 +1,12 @@
+locals {
+  eks_name = var.name != "" ? var.name : "${var.resource_prefix}-eks"
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.15.3"
 
-  cluster_name    = var.name
+  cluster_name    = local.eks_name
   cluster_version = var.cluster_version
 
   cluster_endpoint_public_access  = true

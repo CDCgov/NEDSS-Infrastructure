@@ -1,6 +1,13 @@
 variable "name" {
-  description = "Name to be used for EFS"
+  description = "Name to be used for EFS (an overwrite option to use a custom name)"
   type        = string
+  default = ""
+}
+
+variable "resource_prefix" {
+  type        = string
+  description = "Prefix for resource names"
+  default     = "cdc-nbs"
 }
 
 variable "vpc_id" {

@@ -23,9 +23,10 @@ Below are the input parameter variables for the eks-nbs:
 | istio_version | string | `1.17.2` | Version of Istio with which to bootstrap EKS cluster |
 | max_nodes_count | number | `3` | Minimum number of EKS nodes allowed by the autoscaling group |
 | min_nodes_count | number | `5` | Maximum number of EKS nodes allowed by the autoscaling group |
-| name | string | `cdc-nbs-sandbox` | Name of the EKS cluster |
+| name | string | `cdc-nbs-sandbox` | Name of the EKS cluster (an overwrite option to use a custom name) |
 | observability_namespace | map(string) | `null` | Labels to add to observability namespace  |
 | observability_namespace | string | `observability` | Name for the observability namespace with the EKS cluster to be created  |
+| resource_prefix | string |  | Prefix for resource names |
 | sso_role_arn | string |  | AWS SSO IAM Role arn used to authenticate into the EKS cluster  |
 | subnets | list(string) | | List of the AWS private subnets ids associated with the supplied vpc_id to deploy in which to deploy the cluster |
 | vpc_id | string | | The AWS VPC ID to deploy in which to deploy the cluster |
