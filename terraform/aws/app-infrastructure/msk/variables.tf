@@ -4,6 +4,12 @@ variable "resource_prefix" {
   default     = "cdc-nbs"
 }
 
+variable "create_msk" {
+  type        = boolean
+  description = "Create msk cluser"
+  default     = true
+}
+
 variable "environment" {
   description = "The environment, either 'development' or 'production'"
   default     = "development"
