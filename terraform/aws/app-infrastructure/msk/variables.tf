@@ -5,8 +5,8 @@ variable "resource_prefix" {
 }
 
 variable "create_msk" {
-  type        = boolean
-  description = "Create msk cluser"
+  type        = bool
+  description = "Create msk cluser and required resources?"
   default     = true
 }
 

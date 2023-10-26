@@ -11,6 +11,7 @@ Below are the input parameter variables for the MSK:
 
 | Key | Type | Default | Description |
 | -------------- | -------------- | -------------- | -------------- |
+| create_msk | bool | true | Create msk cluser and required resources? |
 | environment | string | `development` | The environment, either 'development' or 'production' |
 | modern-cidr | string |  | VPC CIDR to be used with cluster SG |
 | msk_ebs_volume_size | number |  | EBS volume size for the MSK broker nodes in GB |
