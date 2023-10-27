@@ -63,6 +63,7 @@ module "grafana-workspace" {
 }
 
 module "grafana-dashboard" {
+  count = 0
   source = "./modules/grafana-dashboard"
   # depends_on = [module.grafana-workspace]
   grafana_workspace_url = "https://${module.grafana-workspace.amg-workspace_endpoint}"
