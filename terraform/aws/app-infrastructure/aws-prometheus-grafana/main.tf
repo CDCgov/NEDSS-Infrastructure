@@ -67,7 +67,7 @@ module "grafana-dashboard" {
   # providers = {
   #   grafana = grafana.cloud
   # }
-  depends_on = [module.grafana-workspace]
+  # depends_on = [module.grafana-workspace]
   grafana_workspace_url = "https://${module.grafana-workspace.amg-workspace_endpoint}"
   amg_api_token         = module.grafana-workspace.amg-workspace-api-key
   amp_url               = module.prometheus-workspace.amp_workspace_endpoint
