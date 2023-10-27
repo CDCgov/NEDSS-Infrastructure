@@ -1,7 +1,7 @@
 module "vpc-endpoints" {
   source              = "./modules/vpc-endpoints"
   tags                = var.tags
-  region              = var.region
+  region              = data.aws_region.current.name
   vpc_id              = var.vpc_id
   vpc_cidr_block      = var.vpc_cidr_block
   private_subnet_ids  = var.private_subnet_ids
@@ -40,7 +40,7 @@ module "prometheus-helm" {
   source                        = "./modules/prometheus-helm"
   depends_on                    = [module.prometheus-workspace, module.iam-role]
   namespace_name                = var.namespace_name
-  region                        = var.region
+  region                        = data.aws_region.current.name
   repository                    = var.repository
   chart                         = var.chart
   workspace_id                  = module.prometheus-workspace.amp_workspace_id
@@ -64,9 +64,9 @@ module "grafana-workspace" {
 
 module "grafana-dashboard" {
   source = "./modules/grafana-dashboard"
-  providers = {
-    grafana = grafana.cloud
-  }
+  # providers = {
+  #   grafana = grafana.cloud
+  # }
   depends_on = [module.grafana-workspace]
   grafana_workspace_url = "https://${module.grafana-workspace.amg-workspace_endpoint}"
   amg_api_token         = module.grafana-workspace.amg-workspace-api-key

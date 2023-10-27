@@ -19,13 +19,13 @@
 
 #https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/folder
 resource "grafana_folder" "data" {
-  provider = grafana
+  provider = grafana.cloud
   title    = "prometheus-nginx-ingress-controller"
 }
 
 
 resource "grafana_data_source" "prometheus" {
-  provider = grafana
+  provider = grafana.cloud
   type     = "prometheus"
   name     = "aws-prometheus"
   url      = var.amp_url #"https://my-instances.com"
@@ -51,7 +51,7 @@ resource "grafana_data_source" "prometheus" {
 
 #https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/dashboard
 resource "grafana_dashboard" "prometheus-nginx-ingress-controller" {
-  provider    = grafana
+  provider    = grafana.cloud
   config_json = file("${path.module}/grafana-dashboard.json") # file("./dashboard/NGINX-Ingress-controller.json")
   folder      = grafana_folder.data.id
   overwrite   = true
