@@ -27,7 +27,7 @@ module "prometheus-workspace" {
   alias             = "${var.resource_prefix}-amp-metrics"
   retention_in_days = var.retention_in_days
   tags              = var.tags
-  region            = var.region
+  region            = data.aws_region.current
 }
 
 module "k8s-namespace" {
@@ -59,13 +59,13 @@ module "grafana-workspace" {
   grafana_workspace_name = "${var.resource_prefix}-amg-metrics"  
   endpoint_url           = module.prometheus-workspace.amp_workspace_endpoint
   amp_workspace_id       = module.prometheus-workspace.amp_workspace_id
-  region                 = var.region
+  region                 = data.aws_region.current
 }
 
-module "grafana-dashboard" {
-  source = "./modules/grafana-dashboard"
-  # depends_on = [module.grafana-workspace]
-  grafana_workspace_url = "https://${module.grafana-workspace.amg-workspace_endpoint}"
-  amg_api_token         = module.grafana-workspace.amg-workspace-api-key
-  amp_url               = module.prometheus-workspace.amp_workspace_endpoint
-}
+# module "grafana-dashboard" {
+#   source = "./modules/grafana-dashboard"
+#   # depends_on = [module.grafana-workspace]
+#   grafana_workspace_url = "https://${module.grafana-workspace.amg-workspace_endpoint}"
+#   amg_api_token         = module.grafana-workspace.amg-workspace-api-key
+#   amp_url               = module.prometheus-workspace.amp_workspace_endpoint
+# }
