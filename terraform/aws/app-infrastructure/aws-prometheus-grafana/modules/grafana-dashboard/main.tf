@@ -19,7 +19,7 @@
 
 #https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/folder
 resource "grafana_folder" "data" {
-  provider = grafana.cloud
+  # provider = grafana.cloud
   title    = "prometheus-nginx-ingress-controller"
 }
 
