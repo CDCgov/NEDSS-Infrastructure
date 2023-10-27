@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# can get this with cli
+ACCT_NUM=00000000
+
+# modify this for each release or prompt and save to rc file
+INFRA_VER=v1.0.0
+
+INSTALL_DIR=nbs_install
+
+cd ~/${INSTALL_DIR}
+rm *.zip
+
+echo "what is the site name"
+read TMP_SITE_NAME
+
+#cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
+
+#cd NEDSS-Infrastructure-1.0.0-prerelease/terraform/aws
+cd nbs-infrastructure-${INFRA_VER}/
+
+cp -pr samples/NBS7_standard ${TMP_SITE_NAME}
+
+cd ${TMP_SITE_NAME}
+
+# 
+# cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
+
+
+#get/create local copy of secrets (can be scripted later) 
+
+# inputs.tfvars template modification documented elsewhere
+
+echo aws s3 cp s3://install-placeholder-<account-num>/terraform.tfvars terraform.tfvars.froms3
+# edit bucket name and uncomment
+#aws s3 cp s3://install-placeholder-${ACCT_NUM}/terraform.tfvars terraform.tfvars.froms3
+
+exit 1 
+
+
+echo "modify terraform.tfars and/or inputs.tfvars to reflect appropriate values"
+echo "replace any variables with EXAMPLE in the name!"
+
+echo "modify bucket and key in terraform.tf"
+echo "e.g. bucket  = "install-placeholder-${ACCT_NUM}"
+echo "key     = "cdc-nbs-ats-modern/infrastructure-artifacts" 
+echo "for s3 backend, choose a local bucket (precreated) probably with versioning enabled"
+
+echo hit return to continue
+read junk
+
+vi terraform.tf
+
+# echo "now need to hand edit terraform.tfvars before running next script"
+echo "now need to hand edit inputs.tfvars before running next script"
+echo "cd `pwd`"
+
