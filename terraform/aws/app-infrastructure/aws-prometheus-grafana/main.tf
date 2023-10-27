@@ -53,7 +53,7 @@ module "prometheus-helm" {
 
 module "grafana-workspace" {
   source                 = "./modules/grafana-workspace"
-  # depends_on             = [module.prometheus-workspace]
+  depends_on             = [module.prometheus-workspace]
   tags                   = var.tags
   data_sources           = var.data_sources
   grafana_workspace_name = "${var.resource_prefix}-amg-metrics"  
