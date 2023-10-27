@@ -64,6 +64,9 @@ module "grafana-workspace" {
 
 module "grafana-dashboard" {
   source = "./modules/grafana-dashboard"
+  providers = {
+    grafana = grafana.cloud
+  }
   # depends_on = [module.grafana-workspace]
   grafana_workspace_url = "https://${module.grafana-workspace.amg-workspace_endpoint}"
   amg_api_token         = module.grafana-workspace.amg-workspace-api-key
