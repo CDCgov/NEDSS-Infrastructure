@@ -64,7 +64,7 @@ module "grafana-workspace" {
 
 module "grafana-dashboard" {
   source = "./modules/grafana-dashboard"
-  depends_on = [module.grafana-workspace]
+  depends_on = [module.grafana-workspace.aws_grafana_workspace_api_key]
   providers = {
     grafana = grafana.cloud
   }  
