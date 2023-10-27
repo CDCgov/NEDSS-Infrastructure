@@ -39,7 +39,7 @@ resource "grafana_data_source" "prometheus" {
     # prometheusVersion = "2.4.0"
     sigV4Auth     = true
     sigV4AuthType = "ec2_iam_role"
-    sigV4Region   = "us-east-1"
+    sigV4Region   = "${var.region}"
     provisionedBy = "aws-datasource-provisioner-app"
     readOnly      = false
 

@@ -1,9 +1,8 @@
 #Define AWS Region
-# variable "region" {
-#   description = "Infrastructure region"
-#   type        = string
-#   default     = "us-east-1"
-# }
+variable "region" {
+  description = "Infrastructure region"
+  type        = string
+}
 variable "amg_api_token" {
   type = string
 }
