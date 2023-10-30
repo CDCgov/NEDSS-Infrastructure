@@ -25,5 +25,3 @@ example | string | | example description
 Scripts to prompt to fill unknown variables, check aws dependencies,
 compare files
 
-# 2023082302
-
