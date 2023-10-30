@@ -116,8 +116,11 @@ Set-Location -Path "D:\wildfly-10.0.0.Final\bin\service"
 #Set-Service Wildfly -StartupType Automatic
 sc.exe config Wildfly start= delayed-auto
 Start-Service Wildfly
+Restart-Computer -Force
 </powershell>
 EOF
+
+    depends_on = [module.db]
 
 }
 
@@ -376,6 +379,7 @@ module "db" {
   license_model             = "license-included"
   character_set_name        = "SQL_Latin1_General_CP1_CI_AS"
   snapshot_identifier       = var.db_snapshot_identifier
+
 }
 
 # Create certificate (this should be an optional resource with ability to provide arn if existing)
@@ -397,3 +401,4 @@ module "acm" {
   validation_timeout  = "15m"
   tags                = var.tags
 }
+
