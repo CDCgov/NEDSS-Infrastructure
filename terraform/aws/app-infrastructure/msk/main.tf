@@ -117,9 +117,13 @@ resource "aws_security_group_rule" "cluster_outbound" {
 resource "aws_msk_cluster" "this" {
   cluster_name  = "msk-cluster-${var.environment}"
   kafka_version = "2.8.1"
-
   number_of_broker_nodes = local.instance_count
   #iam_instance_profile = aws_iam_role.msk.arn
+
+  configuration_info {
+    arn = aws_msk_configuration.msk_configuration_environment.arn
+    revision = 1 
+  }
 
   broker_node_group_info {
     instance_type   = local.instance_type
@@ -175,5 +179,27 @@ output "bootstrap_brokers" {
 output "zookeeper_connect_string" {
   description = "The Zookeeper connect string for the MSK cluster"
   value       = aws_msk_cluster.this.zookeeper_connect_string
+}
+
+resource "aws_msk_configuration" "msk_configuration_environment" {
+  kafka_versions = ["2.8.1"]
+  name           = "msk-configuration-environment"
+
+  server_properties = <<PROPERTIES
+auto.create.topics.enable = true
+delete.topic.enable = true
+default.replication.factor=2
+min.insync.replicas=2
+num.io.threads=8
+num.network.threads=5
+num.partitions=1
+num.replica.fetchers=2
+replica.lag.time.max.ms=30000
+socket.receive.buffer.bytes=102400
+socket.request.max.bytes=104857600
+socket.send.buffer.bytes=102400
+unclean.leader.election.enable=true
+zookeeper.session.timeout.ms=18000
+PROPERTIES
 }
 

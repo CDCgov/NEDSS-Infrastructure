@@ -32,10 +32,8 @@ resource "aws_iam_role" "prommetheus_role" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "",
       "Effect": "Allow",
-      "Action": "sts:AssumeRole",
- "Principal": {
+  "Principal": {
     "Federated": "${var.OIDC_PROVIDER_ARN}"
     },
     "Action": "sts:AssumeRoleWithWebIdentity",
@@ -60,3 +58,7 @@ resource "aws_iam_policy_attachment" "prometheus-attach" {
   roles      = [aws_iam_role.prommetheus_role.name]
   policy_arn = aws_iam_policy.policy.arn
 }
+
+
+
+

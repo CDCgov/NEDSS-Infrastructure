@@ -39,13 +39,11 @@ resource "aws_iam_role" "fluentbit-role" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "",
       "Effect": "Allow",
-      "Action": "sts:AssumeRole",
-  "Principal": {
+    "Action": "sts:AssumeRoleWithWebIdentity",
+      "Principal": {
     "Federated": "${var.OIDC_PROVIDER_ARN}"
     },
-    "Action": "sts:AssumeRoleWithWebIdentity",
     "Condition": {
     "StringEquals": {
     "${var.OIDC_PROVIDER}:sub":["system:serviceaccount:${var.SERVICE_ACCOUNT_NAMESPACE}:${var.SERVICE_ACCOUNT_NAME}"
@@ -70,3 +68,10 @@ resource "aws_iam_policy_attachment" "test-attach" {
 
 
 
+  #   {
+  #     "Sid": "assume-role",
+  #     "Effect": "Allow",
+  #     "Action": "sts:AssumeRole",
+  # "Principal": {
+  #   "Federated": "${var.OIDC_PROVIDER_ARN}"
+  #   }},
