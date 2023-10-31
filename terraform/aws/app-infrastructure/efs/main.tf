@@ -1,7 +1,11 @@
+locals {
+  efs_name = var.name != "" ? var.name : "${var.resource_prefix}-efs"
+}
+
 module "efs" {
   source = "terraform-aws-modules/efs/aws"
 
-  name           = var.name
+  name           = local.efs_name
   encrypted      = true
   kms_key_arn    = var.kms_key_arn
 
@@ -35,7 +39,7 @@ module "efs" {
 
   # Mount targets / security group
   mount_targets              = var.mount_targets
-  security_group_description = "EFS Security Group for ${var.name}"
+  security_group_description = "EFS Security Group for ${var.resource_prefix}-efs"
   security_group_vpc_id      = var.vpc_id
 
   security_group_rules = {

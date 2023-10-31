@@ -3,12 +3,13 @@ locals {
   module_serial_number = "2023071301" # update with each commit?  Date plus two digit increment
   instance_type  = var.environment == "development" ? "kafka.t3.small" : "kafka.m5.large"
   instance_count = var.environment == "development" ? 2 : 3
-  msk_ebs_volume_size = var.msk_ebs_volume_size
 }
 
 # Create an IAM role for MSK
 resource "aws_iam_role" "msk" {
-  name = "${var.environment}-msk-role"
+  count = var.create_msk ? 1 : 0
+
+  name = "${var.resource_prefix}-${var.environment}-msk-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -29,7 +30,8 @@ resource "aws_iam_role" "msk" {
 
 # Create an IAM policy for MSK
 resource "aws_iam_policy" "msk" {
-  name   = "${var.environment}-msk-policy"
+  count = var.create_msk ? 1 : 0
+  name   = "${var.resource_prefix}-${var.environment}-msk-policy"
   policy = jsonencode({
     Version: "2012-10-17"
     Statement = [
@@ -59,12 +61,14 @@ resource "aws_iam_policy" "msk" {
 
 # Attach the IAM policy to the MSK role
 resource "aws_iam_role_policy_attachment" "msk" {
+  count = var.create_msk ? 1 : 0
   policy_arn = aws_iam_policy.msk.arn
   role       = aws_iam_role.msk.name
 }
 
 resource "aws_cloudwatch_log_group" "test" {
-  name = "msk_broker_logs"
+  count = var.create_msk ? 1 : 0
+  name = "${var.resource_prefix}-msk-broker-logs"
   tags = {
     ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
@@ -72,7 +76,8 @@ resource "aws_cloudwatch_log_group" "test" {
 
 # MSK Cluster Security Group
 resource "aws_security_group" "msk_cluster_sg" {
-  name        = "msk-cluster-sg"
+  count = var.create_msk ? 1 : 0
+  name        = "${var.resource_prefix}-msk-cluster-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = var.vpc_id
 
@@ -83,6 +88,7 @@ resource "aws_security_group" "msk_cluster_sg" {
 }
 
 resource "aws_security_group_rule" "msk_cluster_plaintext" {
+  count = var.create_msk ? 1 : 0
   description              = "Allow world to communicate with the cluster"
   from_port                = 9092
   # allow connection from modern vpc and VPN
@@ -94,6 +100,7 @@ resource "aws_security_group_rule" "msk_cluster_plaintext" {
 }
 
 resource "aws_security_group_rule" "msk_cluster_tls" {
+  count = var.create_msk ? 1 : 0
   description              = "Allow world to communicate with the cluster"
   from_port                = 9094
   cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
@@ -104,6 +111,7 @@ resource "aws_security_group_rule" "msk_cluster_tls" {
 }
 
 resource "aws_security_group_rule" "cluster_outbound" {
+  count = var.create_msk ? 1 : 0
   description              = "Allow cluster to communicate to vpc"
   from_port                = 1024
   cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
@@ -115,7 +123,8 @@ resource "aws_security_group_rule" "cluster_outbound" {
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/msk_cluster
 resource "aws_msk_cluster" "this" {
-  cluster_name  = "msk-cluster-${var.environment}"
+  count = var.create_msk ? 1 : 0
+  cluster_name  = "${var.resource_prefix}-${var.environment}-msk-cluster"
   kafka_version = "2.8.1"
   number_of_broker_nodes = local.instance_count
   #iam_instance_profile = aws_iam_role.msk.arn
@@ -132,7 +141,7 @@ resource "aws_msk_cluster" "this" {
     security_groups = [aws_security_group.msk_cluster_sg.id]
     storage_info {
       ebs_storage_info {
-        volume_size = local.msk_ebs_volume_size
+        volume_size = var.msk_ebs_volume_size
       }
     }
   }
@@ -171,19 +180,10 @@ resource "aws_msk_cluster" "this" {
   }
 }
 
-output "bootstrap_brokers" {
-  description = "The bootstrap brokers for the MSK cluster"
-  value       = aws_msk_cluster.this.bootstrap_brokers
-}
-
-output "zookeeper_connect_string" {
-  description = "The Zookeeper connect string for the MSK cluster"
-  value       = aws_msk_cluster.this.zookeeper_connect_string
-}
-
 resource "aws_msk_configuration" "msk_configuration_environment" {
+  count = var.create_msk ? 1 : 0
   kafka_versions = ["2.8.1"]
-  name           = "msk-configuration-environment"
+  name           = "${var.resource_prefix}-${var.environment}-msk-cluster-config"
 
   server_properties = <<PROPERTIES
 auto.create.topics.enable = true
@@ -202,4 +202,8 @@ unclean.leader.election.enable=true
 zookeeper.session.timeout.ms=18000
 PROPERTIES
 }
+
+
+
+
 

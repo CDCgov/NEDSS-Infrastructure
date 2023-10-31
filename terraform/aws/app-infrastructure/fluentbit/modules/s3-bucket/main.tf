@@ -9,6 +9,7 @@ resource "random_string" "random" {
 resource "aws_s3_bucket" "log_bucket" {
   bucket = "${var.bucket_name}-${data.aws_caller_identity.current.account_id}-${random_string.random.result}"
   tags   = merge(tomap({ "Name" = "${var.bucket_name}-${data.aws_caller_identity.current.account_id}-${random_string.random.result}" }), var.tags)
+  force_destroy = var.force_destroy_log_bucket
 }
 
 resource "aws_s3_bucket_public_access_block" "public_access_block" {

@@ -1,18 +1,23 @@
-
-variable "bucket_name" {
+variable "resource_prefix" {
   type        = string
-  description = "name of bucket to forward logs to"
-  default     = "cdc-nbs-fluentbit-logs"
+  description = "Prefix for resource names"
+  default     = "cdc-nbs"
 }
+
+# variable "bucket_name" {
+#   type        = string
+#   description = "name of bucket to forward logs to"
+#   default     = "cdc-nbs-fluentbit-logs"
+# }
 variable "tags" {
   type        = map(string)
   description = "tags applied to all resources"
 }
-variable "OIDC_PROVIDER_ARN" {
+variable "oidc_provider_arn" {
   type        = string
   description = "the ARN of the OIDC provider"
 }
-variable "OIDC_PROVIDER_URL" {
+variable "oidc_provider_url" {
   type        = string
   description = "the URL of the OIDC provider"
 }
@@ -22,11 +27,18 @@ variable "OIDC_PROVIDER_URL" {
 #   # default     = "observability"
 
 # }
-variable "SERVICE_ACCOUNT_NAME" {
+# variable "service_account_name" {
+#   type        = string
+#   description = "the name of the service account for fluentbit"
+#   default     = "fluentbit-service-account"
+# }
+
+variable "force_destroy_log_bucket" {
   type        = string
-  description = "the name of the service account for fluentbit"
-  default     = "fluentbit-service-account"
+  description = "Boolean that indicates all objects (including any locked objects) should be deleted from the bucket when the bucket is destroyed so that the bucket can be destroyed without error."
+  default     = false
 }
+
 variable "path_to_fluentbit" {
   type        = string
   description = "path to the fluentbit module (No trailing slash needed)"
@@ -34,7 +46,8 @@ variable "path_to_fluentbit" {
 }
 variable "namespace_name" {
   type        = string
-  description = "the namespace for service account for fluentbit (typically observability)"  
+  description = "the namespace for service account for fluentbit (typically observability)"
+  default     = "observability"
 }
 
 variable "release_name" {
@@ -53,9 +66,28 @@ variable "chart" {
   default     = "fluent-bit"
 }
 
-  variable "eks_cluster_endpoint" {} 
-  variable "cluster_certificate_authority_data" {} 
-  variable "eks_cluster_name" {} 
-  variable "eks_aws_role_arn" {} 
+variable "cluster_certificate_authority_data" {
+  type        = string
+  description = "TBase64 encoded certificate data required to communicate with the cluster"
+}
 
-  variable "log_group_name" {default = "fluent-bit-cloudwatch"}
+variable "eks_cluster_endpoint" {
+  type        = string
+  description = "The endpoint of the EKS cluster"
+}
+
+variable "eks_cluster_name" {
+  type        = string
+  description = "Name of the EKS cluster"
+}
+
+variable "eks_aws_role_arn" {
+  type        = string
+  description = "IAM role ARN of the EKS cluster"
+}
+
+variable "log_group_name" {
+  type        = string
+  description = "The name of CloudWatch log group"
+  default     = "fluent-bit-cloudwatch"
+}

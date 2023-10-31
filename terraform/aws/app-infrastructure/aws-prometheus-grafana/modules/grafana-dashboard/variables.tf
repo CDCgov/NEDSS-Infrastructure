@@ -1,9 +1,8 @@
 #Define AWS Region
-# variable "region" {
-#   description = "Infrastructure region"
-#   type        = string
-#   default     = "us-east-1"
-# }
+variable "region" {
+  description = "Infrastructure region"
+  type        = string
+}
 variable "amg_api_token" {
   type = string
 }
@@ -16,6 +15,6 @@ variable "amp_url" {
 }
 
 variable "data_source_uid" {
-  type = string
+  type    = string
   default = "prom_ds_uid"
 }

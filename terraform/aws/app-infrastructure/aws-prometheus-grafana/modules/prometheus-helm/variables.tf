@@ -1,8 +1,8 @@
 
 
 variable "region" {}
-variable "WORKSPACE_ID" {}
-variable "IAM_PROXY_PROMETHEUS_ROLE_ARN" {}
+variable "workspace_id" {}
+variable "iam_proxy_prometheus_role_arn" {}
 variable "repository" {}
 variable "chart" {}
 variable "values_file_path" {}

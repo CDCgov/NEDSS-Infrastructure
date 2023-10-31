@@ -1,7 +1,11 @@
+locals {
+  resource_name = var.name != "" ? var.name : "${var.resource_prefix}-vpc"
+}
+
 module "vpc" {
   source          = "terraform-aws-modules/vpc/aws"
   version         = "~> 5.0"
-  name            = var.name
+  name            = local.resource_name
   cidr            = var.cidr
   azs             = var.azs
   private_subnets = var.private_subnets

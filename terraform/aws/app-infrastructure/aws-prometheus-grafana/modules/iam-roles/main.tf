@@ -34,12 +34,12 @@ resource "aws_iam_role" "prommetheus_role" {
     {
       "Effect": "Allow",
   "Principal": {
-    "Federated": "${var.OIDC_PROVIDER_ARN}"
+    "Federated": "${var.oidc_provider_arn}"
     },
     "Action": "sts:AssumeRoleWithWebIdentity",
     "Condition": {
     "StringEquals": {
-    "${var.OIDC_PROVIDER}:sub":["system:serviceaccount:${var.SERVICE_ACCOUNT_NAMESPACE}:${var.SERVICE_ACCOUNT_AMP_INGEST_NAME}"
+    "${var.oidc_provider}:sub":["system:serviceaccount:${var.service_account_namespace}:${var.service_account_amp_ingest_name}"
     ]
     }
     }

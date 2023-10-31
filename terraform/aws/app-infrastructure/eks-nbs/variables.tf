@@ -1,7 +1,13 @@
-variable "name" {
-  description = "Name of the EKS cluster"
+variable "resource_prefix" {
   type        = string
-  default     = "cdc-nbs-sandbox"
+  description = "Prefix for resource names"
+  default     = "cdc-nbs"
+}
+
+variable "name" {
+  description = "Name of the EKS cluster (an overwrite option to use a custom name)"
+  type        = string
+  default     = ""
 }
 
 variable "vpc_id" {

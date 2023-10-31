@@ -1,5 +1,5 @@
 variable "tags" {}
-variable "OIDC_PROVIDER" {}
-variable "OIDC_PROVIDER_ARN" {}
-variable "SERVICE_ACCOUNT_NAMESPACE" {}
-variable "SERVICE_ACCOUNT_AMP_INGEST_NAME" {}
+variable "oidc_provider" {}
+variable "oidc_provider_arn" {}
+variable "service_account_namespace" {}
+variable "service_account_amp_ingest_name" {}

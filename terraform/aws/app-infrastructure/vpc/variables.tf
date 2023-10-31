@@ -1,5 +1,11 @@
+variable "resource_prefix" {
+  type        = string
+  description = "Prefix for resource names"
+  default     = "cdc-nbs"
+}
+
 variable "name" {  
-    description = "Name of your VPC"  
+    description = "Name of your VPC (an overwrite option to use a custom name)"  
 }
 
 variable "cidr" {
