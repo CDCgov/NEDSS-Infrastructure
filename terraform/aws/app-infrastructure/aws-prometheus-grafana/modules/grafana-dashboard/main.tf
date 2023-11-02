@@ -49,6 +49,20 @@ resource "grafana_data_source" "prometheus" {
   })
 }
 
+##############################
+resource "grafana_service_account" "admin" {
+  name        = "admin sa"
+  role        = "Admin"
+  is_disabled = false
+}
+
+resource "grafana_service_account_token" "grafana_service_acc_token" {
+  name               = "grafana_service_acc_token"
+  service_account_id = grafana_service_account.admin.id
+  seconds_to_live    = 86400
+}
+##############################
+
 #https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/dashboard
 resource "grafana_dashboard" "prometheus-nginx-ingress-controller" {
   provider    = grafana
