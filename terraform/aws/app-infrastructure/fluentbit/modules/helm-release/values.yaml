@@ -359,30 +359,30 @@ config:
   #       Health_Check On
 
   # ## https://docs.fluentbit.io/manual/pipeline/inputs
-  # inputs: |
-  #   [INPUT]
-  #       Name tail
-  #       Path /var/log/containers/*.log
-  #       multiline.parser docker, cri
-  #       Tag kube.*
-  #       Mem_Buf_Limit 5MB
-  #       Skip_Long_Lines On
+  inputs: |
+    [INPUT]
+        Name tail
+        Path /var/log/containers/*.log
+        multiline.parser docker, cri, json
+        Tag kube.*
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
 
-  #   [INPUT]
-  #       Name systemd
-  #       Tag host.*
-  #       Systemd_Filter _SYSTEMD_UNIT=kubelet.service
-  #       Read_From_Tail On
+    [INPUT]
+        Name systemd
+        Tag host.*
+        Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+        Read_From_Tail On
 
   # ## https://docs.fluentbit.io/manual/pipeline/filters
-  # filters: |
-  #   [FILTER]
-  #       Name kubernetes
-  #       Match kube.*
-  #       Merge_Log On
-  #       Keep_Log Off
-  #       K8S-Logging.Parser On
-  #       K8S-Logging.Exclude On
+  filters: |
+    [FILTER]
+        Name kubernetes
+        Match kube.*
+        Merge_Log On
+        Keep_Log Off
+        K8S-Logging.Parser On
+        K8S-Logging.Exclude On
 
   ## https://docs.fluentbit.io/manual/pipeline/outputs
   outputs: |
