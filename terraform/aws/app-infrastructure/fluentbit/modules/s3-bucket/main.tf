@@ -11,7 +11,7 @@ resource "aws_s3_bucket" "log_bucket" {
   tags   = merge(tomap({ "Name" = "${var.bucket_name}-${data.aws_caller_identity.current.account_id}-${random_string.random.result}" }), var.tags)
   force_destroy = var.force_destroy_log_bucket
   lifecycle {
-   prevent_destroy = var.force_destroy_log_bucket
+   prevent_destroy = false
 }
 }
 
