@@ -4,7 +4,7 @@ variable "tags" {
 }
 
 variable "force_destroy_log_bucket" {
-  type = string
+  type = bool
   description = "Boolean that indicates all objects (including any locked objects) should be deleted from the bucket when the bucket is destroyed so that the bucket can be destroyed without error."
   default = false
 }
