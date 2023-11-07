@@ -42,7 +42,7 @@ variable "force_destroy_log_bucket" {
 variable "path_to_fluentbit" {
   type        = string
   description = "path to the fluentbit module (No trailing slash needed)"
-  default     = "../modules/fluentbit"
+  default     = "./.terraform/modules/fluentbit/terraform/aws/app-infrastructure/fluentbit" # this path is path to TF .terraform folder once module downloaded  # "../modules/fluentbit"
 }
 variable "namespace_name" {
   type        = string
