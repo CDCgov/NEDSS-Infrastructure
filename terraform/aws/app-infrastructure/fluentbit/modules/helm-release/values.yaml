@@ -367,14 +367,12 @@ config:
         Tag kube.*
         Mem_Buf_Limit 5MB
         Skip_Long_Lines On
-        Refresh_Interval 60
 
     [INPUT]
         Name systemd
         Tag host.*
         Systemd_Filter _SYSTEMD_UNIT=kubelet.service
         Read_From_Tail On
-        Refresh_Interval 60
 
 
   # ## https://docs.fluentbit.io/manual/pipeline/filters
@@ -397,7 +395,6 @@ config:
         total_file_size              250M
         s3_key_format                /$TAG[2]/$TAG[0]/%Y/%m/%d/%H/%M/%S/$UUID.gz
         s3_key_format_tag_delimiters .-
-        Flush_Interval  300
 
     [OUTPUT]
         Name cloudwatch_logs
@@ -406,7 +403,6 @@ config:
         log_group_name fluent-bit-cloudwatch
         log_stream_prefix from-fluent-bit-
         auto_create_group On
-        Flush_Interval  300
 
 #     # [OUTPUT]
 #     #     Name es
