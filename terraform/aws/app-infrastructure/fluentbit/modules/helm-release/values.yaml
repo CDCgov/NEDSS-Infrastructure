@@ -503,4 +503,4 @@ config:
 # #     image: bitnami/kubectl:{{ .Capabilities.KubeVersion.Major }}.{{ .Capabilities.KubeVersion.Minor }}
 # #     command: ['kubectl', 'version']
 
-# logLevel: info
+## logLevel: info
