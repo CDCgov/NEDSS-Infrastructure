@@ -49,6 +49,7 @@ module "prometheus-helm" {
   dependency_update             = var.dependency_update
   lint                          = var.lint
   force_update                  = var.force_update
+  service_account_amp_ingest_name = "${var.resource_prefix}-amp-svc-acc"
 }
 
 module "grafana-workspace" {
