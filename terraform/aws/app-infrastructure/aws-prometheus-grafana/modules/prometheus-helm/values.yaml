@@ -12,7 +12,7 @@ imagePullSecrets: []
 serviceAccounts:
   server:
     create: true
-    name: prometheus-service-account
+    name: ${SERVICE_ACCOUNT_NAME}
     annotations: 
       eks.amazonaws.com/role-arn: ${IAM_PROXY_PROMETHEUS_ROLE_ARN}
 
