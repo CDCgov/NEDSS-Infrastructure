@@ -25,6 +25,6 @@ terraform {
 
 provider "grafana" {
   alias="cloud"
-  url  = module.prometheus-workspace.amp_workspace_endpoint
+  url  = "https://${module.grafana-workspace.amg-workspace_endpoint}"
   auth = module.grafana-workspace.amg-workspace-api-key  #grafana_service_account_token.admin-sa-token.key #
 }
