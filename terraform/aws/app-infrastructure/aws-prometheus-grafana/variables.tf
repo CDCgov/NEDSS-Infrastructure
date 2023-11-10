@@ -95,7 +95,7 @@ variable "retention_in_days" {
 variable "values_file_path" {
   type        = string
   description = "path to the values.yaml file"
-  default     = "./.terraform/modules/fluentbit/terraform/aws/app-infrastructure/prometheus" # "../modules/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
+  default     = "./.terraform/modules/prometheus/terraform/aws/app-infrastructure/aws-prometheus-grafana" # "../modules/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
 }
 
 # variable "prometheus_endpoint" {
