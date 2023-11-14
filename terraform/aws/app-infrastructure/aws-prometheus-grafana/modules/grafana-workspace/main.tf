@@ -60,7 +60,7 @@ resource "aws_iam_policy_attachment" "grafana-attach" {
 ######################################
 # rotating the api key
 locals {
-  expiration_days    = 1
+  expiration_days    = 30
   expiration_seconds = 60 * 60 * 24 * local.expiration_days
 }
 
