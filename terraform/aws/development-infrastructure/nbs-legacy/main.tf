@@ -117,9 +117,57 @@ Set-Location -Path "D:\wildfly-10.0.0.Final\bin\service"
 sc.exe config Wildfly start= delayed-auto
 Start-Service Wildfly
 Restart-Computer -Force
+
+############# WIN TASK SCHEDULES #################################################################
+######## Upload script to D drive 
+# PowerShell script content
+$scriptContent = @"
+$serviceName = "Wildfly"
+# Check if the service is running
+$serviceStatus = Get-Service -Name $serviceName
+if ($serviceStatus.Status -ne "Running") {
+    # If the service is not running, start it
+    Start-Service -Name $serviceName
+}
+"@
+$filePath = "D:\wildfly-10.0.0.Final\nedssdomain\log\auto-start.ps1"
+$scriptContent | Out-File -FilePath $filePath -Force
+
+########### Windows Task Scheduler NBS Recurring Start Check
+$jobname = "NBS Recurring Start Check"
+$scriptPath = "D:\wildfly-10.0.0.Final\nedssdomain\log\auto-start.ps1"
+$repeat = (New-TimeSpan -Minutes 5)
+$currentDate= ([DateTime]::Now)
+#Windows doesn't like infinite duration, setting it for max 25 years
+$duration = $currentDate.AddYears(25) -$currentDate
+#Configure Task Action
+$action = New-ScheduledTaskAction –Execute "Powershell.exe" -Argument "$scriptPath; quit"
+#Configure Task Trigger
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval $repeat -RepetitionDuration $duration
+#Configure Task Settings
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
+#Create Scheduled Task
+Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -RunLevel Highest -Settings $settings
+
+########### DI app required task schedule
+$jobName = "ELMReporter Task"
+$repeat = (New-TimeSpan -Minutes 2)
+$currentDate= ([DateTime]::Now)
+$duration = $currentDate.AddYears(25) -$currentDate
+# Define the file path
+$scriptPath = "D:\wildfly-10.0.0.Final\nedssdomain\Nedss\BatchFiles\ELMReporter.bat"
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType S4U
+# Action to run the specified batch file
+$action = New-ScheduledTaskAction -Execute "Powershell.exe" -Argument "$scriptPath; quit"
+# Trigger for daily execution once, repeating every 2 minutes
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval $repeat -RepetitionDuration $duration
+# Create scheduled task
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
+# Register the scheduled task
+Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+################ END OF TASK SCHEDULES ###############################################################
 </powershell>
 EOF
-
     depends_on = [module.db]
 
 }
