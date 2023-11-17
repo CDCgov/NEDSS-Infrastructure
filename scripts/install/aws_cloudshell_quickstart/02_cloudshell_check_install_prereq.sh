@@ -123,15 +123,6 @@ if ! eksctl version > /dev/null 2>&1 || version_compare "$(eksctl version)" "$MI
     fi
 fi
 
-# Check and install Helm
-#if ! helm version --short > /dev/null 2>&1 || version_compare "$(helm version --short | cut -d'v' -f2)" "$MIN_HELM_VERSION"; then
-#    read -p "Helm is missing or its version is less than the minimum. Install/Update? (y/n) " choice
-#    if [[ $choice == "y" ]]; then
-#        sudo yum install -y openssl -q
-#        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-#    fi
-#fi
-
 if ! helm version --short > /dev/null 2>&1 || version_compare "$(helm version --short | cut -d'v' -f2)" "$MIN_HELM_VERSION"; then
     if [ "$auto_yes" = true ]; then
         [ "$quiet_mode" = false ] && echo "Auto-installing Helm as '-y' flag is set"
