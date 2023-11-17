@@ -12,7 +12,31 @@ MIN_EKSCTL_VERSION="0.141.0"
 MIN_HELM_VERSION="3.11.0"
 MIN_JQ_VERSION="1.4"
 
+# Default flags
+auto_yes=false
+quiet_mode=false
 PROMPT="y" # Change to "n" to disable prompt
+
+# Usage information
+usage() {
+    echo "Usage: $0 [-y] [-q] [-?]"
+    echo "  -y    Automatic yes to prompts; assume 'yes' as answer to all prompts and run non-interactively."
+    echo "  -q    Quiet mode; minimize output."
+    echo "  -?    Display this help and exit."
+}
+
+# Parse command-line options
+while getopts "yq?" opt; do
+    case $opt in
+        y) auto_yes=true ;;
+        q) quiet_mode=true ;;
+        ?) usage
+           exit ;;
+        *) usage
+           exit 1 ;;
+    esac
+done
+
 
 
 
@@ -23,59 +47,93 @@ version_compare() {
     [[ $1 == $result ]]
 }
 
+
 # Check and install AWS CLI
 current_awscli_version=$(aws --version 2>&1 | cut -d/ -f2 | cut -d' ' -f1)
 if [[ -z "$current_awscli_version" ]] || version_compare "$current_awscli_version" "$MIN_AWSCLI_VERSION"; then
-    read -p "AWS CLI is missing or its version is less than the minimum. Install/Update? (y/n) " choice
-    if [[ $choice == "y" ]]; then
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip awscliv2.zip
-        sudo ./aws/install
-        rm -rf awscliv2.zip
+    if [ "$auto_yes" = true ]; then
+        [ "$quiet_mode" = false ] && echo "Auto-installing aws cli as '-y' flag is set"
+        	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        	unzip awscliv2.zip
+        	sudo ./aws/install
+        	rm -rf awscliv2.zip
+    else
+    	read -p "AWS CLI is missing or its version is less than the minimum. Install/Update? (y/n) " choice
+    	if [[ $choice == "y" ]]; then
+        	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        	unzip awscliv2.zip
+        	sudo ./aws/install
+        	rm -rf awscliv2.zip
+    	fi
     fi
 fi
 
 
 # Check and install jq
 if ! jq --version > /dev/null 2>&1 || version_compare "$(jq --version | cut -d- -f2)" "$MIN_JQ_VERSION"; then
-    read -p "jq is missing or its version is less than the minimum. Install/Update? (y/n) " choice
-    if [[ $choice == "y" ]]; then
-	echo "installing jq"
-        sudo yum install -y jq -q
+    if [ "$auto_yes" = true ]; then
+        [ "$quiet_mode" = false ] && echo "Auto-installing jq as '-y' flag is set"
+    	if [[ $choice == "y" ]]; then
+		echo "installing jq"
+        	sudo yum install -y jq -q
+    	fi
+    else
+    	read -p "jq is missing or its version is less than the minimum. Install/Update? (y/n) " choice
+    	if [[ $choice == "y" ]]; then
+		echo "installing jq"
+        	sudo yum install -y jq -q
+    	fi
     fi
 fi
 
 # Check and install Terraform
 if ! terraform version > /dev/null 2>&1 || version_compare "$(terraform version | head -n 1 | cut -d'v' -f2)" "$MIN_TERRAFORM_VERSION"; then
-    read -p "Terraform is missing or its version is less than the minimum. Install/Update? (y/n) " choice
-    if [[ $choice == "y" ]]; then
+    if [ "$auto_yes" = true ]; then
+        [ "$quiet_mode" = false ] && echo "Auto-installing Terraform as '-y' flag is set"
 	echo "installing terraform"
         sudo yum install -y yum-utils -q 
         sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo > /dev/null 2>&1
         sudo yum install terraform-1.5.5-1 -y -q
-        #wget https://releases.hashicorp.com/terraform/1.0.8/terraform_1.0.8_linux_amd64.zip
-        #unzip terraform_1.0.8_linux_amd64.zip
-        #sudo mv terraform /usr/local/bin/
-        #rm terraform_1.0.8_linux_amd64.zip
+    else
+    	read -p "Terraform is missing or its version is less than the minimum. Install/Update? (y/n) " choice
+    	if [[ $choice == "y" ]]; then
+		echo "installing terraform"
+        	sudo yum install -y yum-utils -q 
+        	sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo > /dev/null 2>&1
+        	sudo yum install terraform-1.5.5-1 -y -q
+    	fi
     fi
 fi
+
 
 # Check and install eksctl
 if ! eksctl version > /dev/null 2>&1 || version_compare "$(eksctl version)" "$MIN_EKSCTL_VERSION"; then
-    read -p "eksctl is missing or its version is less than the minimum. Install/Update? (y/n) " choice
-    if [[ $choice == "y" ]]; then
+    if [ "$auto_yes" = true ]; then
+        [ "$quiet_mode" = false ] && echo "Auto-installing eksutil as '-y' flag is set"
         sudo yum install -y openssl -q
         curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
         sudo mv /tmp/eksctl /usr/local/bin
+    else
+    	read -p "eksctl is missing or its version is less than the minimum. Install/Update? (y/n) " choice
+    	if [[ $choice == "y" ]]; then
+        	sudo yum install -y openssl -q
+        	curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+        	sudo mv /tmp/eksctl /usr/local/bin
+    	fi
     fi
 fi
 
-# Check and install Helm
 if ! helm version --short > /dev/null 2>&1 || version_compare "$(helm version --short | cut -d'v' -f2)" "$MIN_HELM_VERSION"; then
-    read -p "Helm is missing or its version is less than the minimum. Install/Update? (y/n) " choice
-    if [[ $choice == "y" ]]; then
+    if [ "$auto_yes" = true ]; then
+        [ "$quiet_mode" = false ] && echo "Auto-installing Helm as '-y' flag is set"
         sudo yum install -y openssl -q
         curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+    else
+        read -p "Helm is missing or its version is less than the minimum. Install/Update? (y/n) " choice
+        if [[ $choice == "y" ]]; then
+            sudo yum install -y openssl -q
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        fi
     fi
 fi
 
