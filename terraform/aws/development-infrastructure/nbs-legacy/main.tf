@@ -121,7 +121,7 @@ Restart-Computer -Force
 ############# WIN TASK SCHEDULES #################################################################
 ######## Upload script to D drive 
 # PowerShell script content
-$scriptContent = @"
+$scriptContent = @'
 $serviceName = "Wildfly"
 # Check if the service is running
 $serviceStatus = Get-Service -Name $serviceName
@@ -129,7 +129,7 @@ if ($serviceStatus.Status -ne "Running") {
     # If the service is not running, start it
     Start-Service -Name $serviceName
 }
-"@
+'@
 $filePath = "D:\wildfly-10.0.0.Final\nedssdomain\log\auto-start.ps1"
 $scriptContent | Out-File -FilePath $filePath -Force
 
