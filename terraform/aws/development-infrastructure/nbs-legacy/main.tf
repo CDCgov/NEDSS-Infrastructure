@@ -115,8 +115,7 @@ Set-Location -Path "D:\wildfly-10.0.0.Final\bin\service"
 #Set service to start automatically and start the service
 #Set-Service Wildfly -StartupType Automatic
 sc.exe config Wildfly start= delayed-auto
-Start-Service Wildfly
-Restart-Computer -Force
+
 
 ############# WIN TASK SCHEDULES #################################################################
 ######## Upload script to D drive 
@@ -166,6 +165,9 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 # Register the scheduled task
 Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
 ################ END OF TASK SCHEDULES ###############################################################
+
+Start-Service Wildfly
+Restart-Computer -Force
 </powershell>
 EOF
     depends_on = [module.db]
