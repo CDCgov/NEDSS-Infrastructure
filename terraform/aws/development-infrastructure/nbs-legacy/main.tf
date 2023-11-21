@@ -139,6 +139,7 @@ $repeat = (New-TimeSpan -Minutes 5)
 $currentDate= ([DateTime]::Now)
 #Windows doesn't like infinite duration, setting it for max 25 years
 $duration = $currentDate.AddYears(25) -$currentDate
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType S4U
 #Configure Task Action
 $action = New-ScheduledTaskAction –Execute "Powershell.exe" -Argument "$scriptPath; quit"
 #Configure Task Trigger
@@ -146,7 +147,7 @@ $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval $re
 #Configure Task Settings
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
 #Create Scheduled Task
-Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -RunLevel Highest -Settings $settings
+Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
 
 ########### DI app required task schedule
 $jobName = "ELMReporter Task"
