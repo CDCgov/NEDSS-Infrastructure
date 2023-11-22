@@ -107,3 +107,8 @@ variable "kms_arn_shared_services_bucket" {
   description = "KMS key arn used to encrypt shared services s3 bucket"
   type        = string
 }
+
+variable "apply_immediately" {
+  type = bool
+  default = false
+}

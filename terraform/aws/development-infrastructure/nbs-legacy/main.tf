@@ -430,7 +430,7 @@ module "db" {
   license_model             = "license-included"
   character_set_name        = "SQL_Latin1_General_CP1_CI_AS"
   snapshot_identifier       = var.db_snapshot_identifier
-
+  apply_immediately = var.apply_immediately
 }
 
 # Create certificate (this should be an optional resource with ability to provide arn if existing)
