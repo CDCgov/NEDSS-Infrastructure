@@ -62,8 +62,8 @@ resource "aws_iam_policy" "msk" {
 # Attach the IAM policy to the MSK role
 resource "aws_iam_role_policy_attachment" "msk" {
   count = var.create_msk ? 1 : 0
-  policy_arn = aws_iam_policy.msk.arn
-  role       = aws_iam_role.msk.name
+  policy_arn = aws_iam_policy.msk[0].arn
+  role       = aws_iam_role.msk[0].name
 }
 
 resource "aws_cloudwatch_log_group" "test" {
@@ -94,7 +94,7 @@ resource "aws_security_group_rule" "msk_cluster_plaintext" {
   # allow connection from modern vpc and VPN
   cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
   protocol                 = "tcp"
-  security_group_id        = aws_security_group.msk_cluster_sg.id
+  security_group_id        = aws_security_group.msk_cluster_sg[0].id
   to_port                  = 9092
   type                     = "ingress"
 }
@@ -105,7 +105,7 @@ resource "aws_security_group_rule" "msk_cluster_tls" {
   from_port                = 9094
   cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
   protocol                 = "tcp"
-  security_group_id        = aws_security_group.msk_cluster_sg.id
+  security_group_id        = aws_security_group.msk_cluster_sg[0].id
   to_port                  = 9094
   type                     = "ingress"
 }
@@ -116,7 +116,7 @@ resource "aws_security_group_rule" "cluster_outbound" {
   from_port                = 1024
   cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
   protocol                 = "tcp"
-  security_group_id        = aws_security_group.msk_cluster_sg.id
+  security_group_id        = aws_security_group.msk_cluster_sg[0].id
   to_port                  = 65535
   type                     = "egress"
 }
@@ -130,7 +130,7 @@ resource "aws_msk_cluster" "this" {
   #iam_instance_profile = aws_iam_role.msk.arn
 
   configuration_info {
-    arn = aws_msk_configuration.msk_configuration_environment.arn
+    arn = aws_msk_configuration.msk_configuration_environment[0].arn
     revision = 1 
   }
 
@@ -138,7 +138,7 @@ resource "aws_msk_cluster" "this" {
     instance_type   = local.instance_type
     client_subnets  = var.msk_subnet_ids
     #security_groups = var.msk_security_groups
-    security_groups = [aws_security_group.msk_cluster_sg.id]
+    security_groups = [aws_security_group.msk_cluster_sg[0].id]
     storage_info {
       ebs_storage_info {
         volume_size = var.msk_ebs_volume_size
@@ -168,7 +168,7 @@ resource "aws_msk_cluster" "this" {
     broker_logs {
       cloudwatch_logs {
         enabled   = true
-        log_group = aws_cloudwatch_log_group.test.name
+        log_group = aws_cloudwatch_log_group.test[0].name
       }
     }
   }
