@@ -196,7 +196,7 @@ do
             echo "logging in and fetching token"
             #echo  login_nbs ${BASE_URL} ${LOGIN_USER} 
             TMP_TOKEN=$(login_nbs ${BASE_URL} ${LOGIN_USER} | jq -r .token)
-            RETURN_CODE=$?"
+            RETURN_CODE=$?
             if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
 
             echo "RETURN_CODE=$?"
@@ -209,14 +209,11 @@ do
             echo "capture ID for later use"
             if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
             
-            #echo patient_create.sh ${BASE_URL} ${TMP_TOKEN}
-            #TMP_PATIENT_ID=$(./Patient/Create.sh ${BASE_URL} ${TMP_TOKEN} |  jq -r .data.createPatient.id)
             TMP_PATIENT_ID=$(patient_create ${BASE_URL} ${TMP_TOKEN} |  jq -r .data.createPatient.id)
-            RETURN_CODE=$?"
+            RETURN_CODE=$?
             if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
             echo "Patient with last name Brea created with Patient ID = ${TMP_PATIENT_ID}"
             echo
-            
 
             echo "#################################################################"
             echo "now searching patient with last name Brea"
@@ -236,7 +233,7 @@ do
             if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
             #echo patient_delete.sh ${BASE_URL} ${TMP_TOKEN} ${TMP_PATIENT_ID}
             patient_delete ${BASE_URL} ${TMP_TOKEN} ${TMP_PATIENT_ID} | jq
-            RETURN_CODE=$?"
+            RETURN_CODE=$?
             if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
             echo
             echo "#################################################################"
