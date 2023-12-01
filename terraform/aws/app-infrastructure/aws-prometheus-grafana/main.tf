@@ -44,7 +44,7 @@ module "prometheus-helm" {
   repository                    = var.repository
   chart                         = var.chart
   workspace_id                  = module.prometheus-workspace.amp_workspace_id
-  iam_proxy_prometheus_role_arn = module.iam-role.prommetheus_role_arn
+  iam_proxy_prometheus_role_arn = module.iam-role.prometheus_role_arn
   values_file_path              = var.values_file_path
   dependency_update             = var.dependency_update
   lint                          = var.lint

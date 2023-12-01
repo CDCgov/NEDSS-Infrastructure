@@ -87,7 +87,7 @@ resource "aws_iam_policy" "sns-policy" {
 
 
 
-resource "aws_iam_role" "amp_prommetheus_role" {
+resource "aws_iam_role" "amp_prometheus_role" {
   name = "amp_prometheus_role"
 
   assume_role_policy = <<EOF
@@ -114,7 +114,7 @@ EOF
 
 resource "aws_iam_policy_attachment" "sns-attach" {
   name       = "sns-policy-attachment"
-  roles      = [aws_iam_role.amp_prommetheus_role.name]
+  roles      = [aws_iam_role.amp_prometheus_role.name]
   policy_arn = aws_iam_policy.sns-policy.arn
 }
 

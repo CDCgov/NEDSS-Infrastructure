@@ -6,8 +6,8 @@ output "amp_workspace_endpoint" {
   value = module.prometheus-workspace.amp_workspace_endpoint
 }
 
-output "prommetheus_role_arn" {
-  value = module.iam-role.prommetheus_role_arn
+output "prometheus_role_arn" {
+  value = module.iam-role.prometheus_role_arn
 }
 
 output "sns_topic_arn" {

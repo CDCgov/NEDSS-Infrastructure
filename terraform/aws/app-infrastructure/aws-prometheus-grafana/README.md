@@ -47,6 +47,6 @@ Below are the available Outputs contained within this DNS moudle:
 | amg-workspace-api-key |  | `module.grafana-workspace.amg-workspace-api-key` | AWS Grafana workspace api key |
 | amp_workspace_endpoint |  | `module.prometheus-workspace.amp_workspace_endpoint` | AWS Prometheus workspace endpoint |
 | amp_workspace_id |  | `module.prometheus-workspace.amp_workspace_id` | AWS Prometheus workspace ID |
-| prommetheus_role_arn |  | `module.iam-role.prommetheus_role_arn` | AWS Prometheus Role ARN |
+| prometheus_role_arn |  | `module.iam-role.prometheus_role_arn` | AWS Prometheus Role ARN |
 | sns_topic_arn |  | `module.prometheus-workspace.sns_topic_arn` | The ARN of the SNS topic |
 
