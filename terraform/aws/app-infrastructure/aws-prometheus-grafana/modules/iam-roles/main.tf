@@ -25,7 +25,10 @@ resource "aws_iam_policy" "policy" {
 }
 
 resource "aws_iam_role" "prometheus_role" {
-  name = "prometheus_role"
+  name = "prometheus-role"
+  lifecycle {
+    create_before_destroy = true
+  }
 
   assume_role_policy = <<EOF
 {
@@ -54,7 +57,10 @@ EOF
 
 
 resource "aws_iam_policy_attachment" "prometheus-attach" {
-  name       = "prometheus-policy-attachment"
+  name       = "prometheus-policy-att"
+  lifecycle {
+    create_before_destroy = true
+  }
   roles      = [aws_iam_role.prometheus_role.name]
   policy_arn = aws_iam_policy.policy.arn
 }
