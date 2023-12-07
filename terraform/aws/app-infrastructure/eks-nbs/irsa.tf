@@ -1,7 +1,11 @@
+locals {
+  eks_name = var.name != "" ? var.name : "${var.resource_prefix}-eks"
+}
+
 module "efs_cni_irsa_role" {
   source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
 
-  role_name = "efs-cni"
+  role_name = "${local.eks_name}-efs-cni"
 
   attach_efs_csi_policy = true
 

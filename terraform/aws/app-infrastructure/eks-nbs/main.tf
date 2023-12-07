@@ -1,5 +1,6 @@
 locals {
   eks_name = var.name != "" ? var.name : "${var.resource_prefix}-eks"
+  eks_iam_role_name = var.name != "" ? "${var.name}-role" : "${var.resource_prefix}-eks-role"
   eks_node_group_name = var.name != "" ? "eks-nbs-main" : "${var.resource_prefix}-node-group-main"
 }
 
@@ -8,6 +9,8 @@ module "eks" {
   version = "19.15.3"
 
   cluster_name    = local.eks_name
+  iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
+  iam_role_name = local.eks_iam_role_name
   cluster_version = var.cluster_version
 
   cluster_endpoint_public_access  = true
