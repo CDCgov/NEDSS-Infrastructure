@@ -40,6 +40,7 @@ data "archive_file" "lambda_canary_zip" {
 }
 
 resource "aws_s3_bucket" "canary-output-bucket" {
+  count = var.synthetics_canary_create ? 1 : 0
   bucket  = var.synthetics_canary_bucket_name
   force_destroy = true
   lifecycle {
@@ -118,6 +119,7 @@ data "aws_iam_policy_document" "canary-policy" {
 }
 
 resource "aws_iam_role" "canary-role" {
+  count = var.synthetics_canary_create ? 1 : 0
   name               = "canary-role"
   assume_role_policy = data.aws_iam_policy_document.canary-assume-role-policy.json
   description        = "IAM role for AWS Synthetic Monitoring Canaries"
@@ -128,6 +130,7 @@ resource "aws_iam_role" "canary-role" {
 }
 
 resource "aws_iam_policy" "canary-policy" {
+  count = var.synthetics_canary_create ? 1 : 0
   name        = "canary-policy"
   policy      = data.aws_iam_policy_document.canary-policy.json
   description = "IAM role for AWS Synthetic Monitoring Canaries"
@@ -138,6 +141,7 @@ resource "aws_iam_policy" "canary-policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "canary-policy-attachment" {
+  count = var.synthetics_canary_create ? 1 : 0
   role       = aws_iam_role.canary-role.name
   policy_arn = aws_iam_policy.canary-policy.arn
 }
@@ -147,6 +151,7 @@ resource "aws_iam_role_policy_attachment" "canary-policy-attachment" {
 # }
 
 resource "aws_sns_topic" "topic" {
+  count = var.synthetics_canary_create ? 1 : 0
   name = "url_monitoring_topic"
   tags = {
     ModuleVersion = "${local.module_name}-${local.module_serial_number}" 
@@ -161,6 +166,7 @@ resource "aws_sns_topic" "topic" {
 # }
 
 resource "aws_synthetics_canary" "synthetics_canary_url_monitoring" {
+  count = var.synthetics_canary_create ? 1 : 0
   name                       = "canary_monitoring"
   artifact_s3_location = "s3://${aws_s3_bucket.canary-output-bucket.bucket}/"
   execution_role_arn         = aws_iam_role.canary-role.arn
@@ -177,6 +183,7 @@ resource "aws_synthetics_canary" "synthetics_canary_url_monitoring" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "canary_alarm" {
+  count = var.synthetics_canary_create ? 1 : 0
   alarm_name          = "synthetics_canary_url_monitoring_alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
