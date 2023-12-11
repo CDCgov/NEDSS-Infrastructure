@@ -25,3 +25,7 @@ Make URLs a list instead of a single value
 Consider using email address list outside of cloudwatch synthetics for
 other SNS topics
 
+
+# apply manually outside of pipeline
+terraform plan -var-file=inputs.tfvars -var 'synthetics_canary_create=true'
+terraform apply -var-file=inputs.tfvars -var 'synthetics_canary_create=true'
