@@ -1,20 +1,5 @@
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/synthetics_canary
 
-# variable "synthetics_canary_email_addresses" {
-#   description = "List of email addresses to send notifications"
-#   type        = list(string)
-# }
-
-variable "synthetics_canary_url" {
-  description = "url to monitor"
-  type        = string
-}
-
-variable "synthetics_canary_bucket_name" {
-  description = "bucket name for synthetics output"
-  type        = string
-}
-
 # attempt to rebuild canary zip file if lambda code changes
 locals {
   module_name = "synthetics-canary"
