@@ -1,3 +1,4 @@
+# Create efs driver using helm
 resource "helm_release" "efs" {
   provider         = helm
   name             = "aws-efs-csi-driver"
@@ -20,6 +21,7 @@ resource "helm_release" "efs" {
   depends_on = [ module.eks ]
 }
 
+# Create argocd for deployment
 resource "helm_release" "argocd" {
   count    = var.deploy_argocd_helm == "true" ? 1 : 0
   provider         = helm
@@ -34,6 +36,7 @@ resource "helm_release" "argocd" {
   depends_on = [ module.eks ]
 }
 
+# create cert manager release
 resource "helm_release" "cert_manager" {
   provider         = helm
   name             = "cert-manager"
@@ -47,6 +50,17 @@ resource "helm_release" "cert_manager" {
   set {
     name  = "installCRDs"
     value = "true"
+  }
+
+  # Set values for OIDC
+  set {
+    name = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = module.cert_manager_cni_irsa_role.iam_role_arn
+  }
+
+  set {
+    name = "securityContext.fsGroup"
+    value = 1001
   }
 
   depends_on = [ module.eks ]
