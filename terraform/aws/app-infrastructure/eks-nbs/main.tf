@@ -14,7 +14,8 @@ module "eks" {
   # Cluster addons, ebs csi driver
   cluster_addons = {
     aws-ebs-csi-driver = {
-      resolve_conflicts = "OVERWRITE"
+      resolve_conflicts_on_create  = "OVERWRITE"
+      resolve_conflicts_on_update  = "OVERWRITE"
       most_recent       = true
     }
   }
