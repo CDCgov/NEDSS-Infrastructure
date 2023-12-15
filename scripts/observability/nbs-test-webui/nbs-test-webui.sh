@@ -29,17 +29,17 @@ MINARGS=2
 # list of options available to this script
 # options requiring arguments must be followed by a ":"
 # search for X,Y and Z and replace with appropriate options
-OPTLIST=dDPc:U:B:h?
+OPTLIST=dDp:PU:B:h?
 
 # Usage variable is echoed if the argument checks fail or 
 # the -? or -h option is passed
-USAGE="USAGE: $BASE [-h] [-?] [-d] [-D] [-P] [-B BASE_URL] [-U USER ] [-c count ] \n\
+USAGE="USAGE: $BASE [-h] [-?] [-d] [-D] [-P] [-B BASE_URL] [-U USER ] [-p <password> ] \n\
 Where -h or -? will echo this usage \n\
 Where -D or -d  will turn on debugging \n\
 Where -P will prompt at each step \n\
+Where -p will take password at cli NOT RECOMMENDED! \n\
 Where -B baseurl url for hitting API \n\
 Where -U user in the database with access to create and delete patients \n\
-Where -c count number of iterations, default is 1 \n\
 
 "
 
@@ -80,8 +80,8 @@ do
 		B)  BASE_URL=$OPTARG
 			echo BASE_URL=$BASE_URL;;
 
-		c)  COUNT=$OPTARG
-			echo COUNT=$COUNT;;
+		p)  TMP_PASS=$OPTARG
+			echo TMP_PASS=$TMP_PASS;;
 
 		# usage request or bad usage
 		h | \?)    echo -e $USAGE
@@ -99,6 +99,7 @@ login_nbs()
 {
     TMP_URL=$1
     TMP_USER=$2
+    TMP_PASS=$3
 
     #curl -q -X "POST" "${TMP_URL}/login" \
     #    -H 'Content-Type: application/json' \
@@ -108,7 +109,7 @@ login_nbs()
     #}'
 
     echo
-    read -p "load login page, Press enter to continue...\n"  junk
+    read -p "load login page, Press enter to continue..."  junk
     echo
     # load the login page, does this set a cookie?
     ${CURL} "${TMP_URL}/nbs/login" \
@@ -120,7 +121,6 @@ login_nbs()
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'cache-control: no-cache' \
-    -H 'cookie: JSESSIONID=Cvrw1FDWprQa3LsjZbYwJkVO2ZL7Pes6YdPJn8HU.ec2amaz-50h0je7' \
     -H 'pragma: no-cache' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
@@ -135,14 +135,12 @@ login_nbs()
     
     RETURN_CODE=$?
     if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
-    echo "RETURN_CODE=$?"
-    echo TMP_TOKEN=${TMP_TOKEN}
     echo 
     
     ####################################################################################################
     # start the actual login post - user and password included
     echo
-    read -p "start login, Press enter to continue...\n"  junk
+    read -p "start login, Press enter to continue..."  junk
     echo
     ${CURL} "${TMP_URL}/nbs/nbslogin" \
     --cookie ${COOKIE_JAR} \
@@ -164,15 +162,15 @@ login_nbs()
     -H 'sec-fetch-user: ?1' \
     -H 'upgrade-insecure-requests: 1' \
     -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' \
-    --data-raw 'mode=&ObjectType=&OperationType=&PopupDataResult=&UserName=state&Password=badpass' \
+    --data-raw "mode=&ObjectType=&OperationType=&PopupDataResult=&UserName=${TMP_USER}&Password=${TMP_PASS}" \
     --compressed
+    #--data-raw 'mode=&ObjectType=&OperationType=&PopupDataResult=&UserName=state&Password=badpass' \
     
-    #  -H 'cookie: JSESSIONID=K1Lk5khAMxRttnXY1_1I0Z2xTEfXy12NZQzwGYi_.ec2amaz-50h0je7' \
     echo
     read -p "second login url Press enter to continue..."  junk
     echo
     # next get
-    ${CURL} "${TMP_URL}/nbs/nfc?UserName=state" \
+    ${CURL} "${TMP_URL}/nbs/nfc?UserName=${TMP_USER}" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
@@ -246,7 +244,7 @@ goto_advanced_search()
     ####################################################################################################
     # now click on advanced search
     # this gets a few cookies
-    # Set-Cookie: nbs_user=state; Max-Age=1800; Expires=Thu, 14 Dec 2023 21:45:31 GMT; Path=/; Secure
+    # Set-Cookie: nbs_user=${TMP_USER}; Max-Age=1800; Expires=Thu, 14 Dec 2023 21:45:31 GMT; Path=/; Secure
     # Set-Cookie: JSESSIONID=blahblah; Max-Age=1800; Expires=Thu, 14 Dec 2023 21:45:31 GMT; Path=/; HttpOnly
     # Set-Cookie: nbs_token=blah.blah.blah; Max-Age=1800; Expires=Thu, 14 Dec 2023 21:45:31 GMT; Path=/; Secure
 
@@ -376,7 +374,6 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -387,6 +384,7 @@ patient_search ()
     --data-raw '{"operationName":"findAllProgramAreas","variables":{},"query":"query findAllProgramAreas($page: Page) {\n  findAllProgramAreas(page: $page) {\n    id\n    progAreaDescTxt\n    nbsUid\n    statusCd\n    statusTime\n    codeSetNm\n    codeSeq\n    __typename\n  }\n}"}' \
     --compressed ;
     
+    # -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     
     echo
     read -p "Post S3 Press enter to continue..."  junk
@@ -402,7 +400,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -413,6 +410,8 @@ patient_search ()
     --data-raw '{"operationName":"findAllConditionCodes","variables":{},"query":"query findAllConditionCodes($page: Page) {\n  findAllConditionCodes(page: $page) {\n    id\n    conditionDescTxt\n    __typename\n  }\n}"}' \
     --compressed ;
     
+    # -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
+
     echo
     read -p "Post S4 Press enter to continue..."  junk
     echo
@@ -427,7 +426,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -454,7 +452,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -479,7 +476,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -506,7 +502,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -533,7 +528,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -560,7 +554,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -585,7 +578,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -612,7 +604,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: text/plain' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -639,7 +630,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -666,7 +656,6 @@ patient_search ()
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
     -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -696,7 +685,7 @@ do
             echo "logging in and fetching cookies"
             #echo  login_nbs ${BASE_URL} ${LOGIN_USER} 
             #TMP_TOKEN=$(login_nbs ${BASE_URL} ${LOGIN_USER} | jq -r .token)
-            login_nbs ${BASE_URL} ${LOGIN_USER} 
+            login_nbs ${BASE_URL} ${LOGIN_USER} ${TMP_PASS}
             RETURN_CODE=$?
             if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
 
@@ -751,6 +740,11 @@ do
             X=$Y
 
 done
+
+
+echo 
+read -p "deleting cookies and search results, Press enter to continue..."  junk
+rm ${COOKIE_JAR} ${SEARCH_RESULTS}
 
 ####################################################################################################
 # and now the actual search - post
