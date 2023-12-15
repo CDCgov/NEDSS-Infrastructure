@@ -114,7 +114,7 @@ login_nbs()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'cache-control: no-cache' \
@@ -143,7 +143,7 @@ login_nbs()
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'cache-control: max-age=0' \
@@ -171,7 +171,7 @@ login_nbs()
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'cache-control: max-age=0' \
@@ -196,7 +196,7 @@ login_nbs()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'cache-control: max-age=0' \
@@ -235,7 +235,7 @@ goto_advanced_search()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'referer: https://app.fts3.nbspreview.com/nbs/HomePage.do?method=loadHomePage' \
@@ -272,7 +272,7 @@ goto_advanced_search()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'referer: https://app.fts3.nbspreview.com/nbs/HomePage.do?method=loadHomePage' \
@@ -302,7 +302,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: application/json' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -332,7 +332,7 @@ patient_search ()
     --show-error \
     --output /dev/null \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'content-type: application/json' \
@@ -355,7 +355,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -380,7 +380,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -406,7 +406,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -430,7 +430,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -456,7 +456,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -482,7 +482,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -508,7 +508,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -532,7 +532,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -558,7 +558,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: application/json' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -584,7 +584,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output /dev/null \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
@@ -610,7 +610,7 @@ patient_search ()
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
     --output ${SEARCH_RESULTS} \
-    -H 'authority: app.fts3.nbspreview.com' \
+    -H "authority: ${TMP_HOST}" \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
