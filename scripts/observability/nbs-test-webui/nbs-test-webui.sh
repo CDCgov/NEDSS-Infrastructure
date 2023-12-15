@@ -12,8 +12,9 @@
 COUNT=1
 # DEBUG ON
 #DEBUG=1
-CURL='curl -q --silent'
+CURL='curl -q --silent --write-out "%{http_code}"' 
 COOKIE_JAR=cookie-jar.$$
+SEARCH_RESULTS=search_results.$$
 
 
 ##########################################################################
@@ -106,12 +107,15 @@ login_nbs()
     #"username": "'"${TMP_USER}"'"
     #}'
 
-    read -p "load login page, Press enter to continue..."  junk
+    echo
+    read -p "load login page, Press enter to continue...\n"  junk
+    echo
     # load the login page, does this set a cookie?
     ${CURL} "${TMP_URL}/nbs/login" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -137,7 +141,9 @@ login_nbs()
     
     ####################################################################################################
     # start the actual login post - user and password included
-    read -p "start login, Press enter to continue..."  junk
+    echo
+    read -p "start login, Press enter to continue...\n"  junk
+    echo
     ${CURL} "${TMP_URL}/nbs/nbslogin" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
@@ -162,7 +168,9 @@ login_nbs()
     --compressed
     
     #  -H 'cookie: JSESSIONID=K1Lk5khAMxRttnXY1_1I0Z2xTEfXy12NZQzwGYi_.ec2amaz-50h0je7' \
+    echo
     read -p "second login url Press enter to continue..."  junk
+    echo
     # next get
     ${CURL} "${TMP_URL}/nbs/nfc?UserName=state" \
     --cookie ${COOKIE_JAR} \
@@ -184,12 +192,15 @@ login_nbs()
     -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' \
     --compressed
 
+    echo
     read -p "third login url loadhome page, Press enter to continue..."  junk
+    echo
     # last document get as part of login
     ${CURL} "${TMP_URL}/nbs/HomePage.do?method=loadHomePage" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -238,11 +249,17 @@ goto_advanced_search()
     # Set-Cookie: nbs_user=state; Max-Age=1800; Expires=Thu, 14 Dec 2023 21:45:31 GMT; Path=/; Secure
     # Set-Cookie: JSESSIONID=blahblah; Max-Age=1800; Expires=Thu, 14 Dec 2023 21:45:31 GMT; Path=/; HttpOnly
     # Set-Cookie: nbs_token=blah.blah.blah; Max-Age=1800; Expires=Thu, 14 Dec 2023 21:45:31 GMT; Path=/; Secure
-    read -p "Post XXX Press enter to continue..."  junk
+
+    # --output /dev/null \
+    echo
+    read -p "Post AS1 Press enter to continue..."  junk
+    echo
+
     ${CURL} "${TMP_URL}/nbs/MyTaskList1.do?ContextAction=GlobalPatient" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -258,17 +275,20 @@ goto_advanced_search()
     -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' \
     --compressed
     
-    #-H 'cookie: JSESSIONID=rsFY26RDq5NMwHtf0kFjsanypXSVP_P_ANA-Ti47.ec2amaz-50h0je7' \
     
     TMP_BEARER_TOKEN=`grep nbs_token ${COOKIE_JAR} | awk '{print $7}'`
+    echo
     echo TMP_BEARER_TOKEN=${TMP_BEARER_TOKEN}
     
-    read -p "Post gets bearer? Press enter to continue..."  junk
+    echo
+    read -p "AS2 Post gets bearer? Press enter to continue..."  junk
+    echo
     # this uses those cookies
     ${CURL} "${TMP_URL}/advanced-search" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -312,12 +332,15 @@ patient_search ()
 	    #}
     #}'
 
-    read -p "Post needs Bearer Press enter to continue..."  junk
+    echo
+    read -p "S1 Post needs Bearer Press enter to continue..."  junk
+    echo
 
     ${CURL} "${TMP_URL}/encryption/encrypt" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: application/json' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -335,14 +358,18 @@ patient_search ()
     --data-raw '{"recordStatus":["ACTIVE"],"gender":"F"}' \
     --compressed
     
+    echo
     TMP_BEARER_TOKEN=`grep nbs_token ${COOKIE_JAR} | awk '{print $7}'`
     echo TMP_BEARER_TOKEN=${TMP_BEARER_TOKEN}
     
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S2 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
@@ -361,11 +388,14 @@ patient_search ()
     --compressed ;
     
     
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S3 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -383,11 +413,14 @@ patient_search ()
     --data-raw '{"operationName":"findAllConditionCodes","variables":{},"query":"query findAllConditionCodes($page: Page) {\n  findAllConditionCodes(page: $page) {\n    id\n    conditionDescTxt\n    __typename\n  }\n}"}' \
     --compressed ;
     
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S4 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -406,12 +439,15 @@ patient_search ()
     --compressed ;
     
 
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S5 Press enter to continue..."  junk
+    echo
     
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -429,11 +465,14 @@ patient_search ()
     --data-raw '{"operationName":"findAllOutbreaks","variables":{},"query":"query findAllOutbreaks($page: Page) {\n  findAllOutbreaks(page: $page) {\n    content {\n      id {\n        codeSetNm\n        code\n        __typename\n      }\n      codeShortDescTxt\n      __typename\n    }\n    total\n    __typename\n  }\n}"}' \
     --compressed ;
     
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S5.5 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -452,12 +491,15 @@ patient_search ()
     --compressed ;
     
     
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S6 Press enter to continue..."  junk
+    echo
     
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -477,11 +519,14 @@ patient_search ()
 
 
 
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S7 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -501,11 +546,14 @@ patient_search ()
     
     
     
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S8 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -523,11 +571,14 @@ patient_search ()
     --data-raw '{"operationName":"findAllUsers","variables":{},"query":"query findAllUsers($page: Page) {\n  findAllUsers(page: $page) {\n    content {\n      nedssEntryId\n      userId\n      userFirstNm\n      userLastNm\n      recordStatusCd\n      __typename\n    }\n    total\n    __typename\n  }\n}"}' \
     --compressed ;
 
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S9 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -547,11 +598,14 @@ patient_search ()
     
 
 
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S10 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/encryption/decrypt" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: application/json' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -571,11 +625,14 @@ patient_search ()
     
     
     
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S11 Press enter to continue..."  junk
+    echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output /dev/null \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -594,12 +651,15 @@ patient_search ()
     --compressed ;
 
     # I think this final post gets the results with total count 
-    read -p "Post XXX Press enter to continue..."  junk
+    echo
+    read -p "Post S12 Press enter to continue..."  junk
+    echo
     
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
     --show-error \
+    --output ${SEARCH_RESULTS} \
     -H 'authority: app.fts3.nbspreview.com' \
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
@@ -661,9 +721,16 @@ do
             echo "now searching patient F"
             if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
 
-            if patient_search ${BASE_URL} ${TMP_TOKEN} | grep "total" 
+            patient_search ${BASE_URL} ${TMP_TOKEN}; 
+            SEARCH_COUNT=`cat ${SEARCH_RESULTS} | jq .data.findPatientsByFilter.total `
+            echo
+            echo "NOTICE: SEARCH_COUNT=${SEARCH_COUNT}"
+            echo 
+
+            if [ "${SEARCH_COUNT}" -ne "0" ]
             then
-                echo "NOTICE: Patients found, good!"
+                echo "NOTICE: ${SEARCH_COUNT} patients found, good!"
+                #echo "NOTICE: SEARCH_COUNT=${SEARCH_COUNT}"
             else
                 echo "ERROR:  searching for Patients"
             fi
@@ -685,14 +752,6 @@ do
 
 done
 
-
-
-
 ####################################################################################################
 # and now the actual search - post
 # authorization Bearer
-
-
-TMP_BEARER_TOKEN=`grep nbs_token ${COOKIE_JAR} | awk '{print $7}'`
-echo TMP_BEARER_TOKEN=${TMP_BEARER_TOKEN}
-
