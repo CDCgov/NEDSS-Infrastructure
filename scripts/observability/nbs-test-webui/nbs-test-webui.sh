@@ -2,14 +2,15 @@
 
 ##########################################################################
 #
-#  Description: This script logs into nbs, creates a Patient, searches a
-#  Patient
-#  and then deletes the Patient, 
-#  TODO: we should create a readonly version
+#  Description: This script logs into nbs via webui 
+#               navigates to advanced search
+#               searches for all Female patients and returns count
+#  TODO: cleanup debug
+#           add more descriptions of what each curl command is doing
+#           wrap output in a prompt/sleep option
 #
 ##########################################################################
 
-COUNT=1
 # DEBUG ON
 #DEBUG=1
 #CURL='curl -q --silent --write-out "%{http_code}"' 
@@ -30,17 +31,17 @@ MINARGS=2
 # list of options available to this script
 # options requiring arguments must be followed by a ":"
 # search for X,Y and Z and replace with appropriate options
-OPTLIST=dDp:PU:B:h?
+OPTLIST=dDp:PU:H:h?
 
 # Usage variable is echoed if the argument checks fail or 
 # the -? or -h option is passed
-USAGE="USAGE: $BASE [-h] [-?] [-d] [-D] [-P] [-B BASE_URL] [-U USER ] [-p <password> ] \n\
+USAGE="USAGE: $BASE [-h] [-?] [-d] [-D] [-P] [-H <HOST> ] [-U USER ] [-p <password> ] \n\
 Where -h or -? will echo this usage \n\
 Where -D or -d  will turn on debugging \n\
 Where -P will prompt at each step \n\
 Where -p will take password at cli NOT RECOMMENDED! \n\
-Where -B baseurl url for hitting API \n\
-Where -U user in the database with access to create and delete patients \n\
+Where -H base host for hitting webui \n\
+Where -U user in the database with access to search patients \n\
 
 "
 
@@ -78,8 +79,10 @@ do
 		U)  LOGIN_USER=$OPTARG
 			echo LOGIN_USER=$LOGIN_USER;;
 
-		B)  BASE_URL=$OPTARG
-			echo BASE_URL=$BASE_URL;;
+		H)  TMP_HOST=$OPTARG
+            BASE_URL="https://${TMP_HOST}"
+            echo BASE_URL=${BASE_URL}
+			echo TMP_HOST=$TMP_HOST;;
 
 		p)  TMP_PASS=$OPTARG
 			echo TMP_PASS=$TMP_PASS;;
@@ -628,57 +631,44 @@ patient_search ()
 
 # BEGIN actual work
 
-X=$COUNT;
-# repeat a command X times
 
-echo "running process ${COUNT} times"
-while [ $X -gt 0 ]
-do
+echo "##################################################################################################################################"
+echo "logging in and fetching cookies"
+login_nbs ${BASE_URL} ${LOGIN_USER} ${TMP_PASS}
+RETURN_CODE=$?
+if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
 
-            echo "REMAINING PASSES $X"
-            Y=$(($X-1))
-
-            echo "##################################################################################################################################"
-            echo "logging in and fetching cookies"
-            #echo  login_nbs ${BASE_URL} ${LOGIN_USER} 
-            #TMP_TOKEN=$(login_nbs ${BASE_URL} ${LOGIN_USER} | jq -r .token)
-            login_nbs ${BASE_URL} ${LOGIN_USER} ${TMP_PASS}
-            RETURN_CODE=$?
-            if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
-
-            #echo TMP_TOKEN=${TMP_TOKEN}
-            echo 
+#echo TMP_TOKEN=${TMP_TOKEN}
+echo 
             
-            if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
-            goto_advanced_search ${BASE_URL} ${TMP_TOKEN};
-            if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
+if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
+goto_advanced_search ${BASE_URL} ${TMP_TOKEN};
+if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
 
-            echo "#################################################################"
-            echo "now searching patient F"
-            if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
+echo "#################################################################"
+echo "now searching for Female patients"
+if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
 
-            patient_search ${BASE_URL} ${TMP_TOKEN}; 
-            SEARCH_COUNT=`cat ${SEARCH_RESULTS} | jq .data.findPatientsByFilter.total `
-            echo
-            echo "NOTICE: SEARCH_COUNT=${SEARCH_COUNT}"
-            echo 
+patient_search ${BASE_URL} ${TMP_TOKEN}; 
+SEARCH_COUNT=`cat ${SEARCH_RESULTS} | jq .data.findPatientsByFilter.total `
+echo
+echo "NOTICE: SEARCH_COUNT=${SEARCH_COUNT}"
+echo 
 
-            if [ "${SEARCH_COUNT}" -ne "0" ]
-            then
-                echo "NOTICE: ${SEARCH_COUNT} patients found, good!"
-                #echo "NOTICE: SEARCH_COUNT=${SEARCH_COUNT}"
-            else
-                echo "ERROR:  searching for Patients"
-                exit 2
-            fi
-            echo
+if [ "${SEARCH_COUNT}" -ne "0" ]
+then
+    echo "NOTICE: ${SEARCH_COUNT} patients found, good!"
+    #echo "NOTICE: SEARCH_COUNT=${SEARCH_COUNT}"
+else
+    echo "ERROR:  searching for Patients"
+    exit 2
+fi
+
+echo
             
             
-            echo "#################################################################"
+echo "#################################################################"
 
-            X=$Y
-
-done
 
 echo 
 read -p "deleting cookies and search results, Press enter to continue..."  junk
