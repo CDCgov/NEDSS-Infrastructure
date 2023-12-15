@@ -8,3 +8,4 @@ variable "tags" {}
 variable "endpoint_url" {}
 variable "amp_workspace_id" {}
 variable "region" {}
+variable "resource_prefix" {}

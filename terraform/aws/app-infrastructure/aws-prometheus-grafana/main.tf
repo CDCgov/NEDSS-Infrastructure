@@ -19,6 +19,7 @@ module "iam-role" {
   oidc_provider_arn               = var.oidc_provider_arn
   service_account_namespace       = var.namespace_name
   service_account_amp_ingest_name = "${var.resource_prefix}-amp-svc-acc"
+  resource_prefix = var.resource_prefix
 }
 
 module "prometheus-workspace" {
@@ -27,7 +28,8 @@ module "prometheus-workspace" {
   alias             = "${var.resource_prefix}-amp-metrics"
   retention_in_days = var.retention_in_days
   tags              = var.tags
-  region            = data.aws_region.current.name
+  region            = data.aws_region.current.name 
+  resource_prefix = var.resource_prefix
 }
 
 module "k8s-namespace" {
@@ -61,6 +63,7 @@ module "grafana-workspace" {
   endpoint_url           = module.prometheus-workspace.amp_workspace_endpoint
   amp_workspace_id       = module.prometheus-workspace.amp_workspace_id
   region                 = data.aws_region.current
+  resource_prefix   = var.resource_prefix
 }
 
 module "grafana-dashboard" {

@@ -1,7 +1,9 @@
-
+locals {
+  prometheus_role_name = "${var.resource_prefix}-amp-role"
+}
 
 resource "aws_iam_policy" "policy" {
-  name        = "prometheus-policy"
+  name        = "${var.resource_prefix}-amp-policy"
   lifecycle {
     create_before_destroy = true
   }
@@ -25,7 +27,7 @@ resource "aws_iam_policy" "policy" {
 }
 
 resource "aws_iam_role" "prometheus_role" {
-  name = "prometheus-role"
+  name = local.prometheus_role_name
   lifecycle {
     create_before_destroy = true
   }
@@ -51,13 +53,13 @@ resource "aws_iam_role" "prometheus_role" {
 }
 EOF
 
-  tags = merge(tomap({"Name"="prometheus_role"}),var.tags)
+  tags = merge(tomap({"Name"="${local.prometheus_role_name}"}),var.tags)
 }
 
 
 
 resource "aws_iam_policy_attachment" "prometheus-attach" {
-  name       = "prometheus-policy-att"
+  name       = "${var.resource_prefix}-amp-policy-att"
   lifecycle {
     create_before_destroy = true
   }

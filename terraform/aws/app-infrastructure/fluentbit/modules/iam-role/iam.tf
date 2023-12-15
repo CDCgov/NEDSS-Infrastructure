@@ -1,5 +1,9 @@
+locals {
+  fluentbit_role_name = "${var.resource_prefix}-fluentbit-role"
+}
+
 resource "aws_iam_policy" "fluentbit-policy" {
-  name = "fluentbit-policy"
+  name = "${var.resource_prefix}-fluentbit-policy"
   lifecycle {
     create_before_destroy = true
   }
@@ -30,7 +34,7 @@ resource "aws_iam_policy" "fluentbit-policy" {
 
 resource "aws_iam_role" "fluentbit-role" {
   depends_on = [aws_iam_policy.fluentbit-policy]
-  name       = "fluentbit-role"
+  name       = local.fluentbit_role_name
 
   assume_role_policy = <<EOF
 {
@@ -52,11 +56,11 @@ resource "aws_iam_role" "fluentbit-role" {
   ]
 }
 EOF
-  tags = merge(tomap({ "Name" = "fluentbit-role" }), var.tags)
+  tags = merge(tomap({ "Name" = "${local.fluentbit_role_name}" }), var.tags)
 }
 
 resource "aws_iam_policy_attachment" "test-attach" {
-  name       = "fluentbit-policy-attachment"
+  name       = "${var.resource_prefix}-fluentbit-policy-attachment"
   roles      = [aws_iam_role.fluentbit-role.name]
   policy_arn = aws_iam_policy.fluentbit-policy.arn
 }

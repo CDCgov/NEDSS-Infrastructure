@@ -6,6 +6,7 @@ module "iam" {
   oidc_provider             = replace(var.oidc_provider_url, "https://", "") # var.OIDC_PROVIDER
   service_account_namespace = var.namespace_name
   tags                      = var.tags
+  resource_prefix = var.resource_prefix
 }
 
 module "fluentbit-bucket" {
@@ -32,5 +33,7 @@ module "helm-release" {
 
 module "fluentbit-dashboard" {
   source     = "./modules/fluentbit-dashboard"
+  log_group_name = "${var.resource_prefix}-fluent-bit-cloudwatch"
+  resource_prefix = var.resource_prefix
   depends_on = [module.helm-release]
 }

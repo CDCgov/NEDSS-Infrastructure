@@ -1,6 +1,6 @@
 
 resource "aws_cloudwatch_log_group" "amp_log_group" {
-  name = "prometheus-workspace"
+  name = "${var.resource_prefix}-amp-workspace-log-group"
   retention_in_days = var.retention_in_days
   skip_destroy = false
 }
@@ -58,13 +58,13 @@ EOF
 
 
 resource "aws_sns_topic" "prometheus-alerts" {
-  name = "prometheus-metrics-alerts"
-  tags = merge(tomap({"Name"="prometheus-metrics-alerts"}),var.tags)
+  name = "${var.resource_prefix}-amp-workspace-metrics-alerts"
+  tags = merge(tomap({"Name"="${var.resource_prefix}-amp-workspace-metrics-alerts"}),var.tags)
 }
 
 
 resource "aws_iam_policy" "sns-policy" {
-  name        = "sns-policy"
+  name        = "${var.resource_prefix}-amp-workspace-sns-policy"
   lifecycle {
     create_before_destroy = true
   }
@@ -88,7 +88,7 @@ resource "aws_iam_policy" "sns-policy" {
 
 
 resource "aws_iam_role" "amp_prometheus_role" {
-  name = "amp_prometheus_role"
+  name = "${var.resource_prefix}-amp-workspace-role"
 
   assume_role_policy = <<EOF
 {
@@ -108,12 +108,12 @@ resource "aws_iam_role" "amp_prometheus_role" {
 }
 EOF
 
-  tags = merge(tomap({"Name"="prometheus_role"}),var.tags)
+  tags = merge(tomap({"Name"="${var.resource_prefix}-amp-workspace-role"}),var.tags)
 }
 
 
 resource "aws_iam_policy_attachment" "sns-attach" {
-  name       = "sns-policy-attachment"
+  name       = "${var.resource_prefix}-amp-workspace-sns-policy-attachment"
   roles      = [aws_iam_role.amp_prometheus_role.name]
   policy_arn = aws_iam_policy.sns-policy.arn
 }

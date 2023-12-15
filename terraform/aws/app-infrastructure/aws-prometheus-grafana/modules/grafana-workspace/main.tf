@@ -9,7 +9,7 @@ resource "aws_grafana_workspace" "amg" {
 }
 
 resource "aws_iam_policy" "policy" {
-  name = "grafana-policy"
+  name = "${var.resource_prefix}-amg-policy"
   lifecycle {
     create_before_destroy = true
   }
@@ -35,7 +35,7 @@ resource "aws_iam_policy" "policy" {
 }
 
 resource "aws_iam_role" "grafana_role" {
-  name = "grafana-role"
+  name = "${var.resource_prefix}-amg-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -52,7 +52,7 @@ resource "aws_iam_role" "grafana_role" {
 }
 
 resource "aws_iam_policy_attachment" "grafana-attach" {
-  name       = "grafana-policy-attachment"
+  name       = "${var.resource_prefix}-amg-policy-attachment"
   roles      = [aws_iam_role.grafana_role.name]
   policy_arn = aws_iam_policy.policy.arn
 }
