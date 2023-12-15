@@ -273,10 +273,18 @@ goto_advanced_search()
     -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' \
     --compressed
     
-    
-    TMP_BEARER_TOKEN=`grep nbs_token ${COOKIE_JAR} | awk '{print $7}'`
     echo
-    echo TMP_BEARER_TOKEN=${TMP_BEARER_TOKEN}
+
+    if $(grep nbs_token ${COOKIE_JAR} > /dev/null)
+    then 
+        echo "NOTICE: nbs token found login successful"
+        TMP_BEARER_TOKEN=`grep nbs_token ${COOKIE_JAR} | awk '{print $7}'`
+        echo TMP_BEARER_TOKEN=${TMP_BEARER_TOKEN}
+    else 
+        echo "ERROR: nbs token not found login failed"
+        exit 1
+    fi
+
     
     echo
     read -p "AS2 Post gets bearer? Press enter to continue..."  junk
