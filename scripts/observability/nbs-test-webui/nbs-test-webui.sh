@@ -148,8 +148,8 @@ login_nbs()
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'cache-control: max-age=0' \
     -H 'content-type: application/x-www-form-urlencoded' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/nbs/login' \
+    -H "origin: ${BASE_URL}" \
+    -H "referer: ${BASE_URL}/nbs/login" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -175,7 +175,7 @@ login_nbs()
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'cache-control: max-age=0' \
-    -H 'referer: https://app.fts3.nbspreview.com/nbs/login' \
+    -H "referer: ${BASE_URL}/nbs/login" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -200,7 +200,7 @@ login_nbs()
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'cache-control: max-age=0' \
-    -H 'referer: https://app.fts3.nbspreview.com/nbs/login' \
+    -H "referer: ${BASE_URL}/nbs/login" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -238,7 +238,7 @@ goto_advanced_search()
     -H "authority: ${TMP_HOST}" \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
-    -H 'referer: https://app.fts3.nbspreview.com/nbs/HomePage.do?method=loadHomePage' \
+    -H "referer: ${BASE_URL}/nbs/HomePage.do?method=loadHomePage" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -275,7 +275,7 @@ goto_advanced_search()
     -H "authority: ${TMP_HOST}" \
     -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
     -H 'accept-language: en-US,en;q=0.9' \
-    -H 'referer: https://app.fts3.nbspreview.com/nbs/HomePage.do?method=loadHomePage' \
+    -H "referer: ${BASE_URL}/nbs/HomePage.do?method=loadHomePage" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -307,8 +307,8 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
-    -H 'referer: https://app.fts3.nbspreview.com/advanced-search' \
+    -H "origin: ${BASE_URL}" \
+    -H "referer: ${BASE_URL}/advanced-search" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -336,7 +336,7 @@ patient_search ()
     -H 'accept: */*' \
     -H 'accept-language: en-US,en;q=0.9' \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -360,7 +360,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -385,7 +385,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -411,7 +411,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -435,7 +435,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -461,7 +461,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -487,7 +487,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -513,7 +513,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -537,7 +537,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -563,7 +563,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: text/plain' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -589,7 +589,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
@@ -615,7 +615,7 @@ patient_search ()
     -H 'accept-language: en-US,en;q=0.9' \
     -H "authorization: Bearer ${TMP_BEARER_TOKEN}" \
     -H 'content-type: application/json' \
-    -H 'origin: https://app.fts3.nbspreview.com' \
+    -H "origin: ${BASE_URL}" \
     -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"' \
     -H 'sec-ch-ua-mobile: ?0' \
     -H 'sec-ch-ua-platform: "Windows"' \
