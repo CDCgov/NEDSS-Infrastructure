@@ -12,7 +12,8 @@
 COUNT=1
 # DEBUG ON
 #DEBUG=1
-CURL='curl -q --silent --write-out "%{http_code}"' 
+#CURL='curl -q --silent --write-out "%{http_code}"' 
+CURL='curl -q --silent'
 COOKIE_JAR=cookie-jar.$$
 SEARCH_RESULTS=search_results.$$
 
@@ -100,13 +101,6 @@ login_nbs()
     TMP_URL=$1
     TMP_USER=$2
     TMP_PASS=$3
-
-    #curl -q -X "POST" "${TMP_URL}/login" \
-    #    -H 'Content-Type: application/json' \
-    #    --silent \
-    #    -d $'{
-    #"username": "'"${TMP_USER}"'"
-    #}'
 
     echo
     read -p "load login page, Press enter to continue..."  junk
@@ -221,26 +215,6 @@ goto_advanced_search()
     TMP_URL=$1
     TMP_TOKEN=$2
 
-    #curl -X "POST" "${TMP_URL}/graphql" \
-        #-H "Authorization: Bearer ${TMP_TOKEN}" \
-        #--silent \
-        #-H 'Content-Type: application/json; charset=utf-8' \
-        #-d $'{
-	    #"query": "mutation create($patient:PersonInput!){createPatient(patient:$patient){id shortId}}",
-	    #"variables": {
-		    #"patient": {
-			    #"comments": "Created for Development testing",
-			    #"asOf": "2023-10-06T18:14:23+00:00",
-			    #"names": [
-				    #{
-					    #"use": "L",
-					    #"first": "Aya",
-					    #"last": "Brea"
-				    #}
-			    #]
-		    #}
-	    #}
-    #}'
     ####################################################################################################
     # now click on advanced search
     # this gets a few cookies
@@ -313,30 +287,8 @@ goto_advanced_search()
 
 patient_search ()
 {
-    ## Patient Search(7.0.0)
     TMP_URL=$1
     TMP_TOKEN=$2
-    #curl -X "POST" "${TMP_URL}/graphql" \
-        #--silent \
-        #-H "Authorization: Bearer ${TMP_TOKEN}" \
-        #-H 'Content-Type: application/json; charset=utf-8' \
-        #-d $'{
-	    #"query": "query search($filter:PersonFilter!,$page:SortablePage){findPatientsByFilter(filter:$filter,page:$page){content{id shortId names{firstNm middleNm lastNm}}total}}",
-	    #"variables": {
-		    #"filter": {
-			    #"lastName": "brea",
-			    #"recordStatus": [
-				    #"ACTIVE"
-			    #]
-		    #},
-		    #"page": {
-			    #"pageNumber": 0,
-			    #"pageSize": 25,
-			    #"sortDirection": "ASC",
-			    #"sortField": "lastNm"
-		    #}
-	    #}
-    #}'
 
     echo
     read -p "S1 Post needs Bearer Press enter to continue..."  junk
@@ -392,8 +344,6 @@ patient_search ()
     --data-raw '{"operationName":"findAllProgramAreas","variables":{},"query":"query findAllProgramAreas($page: Page) {\n  findAllProgramAreas(page: $page) {\n    id\n    progAreaDescTxt\n    nbsUid\n    statusCd\n    statusTime\n    codeSetNm\n    codeSeq\n    __typename\n  }\n}"}' \
     --compressed ;
     
-    # -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
-    
     echo
     read -p "Post S3 Press enter to continue..."  junk
     echo
@@ -418,7 +368,6 @@ patient_search ()
     --data-raw '{"operationName":"findAllConditionCodes","variables":{},"query":"query findAllConditionCodes($page: Page) {\n  findAllConditionCodes(page: $page) {\n    id\n    conditionDescTxt\n    __typename\n  }\n}"}' \
     --compressed ;
     
-    # -H 'referer: https://app.fts3.nbspreview.com/advanced-search?q=NrtpfI68PmAX2uhPtGP%2BAEpoKI2l59mCV6DbgTPxeddvSC4yjszy3d9OHe0MuddOrJBxDjHveaMe0ZseHNeSC8ffCS7GuiOi&type=search' \
 
     echo
     read -p "Post S4 Press enter to continue..."  junk
@@ -697,22 +646,12 @@ do
             RETURN_CODE=$?
             if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
 
-            echo "RETURN_CODE=$?"
-
             #echo TMP_TOKEN=${TMP_TOKEN}
             echo 
             
-            #echo "#################################################################"
-            #echo "now creating patient with last name Brea"
-            #echo "capture ID for later use"
             if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
             goto_advanced_search ${BASE_URL} ${TMP_TOKEN};
             if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
-           # 
-           # TMP_PATIENT_ID=$(patient_create ${BASE_URL} ${TMP_TOKEN} |  jq -r .data.createPatient.id)
-           # RETURN_CODE=$?
-           # echo "Patient with last name Brea created with Patient ID = ${TMP_PATIENT_ID}"
-           # echo
 
             echo "#################################################################"
             echo "now searching patient F"
@@ -730,30 +669,18 @@ do
                 #echo "NOTICE: SEARCH_COUNT=${SEARCH_COUNT}"
             else
                 echo "ERROR:  searching for Patients"
+                exit 2
             fi
             echo
             
             
             echo "#################################################################"
-#            echo "now deleting patient with last name Brea and patient id ${TMP_PATIENT_ID}"
-#            if [ $PROMPT ]; then echo "Hit return to continue"; read junk ; fi
-#            #echo patient_delete.sh ${BASE_URL} ${TMP_TOKEN} ${TMP_PATIENT_ID}
-#            patient_delete ${BASE_URL} ${TMP_TOKEN} ${TMP_PATIENT_ID} | jq
-#            RETURN_CODE=$?
-#            if [ $DEBUG ]; then echo "RETURN_CODE=${RETURN_CODE}"; fi
-#            echo
-#            echo "#################################################################"
-                        
 
             X=$Y
 
 done
 
-
 echo 
 read -p "deleting cookies and search results, Press enter to continue..."  junk
 rm ${COOKIE_JAR} ${SEARCH_RESULTS}
 
-####################################################################################################
-# and now the actual search - post
-# authorization Bearer
