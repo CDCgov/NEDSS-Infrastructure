@@ -1,7 +1,7 @@
 #create s3 bucket
 resource "aws_s3_bucket" "this" {
   bucket_prefix = "${var.bucket_prefix}"
-  tags   = merge(tomap({ "Name" = "${aws_s3_bucket.this.id}" }), var.tags)
+  # tags   = merge(tomap({ "Name" = "${aws_s3_bucket.this.id}" }), var.tags)
   force_destroy = var.force_destroy_bucket
 }
 
