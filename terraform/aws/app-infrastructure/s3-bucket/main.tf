@@ -1,8 +1,8 @@
 #create s3 bucket
-resource "aws_s3_bucket" "log_bucket" {
+resource "aws_s3_bucket" "this" {
   bucket_prefix = "${var.bucket_prefix}"
-  tags   = merge(tomap({ "Name" = "${aws_s3_bucket.log_bucket.id}" }), var.tags)
-  force_destroy = var.force_destroy_log_bucket
+  tags   = merge(tomap({ "Name" = "${aws_s3_bucket.this.id}" }), var.tags)
+  force_destroy = var.force_destroy_bucket
 }
 
 # Enabled bucket versioning
@@ -15,8 +15,8 @@ resource "aws_s3_bucket_versioning" "versioning" {
 
 # Enabled block public access
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
-  depends_on = [aws_s3_bucket.log_bucket]
-  bucket     = aws_s3_bucket.log_bucket.id
+  depends_on = [aws_s3_bucket.this]
+  bucket     = aws_s3_bucket.this.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -28,7 +28,7 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
 resource "aws_s3control_bucket_lifecycle_configuration" "lifecyle_rules" {
   # Must have bucket versioning enabled first
   depends_on = [aws_s3_bucket_versioning.versioning]
-  bucket = aws_s3_bucket.log_bucket.id
+  bucket = aws_s3_bucket.this.id
 
   rule {
     id = "default-lifecycle-policy"
