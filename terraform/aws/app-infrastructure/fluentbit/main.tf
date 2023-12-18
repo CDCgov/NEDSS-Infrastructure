@@ -9,18 +9,10 @@ module "iam" {
   resource_prefix = var.resource_prefix
 }
 
-module "fluentbit-bucket" {
-  source                   = "./modules/s3-bucket"
-  depends_on               = [module.iam]
-  bucket_name              = "${var.resource_prefix}-fluentbit-logs"
-  tags                     = var.tags
-  force_destroy_log_bucket = var.force_destroy_log_bucket
-}
-
 module "helm-release" {
   source               = "./modules/helm-release"
-  depends_on           = [module.fluentbit-bucket, module.iam]
-  bucket               = module.fluentbit-bucket.bucket_name
+  depends_on           = [module.iam]
+  bucket               = var.bucket_name
   release_name         = var.release_name
   repository           = var.repository
   chart                = var.chart

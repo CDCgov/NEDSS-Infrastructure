@@ -4,11 +4,11 @@ variable "resource_prefix" {
   default     = "cdc-nbs"
 }
 
-# variable "bucket_name" {
-#   type        = string
-#   description = "name of bucket to forward logs to"
-#   default     = "cdc-nbs-fluentbit-logs"
-# }
+variable "bucket_name" {
+  type        = string
+  description = "Precreated (may be referenced from another module) S3 bucket into which logs are placed."
+}
+
 variable "tags" {
   type        = map(string)
   description = "tags applied to all resources"

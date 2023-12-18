@@ -1,16 +1,3 @@
-module "vpc-endpoints" {
-  source              = "./modules/vpc-endpoints"
-  tags                = var.tags
-  region              = data.aws_region.current.name
-  vpc_id              = var.vpc_id
-  vpc_cidr_block      = var.vpc_cidr_block
-  private_subnet_ids  = var.private_subnet_ids
-  grafana_sg_name     = "${var.resource_prefix}-amg-sg"
-  grafana_endpoint    = "${var.resource_prefix}-amg-endpoint-sg"
-  prometheus_sg_name  = "${var.resource_prefix}-amp-sg"
-  prometheus_endpoint = "${var.resource_prefix}-amp-endpoint-sg"  
-}
-
 module "iam-role" {
   source = "./modules/iam-roles"
   tags   = var.tags

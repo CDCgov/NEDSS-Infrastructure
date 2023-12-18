@@ -11,7 +11,7 @@ Below are the input parameter variables for Fluentbit:
 
 | Key | Type | Default | Description |
 | -------------- | -------------- | -------------- | -------------- |
-| bucket_name | string | `cdc-nbs-fluentbit-logs` | Name of bucket to forward logs to |
+| bucket_name | string |  | Precreated (may be referenced from another module) S3 bucket into which logs are placed. |
 | chart | string | `fluent-bit` | Fluentbit chart name |
 | cluster_certificate_authority_data | string |  | TBase64 encoded certificate data required to communicate with the cluster |
 | eks_aws_role_arn | string |  | IAM role ARN of the EKS cluster |

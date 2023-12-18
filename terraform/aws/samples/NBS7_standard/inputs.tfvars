@@ -38,6 +38,9 @@ eks_instance_types = ["m5.large"]
 # grab from login screen
 aws_admin_role_name = "AWSReservedSSO_AWSAdministratorAccess_EXAMPLE"
 
+# S3 buckets
+fluentbit_bucket_prefix = "EXAMPLE-fluenbit-bucket"
+
 
 
 
