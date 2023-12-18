@@ -25,7 +25,7 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
 }
 
 # configure object lifecycle rule
-resource "aws_s3control_bucket_lifecycle_configuration" "lifecyle_rules" {
+resource "aws_s3_bucket_lifecycle_configuration" "lifecyle_rules" {
   # Must have bucket versioning enabled first
   depends_on = [aws_s3_bucket_versioning.versioning]
   bucket = aws_s3_bucket.this.id
