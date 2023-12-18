@@ -11,7 +11,6 @@ module "iam-role" {
 
 module "prometheus-workspace" {
   source            = "./modules/prometheus-workspace"
-  depends_on        = [module.vpc-endpoints]
   alias             = "${var.resource_prefix}-amp-metrics"
   retention_in_days = var.retention_in_days
   tags              = var.tags
