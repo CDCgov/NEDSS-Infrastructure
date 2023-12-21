@@ -3,5 +3,6 @@ resource "kubernetes_namespace" "observability" {
   metadata {
     labels = var.observability_labels
     name = var.observability_namespace
-  }  
+  }
+  depends_on = [ module.eks ]
 }

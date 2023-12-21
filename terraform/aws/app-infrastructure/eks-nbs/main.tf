@@ -1,20 +1,17 @@
-locals {
-  eks_name = var.name != "" ? var.name : "${var.resource_prefix}-eks"
-  eks_node_group_name = var.name != "" ? "eks-nbs-main" : "${var.resource_prefix}-node-group-main"
-}
-
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.15.3"
 
-  cluster_name    = local.eks_name
+  # Set cluster info
+  cluster_name    = local.eks_name  
   cluster_version = var.cluster_version
-
   cluster_endpoint_public_access  = true
 
+  # Set VPC/Subnets
   vpc_id                   = var.vpc_id
   subnet_ids               = var.subnets
 
+  # Cluster addons, ebs csi driver
   cluster_addons = {
     aws-ebs-csi-driver = {
       resolve_conflicts = "OVERWRITE"
@@ -22,14 +19,18 @@ module "eks" {
     }
   }
 
+  # Set node group instance types
   eks_managed_node_group_defaults = {
     instance_types = [var.instance_type]
     
   }
 
+  # Create node groups with config
   eks_managed_node_groups = {
       main = {
         name         = local.eks_node_group_name
+        iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
+        iam_role_name = local.eks_iam_role_name
         min_size     = var.min_nodes_count
         max_size     = var.max_nodes_count
         desired_size = var.desired_nodes_count
