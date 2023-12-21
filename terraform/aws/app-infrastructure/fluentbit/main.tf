@@ -6,20 +6,13 @@ module "iam" {
   oidc_provider             = replace(var.oidc_provider_url, "https://", "") # var.OIDC_PROVIDER
   service_account_namespace = var.namespace_name
   tags                      = var.tags
-}
-
-module "fluentbit-bucket" {
-  source                   = "./modules/s3-bucket"
-  depends_on               = [module.iam]
-  bucket_name              = "${var.resource_prefix}-fluentbit-logs"
-  tags                     = var.tags
-  force_destroy_log_bucket = var.force_destroy_log_bucket
+  resource_prefix = var.resource_prefix
 }
 
 module "helm-release" {
   source               = "./modules/helm-release"
-  depends_on           = [module.fluentbit-bucket, module.iam]
-  bucket               = module.fluentbit-bucket.bucket_name
+  depends_on           = [module.iam]
+  bucket               = var.bucket_name
   release_name         = var.release_name
   repository           = var.repository
   chart                = var.chart
@@ -32,5 +25,7 @@ module "helm-release" {
 
 module "fluentbit-dashboard" {
   source     = "./modules/fluentbit-dashboard"
+  log_group_name = "${var.resource_prefix}-fluent-bit-cloudwatch"
+  resource_prefix = var.resource_prefix
   depends_on = [module.helm-release]
 }

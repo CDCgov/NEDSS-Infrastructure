@@ -5,5 +5,4 @@ variable "app_name" {
   default = ["argocd", "elasticsearch", "fluentbit", "ingress-nginx", "istio", "nifi", "patient-search", "prometheus", "modernization-api", "dataingestion"]
 }
 
-
-
+variable "resource_prefix" {}

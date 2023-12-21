@@ -36,8 +36,6 @@ Below are the available Variables contained within this aws-prometheus-grafana m
 | service_account_namespace | string | "observability" | Service account namespace name |
 | tags | map(string) |  | The tags added to the resources |
 | values_file_path | string | "../modules/aws-prometheus-grafana/modules/prometheus-helm/values.yaml" | Path to the values.yaml file |
-| vpc_cidr_block | string |  | CIDR block of your VPC |
-| vpc_id | string |  | List of VPC to which AWS Grafana and AWS Prometheus VPC endpoints are added |
 
 Below are the available Outputs contained within this DNS moudle:
 

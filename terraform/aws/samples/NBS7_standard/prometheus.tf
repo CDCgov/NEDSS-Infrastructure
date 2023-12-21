@@ -9,8 +9,5 @@ module "prometheus" {
   cluster_certificate_authority_data = module.eks_nbs.cluster_certificate_authority_data
   eks_cluster_name                   = module.eks_nbs.eks_cluster_name
   eks_aws_role_arn                   = "arn:aws:iam::${var.target_account_id}:role/cdc-terraform-user-cross-account-role"
-  vpc_id                             = module.modernization-vpc.vpc_id
-  private_subnet_ids                 = module.modernization-vpc.private_subnets
-  vpc_cidr_block                     = module.modernization-vpc.vpc_cidr_block
   namespace_name                     = module.eks_nbs.precreated_observability_namespace_name
 }

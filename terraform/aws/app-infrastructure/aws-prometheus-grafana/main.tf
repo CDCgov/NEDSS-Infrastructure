@@ -1,16 +1,3 @@
-module "vpc-endpoints" {
-  source              = "./modules/vpc-endpoints"
-  tags                = var.tags
-  region              = data.aws_region.current.name
-  vpc_id              = var.vpc_id
-  vpc_cidr_block      = var.vpc_cidr_block
-  private_subnet_ids  = var.private_subnet_ids
-  grafana_sg_name     = "${var.resource_prefix}-amg-sg"
-  grafana_endpoint    = "${var.resource_prefix}-amg-endpoint-sg"
-  prometheus_sg_name  = "${var.resource_prefix}-amp-sg"
-  prometheus_endpoint = "${var.resource_prefix}-amp-endpoint-sg"  
-}
-
 module "iam-role" {
   source = "./modules/iam-roles"
   tags   = var.tags
@@ -19,15 +6,16 @@ module "iam-role" {
   oidc_provider_arn               = var.oidc_provider_arn
   service_account_namespace       = var.namespace_name
   service_account_amp_ingest_name = "${var.resource_prefix}-amp-svc-acc"
+  resource_prefix = var.resource_prefix
 }
 
 module "prometheus-workspace" {
   source            = "./modules/prometheus-workspace"
-  depends_on        = [module.vpc-endpoints]
   alias             = "${var.resource_prefix}-amp-metrics"
   retention_in_days = var.retention_in_days
   tags              = var.tags
-  region            = data.aws_region.current.name
+  region            = data.aws_region.current.name 
+  resource_prefix = var.resource_prefix
 }
 
 module "k8s-namespace" {
@@ -61,6 +49,7 @@ module "grafana-workspace" {
   endpoint_url           = module.prometheus-workspace.amp_workspace_endpoint
   amp_workspace_id       = module.prometheus-workspace.amp_workspace_id
   region                 = data.aws_region.current
+  resource_prefix   = var.resource_prefix
 }
 
 module "grafana-dashboard" {
