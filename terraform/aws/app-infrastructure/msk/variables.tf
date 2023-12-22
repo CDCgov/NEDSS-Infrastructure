@@ -37,5 +37,5 @@ variable "modern-cidr" {
 variable "vpn-cidr" {
   description = "VPN VPC CIDR to be used with cluster SG"
   type        = string
-  default = ""
+  default = null
 }
