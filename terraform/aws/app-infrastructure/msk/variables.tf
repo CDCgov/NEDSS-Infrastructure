@@ -30,15 +30,15 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "modern-cidr" {
-  description = "VPC CIDR to be used with cluster SG"
-  type        = string
-}
-variable "vpn-cidr" {
-  description = "VPN VPC CIDR to be used with cluster SG"
-  type        = string
-  default = null
-}
+# variable "modern-cidr" {
+#   description = "VPC CIDR to be used with cluster SG"
+#   type        = string
+# }
+# variable "vpn-cidr" {
+#   description = "VPN VPC CIDR to be used with cluster SG"
+#   type        = string
+#   default = null
+# }
 
 variable "cidr_blocks" {
   type = list
