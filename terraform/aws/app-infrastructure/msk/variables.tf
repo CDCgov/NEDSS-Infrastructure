@@ -39,3 +39,7 @@ variable "vpn-cidr" {
   type        = string
   default = null
 }
+
+variable "cidr_blocks" {
+  type = list
+}

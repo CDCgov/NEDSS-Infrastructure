@@ -92,7 +92,7 @@ resource "aws_security_group_rule" "msk_cluster_plaintext" {
   description              = "Allow world to communicate with the cluster"
   from_port                = 9092
   # allow connection from modern vpc and VPN
-  cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
+  cidr_blocks               = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
   protocol                 = "tcp"
   security_group_id        = aws_security_group.msk_cluster_sg[0].id
   to_port                  = 9092
@@ -103,7 +103,7 @@ resource "aws_security_group_rule" "msk_cluster_tls" {
   count = var.create_msk ? 1 : 0
   description              = "Allow world to communicate with the cluster"
   from_port                = 9094
-  cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
+  cidr_blocks               = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
   protocol                 = "tcp"
   security_group_id        = aws_security_group.msk_cluster_sg[0].id
   to_port                  = 9094
@@ -114,7 +114,7 @@ resource "aws_security_group_rule" "cluster_outbound" {
   count = var.create_msk ? 1 : 0
   description              = "Allow cluster to communicate to vpc"
   from_port                = 1024
-  cidr_blocks               = [var.modern-cidr, var.vpn-cidr]
+  cidr_blocks               = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
   protocol                 = "tcp"
   security_group_id        = aws_security_group.msk_cluster_sg[0].id
   to_port                  = 65535
