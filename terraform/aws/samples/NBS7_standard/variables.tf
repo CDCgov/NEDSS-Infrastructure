@@ -79,7 +79,7 @@ variable "legacy_vpc_public_route_table_id" {}
 
 #EKS Variables----------------------------------------------------
 variable "eks_disk_size" {
-  type = number
+  type    = number
   default = 100
 }
 
@@ -103,7 +103,7 @@ variable "eks_min_nodes_count" {
 }
 
 variable "aws_admin_role_name" {
-  type    = string
+  type = string
 }
 #-----------------------------------------------------------------
 
@@ -112,3 +112,4 @@ variable "fluentbit_bucket_prefix" {
   type = string
 }
 #-----------------------------------------------------------------
+
