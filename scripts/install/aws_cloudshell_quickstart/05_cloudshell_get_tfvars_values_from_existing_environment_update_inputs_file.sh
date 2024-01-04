@@ -1,3 +1,4 @@
+#!/bin/bash
 
 select_vpc() {
     mapfile -t vpcs < <(aws ec2 describe-vpcs --query 'Vpcs[].[VpcId, Tags[?Key==`Name`].Value | [0]]' --output text | awk '{print $1 " (" $2 ")"}')
