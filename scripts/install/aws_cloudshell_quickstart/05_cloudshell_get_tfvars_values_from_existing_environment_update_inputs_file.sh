@@ -1,3 +1,4 @@
+#!/bin/bash
 
 select_vpc() {
     mapfile -t vpcs < <(aws ec2 describe-vpcs --query 'Vpcs[].[VpcId, Tags[?Key==`Name`].Value | [0]]' --output text | awk '{print $1 " (" $2 ")"}')
@@ -102,21 +103,23 @@ OCTET2b=$(select_subnet_octet)
 #  # OCTET2a, OCTET2b, OCTET2shared
 read -p "Please enter the site name e.g. ats: " SITE_NAME
 read -p "Please enter domain name  e.g. nbspreview.com : " EXAMPLE_DOMAIN
-read -p "Please enter the shared octet value for vpn access e.g. 3 will allow 10.3.0.0/16: " OCTET2shared
+#read -p "Please enter the shared octet value for vpn access e.g. 3 will allow 10.3.0.0/16: " OCTET2shared
 read -p "Please enter the modern octet value for new vpc 10.x.0.0/16: " OCTET2a
 
+INPUTS_FILE=inputs_template.tfvars
+NEW_INPUTS_FILE=inputs_template.tfvars.new
 # Displaying the results
-echo "LEGACY_VPC_ID = $LEGACY_VPC_ID"
-echo "PRIVATE_ROUTE_TABLE_ID = $PRIVATE_ROUTE_TABLE_ID"
-echo "PUBLIC_ROUTE_TABLE_ID = $PUBLIC_ROUTE_TABLE_ID"
-echo "LEGACY_CIDR_BLOCK = $LEGACY_CIDR_BLOCK"
-echo "BUCKET_NAME = $BUCKET_NAME"
-echo "OCTET2a = $OCTET2a"
-echo "OCTET2b = $OCTET2b"
-echo "OCTET2shared = $OCTET2shared"
-echo "SITE_NAME = $SITE_NAME"
-echo "EXAMPLE_DOMAIN = $EXAMPLE_DOMAIN"
 
-#legacy-vpc-id = "vpc-EXAMPLE"
-#legacy_vpc_private_route_table_id = "rtb-EXAMPLE"
-#legacy_vpc_public_route_table_id = "rtb-EXAMPLE"
+cp -p ${INPUTS_FILE}  ${NEW_INPUTS_FILE}
+sed  --in-place "s/vpc-LEGACY-EXAMPLE/${LEGACY_VPC_ID}/"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/rtb-PRIVATE-EXAMPLE/${PRIVATE_ROUTE_TABLE_ID}/" ${NEW_INPUTS_FILE}
+sed  --in-place "s/rtb-PUBLIC-EXAMPLE/${PUBLIC_ROUTE_TABLE_ID}/" ${NEW_INPUTS_FILE}
+sed  --in-place "s/OCTET2a/${OCTET2a}/g"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/OCTET2b/${OCTET2b}/g"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/EXAMPLE_LEGACY_CIDR_BLOCK/${LEGACY_CIDR_BLOCK}/" ${NEW_INPUTS_FILE}
+sed  --in-place "s/EXAMPLE_BUCKET_NAME/${BUCKET_NAME}"  ${NEW_INPUTS_FILE}
+#sed  --in-place "s/EXAMPLE_OCTET2shared/${OCTET2shared}/g"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/EXAMPLE-ENVIRONMENT/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/"  ${NEW_INPUTS_FILE}
+
+exit 0

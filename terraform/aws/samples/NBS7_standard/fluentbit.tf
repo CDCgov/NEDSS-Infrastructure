@@ -11,6 +11,6 @@ module "fluentbit" {
   eks_aws_role_arn                   = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
   namespace_name                     = module.eks_nbs.precreated_observability_namespace_name
   # using bucket prefix to guarantee unique
-  #bucket_name                        = module.fluentbit-bucket.bucket_name
+  bucket_name                        = module.fluentbit-bucket.bucket_name
 }
 

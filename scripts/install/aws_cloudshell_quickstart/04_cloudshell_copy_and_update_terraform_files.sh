@@ -4,7 +4,7 @@
 ACCT_NUM=00000000
 
 # modify this for each release or prompt and save to rc file
-INFRA_VER=v1.0.0
+INFRA_VER=v1.1.5
 
 INSTALL_DIR=nbs_install
 
@@ -19,7 +19,15 @@ read TMP_SITE_NAME
 #cd NEDSS-Infrastructure-1.0.0-prerelease/terraform/aws
 cd nbs-infrastructure-${INFRA_VER}/
 
-cp -pr samples/NBS7_standard ${TMP_SITE_NAME}
+if [ -d  ${TMP_SITE_NAME} ]
+then
+	echo "INFO:  ${TMP_SITE_NAME} already exists"
+	#echo "INFO:  ${TMP_SITE_NAME} already exists, exiting"
+	#exit 1
+else
+	#cp -pr samples/NBS7_standard ${TMP_SITE_NAME}
+	cp -pr terraform/aws/samples/NBS7_standard ${TMP_SITE_NAME}
+fi
 
 cd ${TMP_SITE_NAME}
 
@@ -31,11 +39,11 @@ cd ${TMP_SITE_NAME}
 
 # inputs.tfvars template modification documented elsewhere
 
-echo aws s3 cp s3://install-placeholder-<account-num>/terraform.tfvars terraform.tfvars.froms3
+# echo aws s3 cp s3://install-placeholder-<account-num>/terraform.tfvars terraform.tfvars.froms3
 # edit bucket name and uncomment
 #aws s3 cp s3://install-placeholder-${ACCT_NUM}/terraform.tfvars terraform.tfvars.froms3
 
-exit 1 
+#exit 1 
 
 
 echo "modify terraform.tfars and/or inputs.tfvars to reflect appropriate values"
