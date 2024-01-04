@@ -34,7 +34,7 @@ tags = {
 }
 
 # EKS cluster Variables
-eks_instance_types = ["m5.large"]
+eks_instance_type = "m5.large"
 # grab from login screen
 aws_admin_role_name = "AWSReservedSSO_AWSAdministratorAccess_EXAMPLE"
 
