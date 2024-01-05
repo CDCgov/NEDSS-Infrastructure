@@ -106,8 +106,15 @@ login_nbs()
     TMP_PASS=$3
 
     echo
-    read -p "load login page, Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "load login page, Press enter to continue..."  junk
+    else
+        echo "NOTICE: load login page"
+    fi  
     echo
+
+
     # load the login page, does this set a cookie?
     ${CURL} "${TMP_URL}/nbs/login" \
     --cookie ${COOKIE_JAR} \
@@ -137,8 +144,14 @@ login_nbs()
     ####################################################################################################
     # start the actual login post - user and password included
     echo
-    read -p "start login, Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "start login, Press enter to continue..."  junk
+    else
+        echo "NOTICE: Starting login"
+    fi
     echo
+
     ${CURL} "${TMP_URL}/nbs/nbslogin" \
     --cookie ${COOKIE_JAR} \
     --cookie-jar ${COOKIE_JAR} \
@@ -164,7 +177,12 @@ login_nbs()
     #--data-raw 'mode=&ObjectType=&OperationType=&PopupDataResult=&UserName=state&Password=badpass' \
     
     echo
-    read -p "second login url Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "second login url Press enter to continue..."  junk
+    else
+        echo "NOTICE: second login url"
+    fi  
     echo
     # next get
     ${CURL} "${TMP_URL}/nbs/nfc?UserName=${TMP_USER}" \
@@ -188,7 +206,12 @@ login_nbs()
     --compressed
 
     echo
-    read -p "third login url loadhome page, Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "third login url loadhome page, Press enter to continue..."  junk
+    else
+        echo "NOTICE: third login url loadhome page"
+    fi  
     echo
     # last document get as part of login
     ${CURL} "${TMP_URL}/nbs/HomePage.do?method=loadHomePage" \
@@ -227,7 +250,12 @@ goto_advanced_search()
 
     # --output /dev/null \
     echo
-    read -p "Post AS1 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post AS1 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post AS1"
+    fi  
     echo
 
     ${CURL} "${TMP_URL}/nbs/MyTaskList1.do?ContextAction=GlobalPatient" \
@@ -264,7 +292,12 @@ goto_advanced_search()
 
     
     echo
-    read -p "AS2 Post gets bearer? Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "AS2 Post gets bearer? Press enter to continue..."  junk
+    else
+        echo "NOTICE: AS2 Post gets bearer"
+    fi  
     echo
     # this uses those cookies
     ${CURL} "${TMP_URL}/advanced-search" \
@@ -294,7 +327,12 @@ patient_search ()
     TMP_TOKEN=$2
 
     echo
-    read -p "S1 Post needs Bearer Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "S1 Post needs Bearer Press enter to continue..."  junk
+    else
+        echo "NOTICE: S1 Post needs Bearer Token"
+    fi  
     echo
 
     ${CURL} "${TMP_URL}/encryption/encrypt" \
@@ -324,7 +362,12 @@ patient_search ()
     echo TMP_BEARER_TOKEN=${TMP_BEARER_TOKEN}
     
     echo
-    read -p "Post S2 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S2 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S2"
+    fi  
     echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
@@ -348,7 +391,12 @@ patient_search ()
     --compressed ;
     
     echo
-    read -p "Post S3 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S3 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S3"
+    fi  
     echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
@@ -373,7 +421,12 @@ patient_search ()
     
 
     echo
-    read -p "Post S4 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S4 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S4"
+    fi  
     echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
@@ -398,7 +451,12 @@ patient_search ()
     
 
     echo
-    read -p "Post S5 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S5 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S5"
+    fi  
     echo
     
     ${CURL} "${TMP_URL}/graphql" \
@@ -423,7 +481,12 @@ patient_search ()
     --compressed ;
     
     echo
-    read -p "Post S5.5 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S5.5 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S5.5"
+    fi  
     echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
@@ -448,7 +511,12 @@ patient_search ()
     
     
     echo
-    read -p "Post S6 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S6 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S6"
+    fi  
     echo
     
     ${CURL} "${TMP_URL}/graphql" \
@@ -475,7 +543,12 @@ patient_search ()
 
 
     echo
-    read -p "Post S7 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S7 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S7"
+    fi  
     echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
@@ -501,7 +574,12 @@ patient_search ()
     
     
     echo
-    read -p "Post S8 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S8 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S8"
+    fi  
     echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
@@ -525,7 +603,12 @@ patient_search ()
     --compressed ;
 
     echo
-    read -p "Post S9 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S9 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S9"
+    fi  
     echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
@@ -551,7 +634,12 @@ patient_search ()
 
 
     echo
-    read -p "Post S10 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S10 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S10"
+    fi  
     echo
     ${CURL} "${TMP_URL}/encryption/decrypt" \
     --cookie ${COOKIE_JAR} \
@@ -577,7 +665,12 @@ patient_search ()
     
     
     echo
-    read -p "Post S11 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S11 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S11"
+    fi  
     echo
     ${CURL} "${TMP_URL}/graphql" \
     --cookie ${COOKIE_JAR} \
@@ -602,7 +695,12 @@ patient_search ()
 
     # I think this final post gets the results with total count 
     echo
-    read -p "Post S12 Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "Post S12 Press enter to continue..."  junk
+    else
+        echo "NOTICE: Post S12"
+    fi  
     echo
     
     ${CURL} "${TMP_URL}/graphql" \
@@ -671,6 +769,11 @@ echo "#################################################################"
 
 
 echo 
-read -p "deleting cookies and search results, Press enter to continue..."  junk
+    if [ $PROMPT ]
+    then 
+        read -p "deleting cookies and search results, Press enter to continue..."  junk
+    else
+        echo "NOTICE: deleting cookies and search results"
+    fi  
 rm ${COOKIE_JAR} ${SEARCH_RESULTS}
 
