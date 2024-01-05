@@ -22,10 +22,6 @@ variable "tags" {
 #-----------------------------------------------------------------
 
 # Modernization VPC Variables-------------------------------------
-variable "modern-name" {
-  type    = string
-  default = ""
-}
 variable "modern-cidr" {}
 
 variable "modern-azs" {}

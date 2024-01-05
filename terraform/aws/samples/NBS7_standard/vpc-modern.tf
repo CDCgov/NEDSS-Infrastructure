@@ -1,7 +1,6 @@
 # VPC for modernization application components
 module "modernization-vpc" {
   source          = "../app-infrastructure/vpc"
-  name            = var.modern-name
   resource_prefix = var.resource_prefix
   cidr            = var.modern-cidr
   azs             = var.modern-azs
