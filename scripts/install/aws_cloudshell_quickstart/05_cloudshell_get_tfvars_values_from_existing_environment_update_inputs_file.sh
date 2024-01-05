@@ -87,12 +87,15 @@ select_subnet_octet() {
 
 # Example calls and setting return results to appropriate variables
 # grab some stuff from existing environment
+
 echo "pick the existing vpc that contains the classic application server(vpc peering will be setup between this vpc and modern vpc)"
+
 LEGACY_VPC_ID=$(select_vpc)
 echo "pick private route table"
 PRIVATE_ROUTE_TABLE_ID=$(select_route_table)
 echo "pick public route table"
 PUBLIC_ROUTE_TABLE_ID=$(select_route_table)
+
 echo "pick the existing CIDR block that contains the classic application server(routing will be setup between this CIDR and modern CIDR)"
 LEGACY_CIDR_BLOCK=$(select_cidr $LEGACY_VPC_ID)
 echo "LEGACY_CIDR_BLOCK = $LEGACY_CIDR_BLOCK"
@@ -105,7 +108,9 @@ OCTET2b=$(select_subnet_octet)
 # prompt for remaining info
 #  SITE_NAME and EXAMPLE_DOMAIN
 #  # OCTET2a, OCTET2b, OCTET2shared
+
 read -p "Please enter the site name e.g. fts3: " SITE_NAME
+
 read -p "Please enter domain name  e.g. nbspreview.com : " EXAMPLE_DOMAIN
 #read -p "Please enter the shared octet value for vpn access e.g. 3 will allow 10.3.0.0/16: " OCTET2shared
 read -p "Please enter the modern octet value for new vpc 10.x.0.0/16: " OCTET2a
@@ -139,6 +144,7 @@ sed  --in-place "s/rtb-PRIVATE-EXAMPLE/${PRIVATE_ROUTE_TABLE_ID}/" ${NEW_INPUTS_
 sed  --in-place "s/rtb-PUBLIC-EXAMPLE/${PUBLIC_ROUTE_TABLE_ID}/" ${NEW_INPUTS_FILE}
 sed  --in-place "s/OCTET2a/${OCTET2a}/g"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/OCTET2b/${OCTET2b}/g"  ${NEW_INPUTS_FILE}
+
 # use a different delimiter for CIDR"
 sed  --in-place "s?EXAMPLE_LEGACY_CIDR_BLOCK?${LEGACY_CIDR_BLOCK}?" ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_BUCKET_NAME/${BUCKET_NAME}/"  ${NEW_INPUTS_FILE}
@@ -151,5 +157,6 @@ sed  --in-place "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE
 sed  --in-place "s/EXAMPLE_RESOURCE_PREFIX/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_ENVIRONMENT/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE-fluentbit-bucket/${SITE_NAME}-fluentbit-bucket-${TMP_ACCOUNT_ID}/"  ${NEW_INPUTS_FILE}
+
 
 exit 0
