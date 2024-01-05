@@ -113,3 +113,9 @@ variable "fluentbit_bucket_prefix" {
 }
 #-----------------------------------------------------------------
 
+# MSK/Kafka Variables---------------------------------------------
+variable "msk_ebs_volume_size" {
+  description = "EBS volume size for the MSK broker nodes in GB"
+  type        = number
+  default     = 20
+}
