@@ -1,0 +1,60 @@
+name: Create draft release
+on:
+  workflow_dispatch:
+    inputs:
+      update_zip_only:
+        description: Will delete and update the artifact from an existing draft release.
+        type: boolean
+        default: false
+        required: true
+      release_version:
+        description: A release version (no 'v', this is added only to the final) to be created upon publishing the draft release (tag must not already exist in repository).
+        type: string
+        default: "1.x.y"
+        required: true
+      release_name:
+        description: Provide a custom name for your release. If none is provided the release name will match the provided release_version.
+        type: string
+        default: "NONE"
+        required: false
+      artifact_base_name:
+        description: Base name of the created artifact. The release version is appended to this name.
+        type: string
+        required: false
+      paths:
+        description: A CSV string detailing which files and directories should be included in the artifact. If not provided only the standard artifacts will be created.
+        type: string
+        default: "terraform/aws/app-infrastructure, terraform/aws/samples, scripts"
+        required: false
+      excluded_paths:
+        description: A CSV list detailing specific files and directories to exclude from the provided paths (this variable serves only to limit scope of the paths variable).
+        type: string
+        default: ""
+        required: false
+    secrets:
+      GIT_USER_EMAIL:
+        description: "Secret named GIT_USER_EMAIL for the CI user email."
+        required: true
+      GIT_USER_NAME:
+        description: "Secret named ECR_REPO_BASE_NAME for the CI user name."
+        required: true
+
+ #token permissions
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-draft-release:   
+    uses: CDCgov/NEDSS-Workflows/.github/workflows/Create-github-draft-release.yaml@main
+    with:
+      update_zip_only: ${{inputs.update_zip_only}}
+      release_version: ${{inputs.release_version}}
+      release_name: ${{inputs.release_name}}
+      artifact_base_name: ${{inputs.artifact_base_name}}
+      paths: ${{inputs.paths}}
+      excluded_paths: ${{inputs.excluded_paths}}
+    secrets:
+      GIT_USER_EMAIL: ${{secrets.GIT_USER_EMAIL}}
+      GIT_USER_NAME: ${{secrets.GIT_USER_NAME}}
