@@ -66,6 +66,7 @@ resource "aws_cloudwatch_log_group" "log_group" {
 # NBS 6 ECS Cluster Creation
 resource "aws_ecs_cluster" "cluster" {
   name = "${var.legacy_resource_prefix}-app-ecs-cluster"
+  tags = var.tags
 }
 
 # NBS 6 ECS Task Definition
@@ -84,7 +85,8 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name  = "${var.legacy_resource_prefix}-task",
-      image = "501715613725.dkr.ecr.us-east-1.amazonaws.com/cdc-nbs-legacy/nbs6:latest",
+      image = "${var.legacy_docker_image}",
+      tags = var.tags,
       portMappings = [
         {
           containerPort = 7001,
@@ -106,16 +108,14 @@ resource "aws_ecs_task_definition" "task" {
             }
         }
       healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost/nbs/login || exit 1"],
-        interval    = 30,
+        command     = ["CMD-SHELL", "curl -f http://localhost:7001/nbs/login || exit 1"],
+        interval    = 60,
         timeout     = 5,
-        retries     = 3,
-        startPeriod = 30
+        retries     = 5,
+        startPeriod = 60
       }
     }
   ])
-
-  tags = var.tags
 }
 
 
@@ -128,7 +128,6 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     subnets = [var.private_subnet_ids[0]]
-    assign_public_ip = "true"
     security_groups = ["${module.app_sg.security_group_id}"]
   }
 
@@ -205,11 +204,11 @@ module "alb" {
 
       health_check = {
         enabled             = true
-        interval            = 30
+        interval            = 60
         path                = "/nbs/login"
         port                = "traffic-port"
         healthy_threshold   = 3
-        unhealthy_threshold = 3
+        unhealthy_threshold = 5
         timeout             = 6
         protocol            = "HTTP"
         matcher             = "200"

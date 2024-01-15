@@ -1,3 +1,5 @@
+# This Dockerfile is used to build NBS 6.0 Image locally and pushed to a ECR Repository
+
 # Use Windows Server Core as the base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
@@ -13,7 +15,9 @@ RUN New-Item -ItemType directory -Path C:\nbs ; \
     New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices' -Name 'D:'  -Value '\??\C:\nbs' -PropertyType String
 
 # Configure NBS from Local Directory
-# NOTE: Verify Zip File is downloaded from S3 and place in same directory, example: wildfly-10.0.0.Final-6.0.15.1.zip
+# NOTE: 
+# 1) Verify Zip File is downloaded from S3 and place in same directory, example: wildfly-10.0.0.Final-6.0.15.1.zip
+# 2) Delete wildfly*/bin/hs_err_pid2604.mdmp and/or any file name containing "err"
 WORKDIR /nbs
 COPY wildfly-10.0.0.Final-6.0.15.1.zip wildfly-10.0.0.Final-6.0.15.1.zip
 RUN Expand-Archive -Path "wildfly-10.0.0.Final-6.0.15.1.zip" ; \

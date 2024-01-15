@@ -2,7 +2,7 @@
 # Prepare NBS Configuration and Start NBS 6.0
 
 # Initialize hastable for data sources
-
+# NOTE: Provide RDS_ENDPOINT when running Container
 
 $connectionURLs = @{
     "NedssDS" = "jdbc:sqlserver://RDS_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_odse";
@@ -19,8 +19,6 @@ foreach ($key in $keys) {
     $connectionURLs[$key] = $connectionURLs[$key] -replace "RDS_ENDPOINT", $env:RDS_ENDPOINT
 }
 
-$connectionURLs["NedssDS"]
-# cdc-nbs-legacy-rds-mssql.cvvnwr59v2sd.us-east-1.rds.amazonaws.com
 # Replace datasources in standalone.xml file
 $xmlFileName = "C:\nbs\wildfly-10.0.0.Final\nedssdomain\configuration\standalone.xml"
 
@@ -62,23 +60,6 @@ if ($serviceStatus.Status -ne "Running") {
 $filePath = "D:\wildfly-10.0.0.Final\nedssdomain\log\auto-start.ps1"
 $scriptContent | Out-File -FilePath $filePath -Force
 
-########### Windows Task Scheduler NBS Recurring Start Check
-$jobname = "NBS Recurring Start Check"
-$scriptPath = "D:\wildfly-10.0.0.Final\nedssdomain\log\auto-start.ps1"
-$repeat = (New-TimeSpan -Minutes 5)
-$currentDate= ([DateTime]::Now)
-#Windows doesn't like infinite duration, setting it for max 25 years
-$duration = $currentDate.AddYears(25) -$currentDate
-$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType S4U
-#Configure Task Action
-$action = New-ScheduledTaskAction –Execute "Powershell.exe" -Argument "$scriptPath; quit"
-#Configure Task Trigger
-$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval $repeat -RepetitionDuration $duration
-#Configure Task Settings
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
-#Create Scheduled Task
-Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
-
 ########### DI app required task schedule
 $jobName = "ELMReporter Task"
 $repeat = (New-TimeSpan -Minutes 2)
@@ -96,6 +77,5 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 # Register the scheduled task
 Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
 ################ END OF TASK SCHEDULES ###############################################################
-
 
 Start-Process "C:\\nbs\\wildfly-10.0.0.Final\\bin\\standalone.bat" -Wait -NoNewWindow -PassThru | Out-Host
