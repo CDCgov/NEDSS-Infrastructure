@@ -18,6 +18,17 @@ variable "instance_type" {
   type        = string
 }
 
+variable "deploy_on_ecs" {
+  description = "Deploy Classic NBS on ECS?"
+  type        = bool
+  default     = false
+}
+
+variable "docker_image" {
+  description = "Docker Image for Classic NBS"
+  type        = string
+}
+
 variable "ami" {
   description = "AMI for EC2 instance"
   type        = string
