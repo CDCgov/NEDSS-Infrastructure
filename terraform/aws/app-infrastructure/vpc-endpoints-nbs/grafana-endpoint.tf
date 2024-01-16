@@ -35,7 +35,7 @@ resource "aws_vpc_endpoint" "grafana_vpc_endpoint" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.grafana_vpc_endpoint_sg.id
+    aws_security_group.grafana_vpc_endpoint_sg[0].id
   ]
 
   subnet_ids = var.private_subnet_ids

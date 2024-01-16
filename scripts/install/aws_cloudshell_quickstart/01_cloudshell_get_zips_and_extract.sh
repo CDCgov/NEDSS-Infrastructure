@@ -7,9 +7,9 @@
 # these need to be updated with each release or prompted and saved in an rc
 # file
 
-RELEASE_VER=v7.0.0
-INFRA_VER=v1.0.0
-HELM_VER=v1.0.0
+RELEASE_VER=v7.2.0
+INFRA_VER=v1.1.5
+HELM_VER=v7.2.0
 
 INFRA_FILE_BASE=nbs-infrastructure-${INFRA_VER}
 HELM_FILE_BASE=nbs-helm-${HELM_VER}
@@ -20,25 +20,48 @@ HELM_URL=https://github.com/CDCgov/NEDSS-Helm/releases/download/${RELEASE_VER}/$
 
 mkdir -p ~/${INSTALL_DIR}
 cd ~/${INSTALL_DIR}
-echo "not grabbing file from s3 as a placeholder"
-aws s3 cp
-s3://<local-bucket-placeholder-acct-num>/NEDSS-<repo>-<branchname>.zip infra.zip
 
-exit 1
 
-# extract temp old repo
-echo "unzipping infra.zip"
-unzip -q infra.zip
 
-# get modules
-#wget https://github.com/CDCgov/NEDSS-Infrastructure/archive/refs/tags/1.0.0-prerelease.zip
-#mv 1.0.0-prerelease.zip NEDSS-Infrastructure-1.0.0-prerelease.zip
-echo "getting ${INFRA_URL}"
-wget -q ${INFRA_URL}
-echo "unzipping ${INFRA_FILE_BASE}.zip into ${INFRA_FILE_BASE}"
-#mkdir -p ${INSTALL_DIR}/${INFRA_FILE_BASE}
-unzip -q ${INFRA_FILE_BASE}.zip -d ${INFRA_FILE_BASE}
 
+if [ -f ${INFRA_FILE_BASE}.zip ]
+then
+	echo "INFO: ${INFRA_FILE_BASE}.zip exists, not downloading"
+
+else
+	# get modules
+	#wget https://github.com/CDCgov/NEDSS-Infrastructure/archive/refs/tags/1.0.0-prerelease.zip
+	#mv 1.0.0-prerelease.zip NEDSS-Infrastructure-1.0.0-prerelease.zip
+
+	echo "grabbing file from s3 as a placeholder"
+	aws s3 cp s3://kr-test-prod-12345/tmpzipfiles/nbs-infrastructure-v1.1.5.zip .
+	# extract temp old repo
+	#echo "unzipping infra.zip"
+	#unzip -q infra.zip
+
+	echo "getting ${INFRA_URL}"
+	#aws s3 cp s3://<local-bucket-placeholder-acct-num>/NEDSS-<repo>-<branchname>.zip infra.zip
+	# wget -q ${INFRA_URL}
+	# wget ${INFRA_URL}
+	#
+fi 
+
+if [ -d ${INFRA_FILE_BASE} ]
+then
+	echo "INFO: ${INFRA_FILE_BASE} exists, not unzipping"
+else
+	
+	#echo "unzipping ${INFRA_FILE_BASE}.zip into ${INFRA_FILE_BASE}"
+	echo "unzipping ${INFRA_FILE_BASE}.zip"
+	#mkdir -p ${INSTALL_DIR}/${INFRA_FILE_BASE}
+	#unzip -q ${INFRA_FILE_BASE}.zip -d ${INFRA_FILE_BASE}
+	unzip -q ${INFRA_FILE_BASE}.zip 
+fi
+
+echo "INFO: make the scripts executable"
+chmod 755 ${INFRA_FILE_BASE}/scripts/*/*/*.sh
+
+#exit 1
 # get helm
 #wget  https://github.com/CDCgov/NEDSS-Helm/archive/refs/tags/1.0.0-prerelease.zip
 echo 
@@ -53,12 +76,14 @@ unzip -q  ${HELM_FILE_BASE}.zip  -d ${HELM_FILE_BASE}
 
 # make scripts executable
 #chmod 755 NEDSS-DevOpsTools-*/terraform/aws/account-template/scripts/1_cloudshell_check_install_prereq.sh
-echo "TODO: need to make the scripts executable once they are included in git zip file"
-echo chmod 755 <dirname>/scripts/*.sh
+#echo "TODO: need to make the scripts executable once they are included in git zip file"
+#echo chmod 755 <dirname>/scripts/*.sh
+#echo chmod 755 <dirname>/scripts/*.sh
 
 # install pre-reqs in bash/cloudshell/aws linux/RHEL?
 #
-echo "then run <dirname>/scripts/02_cloudshell_check_install_prereq.sh and all the other numbered install scripts in order"
+cd ~/${INSTALL_DIR}
+echo "then run ${INSTALL_DIR}/${INFRA_FILE_BASE}/scripts/install/aws_cloudshell_quickstart/02_cloudshell_check_install_prereq.sh and all the other numbered install scripts in order"
 #NEDSS-DevOpsTools-*/terraform/aws/account-template/scripts/01_cloudshell_check_install_prereq.sh
 # ~/scripts/01_cloudshell_check_install_prereq.sh
 
