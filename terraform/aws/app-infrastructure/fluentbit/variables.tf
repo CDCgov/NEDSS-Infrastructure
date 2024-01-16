@@ -44,6 +44,7 @@ variable "path_to_fluentbit" {
   description = "path to the fluentbit module (No trailing slash needed)"
   default     = "./.terraform/modules/fluentbit/terraform/aws/app-infrastructure/fluentbit" # this path is path to TF .terraform folder once module downloaded  # "../modules/fluentbit"
 }
+
 variable "namespace_name" {
   type        = string
   description = "the namespace for service account for fluentbit (typically observability)"
@@ -92,7 +93,7 @@ variable "log_group_name" {
   default     = "fluent-bit-cloudwatch"
 }
 
-variable "values_file_path" {
+variable "fluentbit_values_file_path" {
   type        = string
   description = "path to the values.yaml file"
   default     = "./.terraform/modules/fluentbit/terraform/aws/app-infrastructure/fluentbit/modules/helm-release/values.yaml" 
