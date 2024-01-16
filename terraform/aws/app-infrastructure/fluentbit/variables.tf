@@ -91,3 +91,9 @@ variable "log_group_name" {
   description = "The name of CloudWatch log group"
   default     = "fluent-bit-cloudwatch"
 }
+
+variable "values_file_path" {
+  type        = string
+  description = "path to the values.yaml file"
+  default     = "./.terraform/modules/fluentbit/terraform/aws/app-infrastructure/fluentbit/modules/helm-release/values.yaml" 
+}

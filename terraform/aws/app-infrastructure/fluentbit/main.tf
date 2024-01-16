@@ -21,6 +21,7 @@ module "helm-release" {
   namespace            = var.namespace_name
   tags                 = var.tags
   service_account_name = "${var.resource_prefix}-fluentbit-svc-acc"
+  values_file_path              = var.values_file_path
 }
 
 module "fluentbit-dashboard" {
