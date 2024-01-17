@@ -61,8 +61,8 @@ resource "aws_ecs_task_definition" "task" {
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = aws_iam_role.ecs_execution_role[0].arn
   task_role_arn            = aws_iam_role.ecs_task_role[0].arn
-  cpu                      = "2048"  # 2 vCPU
-  memory                   = "8192" # 8GB
+  cpu                      = "${var.ecs_cpu}"
+  memory                   = "${var.ecs_memory}"
   runtime_platform {
     operating_system_family = "WINDOWS_SERVER_2019_FULL"
   }
@@ -113,7 +113,7 @@ resource "aws_ecs_service" "service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets = [var.private_subnet_ids[0]]
+    subnets = ["${var.ecs_subnets}"]
     security_groups = ["${module.app_sg.security_group_id}"]
   }
 

@@ -24,9 +24,26 @@ variable "deploy_on_ecs" {
   default     = false
 }
 
+variable "ecs_subnets" {
+  description = "Classic NBS ECS Subnets Configuration"
+  type        = string
+}
+
 variable "docker_image" {
   description = "Docker Image for Classic NBS"
   type        = string
+}
+
+variable "ecs_cpu" {
+  description = "Classic NBS ECS CPU Configuration"
+  type        = string
+  default     = "2048"
+}
+
+variable "ecs_memory" {
+  description = "Classic NBS ECS Memory Configuration"
+  type        = string
+  default     = "8192"
 }
 
 variable "ami" {
