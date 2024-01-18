@@ -2,7 +2,6 @@
 
 # Use Windows Server Core as the base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
-USER nbs
 
 ENV ZIP_NAME="wildfly-10.0.0.Final-6.0.15.1"
 
@@ -32,7 +31,6 @@ COPY user-data.ps1 user-data.ps1
 EXPOSE 7001
 
 # Added for SonarCloud by not needed.
-USER NBS
 
 # Start WildFly
 CMD ["powershell","C:\\nbs\\user-data.ps1"]
