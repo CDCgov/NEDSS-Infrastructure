@@ -30,7 +30,5 @@ COPY user-data.ps1 user-data.ps1
 # Expose necessary ports
 EXPOSE 7001
 
-# Added for SonarCloud by not needed.
-
 # Start WildFly
 CMD ["powershell","C:\\nbs\\user-data.ps1"]
