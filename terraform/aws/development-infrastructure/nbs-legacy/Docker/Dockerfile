@@ -1,0 +1,34 @@
+# This Dockerfile is used to build NBS 6.0 Image locally and pushed to a ECR Repository
+
+# Use Windows Server Core as the base image
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+
+ENV ZIP_NAME="wildfly-10.0.0.Final-6.0.15.1"
+
+# Run Shell as Powershell
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# Set environment variables and AWS credentials and region
+ENV JAVA_HOME="D:\wildfly-10.0.0.Final\Java\jdk1.8.0_181" \
+    JBOSS_HOME="D:\wildfly-10.0.0.Final"
+
+# Set symbolic link as D drive using HKEY_LOCAL_MACHINE (HKLM)
+RUN New-Item -ItemType directory -Path C:\nbs ; \
+    New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\DOS Devices' -Name 'D:'  -Value '\??\C:\nbs' -PropertyType String
+
+# Configure NBS from Local Directory
+# NOTE: 
+# 1) Verify Zip File is downloaded from S3 and place in same directory, example: wildfly-10.0.0.Final-6.0.15.1.zip
+# 2) Delete wildfly*/bin/hs_err_pid2604.mdmp and/or any file name containing "err"
+WORKDIR /nbs
+COPY $ZIP_NAME.zip $ZIP_NAME.zip
+RUN Expand-Archive -Path C:\nbs\$env:ZIP_NAME.zip; mv C:\nbs\$env:ZIP_NAME\wildfly-10.0.0.Final C:\nbs; rm C:\nbs\$env:ZIP_NAME; rm C:\nbs\$env:ZIP_NAME.zip
+
+# Replace datasources in standalone.xml file
+COPY user-data.ps1 user-data.ps1
+
+# Expose necessary ports
+EXPOSE 7001
+
+# Start WildFly
+CMD ["powershell","C:\\nbs\\user-data.ps1"]

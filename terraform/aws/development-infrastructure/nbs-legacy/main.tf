@@ -22,7 +22,7 @@ data "aws_vpc" "modern_vpc" {
 module "app_server" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 4.0"
-  count   = 1
+  count = var.deploy_on_ecs ? 0 : 1
 
   name                   = "${var.legacy_resource_prefix}-app-server"
   ami                    = var.ami
@@ -218,6 +218,7 @@ module "app_sg" {
 
 # Add in-line IAM role for EC2 access to shared services bucket
 resource "aws_iam_role_policy" "shared_s3_access" {
+  count = var.deploy_on_ecs ? 0 : 1
   name = "cross_account_s3_access_policy"
   role = module.app_server[0].iam_role_name
 
@@ -257,7 +258,7 @@ module "alb_sg" {
   version = "~> 4.0"
 
   name        = "${var.legacy_resource_prefix}-alb-sg"
-  description = "Security group for ALB"
+  description = "${var.legacy_resource_prefix} Security Group for ALB"
   vpc_id      = var.legacy_vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
@@ -268,10 +269,11 @@ module "alb_sg" {
 
 # Application load balancer for NBS application server
 module "alb" {
+  count = var.deploy_on_ecs ? 0 : 1
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 8.2"
 
-  name = "${var.legacy_resource_prefix}-alb"
+  name = "${var.legacy_resource_prefix}-alb-ec2"
 
   load_balancer_type = "application"
 
@@ -333,13 +335,14 @@ module "alb" {
 }
 
 resource "aws_route53_record" "alb_dns_record" {
+  count = var.deploy_on_ecs ? 0 : 1
   zone_id = var.zone_id
   name    = var.route53_url_name
   type    = "A"
 
   alias {
-    name                   = module.alb.lb_dns_name
-    zone_id                = module.alb.lb_zone_id
+    name                   = module.alb[0].lb_dns_name
+    zone_id                = module.alb[0].lb_zone_id
     evaluate_target_health = true
   }
 }
