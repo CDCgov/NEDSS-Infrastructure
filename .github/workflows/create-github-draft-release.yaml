@@ -3,31 +3,35 @@ on:
   workflow_dispatch:
     inputs:
       update_zip_only:
-        description: Will delete and update the artifact from an existing draft release.
+        description: "update_zip_only - Will delete and update the artifact from an existing draft release."
         type: boolean
         default: false
         required: true
       release_version:
-        description: A release version (no 'v', this is added only to the final) to be created upon publishing the draft release (tag must not already exist in repository).
+        description: "release_version - A release version (no 'v', this is added only to the final) to be created upon publishing the draft release (tag must not already exist in repository)."
         type: string
         default: "1.x.y"
         required: true
       release_name:
-        description: Provide a custom name for your release. If none is provided the release name will match the provided release_version.
+        description: "release_name - Provide a custom name for your release. If none is provided the release name will match the provided release_version."
         type: string
         default: "NONE"
         required: false
       artifact_base_name:
-        description: Base name of the created artifact. The release version is appended to this name.
+        description: "artifact_base_name - Base name of the created artifact. The release version is appended to this name."
         type: string
-        required: false
+        required: true
+      artifact_release_version:
+        description: "artifact_release_version - The artifact release version (no 'v', this is added only to the final)."
+        type: string
+        required: true
       paths:
-        description: A CSV string detailing which files and directories should be included in the artifact. If not provided only the standard artifacts will be created.
+        description: "paths - A CSV string detailing which files and directories should be included in the artifact. If not provided only the standard artifacts will be created."
         type: string
         default: "terraform/aws/app-infrastructure, terraform/aws/samples, scripts"
-        required: false
+        required: true
       excluded_paths:
-        description: A CSV list detailing specific files and directories to exclude from the provided paths (this variable serves only to limit scope of the paths variable).
+        description: "excluded_paths - A CSV list detailing specific files and directories to exclude from the provided paths (this variable serves only to limit scope of the paths variable)."
         type: string
         default: ""
         required: false
@@ -47,12 +51,13 @@ permissions:
 
 jobs:
   create-draft-release:   
-    uses: CDCgov/NEDSS-Workflows/.github/workflows/Create-github-draft-release.yaml@main
+    uses: CDCgov/NEDSS-Workflows/.github/workflows/Create-github-draft-release.yaml@v1.0.0
     with:
       update_zip_only: ${{inputs.update_zip_only}}
       release_version: ${{inputs.release_version}}
       release_name: ${{inputs.release_name}}
       artifact_base_name: ${{inputs.artifact_base_name}}
+      artifact_release_version: ${{inputs.artifact_release_version}}
       paths: ${{inputs.paths}}
       excluded_paths: ${{inputs.excluded_paths}}
     secrets:
