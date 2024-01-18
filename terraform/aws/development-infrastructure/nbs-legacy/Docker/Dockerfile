@@ -3,6 +3,8 @@
 # Use Windows Server Core as the base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
+ENV ZIP_NAME="wildfly-10.0.0.Final-6.0.15.1"
+
 # Run Shell as Powershell
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -19,12 +21,8 @@ RUN New-Item -ItemType directory -Path C:\nbs ; \
 # 1) Verify Zip File is downloaded from S3 and place in same directory, example: wildfly-10.0.0.Final-6.0.15.1.zip
 # 2) Delete wildfly*/bin/hs_err_pid2604.mdmp and/or any file name containing "err"
 WORKDIR /nbs
-COPY wildfly-10.0.0.Final-6.0.15.1.zip wildfly-10.0.0.Final-6.0.15.1.zip
-RUN Expand-Archive -Path "wildfly-10.0.0.Final-6.0.15.1.zip" ; \
-    mv wildfly-10.0.0.Final-6.0.15.1/wildfly-10.0.0.Final C:\nbs  ; \
-    rm wildfly-10.0.0.Final-6.0.15.1 ; \
-    rm wildfly-10.0.0.Final-6.0.15.1.zip
-
+COPY $ZIP_NAME.zip $ZIP_NAME.zip
+RUN Expand-Archive -Path C:\nbs\$env:ZIP_NAME.zip; mv C:\nbs\$env:ZIP_NAME\wildfly-10.0.0.Final C:\nbs; rm C:\nbs\$env:ZIP_NAME; rm C:\nbs\$env:ZIP_NAME.zip
 
 # Replace datasources in standalone.xml file
 COPY user-data.ps1 user-data.ps1
