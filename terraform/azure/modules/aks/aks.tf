@@ -57,12 +57,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
     type                 = var.node_pool_type #"VirtualMachineScaleSets"
     vnet_subnet_id        = azurerm_subnet.aks-default.id 
     node_labels = {
-      "nodepool-type"    = "system"
-      "nodepoolos"       = "linux"
+      "NodepoolType"    = "system"
+      "NodepoolOs"       = "linux"
     } 
    tags = {
-      "nodepool-type"    = "system"
-      "nodepoolos"       = "linux"
+      "NodepoolType"    = "system"
+      "NodepoolOs"       = "linux"
    } 
   }
 
@@ -105,12 +105,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "linux01" {
   vnet_subnet_id        = azurerm_subnet.aks-default.id   
   
   node_labels = {
-    "nodepool-type" = "user"
-    "nodepoolos"    = "linux"
+    "NodepoolType" = "user"
+    "NodepoolOs"    = "linux"
   }
   tags = {
-    "nodepool-type" = "user"
-    "nodepoolos"    = "linux"
+    "NodepoolType" = "user"
+    "NodepoolOs"    = "linux"
   }
 }
 

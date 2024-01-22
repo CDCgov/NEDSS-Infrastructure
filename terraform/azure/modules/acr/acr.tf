@@ -7,6 +7,7 @@ resource "azurerm_container_registry" "acr" {
   sku                 = var.container_registry_sku
   #"Standard"
   admin_enabled       = var.container_registry_admin_enabled
+  public_network_access_enabled   =  false
 }
 
 
