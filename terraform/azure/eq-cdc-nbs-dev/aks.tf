@@ -8,4 +8,5 @@ module aks{
   k8_dns_prefix= var.k8_dns_prefix
   service_principal_client_secret= var.service_principal_client_secret
   modern_subnet=var.modern_subnet
+  resource_prefix=var.resource_prefix
 }

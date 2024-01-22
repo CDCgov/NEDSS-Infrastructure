@@ -29,3 +29,4 @@ data "azurerm_resource_group" "rg" {
   name     = var.container_registry_resource_group_name
   #"cdc-nbs-modern-rg"
 }
+

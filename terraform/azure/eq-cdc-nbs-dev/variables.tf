@@ -103,3 +103,8 @@ variable "service_principal_client_secret" {
 variable "modern_subnet"{
   type= list(any)
 }
+
+variable "resource_prefix"{
+  type = string
+  description = "Name to be used on all the resources as identifier. e.g. Project name, Application name"
+}

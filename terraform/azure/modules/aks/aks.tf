@@ -25,7 +25,7 @@ data "azurerm_resource_group" "rg" {
 
 resource "azurerm_kubernetes_cluster" "aks" {
   location            = data.azurerm_resource_group.rg.location
-  name                = var.k8_cluster_name 
+  name                = "${var.resource_prefix}-cluster"
   resource_group_name = data.azurerm_resource_group.rg.name
   dns_prefix          = var.k8_dns_prefix 
 
