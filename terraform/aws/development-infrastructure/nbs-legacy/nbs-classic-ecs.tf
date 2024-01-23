@@ -80,7 +80,7 @@ resource "aws_ecs_task_definition" "task" {
       ],
       environment = [
         {
-          name  = "RDS_ENDPOINT",
+          name  = "DATABASE_ENDPOINT",
           value = "${var.nbs_db_dns}"
         }
       ]
@@ -113,7 +113,7 @@ resource "aws_ecs_service" "service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets = ["${var.ecs_subnets}"]
+    subnets = var.ecs_subnets
     security_groups = ["${module.app_sg.security_group_id}"]
   }
 
