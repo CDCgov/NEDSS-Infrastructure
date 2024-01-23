@@ -26,7 +26,7 @@ variable "deploy_on_ecs" {
 
 variable "ecs_subnets" {
   description = "Classic NBS ECS Subnets Configuration"
-  type        = string
+  type        = list(any)
 }
 
 variable "docker_image" {

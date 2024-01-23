@@ -2,21 +2,21 @@
 # Prepare NBS Configuration and Start NBS 6.0
 
 # Initialize hastable for data sources
-# NOTE: Provide RDS_ENDPOINT when running Container
+# NOTE: Provide DATABASE_ENDPOINT when running Container
 
 $connectionURLs = @{
-    "NedssDS" = "jdbc:sqlserver://RDS_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_odse";
-    "MsgOutDS" = "jdbc:sqlserver://RDS_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";
-    "ElrXrefDS" = "jdbc:sqlserver://RDS_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";
-    "RdbDS" = "jdbc:sqlserver://RDS_ENDPOINT:1433;SelectMethod=direct;DatabaseName=rdb";
-    "SrtDS" = "jdbc:sqlserver://RDS_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_srte"
+    "NedssDS" = "jdbc:sqlserver://DATABASE_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_odse";
+    "MsgOutDS" = "jdbc:sqlserver://DATABASE_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";
+    "ElrXrefDS" = "jdbc:sqlserver://DATABASE_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";
+    "RdbDS" = "jdbc:sqlserver://DATABASE_ENDPOINT:1433;SelectMethod=direct;DatabaseName=rdb";
+    "SrtDS" = "jdbc:sqlserver://DATABASE_ENDPOINT:1433;SelectMethod=direct;DatabaseName=nbs_srte"
 }
 
 
 $keys = $connectionURLs.Keys.Clone()
 
 foreach ($key in $keys) {
-    $connectionURLs[$key] = $connectionURLs[$key] -replace "RDS_ENDPOINT", $env:RDS_ENDPOINT
+    $connectionURLs[$key] = $connectionURLs[$key] -replace "DATABASE_ENDPOINT", $env:DATABASE_ENDPOINT
 }
 
 # Replace datasources in standalone.xml file

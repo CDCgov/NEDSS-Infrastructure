@@ -25,10 +25,10 @@ COPY $ZIP_NAME.zip $ZIP_NAME.zip
 RUN Expand-Archive -Path C:\nbs\$env:ZIP_NAME.zip; mv C:\nbs\$env:ZIP_NAME\wildfly-10.0.0.Final C:\nbs; rm C:\nbs\$env:ZIP_NAME; rm C:\nbs\$env:ZIP_NAME.zip
 
 # Replace datasources in standalone.xml file
-COPY user-data.ps1 user-data.ps1
+COPY entrypoint.ps1 entrypoint.ps1
 
 # Expose necessary ports
 EXPOSE 7001
 
 # Start WildFly
-CMD ["powershell","C:\\nbs\\user-data.ps1"]
+CMD ["powershell","C:\\nbs\\entrypoint.ps1"]
