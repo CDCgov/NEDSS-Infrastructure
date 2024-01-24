@@ -22,4 +22,4 @@ terraform {
       source = "hashicorp/kubernetes"
     }
   }
-}s
+}
