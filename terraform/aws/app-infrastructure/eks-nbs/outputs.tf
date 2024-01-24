@@ -32,7 +32,7 @@ output "eks_aws_role_arn" {
 
 output "precreated_observability_namespace_name" {
   description = "Name of the observability namespace"
-  value       = kubernetes_namespace.observability.id  # var.observability_namespace
+  value       =   kubernetes_namespace.observability.id # var.observability_namespace  # 
 }
 
 output "cluster_auth_token" {
