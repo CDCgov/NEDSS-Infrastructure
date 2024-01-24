@@ -4,7 +4,7 @@ locals {
 
 resource "kubernetes_namespace" "istio_system" {
   count    = var.deploy_istio_helm == "true" ? 1 : 0
-  provider         = kubernetes
+  # provider         = kubernetes
   metadata {
     name = "istio-system"
   }
@@ -14,7 +14,7 @@ resource "kubernetes_namespace" "istio_system" {
 
 resource "kubernetes_namespace" "istio_ingress" {
   count    = var.deploy_istio_helm == "true" ? 1 : 0
-  provider         = kubernetes
+  # provider         = kubernetes
   metadata {
     name = "istio-ingress"
     labels = {
@@ -27,7 +27,7 @@ resource "kubernetes_namespace" "istio_ingress" {
 
 resource "helm_release" "istio_base" {
   count    = var.deploy_istio_helm == "true" ? 1 : 0
-  provider         = helm
+  # provider         = helm
   repository       = local.istio_charts_url
   chart            = "base"
   name             = "istio-base"
@@ -40,7 +40,7 @@ resource "helm_release" "istio_base" {
 
 resource "helm_release" "istiod" {
   count    = var.deploy_istio_helm == "true" ? 1 : 0
-  provider         = helm
+  # provider         = helm
   repository       = local.istio_charts_url
   chart            = "istiod"
   name             = "istiod"
@@ -52,7 +52,7 @@ resource "helm_release" "istiod" {
 
 resource "helm_release" "ingress-gateway" {
   count    = var.deploy_istio_helm == "true" ? 1 : 0
-  provider         = helm
+  # provider         = helm
   repository       = local.istio_charts_url
   chart            = "gateway"
   name             = "istio-ingressgateway"

@@ -1,6 +1,6 @@
 # Create efs driver using helm
 resource "helm_release" "efs" {
-  provider         = helm
+  # provider         = helm
   name             = "aws-efs-csi-driver"
   namespace        = "kube-system"
   repository       = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
@@ -24,7 +24,7 @@ resource "helm_release" "efs" {
 # Create argocd for deployment
 resource "helm_release" "argocd" {
   count    = var.deploy_argocd_helm == "true" ? 1 : 0
-  provider         = helm
+  # provider         = helm
   name             = "argocd-release"
   namespace        = "argocd"
   repository       = "https://argoproj.github.io/argo-helm"
@@ -38,7 +38,7 @@ resource "helm_release" "argocd" {
 
 # create cert manager release
 resource "helm_release" "cert_manager" {
-  provider         = helm
+  # provider         = helm
   name             = "cert-manager"
   namespace        = "cert-manager"
   repository       = "https://charts.jetstack.io"
