@@ -15,5 +15,5 @@ data "aws_ami" "eks_default" {
 ########## EXTERNALIZE PROVIDER
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = local.cluster_name
+  name = local.eks_name 
 }
