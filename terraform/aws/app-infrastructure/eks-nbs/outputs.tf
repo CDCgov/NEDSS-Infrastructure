@@ -34,3 +34,8 @@ output "precreated_observability_namespace_name" {
   description = "Name of the observability namespace"
   value       = var.observability_namespace
 }
+
+##############  EXTERNALIZE LOCAL PROVIDERS
+output "cluster_auth_token" {
+  value = data.aws_eks_cluster_auth.cluster.token
+}

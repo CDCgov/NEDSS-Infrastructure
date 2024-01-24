@@ -7,7 +7,13 @@ data "aws_ami" "eks_default" {
     values = ["amazon-eks-node-${var.cluster_version}-v*"]
   }
 }
+## this was commented out
+# data "aws_eks_cluster_auth" "cluster" {
+#   name = module.eks.cluster_name
+# }
+
+########## EXTERNALIZE PROVIDER
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_name
+  name = local.cluster_name
 }
