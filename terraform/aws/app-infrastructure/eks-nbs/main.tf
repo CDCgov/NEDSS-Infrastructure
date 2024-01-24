@@ -31,6 +31,9 @@ module "eks" {
         name         = local.eks_node_group_name
         iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
         iam_role_name = local.eks_iam_role_name
+        iam_role_additional_policies = {
+          AmazonElasticContainerRegistryPublicReadOnly  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+        }
         min_size     = var.min_nodes_count
         max_size     = var.max_nodes_count
         desired_size = var.desired_nodes_count
