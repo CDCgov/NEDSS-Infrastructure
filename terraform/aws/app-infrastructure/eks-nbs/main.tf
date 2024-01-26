@@ -33,6 +33,7 @@ module "eks" {
         iam_role_name = local.eks_iam_role_name
         iam_role_additional_policies = {
           AmazonElasticContainerRegistryPublicReadOnly  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
+          AWSECRPullThroughCache_ServiceRolePolicy = "arn:aws:iam::aws:policy/aws-service-role/AWSECRPullThroughCache_ServiceRolePolicy"
         }
         min_size     = var.min_nodes_count
         max_size     = var.max_nodes_count
