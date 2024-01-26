@@ -32,8 +32,9 @@ module "eks" {
         iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
         iam_role_name = local.eks_iam_role_name
         iam_role_additional_policies = {
-          AmazonElasticContainerRegistryPublicReadOnly  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly"
-          AWSECRPullThroughCache_ServiceRolePolicy = "arn:aws:iam::aws:policy/aws-service-role/AWSECRPullThroughCache_ServiceRolePolicy"
+          AmazonElasticContainerRegistryPublicReadOnly  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly",
+          PullThroughCacheRule = "${aws_iam_policy.eks_permissions.arn}"
+          
         }
         min_size     = var.min_nodes_count
         max_size     = var.max_nodes_count
@@ -66,4 +67,31 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
+}
+
+#Additional EKS permissions
+resource "aws_iam_policy" "eks_permissions" {
+  name = "${local.eks_name}-additional-policy"
+  path        = "/"
+  description = "Additional Permissions required for EKS cluster ${local.eks_name}"
+  
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ecr:BatchImportUpstreamImage",
+          "ecr:CreatePullThroughCacheRule",
+          "ecr:CreateRepository",
+          "ecr:TagResource"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+
+  depends_on = [module.app_server]
 }
