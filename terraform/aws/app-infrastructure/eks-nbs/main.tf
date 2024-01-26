@@ -92,6 +92,4 @@ resource "aws_iam_policy" "eks_permissions" {
       },
     ]
   })
-
-  depends_on = [module.app_server]
 }
