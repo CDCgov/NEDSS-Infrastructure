@@ -32,7 +32,7 @@ module "eks" {
         iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
         iam_role_name = local.eks_iam_role_name
         iam_role_additional_policies = {
-          AmazonElasticContainerRegistryPublicReadOnly  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicReadOnly",
+          AmazonElasticContainerRegistryPublicFullAccess  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
           PullThroughCacheRule = "${aws_iam_policy.eks_permissions.arn}"
           
         }
