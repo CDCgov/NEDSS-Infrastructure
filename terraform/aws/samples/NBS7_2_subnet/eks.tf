@@ -4,7 +4,7 @@ module "eks_nbs" {
   subnets             = local.list_subnet_ids
   vpc_id              = data.aws_vpc.vpc_1.id
   aws_role_arn        = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
-  sso_role_arn        = "arn:aws:iam::${var.target_account_id}:role/${var.sso_role_name}"
+  sso_role_arn        = "arn:aws:iam::${var.target_account_id}:role/${var.sso_admin_role_name}"
   desired_nodes_count = var.eks_desired_nodes_count
   max_nodes_count     = var.eks_max_nodes_count
   min_nodes_count     = var.eks_min_nodes_count
