@@ -1,3 +1,7 @@
+# locals {
+#   efs_repository = use_ecr_pull_through_cache ? 
+# }
+
 # Create efs driver using helm
 resource "helm_release" "efs" {
   provider         = helm

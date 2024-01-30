@@ -105,3 +105,9 @@ variable "observability_labels" {
   #   my_label_key = "my_label_value"
   # }
 }
+
+variable "use_ecr_pull_through_cache" {
+  description = "Create and use ECR pull through caching for bootstrapped helm charts"
+  type        = bool
+  default     = false
+}
