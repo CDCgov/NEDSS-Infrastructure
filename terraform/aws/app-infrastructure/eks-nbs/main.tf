@@ -31,6 +31,11 @@ module "eks" {
         name         = local.eks_node_group_name
         iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
         iam_role_name = local.eks_iam_role_name
+        iam_role_additional_policies = {
+          AmazonElasticContainerRegistryPublicFullAccess  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
+          PullThroughCacheRule = "${aws_iam_policy.eks_permissions.arn}"
+          
+        }
         min_size     = var.min_nodes_count
         max_size     = var.max_nodes_count
         desired_size = var.desired_nodes_count
@@ -62,4 +67,29 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
+}
+
+#Additional EKS permissions
+resource "aws_iam_policy" "eks_permissions" {
+  name = "${local.eks_name}-additional-policy"
+  path        = "/"
+  description = "Additional Permissions required for EKS cluster ${local.eks_name}"
+  
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ecr:BatchImportUpstreamImage",
+          "ecr:CreatePullThroughCacheRule",
+          "ecr:CreateRepository",
+          "ecr:TagResource"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }
