@@ -1,5 +1,5 @@
 module "efs" {
-  source          = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/efs?ref=v1.1.6-DEV"
+  source          = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/efs?ref=sgz-cdc-temp-test"
   resource_prefix = var.resource_prefix
   vpc_id          = data.aws_vpc.vpc_1.id
   vpc_cidrs       = local.list_subnet_cidr
