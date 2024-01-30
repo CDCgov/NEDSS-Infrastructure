@@ -89,7 +89,7 @@ variable "eks_instance_type" {
 
 variable "eks_desired_nodes_count" {
   type    = number
-  default = 3
+  default = 2
 }
 
 variable "eks_max_nodes_count" {
@@ -99,7 +99,7 @@ variable "eks_max_nodes_count" {
 
 variable "eks_min_nodes_count" {
   type    = number
-  default = 3
+  default = 2
 }
 
 variable "aws_admin_role_name" {
