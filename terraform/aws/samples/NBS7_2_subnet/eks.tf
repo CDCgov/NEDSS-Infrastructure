@@ -1,5 +1,5 @@
 module "eks_nbs" {
-  source              = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/eks-nbs?ref=v1.1.6-DEV"
+  source              = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/eks-nbs?ref=sgz-cdc-temp-test"
   resource_prefix     = var.resource_prefix
   subnets             = local.list_subnet_ids
   vpc_id              = data.aws_vpc.vpc_1.id
