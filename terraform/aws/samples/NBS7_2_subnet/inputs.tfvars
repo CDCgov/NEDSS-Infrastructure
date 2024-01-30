@@ -37,7 +37,7 @@ tags = {
 eks_instance_type = "m5.large"
 # grab from login screen
 aws_admin_role_name = ""
-sso_role_name = ""
+sso_admin_role_name = ""
 
 # S3 buckets
 fluentbit_bucket_prefix = "cdc-nbs-test-fluentbit-bucket"
