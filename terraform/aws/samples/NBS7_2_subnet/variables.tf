@@ -105,6 +105,11 @@ variable "eks_min_nodes_count" {
 variable "aws_admin_role_name" {
   type = string
 }
+
+
+variable "sso_admin_role_name" {
+  type = string
+}
 #-----------------------------------------------------------------
 
 # S3 buckets -----------------------------------------------------
