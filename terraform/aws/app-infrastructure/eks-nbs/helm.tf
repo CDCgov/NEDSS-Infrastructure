@@ -1,8 +1,8 @@
 locals {
-  efs_main_image_repo = var. use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].id}/efs-csi-driver/amazon/aws-efs-csi-driver" : "public.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver"
-  efs_side_liveness_image_repo = var. use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].id}/eks-distro/kubernetes-csi/livenessprobe" : "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe"
-  efs_side_nodedriverregistrar_image_repo = var. use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].id}/eks-distro/kubernetes-csi/node-driver-registrar" : "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar"
-  efs_side_csiprovisioner_image_repo = var. use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].id}/eks-distro/kubernetes-csi/external-provisioner" : "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner"  
+  efs_main_image_repo = var. use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].upstream_registry_url }/efs-csi-driver/amazon/aws-efs-csi-driver" : "public.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver"
+  efs_side_liveness_image_repo = var. use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].upstream_registry_url }/eks-distro/kubernetes-csi/livenessprobe" : "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe"
+  efs_side_nodedriverregistrar_image_repo = var. use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].upstream_registry_url }/eks-distro/kubernetes-csi/node-driver-registrar" : "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar"
+  efs_side_csiprovisioner_image_repo = var. use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].upstream_registry_url }/eks-distro/kubernetes-csi/external-provisioner" : "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner"  
 }
 
 # Create efs driver using helm
