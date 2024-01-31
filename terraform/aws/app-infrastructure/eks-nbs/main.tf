@@ -12,18 +12,12 @@ module "eks" {
   subnet_ids               = var.subnets
 
   # Cluster addons, ebs csi driver
-  cluster_addons = {
-    aws-ebs-csi-driver = {
-      resolve_conflicts = "OVERWRITE"
-      most_recent       = true
-    }
-
-    aws-efs-csi-driver = {
-      resolve_conflicts = "OVERWRITE"
-      most_recent       = true
-      service_account_role_arn = "${module.efs_cni_irsa_role.iam_role_arn}"
-    }
-  }
+  # cluster_addons = {
+  #   aws-ebs-csi-driver = {
+  #     resolve_conflicts = "OVERWRITE"
+  #     most_recent       = true
+  #   }
+  # }
 
   # Set node group instance types
   eks_managed_node_group_defaults = {
