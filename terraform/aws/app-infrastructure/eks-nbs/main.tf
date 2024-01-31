@@ -6,9 +6,6 @@ module "eks" {
   cluster_name    = local.eks_name  
   cluster_version = var.cluster_version
   cluster_endpoint_public_access  = true
-  iam_role_additional_policies = {
-      AmazonElasticContainerRegistryPublicFullAccess  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess"
-  }
 
   # Set VPC/Subnets
   vpc_id                   = var.vpc_id
@@ -19,6 +16,12 @@ module "eks" {
     aws-ebs-csi-driver = {
       resolve_conflicts = "OVERWRITE"
       most_recent       = true
+    }
+
+    aws-efs-csi-driver = {
+      resolve_conflicts = "OVERWRITE"
+      most_recent       = true
+      role_name         = "${module.efs_cni_irsa_role.name}"
     }
   }
 
