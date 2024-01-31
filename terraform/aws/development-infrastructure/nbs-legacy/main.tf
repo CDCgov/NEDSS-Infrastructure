@@ -150,12 +150,12 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
 
 ########### DI app required task schedule
-$jobName = "ELMReporter Task"
+$jobName = "ELRImporter Task"
 $repeat = (New-TimeSpan -Minutes 2)
 $currentDate= ([DateTime]::Now)
 $duration = $currentDate.AddYears(25) -$currentDate
 # Define the file path
-$scriptPath = "D:\wildfly-10.0.0.Final\nedssdomain\Nedss\BatchFiles\ELMReporter.bat"
+$scriptPath = "D:\wildfly-10.0.0.Final\nedssdomain\Nedss\BatchFiles\ELRImporter.bat"
 $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType S4U
 # Action to run the specified batch file
 $action = New-ScheduledTaskAction -Execute "Powershell.exe" -Argument "$scriptPath; quit"
