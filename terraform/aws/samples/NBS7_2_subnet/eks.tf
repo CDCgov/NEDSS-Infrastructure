@@ -10,4 +10,5 @@ module "eks_nbs" {
   min_nodes_count     = var.eks_min_nodes_count
   instance_type       = var.eks_instance_type
   ebs_volume_size     = var.eks_disk_size
+  use_ecr_pull_through_cache = var.use_ecr_pull_through_cache
 }
