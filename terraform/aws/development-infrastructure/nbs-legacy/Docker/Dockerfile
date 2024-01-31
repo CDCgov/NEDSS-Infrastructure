@@ -3,6 +3,7 @@
 # Use Windows Server Core as the base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
+#Set Zip File Name 
 ENV ZIP_NAME="wildfly-10.0.0.Final-6.0.15.1"
 
 # Run Shell as Powershell
@@ -10,7 +11,8 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 
 # Set environment variables and AWS credentials and region
 ENV JAVA_HOME="D:\wildfly-10.0.0.Final\Java\jdk1.8.0_181" \
-    JBOSS_HOME="D:\wildfly-10.0.0.Final"
+    JBOSS_HOME="D:\wildfly-10.0.0.Final" \
+    JAVA_TOOL_OPTIONS="-Dsun.stdout.encoding=cp437 -Dsun.stderr.encoding=cp437"
 
 # Set symbolic link as D drive using HKEY_LOCAL_MACHINE (HKLM)
 RUN New-Item -ItemType directory -Path C:\nbs ; \
