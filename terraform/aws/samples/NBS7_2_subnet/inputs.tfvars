@@ -42,3 +42,6 @@ sso_admin_role_name = ""
 # S3 buckets
 fluentbit_bucket_prefix = "cdc-nbs-test-fluentbit-bucket"
 
+# Helm deployment
+use_ecr_pull_through_cache = true
+

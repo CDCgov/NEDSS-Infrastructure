@@ -124,3 +124,12 @@ variable "msk_ebs_volume_size" {
   type        = number
   default     = 20
 }
+#-----------------------------------------------------------------
+
+# ECR use pull-through cache--------------------------------------
+variable "use_ecr_pull_through_cache" {
+  description = "Create and use ECR pull through caching for bootstrapped helm charts"
+  type        = bool
+  default     = false
+}
+#-----------------------------------------------------------------
