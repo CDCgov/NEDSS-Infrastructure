@@ -21,7 +21,7 @@ module "eks" {
     aws-efs-csi-driver = {
       resolve_conflicts = "OVERWRITE"
       most_recent       = true
-      service_account_role_arn = "${module.efs_cni_irsa_role.iam_role_name}"
+      service_account_role_arn = "${module.efs_cni_irsa_role.iam_role_arn}"
     }
   }
 
