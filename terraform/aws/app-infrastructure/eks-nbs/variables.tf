@@ -111,3 +111,9 @@ variable "use_ecr_pull_through_cache" {
   type        = bool
   default     = false
 }
+
+variable "allow_endpoint_public_access" {
+  description = "Allow both public and private access to EKS api endpoint"
+  type        = bool
+  default     = false
+}

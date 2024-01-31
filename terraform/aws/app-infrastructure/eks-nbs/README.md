@@ -12,6 +12,7 @@ Below are the input parameter variables for the eks-nbs:
 
 | Key | Type | Default | Description |
 | -------------- | -------------- | -------------- | -------------- |
+| allow_endpoint_public_access | bool | false | Allow both public and private access to EKS api endpoint |
 | argocd_version | string | `5.23.3` | Version of ArgoCD with which to bootstrap EKS cluster |
 | aws_role_arn | string |  | AWS IAM Role arn used to authenticate into the EKS cluster  |
 | cluster_version | string | `1.26` | Version of the AWS EKS cluster to provision  |
