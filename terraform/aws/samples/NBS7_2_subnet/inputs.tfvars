@@ -43,3 +43,7 @@ external_cidr_blocks = []
 
 # S3 buckets
 fluentbit_bucket_prefix = "EXAMPLE-fluentbit-bucket"
+
+# RDS
+db_instance_type = "db.m6i.xlarge"
+db_snapshot_identifier = ""
