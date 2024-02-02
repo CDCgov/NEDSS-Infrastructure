@@ -8,8 +8,8 @@
 #
 
 # Non-module specific variables
-target_account_id = "090466851254"
-resource_prefix   = "cdc-nbs-test" # highly recommend using snake case for naming (e.g. this-is-snake-case)
+target_account_id = ""
+resource_prefix   = "" # highly recommend using snake case for naming (e.g. this-is-snake-case)
 
 # Modernization Infrastructure
 # VPC Variables
@@ -28,7 +28,7 @@ resource_prefix   = "cdc-nbs-test" # highly recommend using snake case for namin
 # Tags
 tags = {
   "Project"     = "NBS"
-  "Environment" = "TEST"
+  "Environment" = "EXAMPLE_ENVIRONMENT"
   "Owner"       = "CDC"
   "Terraform"   = "true"
 }
@@ -42,4 +42,4 @@ use_ecr_pull_through_cache = true
 external_cidr_blocks = []
 
 # S3 buckets
-fluentbit_bucket_prefix = "cdc-nbs-test-fluentbit-bucket"
+fluentbit_bucket_prefix = "EXAMPLE-fluentbit-bucket"
