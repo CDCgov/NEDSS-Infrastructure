@@ -9,7 +9,7 @@ module "eks" {
 
   # Set VPC/Subnets
   vpc_id                   = var.vpc_id
-  subnet_ids               = var.subnets
+  subnet_ids               = var.subnets 
 
   # Cluster addons, ebs csi driver
   # cluster_addons = {
@@ -92,4 +92,15 @@ resource "aws_iam_policy" "eks_permissions" {
       },
     ]
   })
+}
+
+# Additional ingress for cluster api access
+resource "aws_vpc_security_group_ingress_rule" "example" {
+  for_each = toset(var.external_cidr_blocks)
+  security_group_id = module.eks.cluster_security_group_id
+
+  cidr_ipv4   = each.key
+  from_port   = 443
+  ip_protocol = "tcp"
+  to_port     = 443
 }

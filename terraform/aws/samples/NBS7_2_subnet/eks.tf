@@ -11,4 +11,5 @@ module "eks_nbs" {
   instance_type       = var.eks_instance_type
   ebs_volume_size     = var.eks_disk_size
   use_ecr_pull_through_cache = var.use_ecr_pull_through_cache
+  cluster_security_group_additional_rules = var.cluster_security_group_additional_rules
 }

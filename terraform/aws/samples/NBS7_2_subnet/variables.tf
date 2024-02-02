@@ -110,6 +110,18 @@ variable "aws_admin_role_name" {
 variable "sso_admin_role_name" {
   type = string
 }
+
+variable "use_ecr_pull_through_cache" {
+  description = "Create and use ECR pull through caching for bootstrapped helm charts"
+  type        = bool
+  default     = false
+}
+
+variable "cluster_security_group_additional_rules " {
+  description = "Modify cluster security group to allow specific traffic into cluster"
+  type        = map(any)
+  default     = {}
+}
 #-----------------------------------------------------------------
 
 # S3 buckets -----------------------------------------------------
@@ -126,10 +138,3 @@ variable "msk_ebs_volume_size" {
 }
 #-----------------------------------------------------------------
 
-# ECR use pull-through cache--------------------------------------
-variable "use_ecr_pull_through_cache" {
-  description = "Create and use ECR pull through caching for bootstrapped helm charts"
-  type        = bool
-  default     = false
-}
-#-----------------------------------------------------------------

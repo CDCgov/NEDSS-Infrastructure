@@ -19,6 +19,7 @@ Below are the input parameter variables for the eks-nbs:
 | deploy_argocd_helm | string | `true` | Do you wish to bootstrap ArgoCD with the EKS cluster deployment? |
 | deploy_istio_helm | string | `false` | Do you wish to bootstrap Istio with the EKS cluster deployment? |
 | desired_nodes_count | number | `5` | Base number of EKS nodes to be maintained by the autoscaling group |
+| external_cidr_blocks | list | [] | List of CIDR blocks (ex. 10.0.0.0/32) to allow access to eks cluster API |
 | ebs_volume_size | number | `100` | EBS volume size backing *each* EKS node on creation |
 | instance_type | string | `m5.large` | The AWS EC2 instance type with which to spin up EKS nodes |
 | istio_version | string | `1.17.2` | Version of Istio with which to bootstrap EKS cluster |

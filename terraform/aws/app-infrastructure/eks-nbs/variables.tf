@@ -117,3 +117,9 @@ variable "allow_endpoint_public_access" {
   type        = bool
   default     = false
 }
+
+variable "external_cidr_blocks" {
+  description = "List of CIDR blocks (ex. 10.0.0.0/32) to allow access to eks cluster API"
+  type        = list
+  default     = []
+}
