@@ -43,7 +43,3 @@ external_cidr_blocks = []
 
 # S3 buckets
 fluentbit_bucket_prefix = "cdc-nbs-test-fluentbit-bucket"
-
-# Helm deployment
-
-
