@@ -19,6 +19,7 @@ variable "private_subnet_ids" {
 }
 
 variable "apply_immediately" {
+  description = "Apply db changes immediately by default"
   type = bool
   default = false
 }
@@ -33,6 +34,7 @@ variable "manage_master_user_password" {
 variable "shared_vpc_cidr_block" {
   description = "VPC CIDR block in shared services account"
   type        = string
+  default = ""
 }
 
 variable "vpc_id" {

@@ -82,7 +82,7 @@ module "rds_sg" {
       to_port     = 1433
       protocol    = "tcp"
       description = "MSSQL RDS instance access from within VPCs"
-      cidr_blocks = "${var.shared_vpc_cidr_block},${data.aws_vpc.legacy_vpc.cidr_block},${data.aws_vpc.modern_vpc.cidr_block}"
+      cidr_blocks = var.shared_vpc_cidr_block == "" ? "${data.aws_vpc.legacy_vpc.cidr_block},${data.aws_vpc.modern_vpc.cidr_block}" : "${var.shared_vpc_cidr_block},${data.aws_vpc.legacy_vpc.cidr_block},${data.aws_vpc.modern_vpc.cidr_block}"
     }
   ]
   number_of_computed_ingress_with_cidr_blocks = 1
