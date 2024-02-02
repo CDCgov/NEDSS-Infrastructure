@@ -39,17 +39,7 @@ eks_instance_type = "m5.large"
 aws_admin_role_name = ""
 sso_admin_role_name = ""
 use_ecr_pull_through_cache = true
-
-
-## NEEDS WORK
-cluster_security_group_additional_rules = {
-  description              = "Ingress from another computed security group"
-  protocol                 = "tcp"
-  from_port                = 443
-  to_port                  = 443
-  type                     = "ingress"
-  source_security_group_id = aws_security_group.additional.id
-}
+external_cidr_blocks = []
 
 # S3 buckets
 fluentbit_bucket_prefix = "cdc-nbs-test-fluentbit-bucket"

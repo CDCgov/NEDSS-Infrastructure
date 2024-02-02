@@ -111,16 +111,14 @@ variable "sso_admin_role_name" {
   type = string
 }
 
-variable "use_ecr_pull_through_cache" {
-  description = "Create and use ECR pull through caching for bootstrapped helm charts"
+variable "use_ecr_pull_through_cache" {  
   type        = bool
   default     = false
 }
 
-variable "cluster_security_group_additional_rules " {
-  description = "Modify cluster security group to allow specific traffic into cluster"
-  type        = map(any)
-  default     = {}
+variable "external_cidr_blocks" {  
+  type        = list
+  default     = []
 }
 #-----------------------------------------------------------------
 
