@@ -2,7 +2,7 @@
 
 ## Description
 
-Contained within are modules for deploying baseline resources within a respoective AWS environment using Terraform. The below module is used for NBS Legacy purposes.
+Contained within are modules for deploying baseline resources within a respective AWS environment using Terraform. The below module is used for NBS Legacy purposes.
 
 ## Values
 
