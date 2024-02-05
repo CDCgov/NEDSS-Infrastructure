@@ -27,7 +27,7 @@ module "db" {
   # db_subnet_group_name   = "legacy-db-subnet-group"
   # create DB subnet group
   create_db_subnet_group = true
-  subnet_ids             = var.private_subnet_ids
+  subnet_ids             = tolist(var.private_subnet_ids)
   vpc_security_group_ids = [module.rds_sg.security_group_id]
 
   maintenance_window              = "Mon:00:00-Mon:03:00"
