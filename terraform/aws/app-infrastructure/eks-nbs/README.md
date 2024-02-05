@@ -31,7 +31,7 @@ Below are the input parameter variables for the eks-nbs:
 | resource_prefix | string |  | Prefix for resource names |
 | sso_role_arn | string |  | AWS SSO IAM Role arn used to authenticate into the EKS cluster  |
 | subnets | list(string) | | List of the AWS private subnets ids associated with the supplied vpc_id to deploy in which to deploy the cluster |
-| use_ecr_pull_through_cahce | bool | false | Create and use ECR pull through caching for bootstrapped helm charts | 
+| use_ecr_pull_through_cache | bool | false | Create and use ECR pull through caching for bootstrapped helm charts | 
 | vpc_id | string | | The AWS VPC ID to deploy in which to deploy the cluster |
 
 ## Outputs
