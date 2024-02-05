@@ -30,6 +30,13 @@ variable "manage_master_user_password" {
   default = false
 }
 
+variable "app_security_group_id" {
+  description = "Security group id of NBS6 instance to allow traffic into RDS"
+  type = string
+  default = null
+}
+
+
 
 variable "shared_vpc_cidr_block" {
   description = "VPC CIDR block in shared services account"

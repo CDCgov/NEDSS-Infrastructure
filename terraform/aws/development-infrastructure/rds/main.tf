@@ -71,7 +71,7 @@ module "rds_sg" {
       to_port                  = 1433
       protocol                 = "tcp"
       description              = "MSSQL RDS instance access from EC2"
-      source_security_group_id = module.app_sg.security_group_id
+      source_security_group_id = var.app_security_group_id
     }
   ]
 
