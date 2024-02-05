@@ -2,7 +2,7 @@
 # TODO: Add secrets manager admin secrets, update version, make private route53 optional.
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "~> 6.3"
+  version = "~> 6.2"
 
   identifier = "${var.resource_prefix}-rds-mssql"
 
