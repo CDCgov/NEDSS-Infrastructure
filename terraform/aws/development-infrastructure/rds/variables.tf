@@ -14,8 +14,8 @@ variable "db_snapshot_identifier" {
 }
 
 variable "private_subnet_ids" {
-  description = "CSV of Subnet Ids to be used when creating RDS"
-  type        = string
+  description = "Subnet Ids to be used when creating RDS"
+  type        = list(any)
 }
 
 variable "apply_immediately" {
