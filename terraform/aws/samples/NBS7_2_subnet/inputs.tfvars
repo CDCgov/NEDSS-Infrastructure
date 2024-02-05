@@ -47,3 +47,4 @@ fluentbit_bucket_prefix = "EXAMPLE-fluentbit-bucket"
 # RDS
 db_instance_type = "db.m6i.xlarge"
 db_snapshot_identifier = ""
+ingress_vpc_cidr_blocks = ""
