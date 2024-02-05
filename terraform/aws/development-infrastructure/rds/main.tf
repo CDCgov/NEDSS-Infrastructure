@@ -1,5 +1,10 @@
 # NBS backend RDS database instance
 # TODO: Add secrets manager admin secrets, update version, make private route53 optional.
+locals {
+  split_subnet_string = split(", ", var.private_subnet_ids)
+  list_subnets = tolist(local.split_subnet_string)
+}
+
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.3.0"
@@ -27,7 +32,7 @@ module "db" {
   # db_subnet_group_name   = "legacy-db-subnet-group"
   # create DB subnet group
   create_db_subnet_group = true
-  subnet_ids             = tolist(var.private_subnet_ids)
+  subnet_ids             = local.list_subnets
   vpc_security_group_ids = [module.rds_sg.security_group_id]
 
   maintenance_window              = "Mon:00:00-Mon:03:00"
