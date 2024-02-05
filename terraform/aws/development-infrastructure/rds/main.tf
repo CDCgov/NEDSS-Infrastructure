@@ -1,10 +1,5 @@
 # NBS backend RDS database instance
 # TODO: Add secrets manager admin secrets, update version, make private route53 optional.
-locals {
-  split_subnet_string = split(", ", var.private_subnet_ids)
-  list_subnets = tolist(local.split_subnet_string)
-}
-
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "6.3.0"
@@ -32,7 +27,7 @@ module "db" {
   # db_subnet_group_name   = "legacy-db-subnet-group"
   # create DB subnet group
   create_db_subnet_group = true
-  subnet_ids             = local.list_subnets
+  subnet_ids             = var.private_subnet_ids
   vpc_security_group_ids = [module.rds_sg.security_group_id]
 
   maintenance_window              = "Mon:00:00-Mon:03:00"
@@ -76,7 +71,7 @@ module "rds_sg" {
       to_port                  = 1433
       protocol                 = "tcp"
       description              = "MSSQL RDS instance access from EC2"
-      source_security_group_id = var.app_security_group_id
+      source_security_group_id = module.app_sg.security_group_id
     }
   ]
 
@@ -87,7 +82,7 @@ module "rds_sg" {
       to_port     = 1433
       protocol    = "tcp"
       description = "MSSQL RDS instance access from within VPCs"
-      cidr_blocks = var.shared_vpc_cidr_block == "" ? "${var.private_subnet_ids}" : "${var.shared_vpc_cidr_block},${var.private_subnet_ids}"
+      cidr_blocks = "${var.ingress_vpc_cidr_blocks}"
     }
   ]
   number_of_computed_ingress_with_cidr_blocks = 1

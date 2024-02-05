@@ -36,10 +36,8 @@ variable "app_security_group_id" {
   default = null
 }
 
-
-
-variable "shared_vpc_cidr_block" {
-  description = "VPC CIDR block in shared services account"
+variable "ingress_vpc_cidr_blocks" {
+  description = "CSV of CIDR blocks which will have access to RDS instance"
   type        = string
   default = ""
 }
