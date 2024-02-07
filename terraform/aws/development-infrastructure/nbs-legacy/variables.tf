@@ -140,3 +140,33 @@ variable "apply_immediately" {
   type = bool
   default = false
 }
+
+variable "load_balancer_type" {
+  description = "The type of load balancer to create. Possible values are `application` or `network`. The default value is `network`"
+  type        = string
+  default     = "network"
+}
+
+variable "internal" {
+  description = "If true, the LB will be internal. Defaults to `false`"
+  type        = bool
+  default     = null
+}
+
+variable "subnet_mapping" {
+  description = "A list of subnet mapping blocks describing subnets to attach to load balancer. Map keys = subnet_id, private_ipv4_address"
+  type        = list(map(string))
+  default     = []
+
+  # Example
+  # [
+  #   {
+  #     private_ipv4_address_1 = ""
+  #     subnet_id_1     = ""
+  #   },
+  #   {
+  #     private_ipv4_address_2 = ""
+  #     subnet_id_2     = ""
+  #   }
+  # ]
+}

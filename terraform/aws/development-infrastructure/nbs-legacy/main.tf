@@ -273,7 +273,11 @@ module "alb" {
 
   name = "${var.legacy_resource_prefix}-alb-ec2"
 
-  load_balancer_type = "application"
+  load_balancer_type = var.load_balancer_type
+  internal = var.internal
+
+  # Use `subnet_mapping` to select specific IP  
+  subnet_mapping = var.subnet_mapping
 
   vpc_id          = var.legacy_vpc_id
   subnets         = var.public_subnet_ids
