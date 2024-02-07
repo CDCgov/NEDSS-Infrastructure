@@ -7,5 +7,6 @@ output "registered_domain_name" {
 }
 
 output "nbs_db_dns" {
-  value = "${var.nbs_db_dns}.private-${var.domain_name}"
+  # value = "${var.nbs_db_dns}.private-${var.domain_name}"
+  value = aws_route53_record.private_record.fqdn
 }
