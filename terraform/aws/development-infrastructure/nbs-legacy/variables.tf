@@ -8,9 +8,29 @@ variable "domain_name" {
   type        = string
 }
 
-variable "public_subnet_ids" {
-  description = "Subnet Id to be used when creating ALB"
+variable "load_balancer_subnet_ids" {
+  description = "Subnet Id to be used when creating load balancer. Conflicts with subnet_mapping (which take precedence if set)."
   type        = list(any)
+  default = null
+}
+
+
+variable "subnet_mapping" {
+  description = "A list of subnet mapping blocks describing subnets to attach to load balancer. Map keys = subnet_id, private_ipv4_address. Conflicts with load_balancer_subnet_ids (subnet_mapping takes precedence)."
+  type        = list(map(string))
+  default     = []
+
+  # Example
+  # [
+  #   {
+  #     private_ipv4_address_1 = ""
+  #     subnet_id_1     = ""
+  #   },
+  #   {
+  #     private_ipv4_address_2 = ""
+  #     subnet_id_2     = ""
+  #   }
+  # ]
 }
 
 variable "instance_type" {
@@ -51,14 +71,25 @@ variable "ami" {
   type        = string
 }
 
-variable "legacy_vpc_id" {
+# variable "legacy_vpc_id" {
+#   description = "VPC ID of virtual private cloud"
+#   type        = string
+# }
+
+# variable "modern_vpc_id" {
+#   description = "VPC ID of virtual private cloud"
+#   type        = string
+# }
+
+variable "vpc_id" {
   description = "VPC ID of virtual private cloud"
   type        = string
 }
 
-variable "modern_vpc_id" {
-  description = "VPC ID of virtual private cloud"
+variable "ingress_vpc_cidr_blocks" {
+  description = "CSV of CIDR blocks which will have access to RDS instance"
   type        = string
+  default = ""
 }
 
 variable "shared_vpc_cidr_block" {
@@ -66,7 +97,7 @@ variable "shared_vpc_cidr_block" {
   type        = string
 }
 
-variable "legacy_resource_prefix" {
+variable "resource_prefix" {
   description = "Legacy resource prefix for resources created by this module"
   type        = string
 }
@@ -92,17 +123,19 @@ variable "tags" {
 }
 
 variable "route53_url_name" {
-  description = "URL name for Classic App as an A record in route53 (ex. app-dev.my-domain.com)"
+  description = "URL name for Classic App as an A record in route53 (ex. app-dev.my-domain.com). Requires zone_id to be set."
   type        = string
+  default = ""
 }
 
 variable "zone_id" {
-  description = "Route53 Hosted Zone Id"
+  description = "Route53 Hosted Zone Id. Requires route53_url_name to be set."
   type        = string
+  default = ""
 }
 
 variable "create_cert" {
-  description = "Do you want to create a public AWS Certificate (if false (default), must provide certificate ARN)."
+  description = "Do you want to create a public AWS Certificate (if false (default), must provide certificate_arn). Requires zone_id to be set."
   type        = bool
   default     = false
 }
@@ -151,22 +184,4 @@ variable "internal" {
   description = "If true, the LB will be internal. Defaults to `false`"
   type        = bool
   default     = null
-}
-
-variable "subnet_mapping" {
-  description = "A list of subnet mapping blocks describing subnets to attach to load balancer. Map keys = subnet_id, private_ipv4_address"
-  type        = list(map(string))
-  default     = []
-
-  # Example
-  # [
-  #   {
-  #     private_ipv4_address_1 = ""
-  #     subnet_id_1     = ""
-  #   },
-  #   {
-  #     private_ipv4_address_2 = ""
-  #     subnet_id_2     = ""
-  #   }
-  # ]
 }
