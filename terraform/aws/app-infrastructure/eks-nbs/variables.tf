@@ -105,3 +105,21 @@ variable "observability_labels" {
   #   my_label_key = "my_label_value"
   # }
 }
+
+variable "use_ecr_pull_through_cache" {
+  description = "Create and use ECR pull through caching for bootstrapped helm charts"
+  type        = bool
+  default     = false
+}
+
+variable "allow_endpoint_public_access" {
+  description = "Allow both public and private access to EKS api endpoint"
+  type        = bool
+  default     = false
+}
+
+variable "external_cidr_blocks" {
+  description = "List of CIDR blocks (ex. 10.0.0.0/32) to allow access to eks cluster API"
+  type        = list
+  default     = []
+}

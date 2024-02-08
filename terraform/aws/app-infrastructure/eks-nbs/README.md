@@ -12,12 +12,14 @@ Below are the input parameter variables for the eks-nbs:
 
 | Key | Type | Default | Description |
 | -------------- | -------------- | -------------- | -------------- |
+| allow_endpoint_public_access | bool | false | Allow both public and private access to EKS api endpoint |
 | argocd_version | string | `5.23.3` | Version of ArgoCD with which to bootstrap EKS cluster |
 | aws_role_arn | string |  | AWS IAM Role arn used to authenticate into the EKS cluster  |
 | cluster_version | string | `1.26` | Version of the AWS EKS cluster to provision  |
 | deploy_argocd_helm | string | `true` | Do you wish to bootstrap ArgoCD with the EKS cluster deployment? |
 | deploy_istio_helm | string | `false` | Do you wish to bootstrap Istio with the EKS cluster deployment? |
 | desired_nodes_count | number | `5` | Base number of EKS nodes to be maintained by the autoscaling group |
+| external_cidr_blocks | list | [] | List of CIDR blocks (ex. 10.0.0.0/32) to allow access to eks cluster API |
 | ebs_volume_size | number | `100` | EBS volume size backing *each* EKS node on creation |
 | instance_type | string | `m5.large` | The AWS EC2 instance type with which to spin up EKS nodes |
 | istio_version | string | `1.17.2` | Version of Istio with which to bootstrap EKS cluster |
@@ -29,6 +31,7 @@ Below are the input parameter variables for the eks-nbs:
 | resource_prefix | string |  | Prefix for resource names |
 | sso_role_arn | string |  | AWS SSO IAM Role arn used to authenticate into the EKS cluster  |
 | subnets | list(string) | | List of the AWS private subnets ids associated with the supplied vpc_id to deploy in which to deploy the cluster |
+| use_ecr_pull_through_cache | bool | false | Create and use ECR pull through caching for bootstrapped helm charts | 
 | vpc_id | string | | The AWS VPC ID to deploy in which to deploy the cluster |
 
 ## Outputs

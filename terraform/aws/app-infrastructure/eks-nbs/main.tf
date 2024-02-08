@@ -5,19 +5,19 @@ module "eks" {
   # Set cluster info
   cluster_name    = local.eks_name  
   cluster_version = var.cluster_version
-  cluster_endpoint_public_access  = true
+  cluster_endpoint_public_access  = var.allow_endpoint_public_access
 
   # Set VPC/Subnets
   vpc_id                   = var.vpc_id
-  subnet_ids               = var.subnets
+  subnet_ids               = var.subnets 
 
   # Cluster addons, ebs csi driver
-  cluster_addons = {
-    aws-ebs-csi-driver = {
-      resolve_conflicts = "OVERWRITE"
-      most_recent       = true
-    }
-  }
+  # cluster_addons = {
+  #   aws-ebs-csi-driver = {
+  #     resolve_conflicts = "OVERWRITE"
+  #     most_recent       = true
+  #   }
+  # }
 
   # Set node group instance types
   eks_managed_node_group_defaults = {
@@ -31,6 +31,11 @@ module "eks" {
         name         = local.eks_node_group_name
         iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
         iam_role_name = local.eks_iam_role_name
+        iam_role_additional_policies = {
+          AmazonElasticContainerRegistryPublicFullAccess  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
+          PullThroughCacheRule = "${aws_iam_policy.eks_permissions.arn}"
+          
+        }
         min_size     = var.min_nodes_count
         max_size     = var.max_nodes_count
         desired_size = var.desired_nodes_count
@@ -62,4 +67,40 @@ module "eks" {
       groups   = ["system:masters"]
     }
   ]
+}
+
+#Additional EKS permissions
+resource "aws_iam_policy" "eks_permissions" {
+  name = "${local.eks_name}-additional-policy"
+  path        = "/"
+  description = "Additional Permissions required for EKS cluster ${local.eks_name}"
+  
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ecr:BatchImportUpstreamImage",
+          "ecr:CreatePullThroughCacheRule",
+          "ecr:CreateRepository",
+          "ecr:TagResource"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
+
+# Additional ingress for cluster api access
+resource "aws_vpc_security_group_ingress_rule" "example" {
+  for_each = toset(var.external_cidr_blocks)
+  security_group_id = module.eks.cluster_security_group_id
+
+  cidr_ipv4   = each.key
+  from_port   = 443
+  ip_protocol = "tcp"
+  to_port     = 443
 }

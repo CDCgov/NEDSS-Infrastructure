@@ -11,3 +11,5 @@ data "aws_ami" "eks_default" {
 data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_name
 }
+
+data "aws_region" "current" {}
