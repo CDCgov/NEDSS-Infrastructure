@@ -1,8 +1,11 @@
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
 data "aws_vpc" "vpc_1" {
   id = ""
 }
 
-data "aws_subnet" "subnet_a" {
+data "aws_subnet" "ecs_subnet" {
   id = ""
 }
 

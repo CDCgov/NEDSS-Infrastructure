@@ -173,3 +173,27 @@ variable "ingress_vpc_cidr_blocks" {
   default     = ""
 }
 #-----------------------------------------------------------------
+
+# NBS6 Variables --------------------------------------------------
+variable ecs_private_ipv4_address {
+  type        = string
+}
+
+variable "docker_image" {
+  description = "Docker Image for Classic NBS"
+  type        = string
+  default = ""
+}
+
+variable "ecs_cpu" {
+  description = "Classic NBS ECS CPU Configuration"
+  type        = string
+  default     = "2048"
+}
+
+variable "ecs_memory" {
+  description = "Classic NBS ECS Memory Configuration"
+  type        = string
+  default     = "8192"
+}
+#-----------------------------------------------------------------
