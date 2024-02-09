@@ -197,11 +197,6 @@ variable "ecs_memory" {
   default     = "8192"
 }
 
-variable "ingress_vpc_cidr_blocks" {
-  description = "CSV of CIDR blocks which will have access to nbs6 instance"
-  type        = string  
-}
-
 variable "certificate_id" {
   description = "Existing AWS ACM certificate id."
   type        = string 

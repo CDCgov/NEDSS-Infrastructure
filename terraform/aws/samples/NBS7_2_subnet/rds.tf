@@ -1,5 +1,5 @@
 module "rds" {
-    source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/efs?ref=v1.1.9-DEV"
+    source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/rds?ref=v1.1.9-DEV"
     resource_prefix = var.resource_prefix
     db_instance_type = var.db_instance_type
     db_snapshot_identifier = var.db_snapshot_identifier
