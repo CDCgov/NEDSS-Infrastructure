@@ -16,7 +16,6 @@ variable "load_balancer_subnet_ids" {
   default = null
 }
 
-
 variable "subnet_mapping" {
   description = "A list of subnet mapping blocks describing subnets to attach to load balancer. Map keys = subnet_id, private_ipv4_address. Conflicts with load_balancer_subnet_ids (subnet_mapping takes precedence)."
   type        = list(map(string))

@@ -16,7 +16,7 @@ locals {
       cidr_blocks = "${var.rdp_cidr_block}" 
     } : {}
 
-  computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? [local.app_ingress] : [local.app_ingress, rdp_ingress]
+  computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? [local.app_ingress] : [local.app_ingress, local.rdp_ingress]
   number_of_computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? 1 : 2
 }
 

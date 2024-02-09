@@ -11,7 +11,7 @@ module "app_server" {
   ami                    = var.ami
   instance_type          = var.instance_type
   vpc_security_group_ids = ["${module.app_sg.security_group_id}"]
-  subnet_id              = var.private_subnet_ids[0]
+  subnet_id              = var.subnet_ids[0]
   key_name               = var.ec2_key_name
 
   create_iam_instance_profile = true
