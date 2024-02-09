@@ -25,6 +25,12 @@ resource_prefix   = "" # highly recommend using snake case for naming (e.g. this
 # legacy_vpc_private_route_table_id = "rtb-PRIVATE-EXAMPLE"
 # legacy_vpc_public_route_table_id  = "rtb-PUBLIC-EXAMPLE"
 
+# NBS6
+docker_image = ""
+ingress_vpc_cidr_blocks = ""
+ecs_private_ipv4_address = "" #Ensure this is within data call to ecs_subnet
+certificate_id = ""
+
 # Tags
 tags = {
   "Project"     = "NBS"
