@@ -15,7 +15,7 @@ locals {
       protocol    = "tcp"
       description = "RDP access from client VPN"
       cidr_blocks = "${var.rdp_cidr_block}" 
-    } : {}
+    } : null
 
   computed_ingress_with_cidr_blocks = [local.app_ingress, local.rdp_ingress]
   # computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? [tolist(local.app_ingress)] : [tolist(local.app_ingress, local.rdp_ingress)]
