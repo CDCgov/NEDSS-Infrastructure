@@ -91,13 +91,13 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "ingress_vpc_cidr_blocks" {
+variable "nbs6_ingress_vpc_cidr_blocks" {
   description = "List of CIDR blocks which will have access to nbs6 instance"
   type        = list(any)
   default = []
 }
 
-variable "rdp_cidr_block" {
+variable "nbs6_rdp_cidr_block" {
   description = "CIDR block in for RDP access"
   type        = list(any)
   default = []
