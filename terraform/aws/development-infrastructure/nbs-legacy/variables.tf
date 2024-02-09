@@ -92,15 +92,15 @@ variable "vpc_id" {
 }
 
 variable "ingress_vpc_cidr_blocks" {
-  description = "CSV of CIDR blocks which will have access to nbs6 instance"
-  type        = string
-  default = ""
+  description = "List of CIDR blocks which will have access to nbs6 instance"
+  type        = list(any)
+  default = []
 }
 
 variable "rdp_cidr_block" {
   description = "CIDR block in for RDP access"
-  type        = string
-  default = ""
+  type        = list(any)
+  default = []
 }
 
 variable "resource_prefix" {
@@ -177,11 +177,6 @@ variable "kms_arn_shared_services_bucket" {
   description = "KMS key arn used to encrypt shared services s3 bucket"
   type        = string
   default = ""
-}
-
-variable "apply_immediately" {
-  type = bool
-  default = false
 }
 
 variable "load_balancer_type" {
