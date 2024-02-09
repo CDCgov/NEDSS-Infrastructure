@@ -1,11 +1,13 @@
-variable "private_subnet_ids" {
+variable "subnet_ids" {
   description = "Subnet Id to be used when creating EC2 instance"
   type        = list(any)
+  default = []
 }
 
 variable "domain_name" {
-  description = "Domain name for hosted zone (ex. dev-app.my-domain.com)"
+  description = "Domain name for hosted zone (ex. dev-app.my-domain.com). Required if create_cert == true"
   type        = string
+  default = ""
 }
 
 variable "load_balancer_subnet_ids" {
@@ -34,8 +36,9 @@ variable "subnet_mapping" {
 }
 
 variable "instance_type" {
-  description = "Instance type for EC2 instance"
+  description = "Instance type for EC2 instance. Required if deploy_on_ecs == false."
   type        = string
+  default = ""
 }
 
 variable "deploy_on_ecs" {
@@ -47,6 +50,7 @@ variable "deploy_on_ecs" {
 variable "ecs_subnets" {
   description = "Classic NBS ECS Subnets Configuration"
   type        = list(any)
+  default = []
 }
 
 variable "docker_image" {
@@ -68,8 +72,9 @@ variable "ecs_memory" {
 }
 
 variable "ami" {
-  description = "AMI for EC2 instance"
+  description = "AMI for EC2 instance. Required if deploy_on_ecs == false."
   type        = string
+  default = ""
 }
 
 # variable "legacy_vpc_id" {
@@ -104,19 +109,20 @@ variable "resource_prefix" {
   type        = string
 }
 
-variable "db_instance_type" {
-  description = "Databae instance type"
-  type        = string
-}
+# variable "db_instance_type" {
+#   description = "Databae instance type"
+#   type        = string
+# }
 
-variable "db_snapshot_identifier" {
-  description = "Database snapshot to use for RDS isntance"
-  type        = string
-}
+# variable "db_snapshot_identifier" {
+#   description = "Database snapshot to use for RDS isntance"
+#   type        = string
+# }
 
 variable "ec2_key_name" {
-  description = "EC2 key pair to manage instance"
+  description = "EC2 key pair to manage instance. Required if deploy_on_ecs == false."
   type        = string
+  default = ""
 }
 
 variable "tags" {
@@ -149,14 +155,16 @@ variable "certificate_arn" {
 }
 
 variable "artifacts_bucket_name" {
-  description = "S3 bucket name used to store build artifacts"
+  description = "S3 bucket name used to store build artifacts. Required if deploy_on_ecs == false."
   type        = string
+  default = ""
 
 }
 
 variable "deployment_package_key" {
-  description = "Deployment package S3 key for NBS application"
+  description = "Deployment package S3 key for NBS application. Required if deploy_on_ecs == false."
   type        = string
+  default = ""
 
 }
 
@@ -169,6 +177,7 @@ variable "nbs_db_dns" {
 variable "kms_arn_shared_services_bucket" {
   description = "KMS key arn used to encrypt shared services s3 bucket"
   type        = string
+  default = ""
 }
 
 variable "apply_immediately" {
