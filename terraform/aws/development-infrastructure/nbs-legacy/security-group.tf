@@ -16,7 +16,8 @@ locals {
       cidr_blocks = "${var.rdp_cidr_block}" 
     } : {}
 
-  computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? [tolist(local.app_ingress)] : [tolist(local.app_ingress, local.rdp_ingress)]
+  computed_ingress_with_cidr_blocks = tolist(local.app_ingress, local.rdp_ingress)
+  # computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? [tolist(local.app_ingress)] : [tolist(local.app_ingress, local.rdp_ingress)]
   number_of_computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? 1 : 2
 }
 
