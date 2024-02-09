@@ -2,7 +2,7 @@ module "nbs6" {
   source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=CNPT-1628-alb-to-nlb"
   
   # Global module flags
-  resource_prefix = var.resource_prefixs
+  resource_prefix = var.resource_prefix
   deploy_on_ecs = true
   create_cert = false
   vpc_id = data.aws_vpc.vpc_1.id
