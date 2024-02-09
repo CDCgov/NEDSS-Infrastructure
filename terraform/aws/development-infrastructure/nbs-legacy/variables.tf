@@ -93,7 +93,7 @@ variable "vpc_id" {
 }
 
 variable "ingress_vpc_cidr_blocks" {
-  description = "CSV of CIDR blocks which will have access to RDS instance"
+  description = "CSV of CIDR blocks which will have access to nbs6 instance"
   type        = string
   default = ""
 }
