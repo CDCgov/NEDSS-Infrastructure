@@ -87,7 +87,7 @@ module "alb" {
 }
 
 resource "aws_route53_record" "alb_dns_record" {
-  count = var.zone_id != "" && var.route53_url_name ? 1 : 0
+  count = var.zone_id != "" && var.route53_url_name != "" ? 1 : 0
   zone_id = var.zone_id
   name    = var.route53_url_name
   type    = "A"

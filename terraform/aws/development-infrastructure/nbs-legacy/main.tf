@@ -155,3 +155,39 @@ Restart-Computer -Force
 </powershell>
 EOF   
 }
+
+# Add in-line IAM role for EC2 access to shared services bucket
+resource "aws_iam_role_policy" "shared_s3_access" {
+  count = var.deploy_on_ecs ? 0 : 1
+  name = "cross_account_s3_access_policy"
+  role = module.app_server[0].iam_role_name
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:Get*",
+          "s3:List*",
+          "s3-object-lambda:Get*",
+          "s3-object-lambda:List*",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${var.artifacts_bucket_name}"
+      },
+      {
+        Action = [
+          "kms:Decrypt",
+          "kms:DescribeKey",
+          "kms:GenerateDataKey"
+        ]
+        Effect   = "Allow"
+        Resource = "${var.kms_arn_shared_services_bucket}"
+      },
+    ]
+  })
+
+  depends_on = [module.app_server]
+}
