@@ -127,6 +127,5 @@ resource "aws_ecs_service" "service" {
   
   desired_count = 1
   enable_execute_command = true
-  tags = var.tags
-  depends_on = [module.db]
+  tags = var.tags  
 }
