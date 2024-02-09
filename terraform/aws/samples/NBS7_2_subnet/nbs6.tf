@@ -15,6 +15,7 @@ module "nbs6" {
   ecs_memory = var.ecs_memory
   ingress_vpc_cidr_blocks = var.ingress_vpc_cidr_blocks
   nbs_db_dns = module.rds.nbs_db_address
+  kms_arn_shared_services_bucket = module.kms.kms_key_arn
   
 
   # load balancer settings
