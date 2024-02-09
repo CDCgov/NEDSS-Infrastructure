@@ -1,23 +1,23 @@
 
 locals {
 
-  app_ingress = {
+  app_ingress = [{
       from_port   = 7001
       to_port     = 7001
       protocol    = "tcp"
       description = "wildfly web server"
       cidr_blocks = "${var.ingress_vpc_cidr_blocks}"
-    }
+    }]
   
-  rdp_ingress = var.rdp_cidr_block != "" ? {
+  rdp_ingress = var.rdp_cidr_block != "" ? [{
       from_port   = 3389
       to_port     = 3389
       protocol    = "tcp"
       description = "RDP access from client VPN"
       cidr_blocks = "${var.rdp_cidr_block}" 
-    } : null
+    }] : []
 
-  computed_ingress_with_cidr_blocks = [local.app_ingress, local.rdp_ingress]
+  computed_ingress_with_cidr_blocks = concat(local.app_ingress, local.rdp_ingress)
   # computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? [tolist(local.app_ingress)] : [tolist(local.app_ingress, local.rdp_ingress)]
   number_of_computed_ingress_with_cidr_blocks = local.rdp_ingress == {} ? 1 : 2
 }
