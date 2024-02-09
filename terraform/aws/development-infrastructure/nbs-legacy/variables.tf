@@ -52,6 +52,7 @@ variable "ecs_subnets" {
 variable "docker_image" {
   description = "Docker Image for Classic NBS"
   type        = string
+  default = ""
 }
 
 variable "ecs_cpu" {
@@ -92,9 +93,10 @@ variable "ingress_vpc_cidr_blocks" {
   default = ""
 }
 
-variable "shared_vpc_cidr_block" {
-  description = "VPC CIDR block in shared services account"
+variable "rdp_cidr_block" {
+  description = "CIDR block in for RDP access"
   type        = string
+  default = ""
 }
 
 variable "resource_prefix" {
