@@ -1,7 +1,7 @@
 # Serial: 2024010201
 
 module "msk" {
-  source              = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/msk?ref=v1.1.6-DEV"
+  source              = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/msk?ref=v1.1.9-DEV"
   msk_subnet_ids      = [
     local.list_subnet_ids[0],
     local.list_subnet_ids[1]

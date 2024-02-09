@@ -2,6 +2,10 @@ data "aws_vpc" "vpc_1" {
   id = ""
 }
 
+data "aws_subnet" "subnet_a" {
+  id = ""
+}
+
 data "aws_subnet" "subnet_c" {
   id = ""
 }
