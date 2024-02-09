@@ -177,12 +177,12 @@ variable "ingress_vpc_cidr_blocks" {
 # NBS6 Variables --------------------------------------------------
 variable ecs_private_ipv4_address {
   type        = string
+  
 }
 
 variable "docker_image" {
   description = "Docker Image for Classic NBS"
-  type        = string
-  default = ""
+  type        = string  
 }
 
 variable "ecs_cpu" {
@@ -195,5 +195,27 @@ variable "ecs_memory" {
   description = "Classic NBS ECS Memory Configuration"
   type        = string
   default     = "8192"
+}
+
+variable "ingress_vpc_cidr_blocks" {
+  description = "CSV of CIDR blocks which will have access to nbs6 instance"
+  type        = string  
+}
+
+variable "certificate_id" {
+  description = "Existing AWS ACM certificate id."
+  type        = string 
+}
+
+variable "load_balancer_type" {
+  description = "The type of load balancer to create. Possible values are `application` or `network`. The default value is `network`"
+  type        = string
+  default     = "network"
+}
+
+variable "internal" {
+  description = "If true, the LB will be internal. Defaults to `false`"
+  type        = bool
+  default     = null
 }
 #-----------------------------------------------------------------
