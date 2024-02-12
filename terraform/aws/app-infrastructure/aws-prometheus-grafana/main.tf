@@ -45,7 +45,7 @@ module "grafana-workspace" {
   depends_on             = [module.prometheus-workspace]
   tags                   = var.tags
   data_sources           = var.data_sources
-  grafana_workspace_name = "${var.resource_prefix}-amg-metrics-temp" # "${var.resource_prefix}-amg-metrics"  
+  grafana_workspace_name = "${var.resource_prefix}-amg-met-2" # "${var.resource_prefix}-amg-metrics"  
   endpoint_url           = module.prometheus-workspace.amp_workspace_endpoint
   amp_workspace_id       = module.prometheus-workspace.amp_workspace_id
   region                 = data.aws_region.current
