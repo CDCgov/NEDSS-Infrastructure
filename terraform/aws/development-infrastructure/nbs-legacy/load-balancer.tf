@@ -34,12 +34,14 @@ module "alb" {
   security_groups = [module.alb_sg.security_group_id]
 
 
-  target_groups = [
-    {
-      name_prefix      = "lgcy-"
+  target_groups = {
+    instance_target = {
+      name_prefix      = "nbs6-"
       backend_protocol = "HTTP"
       backend_port     = 7001
-      target_type      = "instance"
+      target_type      = var.deploy_on_ecs ? "ip" : "instance"
+      target_id        = var.deploy_on_ecs ? null : module.app_server[0].id
+
 
       health_check = {
         enabled             = true
@@ -53,14 +55,14 @@ module "alb" {
         matcher             = "200"
       }
 
-      targets = var.deploy_on_ecs ? null : {
-        my_target = {
-          target_id = module.app_server[0].id
-          port      = 7001
-        }
-      } 
+      # targets = var.deploy_on_ecs ? null : {
+      #   my_target = {
+      #     target_id = module.app_server[0].id
+      #     port      = 7001
+      #   }
+      # } 
     }
-  ]
+  }
 
   listeners = {
     https = {
