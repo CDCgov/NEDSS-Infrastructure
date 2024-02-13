@@ -65,7 +65,7 @@ module "alb" {
   https_listeners = [
     {
       port     = 443
-      protocol = "HTTPS"
+      protocol = var.load_balancer_type == "network" ? "TCP" : "HTTPS"
       # Use terraform create certificate or a precreated certificate
       certificate_arn    = try(module.acm[0].acm_certificate_arn, var.certificate_arn)
       target_group_index = 0
@@ -75,7 +75,7 @@ module "alb" {
   http_tcp_listeners = var.load_balancer_type == "network" ? [] : [
     {
       port        = 80
-      protocol    = "TCP"
+      protocol    = "HTTP"
       action_type = "redirect"
       redirect = {
         port        = "443"
