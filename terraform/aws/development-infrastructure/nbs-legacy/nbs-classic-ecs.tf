@@ -120,7 +120,7 @@ resource "aws_ecs_service" "service" {
   }
 
   load_balancer {
-    target_group_arn = module.alb.target_group_arns[0]
+    target_group_arn = module.alb.arn
     container_name   = "${var.resource_prefix}-task"
     container_port   = 7001
   }
