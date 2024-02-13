@@ -72,7 +72,7 @@ module "alb" {
     }
   ]
 
-  http_tcp_listeners = [
+  http_tcp_listeners = var.load_balancer_type == "network" ? [] : [
     {
       port        = 80
       protocol    = "TCP"
