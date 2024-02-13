@@ -53,7 +53,7 @@ module "alb" {
         matcher             = "200"
       }
 
-      targets = var.deploy_on_ecs ? null : {
+      targets = var.deploy_on_ecs ? {} : {
         my_target = {
           target_id = module.app_server[0].id
           port      = 7001
