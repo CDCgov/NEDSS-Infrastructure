@@ -1,5 +1,5 @@
 output "nbs_app_alb" {
-  value = module.alb.dns_name
+  value = module.alb.lb_dns_name
 }
 
 # output "nbs_ecs_app_alb" {

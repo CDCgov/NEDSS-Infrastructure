@@ -17,7 +17,7 @@ module "alb_sg" {
 # Application load balancer for NBS application server
 module "alb" {  
   source  = "terraform-aws-modules/alb/aws"
-  version = "9.4.1"
+  version = "~> 8.2"
 
   name = var.deploy_on_ecs ? "${var.resource_prefix}-alb-ecs" : "${var.resource_prefix}-alb-ec2"
 
@@ -30,18 +30,16 @@ module "alb" {
   # Care here
 #   vpc_id          = var.legacy_vpc_id
   vpc_id          = var.vpc_id
-  subnets         = var.load_balancer_subnet_ids
+  subnets         = var.load_balancer_subnet_ids 
   security_groups = [module.alb_sg.security_group_id]
 
 
-  target_groups = {
-    instance_target = {
-      name_prefix      = "nbs6-"
+  target_groups = [
+    {
+      name_prefix      = "lgcy-"
       backend_protocol = "HTTP"
       backend_port     = 7001
       target_type      = var.deploy_on_ecs ? "ip" : "instance"
-      target_id        = var.deploy_on_ecs ? null : module.app_server[0].id
-
 
       health_check = {
         enabled             = true
@@ -55,36 +53,37 @@ module "alb" {
         matcher             = "200"
       }
 
-      # targets = var.deploy_on_ecs ? null : {
-      #   my_target = {
-      #     target_id = module.app_server[0].id
-      #     port      = 7001
-      #   }
-      # } 
+      targets = var.deploy_on_ecs ? null : {
+        my_target = {
+          target_id = module.app_server[0].id
+          port      = 7001
+        }
+      } 
     }
-  }
+  ]
 
-  listeners = {
-    https = {
+  https_listeners = [
+    {
       port     = 443
       protocol = "HTTPS"
       # Use terraform create certificate or a precreated certificate
       certificate_arn    = try(module.acm[0].acm_certificate_arn, var.certificate_arn)
       target_group_index = 0
     }
-    http = {      
-        port        = 80
-        protocol    = "HTTP"
-        action_type = "redirect"
-        redirect = {
-          port        = "443"
-          protocol    = "HTTPS"
-          status_code = "HTTP_301"
-        }      
-    }
-  }
+  ]
 
-  
+  http_tcp_listeners = [
+    {
+      port        = 80
+      protocol    = "HTTP"
+      action_type = "redirect"
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
+  ]
 }
 
 resource "aws_route53_record" "alb_dns_record" {
@@ -94,8 +93,8 @@ resource "aws_route53_record" "alb_dns_record" {
   type    = "A"
 
   alias {
-    name                   = module.alb.dns_name
-    zone_id                = module.alb.zone_id
+    name                   = module.alb.lb_dns_name
+    zone_id                = module.alb.lb_zone_id
     evaluate_target_health = true
   }
 }
