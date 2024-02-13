@@ -13,7 +13,7 @@ module "nbs6" {
   docker_image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${var.docker_image}"
   ecs_cpu = var.ecs_cpu
   ecs_memory = var.ecs_memory
-  ingress_vpc_cidr_blocks = var.ingress_vpc_cidr_blocks
+  nbs6_ingress_vpc_cidr_blocks = var.nbs6_ingress_vpc_cidr_blocks
   nbs_db_dns = module.rds.nbs_db_address
   kms_arn_shared_services_bucket = module.kms.kms_key_arn
   

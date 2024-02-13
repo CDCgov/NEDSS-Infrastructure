@@ -172,6 +172,10 @@ variable "ingress_vpc_cidr_blocks" {
   type        = string
   default     = ""
 }
+variable "nbs6_ingress_vpc_cidr_blocks" {  
+  type        = list(any)
+  default     = []
+}
 #-----------------------------------------------------------------
 
 # NBS6 Variables --------------------------------------------------
