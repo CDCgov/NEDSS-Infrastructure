@@ -50,7 +50,7 @@ module "app_sg" {
 }
 
 # Additional ingress for cluster api access
-resource "aws_vpc_security_group_ingress_rule" "example" {
+resource "aws_vpc_security_group_ingress_rule" "app" {
   for_each = toset(var.nbs6_ingress_vpc_cidr_blocks)
   security_group_id = module.app_sg.security_group_id
 
@@ -62,7 +62,7 @@ resource "aws_vpc_security_group_ingress_rule" "example" {
 }
 
 # Additional ingress for cluster api access
-resource "aws_vpc_security_group_ingress_rule" "example" {
+resource "aws_vpc_security_group_ingress_rule" "rdp" {
   for_each = toset(var.nbs6_rdp_cidr_block)
   security_group_id = module.app_sg.security_group_id
 
