@@ -37,7 +37,7 @@ module "alb" {
   target_groups = [
     {
       name_prefix      = "lgcy-"
-      backend_protocol = "TCP"
+      backend_protocol = "HTTP"
       backend_port     = 7001
       target_type      = var.deploy_on_ecs ? "ip" : "instance"
 
@@ -49,7 +49,7 @@ module "alb" {
         healthy_threshold   = 3
         unhealthy_threshold = 3
         timeout             = 6
-        protocol            = "TCP"
+        protocol            = "HTTP"
         matcher             = "200"
       }
 
