@@ -79,7 +79,7 @@ module "alb" {
       action_type = "redirect"
       redirect = {
         port        = "443"
-        protocol    = "TCP"
+        protocol    = "HTTPS"
         status_code = "HTTP_301"
       }
     }
