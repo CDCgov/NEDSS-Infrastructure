@@ -65,7 +65,7 @@ module "alb" {
   https_listeners = [
     {
       port     = 443
-      protocol = "TCP"
+      protocol = "HTTPS"
       # Use terraform create certificate or a precreated certificate
       certificate_arn    = try(module.acm[0].acm_certificate_arn, var.certificate_arn)
       target_group_index = 0
