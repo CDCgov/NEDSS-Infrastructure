@@ -17,7 +17,7 @@ module "alb_sg" {
 # Application load balancer for NBS application server
 module "alb" {  
   source  = "terraform-aws-modules/alb/aws"
-  version = "~> 8.2"
+  version = "9.4.1"
 
   name = var.deploy_on_ecs ? "${var.resource_prefix}-alb-ecs" : "${var.resource_prefix}-alb-ec2"
 
@@ -30,7 +30,7 @@ module "alb" {
   # Care here
 #   vpc_id          = var.legacy_vpc_id
   vpc_id          = var.vpc_id
-  subnets         = var.subnet_mapping == [] ? var.load_balancer_subnet_ids : []
+  subnets         = var.load_balancer_subnet_ids
   security_groups = [module.alb_sg.security_group_id]
 
 
