@@ -9,7 +9,7 @@ module "nbs6" {
   tags                   = var.tags
 
   # ECS settings
-  ecs_subnets = local.list_subnet_ids
+  ecs_subnets = data.aws_subnet.ecs_subnet.id
   docker_image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${var.docker_image}"
   ecs_cpu = var.ecs_cpu
   ecs_memory = var.ecs_memory
