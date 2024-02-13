@@ -62,28 +62,27 @@ module "alb" {
     }
   ]
 
-  https_listeners = [
-    {
+  listeners = {
+    https = {
       port     = 443
       protocol = "HTTPS"
       # Use terraform create certificate or a precreated certificate
       certificate_arn    = try(module.acm[0].acm_certificate_arn, var.certificate_arn)
       target_group_index = 0
     }
-  ]
-
-  http_tcp_listeners = [
-    {
-      port        = 80
-      protocol    = "HTTP"
-      action_type = "redirect"
-      redirect = {
-        port        = "443"
-        protocol    = "HTTPS"
-        status_code = "HTTP_301"
-      }
+    http = {      
+        port        = 80
+        protocol    = "HTTP"
+        action_type = "redirect"
+        redirect = {
+          port        = "443"
+          protocol    = "HTTPS"
+          status_code = "HTTP_301"
+        }      
     }
-  ]
+  }
+
+  
 }
 
 resource "aws_route53_record" "alb_dns_record" {
