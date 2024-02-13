@@ -36,8 +36,8 @@ module "alb" {
 
   target_groups = [
     {
-      name_prefix      = "lgcy-"
-      backend_protocol = "HTTP"
+      name_prefix      = "nbs6-"
+      backend_protocol = var.load_balancer_type == "network" ? "TCP" : "HTTP"
       backend_port     = 7001
       target_type      = var.deploy_on_ecs ? "ip" : "instance"
 
