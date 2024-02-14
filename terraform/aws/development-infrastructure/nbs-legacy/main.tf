@@ -156,9 +156,11 @@ $currentDate= ([DateTime]::Now)
 $duration = $currentDate.AddYears(25) -$currentDate
 # Define the file path
 $scriptPath = "D:\wildfly-10.0.0.Final\nedssdomain\Nedss\BatchFiles\ELRImporter.bat"
+$argument = ">ElrImporter.output"
+$scriptDirPath = "D:\wildfly-10.0.0.Final\nedssdomain\Nedss\BatchFiles"
 $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType S4U
 # Action to run the specified batch file
-$action = New-ScheduledTaskAction -Execute "Powershell.exe" -Argument "$scriptPath; quit"
+$action = New-ScheduledTaskAction -Execute "$scriptPath" -Argument "$argument" -WorkingDirectory "$scriptDirPath"
 # Trigger for daily execution once, repeating every 2 minutes
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval $repeat -RepetitionDuration $duration
 # Create scheduled task
