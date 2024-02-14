@@ -27,7 +27,8 @@ resource_prefix   = "" # highly recommend using snake case for naming (e.g. this
 
 # NBS6
 docker_image = ""
-nbs6_ingress_vpc_cidr_blocks = [""]
+nbs6_ingress_vpc_cidr_blocks = []
+nbs6_rdp_cidr_block = []
 ingress_vpc_cidr_blocks = ""
 ecs_private_ipv4_address = "" #Ensure this is within data call to ecs_subnet
 certificate_id = ""
@@ -60,4 +61,4 @@ certificate_id = ""
 # RDS
 db_instance_type = "db.m6i.xlarge"
 db_snapshot_identifier = ""
-nbs6_rdp_cidr_block = []
+
