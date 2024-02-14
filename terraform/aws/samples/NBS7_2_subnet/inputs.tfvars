@@ -52,12 +52,6 @@ external_cidr_blocks = []
 # S3 buckets
 fluentbit_bucket_prefix = "EXAMPLE-fluentbit-bucket"
 
-# NBS6
-docker_image = ""
-nbs6_ingress_vpc_cidr_blocks = []
-ecs_private_ipv4_address = "" #Ensure this is within data call to ecs_subnet
-certificate_id = ""
-
 # RDS
 db_instance_type = "db.m6i.xlarge"
 db_snapshot_identifier = ""
