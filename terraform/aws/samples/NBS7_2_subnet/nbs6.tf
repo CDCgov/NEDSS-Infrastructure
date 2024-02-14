@@ -7,6 +7,7 @@ module "nbs6" {
   create_cert = false
   vpc_id = data.aws_vpc.vpc_1.id
   tags                   = var.tags
+  internal = var.internal
 
   # ECS settings
   ecs_subnets = [data.aws_subnet.ecs_subnet.id]
