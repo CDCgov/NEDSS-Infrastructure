@@ -176,6 +176,12 @@ variable "nbs6_ingress_vpc_cidr_blocks" {
   type        = list(any)
   default     = []
 }
+
+variable "nbs6_rdp_cidr_block" {
+  description = "CIDR block in for RDP access"
+  type        = list(any)
+  default = []
+}
 #-----------------------------------------------------------------
 
 # NBS6 Variables --------------------------------------------------
