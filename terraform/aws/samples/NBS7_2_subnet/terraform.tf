@@ -9,8 +9,8 @@ terraform {
   backend "s3" {
     encrypt = true
     #change following 2 lines and uncomment them
-    # bucket  = "cdc-nbs-test-terraform"
-    # key = "cdc-nbs-test/infrastructure-artifacts"
+    # bucket  = "sample-bucket"
+    # key = "sample_path/infrastructure-artifacts"
     region = "us-east-1"
   }
 }
