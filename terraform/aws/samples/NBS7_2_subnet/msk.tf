@@ -12,4 +12,5 @@ module "msk" {
   cidr_blocks = [data.aws_vpc.vpc_1.cidr_block] # can add this to list if needed: var.shared_vpc_cidr_block
   #cidr_blocks     = [var.modern-cidr, var.shared_vpc_cidr_block]
   resource_prefix = var.resource_prefix
+  environment = var.msk_environment
 }

@@ -134,6 +134,11 @@ variable "msk_ebs_volume_size" {
   type        = number
   default     = 20
 }
+
+variable "msk_environment" {
+  description = "The environment, either 'development' or 'production'"
+  default     = "development"
+}
 #-----------------------------------------------------------------
 
 # RDS Variables --------------------------------------------------
@@ -221,6 +226,6 @@ variable "load_balancer_type" {
 variable "internal" {
   description = "If true, the LB will be internal. Defaults to `false`"
   type        = bool
-  default     = null
+  default     = true
 }
 #-----------------------------------------------------------------
