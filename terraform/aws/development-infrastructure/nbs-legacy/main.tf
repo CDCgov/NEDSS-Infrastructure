@@ -1,22 +1,5 @@
 # Prerequisites
 # 1. Create key-pair in account if desired (leaving blank is untested)
-# 2. Used domain is assumed to exist
-
-#locals on whether to create CSM
-locals {
-  #If create_cert == true set value to 1 and create CSM, otherwise do not create
-  cert_count = var.create_cert ? 1 : 0
-}
-
-# get legacy VPC data
-data "aws_vpc" "legacy_vpc" {
-  id = var.legacy_vpc_id
-}
-
-# get modernized VPC data
-data "aws_vpc" "modern_vpc" {
-  id = var.modern_vpc_id
-}
 
 # NBS application server
 module "app_server" {
@@ -24,11 +7,11 @@ module "app_server" {
   version = "~> 4.0"
   count = var.deploy_on_ecs ? 0 : 1
 
-  name                   = "${var.legacy_resource_prefix}-app-server"
+  name                   = "${var.resource_prefix}-app-server"
   ami                    = var.ami
   instance_type          = var.instance_type
   vpc_security_group_ids = ["${module.app_sg.security_group_id}"]
-  subnet_id              = var.private_subnet_ids[0]
+  subnet_id              = var.subnet_ids[0]
   key_name               = var.ec2_key_name
 
   create_iam_instance_profile = true
@@ -175,47 +158,6 @@ Restart-Computer -Force
 EOF   
 }
 
-# Security group for NBS application server
-module "app_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
-
-  name         = "${var.legacy_resource_prefix}-app-sg"
-  description  = "Security group for NBS application server"
-  vpc_id       = var.legacy_vpc_id
-  egress_rules = ["all-all"]
-
-  # Open for ALB source security group
-  ingress_with_source_security_group_id = [
-    {
-      from_port                = 7001
-      to_port                  = 7001
-      protocol                 = "tcp"
-      description              = "Wildfly web server"
-      source_security_group_id = module.alb_sg.security_group_id
-    }
-  ]
-
-  # Open for shared services and legacy VPC cidr block
-  computed_ingress_with_cidr_blocks = [
-    {
-      from_port   = 7001
-      to_port     = 7001
-      protocol    = "tcp"
-      description = "wildfly web server"
-      cidr_blocks = "${var.shared_vpc_cidr_block},${data.aws_vpc.legacy_vpc.cidr_block},${data.aws_vpc.modern_vpc.cidr_block}"
-    },
-    {
-      from_port   = 3389
-      to_port     = 3389
-      protocol    = "tcp"
-      description = "RDP access from cleint VPN"
-      cidr_blocks = "${var.shared_vpc_cidr_block}"
-    }
-  ]
-  number_of_computed_ingress_with_cidr_blocks = 2
-}
-
 # Add in-line IAM role for EC2 access to shared services bucket
 resource "aws_iam_role_policy" "shared_s3_access" {
   count = var.deploy_on_ecs ? 0 : 1
@@ -251,119 +193,3 @@ resource "aws_iam_role_policy" "shared_s3_access" {
 
   depends_on = [module.app_server]
 }
-
-# Security group for NBS load balancer security group
-module "alb_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
-
-  name        = "${var.legacy_resource_prefix}-alb-sg"
-  description = "${var.legacy_resource_prefix} Security Group for ALB"
-  vpc_id      = var.legacy_vpc_id
-
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["https-443-tcp", "http-80-tcp"]
-  egress_rules        = ["all-all"]
-}
-
-
-# Application load balancer for NBS application server
-module "alb" {
-  count = var.deploy_on_ecs ? 0 : 1
-  source  = "terraform-aws-modules/alb/aws"
-  version = "~> 8.2"
-
-  name = "${var.legacy_resource_prefix}-alb-ec2"
-
-  load_balancer_type = "application"
-
-  vpc_id          = var.legacy_vpc_id
-  subnets         = var.public_subnet_ids
-  security_groups = [module.alb_sg.security_group_id]
-
-
-  target_groups = [
-    {
-      name_prefix      = "lgcy-"
-      backend_protocol = "HTTP"
-      backend_port     = 7001
-      target_type      = "instance"
-
-      health_check = {
-        enabled             = true
-        interval            = 30
-        path                = "/nbs/login"
-        port                = "traffic-port"
-        healthy_threshold   = 3
-        unhealthy_threshold = 3
-        timeout             = 6
-        protocol            = "HTTP"
-        matcher             = "200"
-      }
-
-      targets = {
-        my_target = {
-          target_id = module.app_server[0].id
-          port      = 7001
-        }
-      }
-    }
-  ]
-
-  https_listeners = [
-    {
-      port     = 443
-      protocol = "HTTPS"
-      # Use terraform create certificate or a precreated certificate
-      certificate_arn    = try(module.acm[0].acm_certificate_arn, var.certificate_arn)
-      target_group_index = 0
-    }
-  ]
-
-  http_tcp_listeners = [
-    {
-      port        = 80
-      protocol    = "HTTP"
-      action_type = "redirect"
-      redirect = {
-        port        = "443"
-        protocol    = "HTTPS"
-        status_code = "HTTP_301"
-      }
-    }
-  ]
-}
-
-resource "aws_route53_record" "alb_dns_record" {
-  count = var.deploy_on_ecs ? 0 : 1
-  zone_id = var.zone_id
-  name    = var.route53_url_name
-  type    = "A"
-
-  alias {
-    name                   = module.alb[0].lb_dns_name
-    zone_id                = module.alb[0].lb_zone_id
-    evaluate_target_health = true
-  }
-}
-
-# Create certificate (this should be an optional resource with ability to provide arn if existing)
-# Needs CNAME record in route53
-module "acm" {
-  count   = local.cert_count
-  source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
-
-  domain_name = "*.${var.domain_name}"
-  zone_id     = var.zone_id
-
-  # subject_alternative_names = [
-  #   "*.my-domain.com",
-  #   "app.sub.my-domain.com",
-  # ]
-
-  wait_for_validation = true
-  validation_timeout  = "15m"
-  tags                = var.tags
-}
-
