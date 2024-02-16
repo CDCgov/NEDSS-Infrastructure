@@ -12,10 +12,9 @@ imagePullSecrets: []
 serviceAccounts:
   server:
     create: true
-    name: ${SERVICE_ACCOUNT_NAME}
+    name: "cdc-nbs-fts2-amp-svc-acc"  # ${SERVICE_ACCOUNT_NAME}
     annotations: 
-      eks.amazonaws.com/role-arn: ${IAM_PROXY_PROMETHEUS_ROLE_ARN}
-
+      eks.amazonaws.com/role-arn: "arn:aws:iam::324406605642:role/cdc-nbs-fts2-amp-role"  # ${IAM_PROXY_PROMETHEUS_ROLE_ARN}
 ## Monitors ConfigMap changes and POSTs to a URL
 ## Ref: https://github.com/prometheus-operator/prometheus-operator/tree/main/cmd/prometheus-config-reloader
 ##
@@ -178,22 +177,28 @@ server:
   ### When empty server.persistentVolume.mountPath is used instead
   storagePath: ""
 
+  # global:
+  #   ## How frequently to scrape targets by default
+  #   ##
+  #   scrape_interval: 1m
+  #   ## How long until a scrape request times out
+  #   ##
+  #   scrape_timeout: 10s
+  #   ## How frequently to evaluate rules
+  #   ##
+  #   evaluation_interval: 1m
+
   global:
-    ## How frequently to scrape targets by default
-    ##
-    scrape_interval: 1m
-    ## How long until a scrape request times out
-    ##
+    scrape_interval: 10s
     scrape_timeout: 10s
-    ## How frequently to evaluate rules
-    ##
-    evaluation_interval: 1m
+    evaluation_interval: 10s
+
   ## https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
   ##
   remoteWrite:
-    - url: https://aps-workspaces.${AWS_REGION}.amazonaws.com/workspaces/${WORKSPACE_ID}/api/v1/remote_write 
+    - url: https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-122fa7ca-6fac-4fac-9073-33565a695f77/api/v1/remote_write 
       sigv4:
-        region: ${AWS_REGION}
+        region: "us-east-1" # ${AWS_REGION}
       queue_config:
         max_samples_per_send: 1000
         max_shards: 200 
@@ -1061,6 +1066,89 @@ serverFiles:
           - source_labels: [__meta_kubernetes_pod_phase]
             regex: Pending|Succeeded|Failed|Completed
             action: drop
+
+################### ADDED SCRAPE JOB FOR LINKERD
+      - job_name: 'linkerd-controller'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - 'linkerd'    # '{{.Values.linkerdNamespace}}'
+            - 'linkerd-viz'  #'{{.Values.namespace}}'
+        relabel_configs:
+        - source_labels:
+          - __meta_kubernetes_pod_container_port_name
+          action: keep
+          regex: admin-http
+        - source_labels: [__meta_kubernetes_pod_container_name]
+          action: replace
+          target_label: component
+
+      - job_name: 'linkerd-service-mirror'
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels:
+          - __meta_kubernetes_pod_label_linkerd_io_control_plane_component
+          - __meta_kubernetes_pod_container_port_name
+          action: keep
+          regex: linkerd-service-mirror;admin-http$
+        - source_labels: [__meta_kubernetes_pod_container_name]
+          action: replace
+          target_label: component
+
+      - job_name: 'linkerd-proxy'
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels:
+          - __meta_kubernetes_pod_container_name
+          - __meta_kubernetes_pod_container_port_name
+          - __meta_kubernetes_pod_label_linkerd_io_control_plane_ns
+          action: keep
+          regex: ^{{default .Values.proxyContainerName "linkerd-proxy" .Values.proxyContainerName}};linkerd-admin;{{.Values.linkerdNamespace}}$
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: pod
+        # special case k8s' "job" label, to not interfere with prometheus' "job"
+        # label
+        # __meta_kubernetes_pod_label_linkerd_io_proxy_job=foo =>
+        # k8s_job=foo
+        - source_labels: [__meta_kubernetes_pod_label_linkerd_io_proxy_job]
+          action: replace
+          target_label: k8s_job
+        # drop __meta_kubernetes_pod_label_linkerd_io_proxy_job
+        - action: labeldrop
+          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_job
+        # __meta_kubernetes_pod_label_linkerd_io_proxy_deployment=foo =>
+        # deployment=foo
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_(.+)
+        # drop all labels that we just made copies of in the previous labelmap
+        - action: labeldrop
+          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_(.+)
+        # __meta_kubernetes_pod_label_linkerd_io_foo=bar =>
+        # foo=bar
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_linkerd_io_(.+)
+        # Copy all pod labels to tmp labels
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+          replacement: __tmp_pod_label_$1
+        # Take `linkerd_io_` prefixed labels and copy them without the prefix
+        - action: labelmap
+          regex: __tmp_pod_label_linkerd_io_(.+)
+          replacement:  __tmp_pod_label_$1
+        # Drop the `linkerd_io_` originals
+        - action: labeldrop
+          regex: __tmp_pod_label_linkerd_io_(.+)
+        # Copy tmp labels into real labels
+        - action: labelmap
+          regex: __tmp_pod_label_(.+)
+################## End of linkerd config
 
 # adds additional scrape configs to prometheus.yml
 # must be a string so you have to add a | after extraScrapeConfigs:
