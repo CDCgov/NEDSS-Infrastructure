@@ -5,6 +5,7 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
+.terraform.lock.hcl
 
 # Crash log files
 crash.log
@@ -36,4 +37,6 @@ terraform.rc
 .DS_Store
 __MACOSX
 
-# provider.tf
+# Configs to Ignore
+provider.tf
+inputs.tfvars
