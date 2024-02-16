@@ -22,5 +22,5 @@ resource "azurerm_subnet" "new" {
   name                 = "csels-nbs-dev-low-modern-vnet-sn"
   resource_group_name  = data.azurerm_virtual_network.existing.resource_group_name
   virtual_network_name = data.azurerm_virtual_network.existing.name
-  address_prefixes     = ["10.11.0.0/27"]
+  address_prefixes     = var.modern_subnet
 }
