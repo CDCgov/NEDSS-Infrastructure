@@ -12,9 +12,9 @@ imagePullSecrets: []
 serviceAccounts:
   server:
     create: true
-    name: "cdc-nbs-fts2-amp-svc-acc"  # ${SERVICE_ACCOUNT_NAME}
+    name: ${SERVICE_ACCOUNT_NAME}
     annotations: 
-      eks.amazonaws.com/role-arn: "arn:aws:iam::324406605642:role/cdc-nbs-fts2-amp-role"  # ${IAM_PROXY_PROMETHEUS_ROLE_ARN}
+      eks.amazonaws.com/role-arn: ${IAM_PROXY_PROMETHEUS_ROLE_ARN}
 ## Monitors ConfigMap changes and POSTs to a URL
 ## Ref: https://github.com/prometheus-operator/prometheus-operator/tree/main/cmd/prometheus-config-reloader
 ##
@@ -198,7 +198,7 @@ server:
   remoteWrite:
     - url: https://aps-workspaces.us-east-1.amazonaws.com/workspaces/ws-122fa7ca-6fac-4fac-9073-33565a695f77/api/v1/remote_write 
       sigv4:
-        region: "us-east-1" # ${AWS_REGION}
+        region: ${AWS_REGION}
       queue_config:
         max_samples_per_send: 1000
         max_shards: 200 
