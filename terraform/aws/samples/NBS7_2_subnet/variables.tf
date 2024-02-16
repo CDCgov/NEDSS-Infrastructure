@@ -120,6 +120,11 @@ variable "external_cidr_blocks" {
   type        = list
   default     = []
 }
+
+variable "cluster_version" {
+  description = "Version of the AWS EKS cluster to provision"
+  default = "1.28"
+}
 #-----------------------------------------------------------------
 
 # S3 buckets -----------------------------------------------------
