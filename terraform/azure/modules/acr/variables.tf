@@ -1,3 +1,4 @@
+/*
 variable "container_registry_name" {
   type = string
   description = "This defines the container registry name"
@@ -24,5 +25,6 @@ variable "container_registry_resource_group_name" {
   description = "This defines the container registry resource group name"
 }
 
+*/
 
 
