@@ -31,12 +31,28 @@ variable "sqlmi_password" {
   sensitive = true
 }
 
-variable "restoring_from_database_name" {
+variable "sqlmi_vcore" {
+  description = "SQL Virtual Cores"
+  type        = string
+}
+
+variable "sqlmi_storage" {
+  description = "SQL Storage"
+  type        = string
+}
+
+variable "sqlmi_sku_name" {
+  description = "SKU Name"
+  type        = string
+}
+
+
+variable "sqlmi_restoring_from_database_name" {
   description = "SQL Managed Database to Restore From"
   type        = string
 }
 
-variable "restore_point_in_time" {
+variable "sqlmi_restore_point_in_time" {
   description = "Restore Point in Time"
   type        = string
 }

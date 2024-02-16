@@ -5,9 +5,9 @@ resource "azurerm_mssql_managed_instance" "sqlmi" {
   location                     = data.azurerm_resource_group.rg.location
   subnet_id                    = data.azurerm_subnet.sqlmi_subnet.id
   license_type                 = "LicenseIncluded"
-  sku_name                     = "GP_Gen5"
-  vcores                       = 4
-  storage_size_in_gb           = 128
+  sku_name                     = var.sqlmi_sku_name
+  vcores                       = var.sqlmi_vcore
+  storage_size_in_gb           = var.sqlmi_storage
   administrator_login          = var.sqlmi_username
   administrator_login_password = var.sqlmi_password
 
@@ -22,7 +22,7 @@ resource "azurerm_mssql_managed_database" "nbs_dataingest_db" {
     prevent_destroy = false
   }
   point_in_time_restore {
-    restore_point_in_time = var.restore_point_in_time
+    restore_point_in_time = var.sqlmi_restore_point_in_time
     source_database_id = "${data.azurerm_mssql_managed_instance.restore_from_database.id}/databases/NBS_DataIngest"
   }
 }
@@ -36,7 +36,7 @@ resource "azurerm_mssql_managed_database" "nbs_msgoute_db" {
     prevent_destroy = false
   }
   point_in_time_restore {
-    restore_point_in_time = var.restore_point_in_time
+    restore_point_in_time = var.sqlmi_restore_point_in_time
     source_database_id = "${data.azurerm_mssql_managed_instance.restore_from_database.id}/databases/NBS_MSGOUTE"
   }
 }
@@ -50,7 +50,7 @@ resource "azurerm_mssql_managed_database" "nbs_odse_db" {
     prevent_destroy = false
   }
   point_in_time_restore {
-    restore_point_in_time = var.restore_point_in_time
+    restore_point_in_time = var.sqlmi_restore_point_in_time
     source_database_id = "${data.azurerm_mssql_managed_instance.restore_from_database.id}/databases/NBS_ODSE"
   }
 }
@@ -64,7 +64,7 @@ resource "azurerm_mssql_managed_database" "nbs_srte_db" {
     prevent_destroy = false
   }
   point_in_time_restore {
-    restore_point_in_time = var.restore_point_in_time
+    restore_point_in_time = var.sqlmi_restore_point_in_time
     source_database_id = "${data.azurerm_mssql_managed_instance.restore_from_database.id}/databases/NBS_SRTE"
   }
 }
@@ -78,7 +78,7 @@ resource "azurerm_mssql_managed_database" "rdb_db" {
     prevent_destroy = false
   }
   point_in_time_restore {
-    restore_point_in_time = var.restore_point_in_time
+    restore_point_in_time = var.sqlmi_restore_point_in_time
     source_database_id = "${data.azurerm_mssql_managed_instance.restore_from_database.id}/databases/RDB"
   }
 }

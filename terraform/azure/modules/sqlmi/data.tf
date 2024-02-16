@@ -17,6 +17,6 @@ data "azurerm_subnet" "sqlmi_subnet" {
 }
 
 data "azurerm_mssql_managed_instance" "restore_from_database" {
-  name                = var.restoring_from_database_name
+  name                = var.sqlmi_restoring_from_database_name
   resource_group_name = data.azurerm_resource_group.rg.name
 }

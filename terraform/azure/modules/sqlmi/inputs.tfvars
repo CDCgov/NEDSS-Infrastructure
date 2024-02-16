@@ -1,8 +1,0 @@
-prefix = "tf-nbs6"
-resource_group_name = "cdc-nbs-classic-rg"
-vnet_name = "vnet-cdc-nbs-sql-managed-instance"
-sqlmi_subnet_name = "ManagedInstance"
-sqlmi_username = "mradministrator"
-sqlmi_password = "thisIsDog11"
-restoring_from_database_name = "nbs-sql-managed-instance"
-restore_point_in_time = "2024-02-14T15:04:05Z"
