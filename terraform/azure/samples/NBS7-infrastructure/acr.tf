@@ -7,7 +7,7 @@
   admin_enabled       = false
 }*/
 
-
+/*
 module acr{
   source = "../modules/acr"
   container_registry_name = var.container_registry_name
@@ -15,3 +15,5 @@ module acr{
   container_registry_resource_group_name = var.container_registry_resource_group_name
   service_principal_name = var.service_principal_name 
 }
+
+*/

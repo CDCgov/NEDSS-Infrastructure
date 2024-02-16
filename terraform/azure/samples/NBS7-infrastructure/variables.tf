@@ -62,7 +62,7 @@ variable "backend_key" {
 
 */
 
-
+/*
 variable "k8_admin_username" {
   type        = string
   description = "The admin username for the new cluster."
@@ -73,6 +73,7 @@ variable "azuread_service_principal_display_name" {
   type        = string
   description = "Azure AD Service Principal Display Name"
 }
+*/
 
 variable "modern_resource_group_name" {
   type = string
@@ -89,17 +90,18 @@ variable "k8_cluster_version" {
   description = "This defines the version of the k8 cluster"
 }
 
+/*
 variable "k8_dns_prefix" {
   type = string
   description = "This defines the k8 dns prefix"
 }
-
-
+*/
+/*
 variable "service_principal_client_secret" {
   type = string
   description = "This defines service principal client secret"
 }
-
+*/
 variable "modern_subnet"{
   type= list(any)
 }
