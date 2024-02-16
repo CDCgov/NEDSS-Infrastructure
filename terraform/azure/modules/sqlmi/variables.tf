@@ -13,11 +13,11 @@ variable "vnet_name" {
   type        = string
 }
 
+# Azure SQL Managed Instance 
 variable "sqlmi_subnet_name" {
   description = "Subnet to deploy Azure SQl Managed Instance in"
   type        = string
 }
-
 
 variable "sqlmi_username" {
   description = "SQL Admin Username"
@@ -45,7 +45,6 @@ variable "sqlmi_sku_name" {
   description = "SKU Name"
   type        = string
 }
-
 
 variable "sqlmi_restoring_from_database_name" {
   description = "SQL Managed Database to Restore From"
