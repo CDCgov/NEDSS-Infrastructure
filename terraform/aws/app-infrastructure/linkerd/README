@@ -1,0 +1,107 @@
+# linkerd installation guide with existing prometheus:
+# https://dev.to/oskarm93/deploy-linkerd-to-kubernetes-using-helm-and-terraform-461h
+# link to documentation: https://linkerd.io/2.14/tasks/external-prometheus/
+
+When using existing/external Prometheus instead of builtin Prometheus in linkerd-viz
+you need to do the following:
+
+1- in Prometheus values.yaml file under scrape_configs add the following:
+################### ADDED SCRAPE JOB FOR LINKERD
+      - job_name: 'linkerd-controller'
+        kubernetes_sd_configs:
+        - role: pod
+          namespaces:
+            names:
+            - 'linkerd'    # '{{.Values.linkerdNamespace}}'
+            - 'linkerd-viz'  #'{{.Values.namespace}}'
+        relabel_configs:
+        - source_labels:
+          - __meta_kubernetes_pod_container_port_name
+          action: keep
+          regex: admin-http
+        - source_labels: [__meta_kubernetes_pod_container_name]
+          action: replace
+          target_label: component
+
+      - job_name: 'linkerd-service-mirror'
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels:
+          - __meta_kubernetes_pod_label_linkerd_io_control_plane_component
+          - __meta_kubernetes_pod_container_port_name
+          action: keep
+          regex: linkerd-service-mirror;admin-http$
+        - source_labels: [__meta_kubernetes_pod_container_name]
+          action: replace
+          target_label: component
+
+      - job_name: 'linkerd-proxy'
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels:
+          - __meta_kubernetes_pod_container_name
+          - __meta_kubernetes_pod_container_port_name
+          - __meta_kubernetes_pod_label_linkerd_io_control_plane_ns
+          action: keep
+          regex: ^{{default .Values.proxyContainerName "linkerd-proxy" .Values.proxyContainerName}};linkerd-admin;{{.Values.linkerdNamespace}}$
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: pod
+        # special case k8s' "job" label, to not interfere with prometheus' "job"
+        # label
+        # __meta_kubernetes_pod_label_linkerd_io_proxy_job=foo =>
+        # k8s_job=foo
+        - source_labels: [__meta_kubernetes_pod_label_linkerd_io_proxy_job]
+          action: replace
+          target_label: k8s_job
+        # drop __meta_kubernetes_pod_label_linkerd_io_proxy_job
+        - action: labeldrop
+          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_job
+        # __meta_kubernetes_pod_label_linkerd_io_proxy_deployment=foo =>
+        # deployment=foo
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_(.+)
+        # drop all labels that we just made copies of in the previous labelmap
+        - action: labeldrop
+          regex: __meta_kubernetes_pod_label_linkerd_io_proxy_(.+)
+        # __meta_kubernetes_pod_label_linkerd_io_foo=bar =>
+        # foo=bar
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_linkerd_io_(.+)
+        # Copy all pod labels to tmp labels
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+          replacement: __tmp_pod_label_$1
+        # Take `linkerd_io_` prefixed labels and copy them without the prefix
+        - action: labelmap
+          regex: __tmp_pod_label_linkerd_io_(.+)
+          replacement:  __tmp_pod_label_$1
+        # Drop the `linkerd_io_` originals
+        - action: labeldrop
+          regex: __tmp_pod_label_linkerd_io_(.+)
+        # Copy tmp labels into real labels
+        - action: labelmap
+          regex: __tmp_pod_label_(.+)
+################## End of linkerd config
+2- change the following setting on Prometheus values.yaml file:
+
+global:
+    scrape_interval: 10s
+    scrape_timeout: 10s
+    evaluation_interval: 10s
+
+3- helm upgrade prometheus deployment with the new values.yaml file
+4- deploy linkerd with default values >> INSTRUCTIONS LINK: https://cdc-nbs.atlassian.net/wiki/spaces/NM/pages/493518860/Linkerd+Installation+Steps
+5- create a values.yaml file and add the following content:
+    # -- url of external prometheus instance
+    prometheusUrl: "http://prometheus-server.observability.svc.cluster.local:9090"  # servicename.namespace_name
+    prometheus:
+    # -- toggle field to enable or disable imbedded prometheus
+        enabled: false
+
+
