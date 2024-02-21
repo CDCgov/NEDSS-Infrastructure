@@ -17,3 +17,9 @@ variable "linkerd_viz_chart" {
 variable "linkerd_viz_namespace_name" {
     default = "linkerd-viz"
 }
+
+#### GENERAL
+variable "eks_cluster_endpoint" {}
+variable "cluster_certificate_authority_data" {}
+variable "target_account_id" {}
+variable "eks_cluster_name" {}
