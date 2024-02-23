@@ -3,19 +3,20 @@ locals {
 }
 
 module "efs" {
-  source = "terraform-aws-modules/efs/aws"
+  source  = "terraform-aws-modules/efs/aws"
+  version = "1.5.0"
 
-  name           = local.efs_name
-  encrypted      = true
-  kms_key_arn    = var.kms_key_arn
+  name        = local.efs_name
+  encrypted   = true
+  kms_key_arn = var.kms_key_arn
 
   # File system policy
   attach_policy                      = true
   bypass_policy_lockout_safety_check = false
   policy_statements = [
     {
-      sid     = "AllowViaMountTarget"
-      effect  = "Allow"
+      sid    = "AllowViaMountTarget"
+      effect = "Allow"
       actions = [
         "elasticfilesystem:ClientRootAccess",
         "elasticfilesystem:ClientWrite",
