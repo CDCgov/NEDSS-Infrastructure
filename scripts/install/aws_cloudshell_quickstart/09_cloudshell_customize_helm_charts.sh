@@ -4,17 +4,17 @@
 #
 
 # must edit on each release or prompt and save
-HELM_VER=v1.0.0
+HELM_VER=v7.3.1
 
 INSTALL_DIR=nbs_install
 cd ~/${INSTALL_DIR}
 
-ZIP_FILE=helm-ats.zip
+ZIP_FILE=helm-fts3.zip
 S3_BUCKET=install-placeholder-${ACCT_NUM}/tmptestzips
 echo "edit line 7, 9 and rerun"
 exit 1
 
-TMP_COPY_DIR=helm-ats
+TMP_COPY_DIR=helm-fts3
 
 #CHARTS_DIR=NEDSS-Helm-1.0.0-prerelease/charts
 CHARTS_DIR=nbs-helm-${HELM_VER}/charts
@@ -33,7 +33,7 @@ update_values_file()
 
 	# backup original 
 	cp -p ${CHARTS_DIR}/${TMP_HELM_CHART}/values.yaml  ${CHARTS_DIR}/${TMP_HELM_CHART}/values.yaml.orig
-	cp -p ${TMP_COPY_DIR}/${TMP_HELM_CHART}/values.yaml ${CHARTS_DIR}/${TMP_HELM_CHART}/values.yaml
+	#cp -p ${TMP_COPY_DIR}/${TMP_HELM_CHART}/values.yaml ${CHARTS_DIR}/${TMP_HELM_CHART}/values.yaml
 
 
 }
@@ -42,7 +42,7 @@ update_values_file elasticsearch-efs;
 update_values_file modernization-api;
 update_values_file nbs-gateway;
 update_values_file nginx-ingress;
-update_values_file nifi;
+update_values_file nifi-efs;
 
 
 echo " now make sure efs volume ID is correct in elasticsearch-efs"

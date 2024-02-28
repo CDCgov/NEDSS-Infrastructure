@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # can get this with cli
-ACCT_NUM=00000000
+ACCT_NUM=0000000
 
 # modify this for each release or prompt and save to rc file
-INFRA_VER=v1.1.5
+INFRA_VER=v1.2.1
 
 INSTALL_DIR=nbs_install
 
@@ -26,10 +26,11 @@ then
 	#exit 1
 else
 	#cp -pr samples/NBS7_standard ${TMP_SITE_NAME}
-	cp -pr terraform/aws/samples/NBS7_standard ${TMP_SITE_NAME}
+	#cp -pr terraform/aws/samples/NBS7_standard ${TMP_SITE_NAME}
+	cp -pr terraform/aws/samples/NBS7_standard terraform/aws/${TMP_SITE_NAME}
 fi
 
-cd ${TMP_SITE_NAME}
+cd terraform/aws/${TMP_SITE_NAME}
 
 # 
 # cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/

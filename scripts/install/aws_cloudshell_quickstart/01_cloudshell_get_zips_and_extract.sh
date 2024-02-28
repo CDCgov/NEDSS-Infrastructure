@@ -7,13 +7,14 @@
 # these need to be updated with each release or prompted and saved in an rc
 # file
 
-RELEASE_VER=v7.2.0
-INFRA_VER=v1.1.5
-HELM_VER=v7.2.0
+RELEASE_VER=v7.3.1
+INFRA_VER=v1.2.1
+HELM_VER=v7.3.1
 
 INFRA_FILE_BASE=nbs-infrastructure-${INFRA_VER}
 HELM_FILE_BASE=nbs-helm-${HELM_VER}
 INSTALL_DIR=nbs_install
+TMP_S3=s3://cdc-nbs-terraform-nbs-video-demo
 
 INFRA_URL=https://github.com/CDCgov/NEDSS-Infrastructure/releases/download/${RELEASE_VER}/${INFRA_FILE_BASE}.zip
 HELM_URL=https://github.com/CDCgov/NEDSS-Helm/releases/download/${RELEASE_VER}/${HELM_FILE_BASE}.zip
@@ -34,7 +35,7 @@ else
 	#mv 1.0.0-prerelease.zip NEDSS-Infrastructure-1.0.0-prerelease.zip
 
 	echo "grabbing file from s3 as a placeholder"
-	aws s3 cp s3://kr-test-prod-12345/tmpzipfiles/nbs-infrastructure-v1.1.5.zip .
+	aws s3 cp ${TMP_S3}/${INFRA_FILE_BASE}.zip .
 	# extract temp old repo
 	#echo "unzipping infra.zip"
 	#unzip -q infra.zip
@@ -55,7 +56,7 @@ else
 	echo "unzipping ${INFRA_FILE_BASE}.zip"
 	#mkdir -p ${INSTALL_DIR}/${INFRA_FILE_BASE}
 	#unzip -q ${INFRA_FILE_BASE}.zip -d ${INFRA_FILE_BASE}
-	unzip -q ${INFRA_FILE_BASE}.zip 
+	unzip -q ${INFRA_FILE_BASE}.zip -d ${INFRA_FILE_BASE}
 fi
 
 echo "INFO: make the scripts executable"
@@ -66,6 +67,7 @@ chmod 755 ${INFRA_FILE_BASE}/scripts/*/*/*.sh
 #wget  https://github.com/CDCgov/NEDSS-Helm/archive/refs/tags/1.0.0-prerelease.zip
 echo 
 echo "getting ${HELM_URL}"
+aws s3 cp ${TMP_S3}/${HELM_FILE_BASE}.zip .
 wget -q ${HELM_URL}
 #mv 1.0.0-prerelease.zip NEDSS-Helm-1.0.0-prerelease.zip
 #unzip  NEDSS-Helm-1.0.0-prerelease.zip
