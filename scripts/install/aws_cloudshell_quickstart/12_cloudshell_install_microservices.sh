@@ -69,6 +69,13 @@ echo "sleeping for ${SLEEP_TIME} seconds"
 sleep ${SLEEP_TIME}
 
 
+echo "installing page-builder-api"
+echo "hit return to continue"
+read junk
+helm install page-builder-api -f ./page-builder-api/values.yaml page-builder-api
+echo "sleeping for ${SLEEP_TIME} seconds"
+sleep ${SLEEP_TIME}
+
 echo "installing modernization-api"
 echo "hit return to continue"
 read junk
@@ -79,7 +86,7 @@ sleep ${SLEEP_TIME}
 echo "installing nifi"
 echo "hit return to continue"
 read junk
-helm install nifi -f ./nifi/values.yaml nifi
+helm install nifi -f ./nifi-efs/values.yaml nifi-efs
 echo "sleeping for ${SLEEP_TIME} seconds"
 sleep ${SLEEP_TIME}
 

@@ -46,6 +46,12 @@ echo "removing modernization-api"
 echo "hit return to continue"
 read junk
 helm uninstall modernization-api 
+
+helm list
+echo "removing page-builder-api"
+echo "hit return to continue"
+read junk
+helm uninstall page-builder-api 
  
 helm list
 echo "removing elasticsearch"
