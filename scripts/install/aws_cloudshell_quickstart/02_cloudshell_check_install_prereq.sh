@@ -11,6 +11,14 @@ MIN_TERRAFORM_VERSION="1.5.4"
 MIN_EKSCTL_VERSION="0.141.0"
 MIN_HELM_VERSION="3.11.0"
 MIN_JQ_VERSION="1.4"
+MIN_KUBECTL_VERSION="1.26"
+
+# this needs to be in your path
+INSTALL_DIR=/usr/local
+#INSTALL_DIR=/opt/local
+# discouraged
+#INSTALL_DIR=/
+
 
 # Default flags
 auto_yes=false
@@ -39,13 +47,24 @@ done
 
 
 
-
 # Function to compare version numbers
 version_compare() {
     # Using 'sort -V' for version comparison and picking the first line
     local result=$(echo -e "$1\n$2" | sort -V | head -n 1)
     [[ $1 == $result ]]
 }
+
+check_install_dir() {
+	if [ -d ${INSTALL_DIR} ]
+	then
+		echo "${INSTALL_DIR} exists, good"
+	else
+		echo "${INSTALL_DIR} does not exist, creating"
+		mkdir -p ${INSTALL_DIR}
+		echo "WARNING: makes sure ${INSTALL_DIR} is in your path"
+	fi
+}
+
 
 
 # Check and install AWS CLI
@@ -105,6 +124,25 @@ if ! terraform version > /dev/null 2>&1 || version_compare "$(terraform version 
     fi
 fi
 
+# Check and install kubectl
+if ! kubectl version > /dev/null 2>&1 || version_compare "$(kubectl version --client | grep "Client Version" | awk -F':' '{print $2}'| cut -d'v' -f2)" "$MIN_KUBECTL_VERSION"; then
+    if [ "$auto_yes" = true ]; then
+        [ "$quiet_mode" = false ] && echo "Auto-installing kubectl as '-y' flag is set"
+	echo "installing kubectl"
+	curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+	check_install_dir;
+	sudo install -o root -g root -m 0755 kubectl ${INSTALL_DIR}/bin/kubectl
+    else
+    	read -p "kubectl is missing or its version is less than the minimum. Install/Update? (y/n) " choice
+    	if [[ $choice == "y" ]]; then
+		echo "installing kubectl"
+		curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+		check_install_dir;
+		sudo install -o root -g root -m 0755 kubectl ${INSTALL_DIR}/bin/kubectl
+    	fi
+    fi
+fi
+
 
 # Check and install eksctl
 if ! eksctl version > /dev/null 2>&1 || version_compare "$(eksctl version)" "$MIN_EKSCTL_VERSION"; then
@@ -112,13 +150,15 @@ if ! eksctl version > /dev/null 2>&1 || version_compare "$(eksctl version)" "$MI
         [ "$quiet_mode" = false ] && echo "Auto-installing eksutil as '-y' flag is set"
         sudo yum install -y openssl -q
         curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-        sudo mv /tmp/eksctl /usr/local/bin
+	check_install_dir;
+        sudo mv /tmp/eksctl ${INSTALL_DIR}/bin
     else
     	read -p "eksctl is missing or its version is less than the minimum. Install/Update? (y/n) " choice
     	if [[ $choice == "y" ]]; then
         	sudo yum install -y openssl -q
         	curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-        	sudo mv /tmp/eksctl /usr/local/bin
+		check_install_dir;
+        	sudo mv /tmp/eksctl  ${INSTALL_DIR}/bin
     	fi
     fi
 fi
@@ -149,4 +189,5 @@ echo "jq version: $(jq --version)"
 echo "Terraform version: $(terraform --version | head -1 )"
 echo "eksctl version: $(eksctl version)"
 echo "Helm version: $(helm version)"
+echo "kubectl version: $(kubectl version --client | grep "Client Version" | awk -F':' '{print $2}')"
 
