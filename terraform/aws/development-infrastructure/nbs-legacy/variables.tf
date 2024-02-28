@@ -173,6 +173,11 @@ variable "nbs_db_dns" {
 
 }
 
+variable "nbs_github_release_tag" {
+  description = "Create URL and download Release Package. Default is always latest or Null"
+  type        = string
+}
+
 variable "kms_arn_shared_services_bucket" {
   description = "KMS key arn used to encrypt shared services s3 bucket"
   type        = string

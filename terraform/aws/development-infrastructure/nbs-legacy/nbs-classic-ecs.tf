@@ -84,6 +84,10 @@ resource "aws_ecs_task_definition" "task" {
         {
           name  = "DATABASE_ENDPOINT",
           value = "${var.nbs_db_dns}"
+        },
+        {
+          name  = "GITHUB_RELEASE_TAG",
+          value = "${var.nbs_github_release_tag}"
         }
       ]
         logConfiguration = {
