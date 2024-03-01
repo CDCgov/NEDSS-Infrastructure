@@ -3,12 +3,12 @@ variable "prefix" {
   type        = string
 }
 
-variable "resource_group_name" {
+variable "sqlmi_resource_group_name" {
   description = "The name of the resource group"
   type        = string
 }
 
-variable "vnet_name" {
+variable "sqlmi_vnet_name" {
   description = "Name of vNet"
   type        = string
 }
@@ -47,8 +47,13 @@ variable "sqlmi_sku_name" {
 }
 
 variable "sqlmi_restoring_from_database_name" {
-  description = "SQL Managed Database to Restore From"
+  description = "SQL Managed Database Name to Restore From"
   type        = string
+}
+
+variable "sqlmi_restoring_from_database_rg" {
+  description = "SQL Managed Database to Restore From Resource Group"
+  type        = string  
 }
 
 variable "sqlmi_restore_point_in_time" {

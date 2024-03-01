@@ -1,60 +1,49 @@
 # Re-used variables
 locals {
-  backend_address_pool_name      = "${var.prefix}-appgw-backend-pool"
-  frontend_port_name             = "${var.prefix}-appgw-frontend-port"
-  frontend_ip_configuration_name = "${var.prefix}-appgw-frontend-ip-configuration"
-  http_setting_name              = "${var.prefix}-appgw-backend-http-settings"
-  listener_name                  = "${var.prefix}-appgw-http-listener"
-  request_routing_rule_name      = "${var.prefix}-appgw-rule"
-  probe_name                     = "${var.prefix}-appgw-custom-probe"
-}
-
-
-### Deploy NBS6 in ACI ###
-resource "azurerm_container_group" "aci" {
-  name                = "${var.prefix}-aci"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-  os_type             = "Windows"
-  ip_address_type     = "Private"
-  subnet_ids          = toset([data.azurerm_subnet.aci_subnet.id])
-
-  container {
-    name   = "${var.prefix}-container"
-    image  = var.quay_nbs6_repository
-    cpu    = 4
-    memory = 8
-    ports {
-      port     = 7001
-      protocol = "TCP"
-    }
-
-    environment_variables = {
-      DATABASE_ENDPOINT = var.sql_database_endpoint
-    }
-
-  }
+  backend_address_pool_name      = "${var.prefix}-agw-backend-pool"
+  frontend_port_name             = "${var.prefix}-agw-frontend-port"
+  frontend_ip_configuration_name = "${var.prefix}-agw-frontend-ip-configuration"
+  http_setting_name              = "${var.prefix}-agw-backend-http-settings"
+  listener_name                  = "${var.prefix}-agw-http-listener"
+  request_routing_rule_name      = "${var.prefix}-agw-rule"
+  probe_name                     = "${var.prefix}-agw-custom-probe"
 }
 
 
 ### Deploy App Gateway for ACI ###
 
-
 # Configure Public IP for App Gateway
 # Might be best to level 1 app infrastrcuture deployment
-resource "azurerm_public_ip" "appgwpublicip" {
-  name                = "${var.prefix}-appgw-public-ip"
+resource "azurerm_public_ip" "agwpublicip" {
+  name                = "${var.prefix}-agw-public-ip"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   allocation_method   = "Static"
   sku                 = "Standard"
+  lifecycle {
+    ignore_changes = [ 
+      tags["business_steward"],
+      tags["center"],
+      tags["environment"],
+      tags["escid"],
+      tags["funding_source"],
+      tags["pii_data"],
+      tags["security_compliance"],
+      tags["security_steward"],
+      tags["support_group"],
+      tags["system"],
+      tags["technical_poc"],
+      tags["technical_steward"],
+      tags["zone"]
+      ]
+    }
 }
 
 
 # Configure App Gateway
-resource "azurerm_application_gateway" "appgw" {
-  name                = "${var.prefix}-appgw"
-  depends_on          = [azurerm_public_ip.appgwpublicip]
+resource "azurerm_application_gateway" "agw" {
+  name                = "${var.prefix}-agw"
+  depends_on          = [azurerm_public_ip.agwpublicip]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
 
@@ -65,8 +54,8 @@ resource "azurerm_application_gateway" "appgw" {
   }
 
   gateway_ip_configuration {
-    name      = "${var.prefix}-appgw-ip-configuration"
-    subnet_id = data.azurerm_subnet.appgw_subnet.id
+    name      = "${var.prefix}-agw-ip-configuration"
+    subnet_id = data.azurerm_subnet.agw_subnet.id
   }
 
   frontend_port {
@@ -76,7 +65,7 @@ resource "azurerm_application_gateway" "appgw" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.appgwpublicip.id
+    public_ip_address_id = azurerm_public_ip.agwpublicip.id
   }
 
   probe {
@@ -91,7 +80,7 @@ resource "azurerm_application_gateway" "appgw" {
 
   backend_address_pool {
     name         = local.backend_address_pool_name
-    ip_addresses = var.aci_ip_list
+    ip_addresses = var.agw_aci_ip_list
   }
 
   backend_http_settings {
@@ -118,4 +107,21 @@ resource "azurerm_application_gateway" "appgw" {
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
   }
+  lifecycle {
+    ignore_changes = [ 
+      tags["business_steward"],
+      tags["center"],
+      tags["environment"],
+      tags["escid"],
+      tags["funding_source"],
+      tags["pii_data"],
+      tags["security_compliance"],
+      tags["security_steward"],
+      tags["support_group"],
+      tags["system"],
+      tags["technical_poc"],
+      tags["technical_steward"],
+      tags["zone"]
+      ]
+    }
 }
