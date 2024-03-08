@@ -233,4 +233,10 @@ variable "internal" {
   type        = bool
   default     = true
 }
+
+variable "nbs_github_release_tag" {
+  description = "Create URL and download Release Package. Default is always latest or Null"
+  type        = string
+  default = "6.0.15.1"
+}
 #-----------------------------------------------------------------

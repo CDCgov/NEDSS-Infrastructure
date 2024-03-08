@@ -70,10 +70,11 @@ resource "aws_ecs_task_definition" "task" {
   }
 
   container_definitions = jsonencode([
-    {
+    {      
       name  = "${var.resource_prefix}-task",
       image = "${var.docker_image}",
       tags = var.tags,
+      readonlyRootFilesystem = true,
       portMappings = [
         {
           containerPort = 7001,
