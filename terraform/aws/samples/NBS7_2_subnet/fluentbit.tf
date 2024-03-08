@@ -1,5 +1,5 @@
 module "fluentbit" {
-  source                             = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/fluentbit?ref=v1.1.9-DEV"
+  source                             = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/fluentbit?ref=v1.2.2-DEV"
   # path_to_fluentbit                  = "../app-infrastructure/fluentbit"
   resource_prefix                    = var.resource_prefix
   oidc_provider_arn                  = module.eks_nbs.oidc_provider_arn

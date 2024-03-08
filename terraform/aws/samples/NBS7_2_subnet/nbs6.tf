@@ -11,7 +11,8 @@ module "nbs6" {
 
   # ECS settings
   ecs_subnets = [data.aws_subnet.ecs_subnet.id]
-  docker_image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${var.docker_image}"
+  docker_image = var.docker_image
+  nbs_github_release_tag = var.nbs_github_release_tag
   ecs_cpu = var.ecs_cpu
   ecs_memory = var.ecs_memory
   nbs6_ingress_vpc_cidr_blocks = var.nbs6_ingress_vpc_cidr_blocks
