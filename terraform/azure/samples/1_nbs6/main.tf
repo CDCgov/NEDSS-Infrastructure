@@ -19,18 +19,28 @@ module nbs6-agw{
     agw_aci_ip_list =  var.agw_aci_ip_list
 }
 
-module nbs6-sqlmi{
-    source = "../../modules/1_nbs6/sqlmi"
+module nbs6-ln{
+    source = "../../modules/1_nbs6/lbi"
     prefix = var.prefix
-    sqlmi_resource_group_name = var.sqlmi_resource_group_name
-    sqlmi_vnet_name = var.sqlmi_vnet_name
-    sqlmi_subnet_name = var.sqlmi_subnet_name
-    sqlmi_username = var.sqlmi_username
-    sqlmi_password = var.sqlmi_password
-    sqlmi_restoring_from_database_name = var.sqlmi_restoring_from_database_name
-    sqlmi_restoring_from_database_rg = var.sqlmi_restoring_from_database_rg
-    sqlmi_restore_point_in_time = var.sqlmi_restore_point_in_time
-    sqlmi_vcore = var.sqlmi_vcore
-    sqlmi_storage = var.sqlmi_storage
-    sqlmi_sku_name = var.sqlmi_sku_name
+    lbi_resource_group_name = var.lbi_resource_group_name
+    lbi_vnet_name = var.lbi_vnet_name
+    lbi_subnet_name = var.lbi_subnet_name
+    lbi_aci_ip_list =  var.lbi_aci_ip_list
+    lbi_private_ip = var.lbi_private_ip
 }
+
+# module nbs6-sqlmi{
+#     source = "../../modules/1_nbs6/sqlmi"
+#     prefix = var.prefix
+#     sqlmi_resource_group_name = var.sqlmi_resource_group_name
+#     sqlmi_vnet_name = var.sqlmi_vnet_name
+#     sqlmi_subnet_name = var.sqlmi_subnet_name
+#     sqlmi_username = var.sqlmi_username
+#     sqlmi_password = var.sqlmi_password
+#     sqlmi_restoring_from_database_name = var.sqlmi_restoring_from_database_name
+#     sqlmi_restoring_from_database_rg = var.sqlmi_restoring_from_database_rg
+#     sqlmi_restore_point_in_time = var.sqlmi_restore_point_in_time
+#     sqlmi_vcore = var.sqlmi_vcore
+#     sqlmi_storage = var.sqlmi_storage
+#     sqlmi_sku_name = var.sqlmi_sku_name
+# }

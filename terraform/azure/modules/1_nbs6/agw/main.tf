@@ -10,7 +10,7 @@ locals {
 }
 
 
-### Deploy App Gateway for ACI ###
+### Deploy Public App Gateway ###
 
 # Configure Public IP for App Gateway
 # Might be best to level 1 app infrastrcuture deployment
@@ -41,9 +41,9 @@ resource "azurerm_public_ip" "agwpublicip" {
 }
 
 
-# Configure App Gateway
-resource "azurerm_application_gateway" "agw" {
-  name                = "${var.prefix}-agw"
+# Configure Public App Gateway
+resource "azurerm_application_gateway" "agw-public" {
+  name                = "${var.prefix}-agw-public"
   depends_on          = [azurerm_public_ip.agwpublicip]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
