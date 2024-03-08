@@ -93,7 +93,7 @@ variable "lbi_aci_ip_list" {
 
 variable "lbi_private_ip" {
   description = "ACI Subnet IP list. Mix/Max 3 Required"
-  type        = list
+  type        = string
 }
 
 

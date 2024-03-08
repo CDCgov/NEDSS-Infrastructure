@@ -10,6 +10,23 @@ resource "azurerm_lb" "lbi" {
     private_ip_address_version = "IPv4"
     subnet_id            = data.azurerm_subnet.lbi_subnet.id
   }
+  lifecycle {
+    ignore_changes = [ 
+      tags["business_steward"],
+      tags["center"],
+      tags["environment"],
+      tags["escid"],
+      tags["funding_source"],
+      tags["pii_data"],
+      tags["security_compliance"],
+      tags["security_steward"],
+      tags["support_group"],
+      tags["system"],
+      tags["technical_poc"],
+      tags["technical_steward"],
+      tags["zone"]
+      ]
+    }
 }
 
 # Create Backend Pool
