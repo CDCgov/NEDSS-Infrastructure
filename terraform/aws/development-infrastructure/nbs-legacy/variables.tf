@@ -46,6 +46,12 @@ variable "deploy_on_ecs" {
   default     = false
 }
 
+variable "deploy_alb_dns_record" {
+  description = "Deploy alb dns record"
+  type        = bool
+  default     = true
+}
+
 variable "ecs_subnets" {
   description = "Classic NBS ECS Subnets Configuration"
   type        = list(any)
@@ -139,6 +145,12 @@ variable "zone_id" {
   description = "Route53 Hosted Zone Id. Requires route53_url_name to be set."
   type        = string
   default = ""
+}
+
+variable "update_route53_a_record" {
+  description = "Updates route53 A record"
+  type        = bool
+  default     = false
 }
 
 variable "create_cert" {
