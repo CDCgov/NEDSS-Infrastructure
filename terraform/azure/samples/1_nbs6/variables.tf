@@ -97,7 +97,6 @@ variable "lbi_private_ip" {
 }
 
 
-
 #### SQLMI ####
 
 variable "sqlmi_resource_group_name" {

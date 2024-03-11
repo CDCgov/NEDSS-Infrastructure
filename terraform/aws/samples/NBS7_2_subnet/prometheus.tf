@@ -1,5 +1,5 @@
 # module "prometheus" {
-#   source                             = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/aws-prometheus-grafana?ref=v1.1.9-DEV"
+#   source                             = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/aws-prometheus-grafana?ref=v1.2.2-DEV"
 #   # values_file_path                   = "../app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
 #   resource_prefix                    = var.resource_prefix
 #   oidc_provider_arn                  = module.eks_nbs.oidc_provider_arn

@@ -10,6 +10,7 @@ locals {
 }
 
 
+
 ### Deploy Public App Gateway ###
 
 # Configure Public IP for App Gateway
@@ -39,6 +40,7 @@ resource "azurerm_public_ip" "agwpublicip" {
     create_before_destroy = true
     }
 }
+
 
 
 # Configure Public App Gateway

@@ -46,6 +46,12 @@ variable "deploy_on_ecs" {
   default     = false
 }
 
+variable "deploy_alb_dns_record" {
+  description = "Deploy alb dns record"
+  type        = bool
+  default     = true
+}
+
 variable "ecs_subnets" {
   description = "Classic NBS ECS Subnets Configuration"
   type        = list(any)
@@ -141,6 +147,12 @@ variable "zone_id" {
   default = ""
 }
 
+variable "update_route53_a_record" {
+  description = "Updates route53 A record"
+  type        = bool
+  default     = false
+}
+
 variable "create_cert" {
   description = "Do you want to create a public AWS Certificate (if false (default), must provide certificate_arn). Requires zone_id to be set."
   type        = bool
@@ -171,6 +183,11 @@ variable "nbs_db_dns" {
   description = "NBS database server dns"
   type        = string
 
+}
+
+variable "nbs_github_release_tag" {
+  description = "Create URL and download Release Package. Default is always latest or Null"
+  type        = string
 }
 
 variable "kms_arn_shared_services_bucket" {

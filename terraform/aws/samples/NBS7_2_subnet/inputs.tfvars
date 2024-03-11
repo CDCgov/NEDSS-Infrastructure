@@ -26,7 +26,7 @@ resource_prefix   = "" # highly recommend using snake case for naming (e.g. this
 # legacy_vpc_public_route_table_id  = "rtb-PUBLIC-EXAMPLE"
 
 # NBS6
-docker_image = ""
+docker_image = "quay.io/us-cdcgov/cdc-nbs-modernization/nbs6:6.0.15.1"
 nbs6_ingress_vpc_cidr_blocks = []
 nbs6_rdp_cidr_block = []
 ingress_vpc_cidr_blocks = ""

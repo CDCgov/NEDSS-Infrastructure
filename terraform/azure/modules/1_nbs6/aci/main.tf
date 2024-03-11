@@ -28,7 +28,7 @@ resource "azurerm_log_analytics_workspace" "aci_log" {
 
 # Create Container Group
 resource "azurerm_container_group" "aci" {
-  depends_on = [ azurerm_log_analytics_workspace.aci_log ]
+  depends_on          = [ azurerm_log_analytics_workspace.aci_log ]
   name                = "${var.prefix}-aci"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -52,6 +52,7 @@ resource "azurerm_container_group" "aci" {
     }
 
   }
+
 
   diagnostics {
     log_analytics {
