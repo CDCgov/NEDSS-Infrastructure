@@ -36,6 +36,12 @@ module "aks" {
   role_based_access_control_enabled = true 
   identity_ids                         = [azurerm_user_assigned_identity.test.id]
   identity_type                        = var.identity_type
+ 
+  # Required to be set for integration with monitor/prometheus/grafana, though values are not required to be null.
+  monitor_metrics = {
+    annotations_allowed = null
+    labels_allowed      =  null
+  }
   
 
   #disk_encryption_set_id = azurerm_key_vault_secret.new.id
