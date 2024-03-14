@@ -16,7 +16,14 @@ data "azurerm_subnet" "sqlmi_subnet" {
   resource_group_name  = data.azurerm_virtual_network.vnet.resource_group_name
 }
 
+# Get Restore From Database Information
 data "azurerm_mssql_managed_instance" "restore_from_database" {
   name                = var.sqlmi_restoring_from_database_name
-  resource_group_name = var.sqlmi_restoring_from_database_rg
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
+# GetKey Vault Information
+data "azurerm_key_vault" "key_vault" {
+  name                = var.sqlmi_key_vault
+  resource_group_name = data.azurerm_resource_group.rg.name
 }

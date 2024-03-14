@@ -115,14 +115,8 @@ variable "sqlmi_subnet_name" {
   type        = string
 }
 
-variable "sqlmi_username" {
-  description = "SQL Admin Username"
-  type        = string
-  sensitive = true
-}
-
-variable "sqlmi_password" {
-  description = "SQL Admin Password"
+variable "sqlmi_key_vault" {
+  description = "Key Vault Name to Store SQLMI Credentials"
   type        = string
   sensitive = true
 }
