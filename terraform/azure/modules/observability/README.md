@@ -7,10 +7,11 @@ This module is used to deploy and configure the observability module and onboard
 ## Prerequisites
 The fluentbit module requires some Azure resource to exist before this module can be sucessfully deployed.
 1. An AKS cluster 
-2. The proper permissions on the role used to deploy resources (needs )
+2. Azure CLI is required for the grafana dashboard configuration (https://learn.microsoft.com/en-us/cli/azure/).
+3. The proper permissions on the role used to deploy resources
     - You require at least **Contributor** access to the cluster for onboarding.
     - You require **Monitoring Reader** or **Monitoring Contributor** to view data after monitoring is enabled.
-3. Managed Prometheus prerequisites
+4. Managed Prometheus prerequisites
     - The cluster *must* use **managed identity authentication**.
     
 
