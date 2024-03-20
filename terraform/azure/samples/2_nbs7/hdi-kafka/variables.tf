@@ -47,7 +47,7 @@ variable "container_access_type" {
 }
 variable "sg_name" {
     type = string
-    default = "hdi-kafka-sg1"
+    default = "hdi-kafka-sg"
 }
 
 variable "kafka_cluster_name" {
@@ -120,7 +120,7 @@ variable "vnet_name" {
     default = "csels-nbs-dev-low-modern-app-vnet"
 }
 
-variable "vnet_rg" {
+variable "resource_group_name" {
     type = string
     default = "csels-nbs-dev-low-rg"
 }
@@ -128,7 +128,7 @@ variable "vnet_rg" {
 
 variable "kafka_subnet_name" {
     type = string
-    default = "csels-nbs-dev-low-hdi-kafka-vnet-sn"
+    default = "csels-nbs-dev-low-hdikafka-app-vnet-sn"
 }
 
 variable "tls_min_version" {
