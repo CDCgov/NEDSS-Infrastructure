@@ -15,11 +15,11 @@ variable "location" {
   default = "East US"
 }
 
-variable "resource_group_name" {
-  description = "Name of the Azure resource group"
-  type        = string
-  default = "kafka-resources"
-}
+# variable "resource_group_name" {
+#   description = "Name of the Azure resource group"
+#   type        = string
+#   default = "kafka-resources"
+# }
 
 variable "storage_account_name" {
       type        = string
