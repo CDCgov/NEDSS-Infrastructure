@@ -1,6 +1,6 @@
 # Get resource group
 data "azurerm_resource_group" "rg" {
-  name = "csels-nbs-dev-low-rg"
+  name = var.resource_group_name
 }
 
 # Get vNet Data
