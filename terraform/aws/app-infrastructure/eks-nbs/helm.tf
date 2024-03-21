@@ -1,7 +1,7 @@
 # set pull-through cache variables for easy reference
 locals {
-  ecr_public_pull = "${aws_ecr_pull_through_cache_rule.ecr_public[0].registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecr_pull_through_cache_rule.ecr_public[0].id}"
-  quay_pull = "${aws_ecr_pull_through_cache_rule.quay[0].registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecr_pull_through_cache_rule.quay[0].id}"
+  ecr_public_pull = var.use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecr_pull_through_cache_rule.ecr_public[0].id}" : ""
+  quay_pull = var.use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.quay[0].registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecr_pull_through_cache_rule.quay[0].id}" : ""
 }
 
 # efs local variables
