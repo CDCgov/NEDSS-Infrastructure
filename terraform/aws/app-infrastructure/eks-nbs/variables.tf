@@ -115,7 +115,7 @@ variable "use_ecr_pull_through_cache" {
 variable "allow_endpoint_public_access" {
   description = "Allow both public and private access to EKS api endpoint"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "external_cidr_blocks" {
