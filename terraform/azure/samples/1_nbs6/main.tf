@@ -10,6 +10,7 @@ module nbs6-aci{
     aci_memory = var.aci_memory
 }
 
+# Temporary, will be removed after Akamai implementation
 module nbs6-agw{
     source = "../../modules/1_nbs6/agw"
     prefix = var.prefix
@@ -29,18 +30,17 @@ module nbs6-ln{
     lbi_private_ip = var.lbi_private_ip
 }
 
-# module nbs6-sqlmi{
-#     source = "../../modules/1_nbs6/sqlmi"
-#     prefix = var.prefix
-#     sqlmi_resource_group_name = var.sqlmi_resource_group_name
-#     sqlmi_vnet_name = var.sqlmi_vnet_name
-#     sqlmi_subnet_name = var.sqlmi_subnet_name
-#     sqlmi_username = var.sqlmi_username
-#     sqlmi_password = var.sqlmi_password
-#     sqlmi_restoring_from_database_name = var.sqlmi_restoring_from_database_name
-#     sqlmi_restoring_from_database_rg = var.sqlmi_restoring_from_database_rg
-#     sqlmi_restore_point_in_time = var.sqlmi_restore_point_in_time
-#     sqlmi_vcore = var.sqlmi_vcore
-#     sqlmi_storage = var.sqlmi_storage
-#     sqlmi_sku_name = var.sqlmi_sku_name
-# }
+module nbs6-sqlmi{
+    source = "../../modules/1_nbs6/sqlmi"
+    prefix = var.prefix
+    sqlmi_resource_group_name = var.sqlmi_resource_group_name
+    sqlmi_vnet_name = var.sqlmi_vnet_name
+    sqlmi_subnet_name = var.sqlmi_subnet_name
+    sqlmi_key_vault = var.sqlmi_key_vault
+    sqlmi_restoring_from_database_name = var.sqlmi_restoring_from_database_name
+    sqlmi_restoring_from_database_rg = var.sqlmi_restoring_from_database_rg
+    sqlmi_restore_point_in_time = var.sqlmi_restore_point_in_time
+    sqlmi_vcore = var.sqlmi_vcore
+    sqlmi_storage = var.sqlmi_storage
+    sqlmi_sku_name = var.sqlmi_sku_name
+}
