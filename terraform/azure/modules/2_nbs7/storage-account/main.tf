@@ -8,7 +8,7 @@ data "azurerm_subnet" "endpoint" {
   virtual_network_name = var.virtual_network_name
 }
 
-# create storage account with blob storage
+# create storage account
 resource "azurerm_storage_account" "storage_account" {
   name                     = var.storage_account_name
   resource_group_name      = data.azurerm_resource_group.main.name
@@ -18,7 +18,8 @@ resource "azurerm_storage_account" "storage_account" {
   account_kind = var.account_kind
   enable_https_traffic_only = true
 }
- 
+
+#Azure Blob endpoint 
 resource "azurerm_private_endpoint" "blob" {
   name                = "${var.storage_account_name}-blob"
   location            = data.azurerm_resource_group.main.location
@@ -50,7 +51,7 @@ resource "azurerm_private_dns_a_record" "blob" {
   records             = [azurerm_private_endpoint.blob.private_service_connection.0.private_ip_address]
 }
 
-
+# Azure Files endpoint
 resource "azurerm_private_endpoint" "file" {
   name                = "${var.storage_account_name}-file"
   location            = data.azurerm_resource_group.main.location
@@ -80,4 +81,24 @@ resource "azurerm_private_dns_a_record" "file" {
   resource_group_name = data.azurerm_resource_group.main.name
   ttl                 = 300
   records             = [azurerm_private_endpoint.file.private_service_connection.0.private_ip_address]
+}
+
+#VNET Link
+data "azurerm_virtual_network" "vnet" {
+    name = var.virtual_network_name
+    resource_group_name = var.resource_group_name
+}
+ 
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_blob" {
+  name                  = "${var.storage_account_name}-blob"
+  resource_group_name   = data.azurerm_resource_group.main.name
+  private_dns_zone_name = var.dns_zone_name_blob
+  virtual_network_id    = data.azurerm_virtual_network.vnet.id
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_file" {
+  name                  = "${var.storage_account_name}-file"
+  resource_group_name   = data.azurerm_resource_group.main.name
+  private_dns_zone_name = var.dns_zone_name_file
+  virtual_network_id    = data.azurerm_virtual_network.vnet.id
 }
