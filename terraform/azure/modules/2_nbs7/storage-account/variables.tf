@@ -42,8 +42,6 @@ variable "virtual_network_name" {
   description = "Name of virtual network to be associated with storage account private endpoints."
 }
 
-
-
 variable "dns_zone_id_blob" {
   type = string
   description = "Zone id of DNS to which record will be added for blob storage."
@@ -62,4 +60,17 @@ variable "dns_zone_id_file" {
 variable "dns_zone_name_file" {
   type = string
   description = "Name of DNS zone to which record will be added for file storage."
+}
+
+# Data retention
+variable "blob_delete_retention_days" {
+  type = number
+  description = "Number of days to retain soft deleted blobs."
+  default = 14
+}
+
+variable "blob_container_delete_retention_days" {
+  type = number
+  description = "Number of days to retain soft delete containers."
+  default = 14
 }

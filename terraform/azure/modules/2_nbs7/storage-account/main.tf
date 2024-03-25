@@ -17,6 +17,16 @@ resource "azurerm_storage_account" "storage_account" {
   account_replication_type = var.account_replication_type
   account_kind = var.account_kind
   enable_https_traffic_only = true
+
+  blob_properties {
+    delete_retention_policy {
+      days = var.blob_delete_retention_days
+    }
+
+    container_delete_retention_policy {
+      days = var.blob_container_delete_retention_days
+    }
+  }
 }
 
 #Azure Blob endpoint 
