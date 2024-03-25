@@ -28,3 +28,10 @@ variable "blob_shared_key" {
   sensitive = true
 }
 
+variable "azure_container_name" {
+  type        = string
+  description = "Name of azure container to create and store fluenbit application logs."
+  default = "fluentbit-logs"
+  
+}
+
