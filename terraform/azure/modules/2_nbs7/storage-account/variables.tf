@@ -66,11 +66,11 @@ variable "dns_zone_name_file" {
 variable "blob_delete_retention_days" {
   type = number
   description = "Number of days to retain soft deleted blobs."
-  default = 14
+  default = null
 }
 
 variable "blob_container_delete_retention_days" {
   type = number
   description = "Number of days to retain soft delete containers."
-  default = 14
+  default = null
 }
