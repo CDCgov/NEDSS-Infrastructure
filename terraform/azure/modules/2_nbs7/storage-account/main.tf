@@ -43,13 +43,13 @@ resource "azurerm_private_endpoint" "blob" {
   ]
 }
  
-resource "azurerm_private_dns_a_record" "blob" {
-  name                = "${var.storage_account_name}-blob"
-  zone_name           = var.dns_zone_name_blob
-  resource_group_name = data.azurerm_resource_group.main.name
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.blob.private_service_connection.0.private_ip_address]
-}
+# resource "azurerm_private_dns_a_record" "blob" {
+#   name                = "${var.storage_account_name}-blob"
+#   zone_name           = var.dns_zone_name_blob
+#   resource_group_name = data.azurerm_resource_group.main.name
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.blob.private_service_connection.0.private_ip_address]
+# }
 
 # Azure Files endpoint
 resource "azurerm_private_endpoint" "file" {
@@ -75,13 +75,13 @@ resource "azurerm_private_endpoint" "file" {
   ]
 }
  
-resource "azurerm_private_dns_a_record" "file" {
-  name                = "${var.storage_account_name}-file"
-  zone_name           = var.dns_zone_name_file
-  resource_group_name = data.azurerm_resource_group.main.name
-  ttl                 = 300
-  records             = [azurerm_private_endpoint.file.private_service_connection.0.private_ip_address]
-}
+# resource "azurerm_private_dns_a_record" "file" {
+#   name                = "${var.storage_account_name}-file"
+#   zone_name           = var.dns_zone_name_file
+#   resource_group_name = data.azurerm_resource_group.main.name
+#   ttl                 = 300
+#   records             = [azurerm_private_endpoint.file.private_service_connection.0.private_ip_address]
+# }
 
 #VNET Link
 data "azurerm_virtual_network" "vnet" {
