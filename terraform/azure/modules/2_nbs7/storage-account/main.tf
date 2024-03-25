@@ -17,6 +17,7 @@ resource "azurerm_storage_account" "storage_account" {
   account_replication_type = var.account_replication_type
   account_kind = var.account_kind
   enable_https_traffic_only = true
+  public_network_access_enabled = var.public_network_access_enabled
 
   blob_properties {
     delete_retention_policy {
@@ -26,6 +27,8 @@ resource "azurerm_storage_account" "storage_account" {
     container_delete_retention_policy {
       days = var.blob_container_delete_retention_days
     }
+
+    
   }
 }
 

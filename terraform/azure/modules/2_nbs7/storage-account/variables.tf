@@ -42,6 +42,13 @@ variable "virtual_network_name" {
   description = "Name of virtual network to be associated with storage account private endpoints."
 }
 
+# Network
+variable "public_network_access_enabled" {
+  type = bool
+  description = "Whether the public network access is enabled?"
+  default = false
+}
+
 variable "dns_zone_id_blob" {
   type = string
   description = "Zone id of DNS to which record will be added for blob storage."
