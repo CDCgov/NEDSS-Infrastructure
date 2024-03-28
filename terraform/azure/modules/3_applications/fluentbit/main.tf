@@ -8,6 +8,8 @@ resource "helm_release" "fluentbit" {
   chart      = "fluent-bit"
   version          = var.helm_version
   namespace  = var.namespace
+  create_namespace = true
+  wait = true
 
   set {
     name = "serviceAccount.create"
