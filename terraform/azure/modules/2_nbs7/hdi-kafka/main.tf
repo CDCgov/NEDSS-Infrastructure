@@ -1,16 +1,16 @@
 ## remove this block once testing is done.
-provider "azurerm" {
-  features {}
-}
+# provider "azurerm" {
+#   features {}
+# }
 
-terraform {
-  required_providers {
-    azurerm = {
-      source = "hashicorp/azurerm"
-      version = "=3.0.1"
-    }
-  }
-}
+# terraform {
+#   required_providers {
+#     azurerm = {
+#       source = "hashicorp/azurerm"
+#       version = "=3.0.1"
+#     }
+#   }
+# }
 
 #######################################+++++++++#####$$$$$$$$$$%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
