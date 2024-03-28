@@ -24,7 +24,7 @@ variable "blob_account_name" {
 
 variable "blob_shared_key" {
   type        = string
-  description = "Azure shared for blob storage access"
+  description = "Azure shared key for blob storage access"
   sensitive = true
 }
 
