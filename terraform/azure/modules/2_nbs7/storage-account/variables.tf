@@ -42,6 +42,12 @@ variable "virtual_network_name" {
   description = "Name of virtual network to be associated with storage account private endpoints."
 }
 
+variable "infrastructure_encryption_enabled" {
+  type = bool
+  description = "Is infrastructure encryption enabled?"
+  default = true
+}
+
 # Network
 variable "public_network_access_enabled" {
   type = bool
