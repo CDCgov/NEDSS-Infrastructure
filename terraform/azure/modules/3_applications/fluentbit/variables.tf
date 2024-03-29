@@ -24,7 +24,14 @@ variable "blob_account_name" {
 
 variable "blob_shared_key" {
   type        = string
-  description = "Azure shared for blob storage access"
+  description = "Azure shared key for blob storage access"
   sensitive = true
+}
+
+variable "azure_container_name" {
+  type        = string
+  description = "Name of azure container to create and store fluenbit application logs."
+  default = "fluentbit-logs"
+  
 }
 
