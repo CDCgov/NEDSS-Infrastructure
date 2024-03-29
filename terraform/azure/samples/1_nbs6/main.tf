@@ -12,7 +12,7 @@ module nbs6-aci{
 
 # Temporary, will be removed after Akamai implementation
 module nbs6-agw{
-    source = "../../modules/1_nbs6/agw"
+    source = "../../modules/0_landing_zone/agw"
     prefix = var.prefix
     agw_resource_group_name = var.agw_resource_group_name
     agw_vnet_name = var.agw_vnet_name
