@@ -1,7 +1,7 @@
 # Application Gateway for AKS Internal Loadbalancer
 module nbs6-agw{
     source = "../../modules/0_landing_zone/agw"
-    prefix = var.prefix
+    resource_prefix = var.resource_prefix
     agw_resource_group_name = var.agw_resource_group_name
     agw_vnet_name = var.agw_vnet_name
     agw_subnet_name = var.agw_subnet_name

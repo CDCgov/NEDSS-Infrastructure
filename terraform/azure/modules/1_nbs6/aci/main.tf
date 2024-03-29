@@ -2,7 +2,7 @@
 
 # Create Log Analytics Workspace
 resource "azurerm_log_analytics_workspace" "aci_log" {
-  name                = "${var.prefix}-aci-log"
+  name                = "${var.resource_prefix}-aci-log"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   sku                 = "PerGB2018"
@@ -29,7 +29,7 @@ resource "azurerm_log_analytics_workspace" "aci_log" {
 # Create Container Group
 resource "azurerm_container_group" "aci" {
   depends_on          = [ azurerm_log_analytics_workspace.aci_log ]
-  name                = "${var.prefix}-aci"
+  name                = "${var.resource_prefix}-aci"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   os_type             = "Windows"
@@ -37,7 +37,7 @@ resource "azurerm_container_group" "aci" {
   subnet_ids          = toset([data.azurerm_subnet.aci_subnet.id])
 
   container {
-    name   = "${var.prefix}-container"
+    name   = "${var.resource_prefix}-container"
     image  = var.aci_quay_nbs6_repository
     cpu    = var.aci_cpu
     memory = var.aci_memory

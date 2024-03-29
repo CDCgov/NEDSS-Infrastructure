@@ -1,12 +1,12 @@
 # Re-used variables
 locals {
-  backend_address_pool_name      = "${var.prefix}-agw-backend-pool"
-  frontend_port_name             = "${var.prefix}-agw-frontend-port"
-  frontend_ip_configuration_name = "${var.prefix}-agw-frontend-ip-configuration"
-  https_setting_name              = "${var.prefix}-agw-backend-https-settings"
-  listener_name                  = "${var.prefix}-agw-https-listener"
-  request_routing_rule_name      = "${var.prefix}-agw-rule"
-  probe_name                     = "${var.prefix}-agw-custom-probe"
+  backend_address_pool_name      = "${var.resource_prefix}-agw-backend-pool"
+  frontend_port_name             = "${var.resource_prefix}-agw-frontend-port"
+  frontend_ip_configuration_name = "${var.resource_prefix}-agw-frontend-ip-configuration"
+  https_setting_name             = "${var.resource_prefix}-agw-backend-https-settings"
+  listener_name                  = "${var.resource_prefix}-agw-https-listener"
+  request_routing_rule_name      = "${var.resource_prefix}-agw-rule"
+  probe_name                     = "${var.resource_prefix}-agw-custom-probe"
 }
 
 
@@ -16,7 +16,7 @@ locals {
 # Configure Public IP for App Gateway
 ### WARNING: IF PUBLIC IP IS CHANGED, A SERVICE NOW TICKET WOULD NEED TO BE SUBMITTED TO CDC OCIO CLOUD TEAM TO UPDATE DNS RECORD ###
 resource "azurerm_public_ip" "agwpublicip" {
-  name                = "${var.prefix}-agw-public-ip"
+  name                = "${var.resource_prefix}-agw-public-ip"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   allocation_method   = "Static"
@@ -45,7 +45,7 @@ resource "azurerm_public_ip" "agwpublicip" {
 
 # Configure Public App Gateway
 resource "azurerm_application_gateway" "agw-public" {
-  name                = "${var.prefix}-agw-public"
+  name                = "${var.resource_prefix}-agw-public"
   depends_on          = [azurerm_public_ip.agwpublicip]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
@@ -57,13 +57,13 @@ resource "azurerm_application_gateway" "agw-public" {
   }
 
   gateway_ip_configuration {
-    name      = "${var.prefix}-agw-ip-configuration"
+    name      = "${var.resource_prefix}-agw-ip-configuration"
     subnet_id = data.azurerm_subnet.agw_subnet.id
   }
 
 # Password is not required
   ssl_certificate {
-    name     = "${var.prefix}-agw-cert"
+    name     = "${var.resource_prefix}-agw-cert"
     data     = data.azurerm_key_vault_secret.agw_key_vault_cert.value
   }
 
@@ -106,7 +106,7 @@ resource "azurerm_application_gateway" "agw-public" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Https"
-    ssl_certificate_name           = "${var.prefix}-agw-cert"
+    ssl_certificate_name           = "${var.resource_prefix}-agw-cert"
   }
 
   request_routing_rule {
