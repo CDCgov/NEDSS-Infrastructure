@@ -10,16 +10,6 @@ module nbs6-aci{
     aci_memory = var.aci_memory
 }
 
-# Temporary, will be removed after Akamai implementation
-module nbs6-agw{
-    source = "../../modules/0_landing_zone/agw"
-    prefix = var.prefix
-    agw_resource_group_name = var.agw_resource_group_name
-    agw_vnet_name = var.agw_vnet_name
-    agw_subnet_name = var.agw_subnet_name
-    agw_aci_ip_list =  var.agw_aci_ip_list
-}
-
 module nbs6-ln{
     source = "../../modules/1_nbs6/lbi"
     prefix = var.prefix
