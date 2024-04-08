@@ -10,14 +10,17 @@ module nbs6-aci{
     aci_memory = var.aci_memory
 }
 
-module nbs6-ln{
-    source = "../../modules/1_nbs6/lbi"
+module nbs6-agw-private{
+    source = "../../modules/0_nbs6/agw-private"
     resource_prefix = var.resource_prefix
-    lbi_resource_group_name = var.lbi_resource_group_name
-    lbi_vnet_name = var.lbi_vnet_name
-    lbi_subnet_name = var.lbi_subnet_name
-    lbi_aci_ip_list =  var.lbi_aci_ip_list
-    lbi_private_ip = var.lbi_private_ip
+    agw_resource_group_name = var.agw_resource_group_name
+    agw_vnet_name = var.agw_vnet_name
+    agw_subnet_name = var.agw_subnet_name
+    agw_key_vault_name = var.agw_key_vault_name
+    agw_key_vault_cert_name = var.agw_key_vault_cert_name
+    agw_backend_host = var.agw_backend_host
+    agw_aks_ip = var.agw_aks_ip
+    agw_private_ip = var.agw_private_ip
 }
 
 module nbs6-sqlmi{

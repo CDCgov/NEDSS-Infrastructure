@@ -1,5 +1,5 @@
-# Application Gateway for AKS Internal Loadbalancer
-module nbs6-agw{
+# Application Gateway for AKS Public Loadbalancer
+module nbs7-agw-public {
     source = "../../modules/0_landing_zone/agw-public"
     resource_prefix = var.resource_prefix
     agw_resource_group_name = var.agw_resource_group_name

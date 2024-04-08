@@ -19,7 +19,8 @@ locals {
 ### Deploy Public App Gateway ###
 
 # Configure Public IP for App Gateway
-### WARNING: IF PUBLIC IP IS CHANGED, A SERVICE NOW TICKET WOULD NEED TO BE SUBMITTED TO CDC OCIO CLOUD TEAM TO UPDATE DNS RECORD ###
+### NOTE: This required by Azure for AGW even if keeping traffic private. ###
+### This will not be needed once Private Application Gateway is out of preview https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-private-deployment?tabs=portal ###
 resource "azurerm_public_ip" "agw_public_ip" {
   name                = "${var.resource_prefix}-agw-public-ip"
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -51,7 +52,7 @@ resource "azurerm_public_ip" "agw_public_ip" {
 resource "azurerm_user_assigned_identity" "agw_mi" {
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  name                = "${var.resource_prefix}-agw-public-mi"
+  name                = "${var.resource_prefix}-agw-private-mi"
   lifecycle {
     ignore_changes = [ 
       tags["business_steward"],
@@ -81,47 +82,13 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
   secret_permissions = ["Get","List"]
 }
 
-# Create if WAF Policy
-# resource "azurerm_web_application_firewall_policy" "agw_waf_policy" {
-#   name                = local.waf_policy_name
-#   resource_group_name = data.azurerm_resource_group.rg.name
-#   location            = data.azurerm_resource_group.rg.location
-
-#  managed_rules {
-#     managed_rule_set {
-#       type    = "OWASP"
-#       version = "3.2"
-#     }
-#   }
-  
-#   lifecycle {
-#     ignore_changes = [ 
-#       tags["business_steward"],
-#       tags["center"],
-#       tags["environment"],
-#       tags["escid"],
-#       tags["funding_source"],
-#       tags["pii_data"],
-#       tags["security_compliance"],
-#       tags["security_steward"],
-#       tags["support_group"],
-#       tags["system"],
-#       tags["technical_poc"],
-#       tags["technical_steward"],
-#       tags["zone"]
-#       ]
-#     create_before_destroy = true
-#     }
-# }
 
 # Configure Public App Gateway
-resource "azurerm_application_gateway" "agw_public" {
-  name                = "${var.resource_prefix}-agw-public"
+resource "azurerm_application_gateway" "agw_private" {
+  name                = "${var.resource_prefix}-agw-private"
   depends_on          = [azurerm_public_ip.agw_public_ip,azurerm_key_vault_access_policy.agw_mi_policy,azurerm_user_assigned_identity.agw_mi]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  # uncomment if WAF Required
-  # firewall_policy_id  = azurerm_web_application_firewall_policy.agw_waf_policy.id
   
   identity {
     type         = "UserAssigned"
@@ -129,7 +96,6 @@ resource "azurerm_application_gateway" "agw_public" {
   }
 
   sku {
-    # Update name and tier to WAF_v2 if setting WAF Policy
     name     = "Standard_v2"
     tier     = "Standard_v2"
     capacity = 2
@@ -160,6 +126,8 @@ resource "azurerm_application_gateway" "agw_public" {
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
     public_ip_address_id = azurerm_public_ip.agw_public_ip.id
+    private_ip_address   = var.agw_private_ip_address
+    private_ip_address_allocation = "Static"
   }
 
 
@@ -175,14 +143,14 @@ resource "azurerm_application_gateway" "agw_public" {
 
   backend_address_pool {
     name         = local.backend_address_pool_name
-    ip_addresses = [var.agw_aks_ip]
+    ip_addresses = [var.agw_aci_ip]
   }
 
   backend_http_settings {
     name                  = local.https_setting_name
     cookie_based_affinity = "Disabled"
     path                  = "/"
-    port                  = 443
+    port                  = 7001
     protocol              = "Https"
     probe_name            = local.probe_name
   }
@@ -230,15 +198,6 @@ resource "azurerm_application_gateway" "agw_public" {
     http_listener_name          = local.listener_name_http
     redirect_configuration_name = local.redirect_configuration_name
   }
-
-  # This should be set if no WAF Policy and only default OWASP rules are required
-  # waf_configuration {
-  #   enabled               = true
-  #   firewall_mode         = "Prevention"
-  #   rule_set_type         = "OWASP"
-  #   rule_set_version      = "3.2"
-  #   request_body_check    = true
-  # }
 
   lifecycle {
     ignore_changes = [ 
