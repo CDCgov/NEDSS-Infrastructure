@@ -31,11 +31,6 @@ variable "agw_key_vault_cert_name" {
   type        = string
 }
 
-variable "agw_key_vault_cert_secret_name" {
-  description = "Key Vault Secret Name"
-  type        = string
-}
-
 variable "agw_backend_host" {
   description = "URL Expected by NGINX Ingress"
   type        = string
