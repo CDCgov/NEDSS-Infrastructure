@@ -22,7 +22,7 @@ locals {
 ### NOTE: This required by Azure for AGW even if keeping traffic private. ###
 ### This will not be needed once Private Application Gateway is out of preview https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-private-deployment?tabs=portal ###
 resource "azurerm_public_ip" "agw_public_ip" {
-  name                = "${var.resource_prefix}-agw-public-ip"
+  name                = "${var.resource_prefix}-agw-temp-public-ip"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   allocation_method   = "Static"
@@ -44,7 +44,6 @@ resource "azurerm_public_ip" "agw_public_ip" {
       tags["zone"]
       ]
     create_before_destroy = true
-    prevent_destroy       = true
     }
 }
 
@@ -83,12 +82,65 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
 }
 
 
+# Create if WAF Policy to only allow vNET Traffic only
+resource "azurerm_web_application_firewall_policy" "agw_waf_policy" {
+  name                = local.waf_policy_name
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+
+ managed_rules {
+    managed_rule_set {
+      type    = "OWASP"
+      version = "3.2"
+    }
+  }
+
+ custom_rules {
+    name      = "Rule1"
+    priority  = 1
+    rule_type = "MatchRule"
+
+    match_conditions {
+      match_variables {
+        variable_name = "RemoteAddr"
+      }
+
+      operator           = "IPMatch"
+      negation_condition = false
+      match_values       = ["10.16.3.0/24", "10.16.0.128/26","10.16.2.0/27"]
+    }
+
+    action = "Allow"
+  }
+
+  lifecycle {
+    ignore_changes = [ 
+      tags["business_steward"],
+      tags["center"],
+      tags["environment"],
+      tags["escid"],
+      tags["funding_source"],
+      tags["pii_data"],
+      tags["security_compliance"],
+      tags["security_steward"],
+      tags["support_group"],
+      tags["system"],
+      tags["technical_poc"],
+      tags["technical_steward"],
+      tags["zone"]
+      ]
+    create_before_destroy = true
+    }
+}
+
+
 # Configure Public App Gateway
 resource "azurerm_application_gateway" "agw_private" {
   name                = "${var.resource_prefix}-agw-private"
   depends_on          = [azurerm_public_ip.agw_public_ip,azurerm_key_vault_access_policy.agw_mi_policy,azurerm_user_assigned_identity.agw_mi]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
+  firewall_policy_id  = azurerm_web_application_firewall_policy.agw_waf_policy.id
   
   identity {
     type         = "UserAssigned"
@@ -96,8 +148,8 @@ resource "azurerm_application_gateway" "agw_private" {
   }
 
   sku {
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
+    name     = "WAF_v2"
+    tier     = "WAF_v2"
     capacity = 2
   }
 
@@ -123,17 +175,22 @@ resource "azurerm_application_gateway" "agw_private" {
     port = 443
   }
 
+
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
     public_ip_address_id = azurerm_public_ip.agw_public_ip.id
-    private_ip_address   = var.agw_private_ip_address
-    private_ip_address_allocation = "Static"
   }
 
+  frontend_ip_configuration {
+    name                          = "${local.frontend_ip_configuration_name}-private"
+    private_ip_address            = var.agw_private_ip
+    private_ip_address_allocation = "Static"
+    subnet_id                     = data.azurerm_subnet.agw_subnet.id
+  }
 
   probe {
     name                = local.probe_name
-    protocol            = "Https"
+    protocol            = "Http"
     path                = "/nbs/login"
     host                = var.agw_backend_host
     interval            = 30
@@ -143,7 +200,7 @@ resource "azurerm_application_gateway" "agw_private" {
 
   backend_address_pool {
     name         = local.backend_address_pool_name
-    ip_addresses = [var.agw_aci_ip]
+    ip_addresses = var.agw_aci_ip
   }
 
   backend_http_settings {
@@ -151,14 +208,14 @@ resource "azurerm_application_gateway" "agw_private" {
     cookie_based_affinity = "Disabled"
     path                  = "/"
     port                  = 7001
-    protocol              = "Https"
+    protocol              = "Http"
     probe_name            = local.probe_name
   }
 
   # https listener rule for Https
   http_listener {
     name                           = local.listener_name
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_ip_configuration_name = "${local.frontend_ip_configuration_name}-private"
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Https"
     ssl_certificate_name           = local.cert_name
@@ -167,7 +224,7 @@ resource "azurerm_application_gateway" "agw_private" {
   # http listener rule for Http
   http_listener {
     name                           = local.listener_name_http
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_ip_configuration_name = "${local.frontend_ip_configuration_name}-private"
     frontend_port_name             = local.frontend_port_name_http
     protocol                       = "Http"
   }

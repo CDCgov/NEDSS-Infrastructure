@@ -79,12 +79,12 @@ variable "agw_backend_host" {
   type        = string
 }
 
-variable "agw_aks_ip" {
-  description = "AKS Internal Loadbalancer IP"
-  type        = string
+variable "agw_aci_ip" {
+  description = "ACI 3 IPs"
+  type        = list
 }
 
-variable "agw_private_ip_address" {
+variable "agw_private_ip" {
   description = "AGW Private IP Address"
   type        = string
 }

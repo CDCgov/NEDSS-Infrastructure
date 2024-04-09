@@ -34,11 +34,11 @@ variable "agw_backend_host" {
 }
 
 variable "agw_aci_ip" {
-  description = "ACI Internal Loadbalancer IP(s)"
-  type        = string
+  description = "ACI IP(s) List"
+  type        = list
 }
  
-variable "agw_private_ip_address" {
+variable "agw_private_ip" {
   description = "AGW Private IP Address"
   type        = string
 }
