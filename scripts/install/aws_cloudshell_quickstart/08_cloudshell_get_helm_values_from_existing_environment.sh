@@ -105,16 +105,15 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_KC_PASSWORD8675309/${KEYCLOAK_ADMIN_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_KCDB_PASS8675309/${KEYCLOAK_DB_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_ENDPOINT/${DB_ENDPOINT}/" "$new_file_path"
+    sed -i "s/EXAMPLE_DB_NAME/${DB_NAME}/" "$new_file_path"
+    sed -i "s/EXAMPLE_DB_USER/${DB_USER}/" "$new_file_path"
+    sed -i "s/EXAMPLE_DB_USER_PASSWORD/${DB_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/MODERNIZATION_API_DB_USER/${MODERNIZATION_API_DB_USER}/" "$new_file_path"
     sed -i "s/MODERNIZATION_API_DB_USER_PASSWORD/${MODERNIZATION_API_DB_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/CERT_MANAGER_EMAIL/${CERT_MANAGER_EMAIL}/" "$new_file_path"
     # Add more sed commands as needed for other placeholders
 }
 
-#  host: "EXAMPLE_DB_ENDPOINT"
-#password: "EXAMPLE_KC_PASS8675309""
-# 'jdbc:sqlserver://EXAMPLE_DB_ENDPOINT:1433;databaseName=keycloak;encrypt=true;trustServerCertificate=true;'
-#    value: 'EXAMPLE_KCDB_PASS8675309'
 
 # Load saved defaults
 load_defaults
@@ -154,6 +153,22 @@ update_defaults "MODERNIZATION_API_DB_USER_PASSWORD" "$MODERNIZATION_API_DB_USER
 
 read -p "Please enter the Cert-Manager email address[${CERT_MANAGER_EMAIL_DEFAULT}]: " CERT_MANAGER_EMAIL && CERT_MANAGER_EMAIL=${CERT_MANAGER_EMAIL:-$CERT_MANAGER_EMAIL_DEFAULT}
 update_defaults "CERT_MANAGER_EMAIL" "$CERT_MANAGER_EMAIL"
+
+read -p "Please enter the DB Name [${DB_NAME_DEFAULT}]: " DB_NAME && DB_NAME=${DB_NAME:-$DB_NAME_DEFAULT}
+update_defaults "DB_NAME" "$DB_NAME"
+
+read -p "Please enter the DB_USER [${DB_USER_DEFAULT}]: " DB_USER && DB_USER=${DB_USER:-$DB_USER_DEFAULT}
+update_defaults "DB_USER" "$DB_USER"
+
+read -sp "Please enter the DB_USER_PASSWORD[${DB_USER_PASSWORD_DEFAULT}]: " DB_USER_PASSWORD && DB_USER_PASSWORD=${DB_USER_PASSWORD:-$DB_USER_PASSWORD_DEFAULT}
+update_defaults "DB_USER_PASSWORD" "$DB_USER_PASSWORD"
+
+#read -p "Please enter the [${XXX_DEFAULT}]: " XXX && XXX=${XXX:-$XXX_DEFAULT}
+#update_defaults "XXX" "$XXX"
+
+#EXAMPLE_DB_NAME
+#EXAMPLE_DB_USER
+#EXAMPLE_DB_USER_PASSWORD
 
 # Call the apply_substitutions_and_copy function for each required file
 #apply_substitutions_and_copy "inputs.tfvars" "./" "$SITE_NAME"
