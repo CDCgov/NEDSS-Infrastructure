@@ -4,7 +4,7 @@
 #
 
 # must edit on each release or prompt and save
-HELM_VER=v7.3.1
+HELM_VER=v7.3.3
 
 INSTALL_DIR=nbs_install
 cd ~/${INSTALL_DIR}
