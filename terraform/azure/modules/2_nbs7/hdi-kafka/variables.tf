@@ -1,9 +1,4 @@
-# variable "create_kafka_cluster" {
-#   description = "Flag to determine whether to create the Azure Event Hubs Kafka cluster"
-#   type        = bool
-#   default     = true # false
-# }
-#################################
+
 variable "resource_prefix" {
     type = string
     default = "dev"
@@ -12,18 +7,10 @@ variable "resource_prefix" {
 variable "location" {
   description = "Location for Azure resources"
   type        = string
-  default = "East US"
-}
-
-variable "resource_group_name" {
-  description = "Name of the Azure resource group"
-  type        = string
-  default = "kafka-resources"
 }
 
 variable "storage_account_name" {
       type        = string
-  default = "cselsnbsdevlowkafka" 
 }
 
 variable "account_tier" {
@@ -38,21 +25,19 @@ variable "account_replication_type" {
 
 variable "kafka_storag_container_name"{ 
     type = string
-    default = "kafka-hdinsight"
 }
 
 variable "container_access_type" {
     type = string
     default = "private"
 }
+
 variable "sg_name" {
     type = string
-    default = "hdi-kafka-sg1"
 }
 
 variable "kafka_cluster_name" {
     type = string
-    default = "hdi-kafka-cluster"
 }
 variable "cluster_version" {
     type = string
@@ -69,36 +54,32 @@ variable "component_version" {
 
  variable "gtwy_username" {
     type = string
-    default = "cdcacctestusrgw"
  } 
 
  variable "gtwy_password" {
     type = string
-    default = "cdwTerrAform123!"
     sensitive   = true
  }
 
 variable "username" {
     type = string
-    default = "cdc-kafka-user"
 }
 variable "password" {
     type = string
-    default = "cdcTerrAform123!"
     sensitive   = true
 }
 
 variable "head_vm_size" {
     type = string
-    default = "Standard_D3_V2"   #D2a v4  # "Standard_D3_V2" 
+    default = "Standard_D3_V2"   
 } 
 variable "worker_vm_size" {
     type = string
-    default = "Standard_D3_V2"   #D2a v4  # "Standard_D3_V2" 
+    default = "Standard_D3_V2"   
 } 
 variable "zookeeper_vm_size" {
     type = string
-    default = "Standard_D3_V2"   #D2a v4  # "Standard_D3_V2" 
+    default = "Standard_D3_V2"  
 }
 variable "encryption_in_transit_enabled" {
     type = bool
@@ -117,18 +98,15 @@ variable "target_instance_count" {
 
 variable "vnet_name" {
     type = string
-    default = "csels-nbs-dev-low-modern-app-vnet"
 }
 
 variable "vnet_rg" {
     type = string
-    default = "csels-nbs-dev-low-rg"
 }
 
 
 variable "kafka_subnet_name" {
     type = string
-    default = "csels-nbs-dev-low-hdi-kafka-vnet-sn"
 }
 
 variable "tls_min_version" {

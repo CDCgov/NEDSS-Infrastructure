@@ -20,20 +20,20 @@ resource "random_password" "sqlmi_password" {
 
 # Store in Key Vault
 resource "azurerm_key_vault_secret" "sqlmi_username_secret" {
-  name         = "${var.prefix}-sqlmi-username"
+  name         = "${var.resource_prefix}-sqlmi-username"
   value        = random_string.sqlmi_username.result
   key_vault_id = data.azurerm_key_vault.key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "sqlmi_password_secret" {
-  name         = "${var.prefix}-sqlmi-password"
+  name         = "${var.resource_prefix}-sqlmi-password"
   value        = random_password.sqlmi_password.result
   key_vault_id = data.azurerm_key_vault.key_vault.id
 }
 
 # Create Azure SQL Managed Instance
 resource "azurerm_mssql_managed_instance" "sqlmi" {
-  name                         = "${var.prefix}-sql-managed-instance"
+  name                         = "${var.resource_prefix}-sql-managed-instance"
   resource_group_name          = data.azurerm_resource_group.rg.name
   location                     = data.azurerm_resource_group.rg.location
   subnet_id                    = data.azurerm_subnet.sqlmi_subnet.id

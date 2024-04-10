@@ -8,6 +8,8 @@ resource "helm_release" "fluentbit" {
   chart      = "fluent-bit"
   version          = var.helm_version
   namespace  = var.namespace
+  create_namespace = true
+  wait = true
 
   set {
     name = "serviceAccount.create"
@@ -70,7 +72,7 @@ resource "helm_release" "fluentbit" {
             account_name          ${var.blob_account_name}
             shared_key            ${var.blob_shared_key}
             path                  kubernetes
-            container_name        logs
+            container_name        ${var.azure_container_name}
             auto_create_container on
             tls                   on
     EOF

@@ -1,6 +1,6 @@
 module nbs6-aci{
     source = "../../modules/1_nbs6/aci"
-    prefix = var.prefix
+    resource_prefix = var.resource_prefix
     aci_resource_group_name = var.aci_resource_group_name
     aci_vnet_name = var.aci_vnet_name
     aci_subnet_name = var.aci_subnet_name
@@ -10,19 +10,9 @@ module nbs6-aci{
     aci_memory = var.aci_memory
 }
 
-# Temporary, will be removed after Akamai implementation
-module nbs6-agw{
-    source = "../../modules/1_nbs6/agw"
-    prefix = var.prefix
-    agw_resource_group_name = var.agw_resource_group_name
-    agw_vnet_name = var.agw_vnet_name
-    agw_subnet_name = var.agw_subnet_name
-    agw_aci_ip_list =  var.agw_aci_ip_list
-}
-
 module nbs6-ln{
     source = "../../modules/1_nbs6/lbi"
-    prefix = var.prefix
+    resource_prefix = var.resource_prefix
     lbi_resource_group_name = var.lbi_resource_group_name
     lbi_vnet_name = var.lbi_vnet_name
     lbi_subnet_name = var.lbi_subnet_name
@@ -32,7 +22,7 @@ module nbs6-ln{
 
 module nbs6-sqlmi{
     source = "../../modules/1_nbs6/sqlmi"
-    prefix = var.prefix
+    resource_prefix = var.resource_prefix
     sqlmi_resource_group_name = var.sqlmi_resource_group_name
     sqlmi_vnet_name = var.sqlmi_vnet_name
     sqlmi_subnet_name = var.sqlmi_subnet_name

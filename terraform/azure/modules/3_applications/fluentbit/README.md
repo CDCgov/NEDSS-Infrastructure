@@ -39,8 +39,9 @@ Below are the input parameter variables for the eks-nbs:
 
 | Key | Type | Default | Description |
 | -------------- | -------------- | -------------- | -------------- |
+| azure_container_name | string | fluentbit-logs | Name of azure container to create and store fluenbit application logs. |
 | blob_account_name | string |  | Azure account name for blob storage (sensitive) |
-| blob_shared_key | string |  | Azure shared for blob storage access (sensitive) |
+| blob_shared_key | string |  | Azure shared key for blob storage access (sensitive) |
 | helm_version | string | 0.43.0 | Version of fluentbit helm chart to deploy |
 | namespace | string | observability | Kubernetes namespace for fluentbit resources |
 | resource_prefix | string | cdc-nbs | Prefix for resource names |
