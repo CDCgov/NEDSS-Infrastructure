@@ -143,7 +143,7 @@ sed  --in-place "s/OCTET2b/${OCTET2b}/g"  ${NEW_INPUTS_FILE}
 sed  --in-place "s?EXAMPLE_LEGACY_CIDR_BLOCK?${LEGACY_CIDR_BLOCK}?" ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_BUCKET_NAME/${BUCKET_NAME}/"  ${NEW_INPUTS_FILE}
 #sed  --in-place "s/EXAMPLE_OCTET2shared/${OCTET2shared}/g"  ${NEW_INPUTS_FILE}
-sed  --in-place "s/EXAMPLE-ENVIRONMENT/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/EXAMPLE_ENVIRONMENT/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_ACCOUNT_ID/${TMP_ACCOUNT_ID}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE}/"  ${NEW_INPUTS_FILE}
