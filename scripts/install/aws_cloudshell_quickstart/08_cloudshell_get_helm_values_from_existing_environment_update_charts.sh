@@ -91,7 +91,9 @@ apply_substitutions_and_copy() {
     # TODO: FIXME: this needs to change in the template since
     # EXAMPLE_DOMAIN is used elsewhere
     sed -i "s/EXAMPLE_USER@EXAMPLE_DOMAIN/${CERT_MANAGER_EMAIL}/" "$new_file_path"
-    sed -i "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/" "$new_file_path"
+    #sed -i "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/" "$new_file_path"
+    # TODO: FIXME: tweak helm charts to have more psi
+    sed -i "s/EXAMPLE_DOMAIN/${SITE_NAME}.${EXAMPLE_DOMAIN}/" "$new_file_path"
     sed -i "s/EXAMPLE_ACCOUNT_ID/${TMP_ACCOUNT_ID}/" "$new_file_path"
     sed -i "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE}/" "$new_file_path"
     sed -i "s/EXAMPLE_RESOURCE_PREFIX/${SITE_NAME}/g" "$new_file_path"
@@ -100,10 +102,10 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_KCDB_PASS8675309/${KEYCLOAK_DB_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_ENDPOINT/${DB_ENDPOINT}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_NAME/${DB_NAME}/" "$new_file_path"
-    sed -i "s/EXAMPLE_DB_USER/${DB_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_USER_PASSWORD/${DB_USER_PASSWORD}/" "$new_file_path"
-    sed -i "s/MODERNIZATION_API_DB_USER/${MODERNIZATION_API_DB_USER}/" "$new_file_path"
+    sed -i "s/EXAMPLE_DB_USER/${DB_USER}/" "$new_file_path"
     sed -i "s/MODERNIZATION_API_DB_USER_PASSWORD/${MODERNIZATION_API_DB_USER_PASSWORD}/" "$new_file_path"
+    sed -i "s/MODERNIZATION_API_DB_USER/${MODERNIZATION_API_DB_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_EFS_ID/${EFS_ID}/" "$new_file_path"
     # Add more sed commands as needed for other placeholders
 }
