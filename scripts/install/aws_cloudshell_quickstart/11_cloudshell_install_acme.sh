@@ -51,8 +51,6 @@ update_defaults "EXAMPLE_DOMAIN" "$EXAMPLE_DOMAIN"
 # Proceed with the rest of the script
 HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 
-HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
-
 cd ${HELM_DIR}/k8-manifests
 
 cp -p cluster-issuer-prod.yaml cluster-issuer-prod.yaml.orig

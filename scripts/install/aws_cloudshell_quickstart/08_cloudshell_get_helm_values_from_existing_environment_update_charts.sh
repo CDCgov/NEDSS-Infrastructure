@@ -6,6 +6,7 @@
 
 # Default file for storing selected values and entered credentials
 DEFAULTS_FILE="nbs_defaults.sh"
+HELM_VER_DEFAULT=v7.3.3
 
 # Function to load saved defaults
 load_defaults() {
@@ -18,7 +19,8 @@ update_defaults() {
     local var_name=$1
     local var_value=$2
     if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
-        sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
     else
         echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
     fi
@@ -120,6 +122,20 @@ update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
 select_efs_volume; 
 update_defaults "EFS_ID" "$EFS_ID"
 
+
+# Prompt for missing values with defaults
+read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
+HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
+update_defaults HELM_VER $HELM_VER
+
+read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_install_dir
+INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
+update_defaults INSTALL_DIR $INSTALL_DIR
+
+# Proceed with the rest of the script
+HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
+[ $NOOP -eq 0 ] && execute_command "cd ${HELM_DIR}/charts"
+
 # Prompts for additional information
 read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
 # read -p "Enter Image Name [$IMAGE_NAME_DEFAULT]: " IMAGE_NAME && IMAGE_NAME=${IMAGE_NAME:-$IMAGE_NAME_DEFAULT}
@@ -164,15 +180,15 @@ update_defaults "DB_USER_PASSWORD" "$DB_USER_PASSWORD"
 
 # Call the apply_substitutions_and_copy function for each required file
 #apply_substitutions_and_copy "inputs.tfvars" "./" "$SITE_NAME"
-apply_substitutions_and_copy "helm/k8-manifests/cluster-issuer-prod.yaml" "helm/k8-manifests" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/keycloak/values.yaml" "helm/charts/keycloak" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/elasticsearch-efs/values.yaml" "helm/charts/elasticsearch-efs" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/modernization-api/values.yaml" "helm/charts/modernization-api" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/nbs-gateway/values.yaml" "helm/charts/nbs-gateway" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/nginx-ingress/values.yaml" "helm/charts/nginx-ingress" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/nifi-efs/values.yaml" "helm/charts/nifi-efs" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/dataingestion-service/values.yaml" "helm/charts/dataingestion-service" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/page-builder-api/values.yaml" "helm/charts/page-builder-api" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/modernization-api/values.yaml" "${HELM_DIR}/charts/modernization-api" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/nbs-gateway/values.yaml" "${HELM_DIR}/charts/nbs-gateway" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_DIR}/charts/nifi-efs" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
 
 echo "Configuration files have been updated and are ready for use."
 
