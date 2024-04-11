@@ -144,3 +144,9 @@ execute_command "kubectl --namespace ingress-nginx get services -o wide ingress-
 
 # The script now has enhanced functionality for a safer and more interactive execution.
 
+echo " now make sure efs volume ID is correct in elasticsearch-efs"
+echo " make sure private route 53 zone is bound to modern vpc"
+echo " make sure private dns record for jdbc host is in private domain"
+echo " make sure you can connect from modern-private-subnets (EKS) to dns"
+echo " verify NLB is now created and map dns names for app, nifi,"
+echo " dataingestion pointing to NLB and app-classic to alb"
