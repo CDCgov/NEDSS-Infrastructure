@@ -136,7 +136,7 @@ HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 
 # nginx ingress installation
 #execute_command "helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -f nginx-ingress/values.yaml --namespace ingress-nginx --create-namespace --version ${INGRESS_VER}"
-execute_command "echo helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -f nginx-ingress/values.yaml --namespace ingress-nginx --create-namespace --version ${INGRESS_VER}"
+execute_command "helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -f nginx-ingress/values.yaml --namespace ingress-nginx --create-namespace --version ${INGRESS_VER}"
 
 # Check for running pods in ingress-nginx namespace
 execute_command "kubectl get po -n ingress-nginx"
