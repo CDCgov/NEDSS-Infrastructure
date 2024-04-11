@@ -7,6 +7,7 @@
 # Default file for storing selected values and entered credentials
 DEFAULTS_FILE="nbs_defaults.sh"
 HELM_VER_DEFAULT=v7.3.3
+NOOP=0
 
 # Function to load saved defaults
 load_defaults() {
@@ -124,7 +125,6 @@ update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
 select_efs_volume; 
 update_defaults "EFS_ID" "$EFS_ID"
 
-
 # Prompt for missing values with defaults
 read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
 HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
@@ -136,7 +136,6 @@ update_defaults INSTALL_DIR $INSTALL_DIR
 
 # Proceed with the rest of the script
 HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
-[ $NOOP -eq 0 ] && execute_command "cd ${HELM_DIR}/charts"
 
 # Prompts for additional information
 read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
