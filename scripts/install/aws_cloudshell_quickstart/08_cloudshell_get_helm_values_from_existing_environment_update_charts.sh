@@ -192,6 +192,7 @@ apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_D
 apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
 apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
 
+echo 
 echo "Configuration files have been updated and are ready for use."
 
 
