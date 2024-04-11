@@ -6,6 +6,8 @@
 
 # Default file for storing selected values and entered credentials
 DEFAULTS_FILE="nbs_defaults.sh"
+HELM_VER_DEFAULT=v7.3.3
+NOOP=0
 
 # Function to load saved defaults
 load_defaults() {
@@ -14,22 +16,12 @@ load_defaults() {
     fi
 }
 
-# Function to update or add variable values in the defaults file
-#update_defaults() {
-#    local var_name=$1
-#    local var_value=$2
-#    if grep -q "^$var_name=" "$DEFAULTS_FILE"; then
-#        sed -i "s/^$var_name=.*/$var_name=$var_value/" "$DEFAULTS_FILE"
-#    else
-#        echo "$var_name=$var_value" >> "$DEFAULTS_FILE"
-#    fi
-#}
-
 update_defaults() {
     local var_name=$1
     local var_value=$2
     if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
-        sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
     else
         echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
     fi
@@ -85,7 +77,7 @@ apply_substitutions_and_copy() {
     local new_file_path="${dest_dir}/${new_filename}"
 
     # Copy and apply substitutions
-    echo cp -ip "$src_file_path" "$new_file_path"
+    #echo cp -ip "$src_file_path" "$new_file_path"
     cp -ip "$src_file_path" "$new_file_path"
 
     # Apply substitutions
@@ -97,7 +89,12 @@ apply_substitutions_and_copy() {
     sed -i "s?EXAMPLE_LEGACY_CIDR_BLOCK?${LEGACY_CIDR_BLOCK}?" "$new_file_path"
     sed -i "s/EXAMPLE_BUCKET_NAME/${BUCKET_NAME}/" "$new_file_path"
     sed -i "s/EXAMPLE_ENVIRONMENT/${SITE_NAME}/g" "$new_file_path"
-    sed -i "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/" "$new_file_path"
+    # TODO: FIXME: this needs to change in the template since
+    # EXAMPLE_DOMAIN is used elsewhere
+    sed -i "s/EXAMPLE_USER@EXAMPLE_DOMAIN/${CERT_MANAGER_EMAIL}/" "$new_file_path"
+    #sed -i "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/" "$new_file_path"
+    # TODO: FIXME: tweak helm charts to have more psi
+    sed -i "s/EXAMPLE_DOMAIN/${SITE_NAME}.${EXAMPLE_DOMAIN}/" "$new_file_path"
     sed -i "s/EXAMPLE_ACCOUNT_ID/${TMP_ACCOUNT_ID}/" "$new_file_path"
     sed -i "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE}/" "$new_file_path"
     sed -i "s/EXAMPLE_RESOURCE_PREFIX/${SITE_NAME}/g" "$new_file_path"
@@ -106,11 +103,11 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_KCDB_PASS8675309/${KEYCLOAK_DB_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_ENDPOINT/${DB_ENDPOINT}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_NAME/${DB_NAME}/" "$new_file_path"
-    sed -i "s/EXAMPLE_DB_USER/${DB_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_USER_PASSWORD/${DB_USER_PASSWORD}/" "$new_file_path"
-    sed -i "s/MODERNIZATION_API_DB_USER/${MODERNIZATION_API_DB_USER}/" "$new_file_path"
+    sed -i "s/EXAMPLE_DB_USER/${DB_USER}/" "$new_file_path"
     sed -i "s/MODERNIZATION_API_DB_USER_PASSWORD/${MODERNIZATION_API_DB_USER_PASSWORD}/" "$new_file_path"
-    sed -i "s/CERT_MANAGER_EMAIL/${CERT_MANAGER_EMAIL}/" "$new_file_path"
+    sed -i "s/MODERNIZATION_API_DB_USER/${MODERNIZATION_API_DB_USER}/" "$new_file_path"
+    sed -i "s/EXAMPLE_EFS_ID/${EFS_ID}/" "$new_file_path"
     # Add more sed commands as needed for other placeholders
 }
 
@@ -127,6 +124,18 @@ update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
 
 select_efs_volume; 
 update_defaults "EFS_ID" "$EFS_ID"
+
+# Prompt for missing values with defaults
+read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
+HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
+update_defaults HELM_VER $HELM_VER
+
+read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_install_dir
+INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
+update_defaults INSTALL_DIR $INSTALL_DIR
+
+# Proceed with the rest of the script
+HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 
 # Prompts for additional information
 read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
@@ -172,14 +181,17 @@ update_defaults "DB_USER_PASSWORD" "$DB_USER_PASSWORD"
 
 # Call the apply_substitutions_and_copy function for each required file
 #apply_substitutions_and_copy "inputs.tfvars" "./" "$SITE_NAME"
-apply_substitutions_and_copy "helm/k8-manifests/cluster-issuer-prod.yaml" "helm/k8-manifests" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/keycloak/values.yaml" "helm/charts/keycloak" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/elasticsearch-efs/values.yaml" "helm/charts/elasticsearch-efs" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/modernization-api/values.yaml" "helm/charts/modernization-api" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/nbs-gateway/values.yaml" "helm/charts/nbs-gateway" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/nginx-ingress/values.yaml" "helm/charts/nginx-ingress" "$SITE_NAME"
-apply_substitutions_and_copy "helm/charts/nifi-efs/values.yaml" "helm/charts/nifi-efs" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/modernization-api/values.yaml" "${HELM_DIR}/charts/modernization-api" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/nbs-gateway/values.yaml" "${HELM_DIR}/charts/nbs-gateway" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_DIR}/charts/nifi-efs" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
+apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
 
+echo 
 echo "Configuration files have been updated and are ready for use."
 
 

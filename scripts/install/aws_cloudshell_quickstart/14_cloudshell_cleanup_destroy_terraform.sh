@@ -1,20 +1,71 @@
 #!/bin/bash
+#!/bin/bash
+HELM_VER=v7.3.3
+#exit 1
+INSTALL_DIR=~/nbs_install
+INFRA_VER=v1.2.4
+DEBUG=1
+STEP=1
+NOOP=0
+SLEEP_TIME=60
+# must edit with each release or prompt and save
+# Default file for storing selected values and entered credentials
+DEFAULTS_FILE="nbs_defaults.sh"
+
+# Function to load saved defaults
+load_defaults() {
+    if [ -f "$DEFAULTS_FILE" ]; then
+        source "$DEFAULTS_FILE"
+    fi
+}
+
+update_defaults() {
+    local var_name=$1
+    local var_value=$2
+    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
+        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
+    else
+        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
+    fi
+}
+
+load_defaults;
+
+# Prompt for missing values with defaults
+read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
+HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
+update_defaults HELM_VER $HELM_VER
+read -p "Please enter Infrastructure version [${INFRA_VER_DEFAULT}]: " input_infra_ver
+INFRA_VER=${input_infra_ver:-$INFRA_VER_DEFAULT}
+update_defaults INFRA_VER $INFRA_VER
+# INFRA_VER=v1.2.4
+
+read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_install_dir
+INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
+update_defaults INSTALL_DIR $INSTALL_DIR
+
+# Read necessary input from user
+read -p "Please enter the site name [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
+read -p "Please enter domain name [${EXAMPLE_DOMAIN_DEFAULT}]: " EXAMPLE_DOMAIN  && EXAMPLE_DOMAIN=${EXAMPLE_DOMAIN:-$EXAMPLE_DOMAIN_DEFAULT}
+# Update defaults
+update_defaults "SITE_NAME" "$SITE_NAME"
+update_defaults "EXAMPLE_DOMAIN" "$EXAMPLE_DOMAIN"
+
+# Proceed with the rest of the script
+HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 #
 
-#change with each release or prompt and save
-INFRA_VER=v1.0.3
-echo "change line 5"
-exit 1
 
-INSTALL_DIR=nbs_install
-cd ~/${INSTALL_DIR}
+#cd ~/${INSTALL_DIR}
+cd ${INSTALL_DIR}
 
 echo "here are the subdirectories in the terraform/aws directory"
 ls -1 NEDSS-Infrastructure-${INFRA_VER}/terraform/aws | grep -v app-infrastructure | grep -v samples
 
 
-echo "what is the site name"
-read TMP_SITE_NAME
+#echo "what is the site name"
+#read TMP_SITE_NAME
 
 #cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
 
@@ -22,7 +73,7 @@ cd NEDSS-Infrastructure-${INFRA_VER}/terraform/aws
 
 #cp samples/NBS6_standard ${TMP_SITE_NAME}
 
-cd ${TMP_SITE_NAME}
+cd ${SITE_NAME}
 
 
 echo "initialize terraform modules: "
