@@ -7,11 +7,9 @@ locals {
   https_setting_name             = "${var.resource_prefix}-agw-backend-https-settings"
   listener_name                  = "${var.resource_prefix}-agw-https-listener"
   listener_name_http             = "${var.resource_prefix}-agw-http-listener"
-  request_routing_rule_name      = "${var.resource_prefix}-agw-rule"
   probe_name                     = "${var.resource_prefix}-agw-custom-probe"
   cert_name                      = "${var.resource_prefix}-agw-cert"
   redirect_configuration_name    = "${var.resource_prefix}-agw-redirect-configuration"
-  waf_policy_name                = "${var.resource_prefix}-waf-policy"
 }
 
 
@@ -82,56 +80,64 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
 }
 
 
-# Create if WAF Policy to only allow vNET Traffic only
-resource "azurerm_web_application_firewall_policy" "agw_waf_policy" {
-  name                = local.waf_policy_name
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+# Create if WAF Policy to only allow vNET Traffic only. By default should be blocked on NSG
+# resource "azurerm_web_application_firewall_policy" "agw_waf_policy" {
+#   name                = "${var.resource_prefix}-waf-policy"
+#   resource_group_name = data.azurerm_resource_group.rg.name
+#   location            = data.azurerm_resource_group.rg.location
+ 
+#   managed_rules {
+#     managed_rule_set {
+#       type    = "OWASP"
+#       version = "3.2"
+#     }
+#   }
 
- managed_rules {
-    managed_rule_set {
-      type    = "OWASP"
-      version = "3.2"
-    }
-  }
+#   policy_settings {
+#     enabled                     = true
+#     mode                        = "Detection"
+#     request_body_check          = true
+#     file_upload_limit_in_mb     = 100
+#     max_request_body_size_in_kb = 128
+#   }
 
- custom_rules {
-    name      = "Rule1"
-    priority  = 1
-    rule_type = "MatchRule"
+#  custom_rules {
+#     name      = "Rule1"
+#     priority  = 1
+#     rule_type = "MatchRule"
 
-    match_conditions {
-      match_variables {
-        variable_name = "RemoteAddr"
-      }
+#     match_conditions {
+#       match_variables {
+#         variable_name = "RemoteAddr"
+#       }
 
-      operator           = "IPMatch"
-      negation_condition = false
-      match_values       = ["10.16.3.0/24", "10.16.0.128/26","10.16.2.0/27"]
-    }
+#       operator           = "IPMatch"
+#       negation_condition = false
+#       match_values       = ["10.16.3.0/24", "10.16.0.128/26","10.16.2.0/27"]
+#     }
 
-    action = "Allow"
-  }
+#     action = "Allow"
+#   }
 
-  lifecycle {
-    ignore_changes = [ 
-      tags["business_steward"],
-      tags["center"],
-      tags["environment"],
-      tags["escid"],
-      tags["funding_source"],
-      tags["pii_data"],
-      tags["security_compliance"],
-      tags["security_steward"],
-      tags["support_group"],
-      tags["system"],
-      tags["technical_poc"],
-      tags["technical_steward"],
-      tags["zone"]
-      ]
-    create_before_destroy = true
-    }
-}
+#   lifecycle {
+#     ignore_changes = [ 
+#       tags["business_steward"],
+#       tags["center"],
+#       tags["environment"],
+#       tags["escid"],
+#       tags["funding_source"],
+#       tags["pii_data"],
+#       tags["security_compliance"],
+#       tags["security_steward"],
+#       tags["support_group"],
+#       tags["system"],
+#       tags["technical_poc"],
+#       tags["technical_steward"],
+#       tags["zone"]
+#       ]
+#     create_before_destroy = true
+#     }
+# }
 
 
 # Configure Public App Gateway
@@ -140,7 +146,8 @@ resource "azurerm_application_gateway" "agw_private" {
   depends_on          = [azurerm_public_ip.agw_public_ip,azurerm_key_vault_access_policy.agw_mi_policy,azurerm_user_assigned_identity.agw_mi]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
-  firewall_policy_id  = azurerm_web_application_firewall_policy.agw_waf_policy.id
+  # Uncomment if WAF Policy is Required
+  # firewall_policy_id  = azurerm_web_application_firewall_policy.agw_waf_policy.id
   
   identity {
     type         = "UserAssigned"
@@ -148,8 +155,9 @@ resource "azurerm_application_gateway" "agw_private" {
   }
 
   sku {
-    name     = "WAF_v2"
-    tier     = "WAF_v2"
+    # Update name and tier to WAF_v2 if setting WAF Policy
+    name     = "Standard_v2"
+    tier     = "Standard_v2"
     capacity = 2
   }
 
@@ -231,7 +239,7 @@ resource "azurerm_application_gateway" "agw_private" {
 
   # Request routing rule for Https
   request_routing_rule {
-    name                       = local.request_routing_rule_name
+    name                       = "${var.resource_prefix}-agw-rule"
     priority                   = 2
     rule_type                  = "Basic"
     http_listener_name         = local.listener_name
