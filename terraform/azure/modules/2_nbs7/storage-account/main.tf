@@ -70,6 +70,7 @@ resource "azurerm_private_endpoint" "file" {
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
   subnet_id           = data.azurerm_subnet.endpoint.id
+  min_tls_version = "TLS1_2"
  
   private_service_connection {
     name                           = "${var.storage_account_name}-file-connection"
