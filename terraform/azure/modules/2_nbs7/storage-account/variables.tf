@@ -87,3 +87,9 @@ variable "blob_container_delete_retention_days" {
   description = "Number of days to retain soft delete containers. Default 7 days."
   default = 7
 }
+
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
+  default = {}
+}
