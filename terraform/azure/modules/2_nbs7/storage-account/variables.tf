@@ -88,8 +88,8 @@ variable "blob_container_delete_retention_days" {
   default = 7
 }
 
-variable "tags" {
-  description = "A map of tags to add to all resources"
-  type        = map(string)
-  default = {}
+variable "ignore_changes" {
+  description = "A list of changes to ignore in all resources"
+  type        = list(any)
+  default = []
 }
