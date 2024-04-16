@@ -87,9 +87,3 @@ variable "blob_container_delete_retention_days" {
   description = "Number of days to retain soft delete containers. Default 7 days."
   default = 7
 }
-
-variable "ignore_changes" {
-  description = "A list of changes to ignore in all resources"
-  type        = list(any)
-  default = []
-}

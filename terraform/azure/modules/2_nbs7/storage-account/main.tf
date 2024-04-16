@@ -108,9 +108,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_blob" {
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = var.dns_zone_name_blob
   virtual_network_id    = data.azurerm_virtual_network.vnet.id
-  lifecycle {
-	  ignore_changes = var.ignore_changes
-	}
+ 
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_file" {
@@ -118,7 +116,5 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_file" {
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = var.dns_zone_name_file
   virtual_network_id    = data.azurerm_virtual_network.vnet.id
-  lifecycle {
-	  ignore_changes = var.ignore_changes
-	}
+  
 }
