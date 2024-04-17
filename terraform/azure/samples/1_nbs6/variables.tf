@@ -47,6 +47,7 @@ variable "aci_quay_nbs6_repository" {
 }
 
 
+
 #### Prviate AGW ####
 
 variable "agw_resource_group_name" {
@@ -66,6 +67,7 @@ variable "agw_subnet_name" {
 
 variable "agw_key_vault_name" {
   description = "Key Vault Name"
+
   type        = string
 }
 
