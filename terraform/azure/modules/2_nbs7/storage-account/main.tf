@@ -18,6 +18,7 @@ resource "azurerm_storage_account" "storage_account" {
   account_kind = var.account_kind
   enable_https_traffic_only = true
   public_network_access_enabled = var.public_network_access_enabled
+  min_tls_version = "TLS1_2"
 
   blob_properties {
     delete_retention_policy {
@@ -69,7 +70,7 @@ resource "azurerm_private_endpoint" "file" {
   name                = "${var.storage_account_name}-file"
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
-  subnet_id           = data.azurerm_subnet.endpoint.id
+  subnet_id           = data.azurerm_subnet.endpoint.id  
  
   private_service_connection {
     name                           = "${var.storage_account_name}-file-connection"
@@ -107,6 +108,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_blob" {
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = var.dns_zone_name_blob
   virtual_network_id    = data.azurerm_virtual_network.vnet.id
+ 
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_file" {
@@ -114,4 +116,5 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_file" {
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = var.dns_zone_name_file
   virtual_network_id    = data.azurerm_virtual_network.vnet.id
+  
 }
