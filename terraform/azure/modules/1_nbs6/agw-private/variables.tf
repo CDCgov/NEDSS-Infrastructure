@@ -3,9 +3,6 @@ variable "resource_prefix" {
   type        = string
 }
 
-
-#### AGW ####
-
 variable "agw_resource_group_name" {
   description = "The name of the resource group"
   type        = string
@@ -17,12 +14,12 @@ variable "agw_vnet_name" {
 }
 
 variable "agw_subnet_name" {
-  description = "App Gateway Subnet"
+  description = "Subnet to deploy App Gateway in"
   type        = string
 }
 
 variable "agw_key_vault_name" {
-  description = "Existing Key Vault Name."
+  description = "Key Vault Name"
   type        = string
 }
 
@@ -36,7 +33,12 @@ variable "agw_backend_host" {
   type        = string
 }
 
-variable "agw_aks_ip" {
-  description = "AKS Internal Loadbalancer IP"
+variable "agw_aci_ip" {
+  description = "ACI IP(s) List"
+  type        = list
+}
+ 
+variable "agw_private_ip" {
+  description = "AGW Private IP Address"
   type        = string
 }

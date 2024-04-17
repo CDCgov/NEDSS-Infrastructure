@@ -3,9 +3,6 @@ variable "resource_prefix" {
   type        = string
 }
 
-
-#### AGW ####
-
 variable "agw_resource_group_name" {
   description = "The name of the resource group"
   type        = string
@@ -17,7 +14,7 @@ variable "agw_vnet_name" {
 }
 
 variable "agw_subnet_name" {
-  description = "App Gateway Subnet"
+  description = "Subnet to deploy App Gateway in"
   type        = string
 }
 

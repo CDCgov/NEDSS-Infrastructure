@@ -47,30 +47,47 @@ variable "aci_quay_nbs6_repository" {
 }
 
 
-#### Internal Load Balancer ####
 
-variable "lbi_resource_group_name" {
+#### Prviate AGW ####
+
+variable "agw_resource_group_name" {
   description = "The name of the resource group"
   type        = string
 }
 
-variable "lbi_vnet_name" {
+variable "agw_vnet_name" {
   description = "Name of vNet"
   type        = string
 }
 
-variable "lbi_subnet_name" {
-  description = "Load Balancer Subnet"
+variable "agw_subnet_name" {
+  description = "App Gateway Subnet"
   type        = string
 }
 
-variable "lbi_aci_ip_list" {
-  description = "ACI Subnet IP list"
+variable "agw_key_vault_name" {
+  description = "Key Vault Name"
+
+  type        = string
+}
+
+variable "agw_key_vault_cert_name" {
+  description = "Key Vault Certificate Name"
+  type        = string
+}
+
+variable "agw_backend_host" {
+  description = "URL Expected by NGINX Ingress"
+  type        = string
+}
+
+variable "agw_aci_ip" {
+  description = "ACI 3 IPs"
   type        = list
 }
 
-variable "lbi_private_ip" {
-  description = "ACI Subnet IP list. Mix/Max 3 Required"
+variable "agw_private_ip" {
+  description = "AGW Private IP Address"
   type        = string
 }
 
