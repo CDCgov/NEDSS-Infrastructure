@@ -14,37 +14,6 @@ locals {
 
 
 
-### Deploy Public App Gateway ###
-
-# Configure Public IP for App Gateway
-### NOTE: This required by Azure for AGW even if keeping traffic private. ###
-### This will not be needed once Private Application Gateway is out of preview https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-private-deployment?tabs=portal ###
-resource "azurerm_public_ip" "agw_public_ip" {
-  name                = "${var.resource_prefix}-agw-temp-public-ip"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  lifecycle {
-    ignore_changes = [ 
-      tags["business_steward"],
-      tags["center"],
-      tags["environment"],
-      tags["escid"],
-      tags["funding_source"],
-      tags["pii_data"],
-      tags["security_compliance"],
-      tags["security_steward"],
-      tags["support_group"],
-      tags["system"],
-      tags["technical_poc"],
-      tags["technical_steward"],
-      tags["zone"]
-      ]
-    create_before_destroy = true
-    }
-}
-
 # Create Managed Identity to allow AGW to read Certificate from KeyVault
 resource "azurerm_user_assigned_identity" "agw_mi" {
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -140,7 +109,37 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
 # }
 
 
-# Configure Public App Gateway
+### Configure Public IP for App Gateway
+### NOTE: Both Public and Private IPs are required by Azure for AGW even if keeping traffic private. ###
+### This will not be needed once Private Application Gateway is out of preview https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-private-deployment?tabs=portal ###
+resource "azurerm_public_ip" "agw_public_ip" {
+  name                = "${var.resource_prefix}-agw-public-ip"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  lifecycle {
+    ignore_changes = [ 
+      tags["business_steward"],
+      tags["center"],
+      tags["environment"],
+      tags["escid"],
+      tags["funding_source"],
+      tags["pii_data"],
+      tags["security_compliance"],
+      tags["security_steward"],
+      tags["support_group"],
+      tags["system"],
+      tags["technical_poc"],
+      tags["technical_steward"],
+      tags["zone"]
+      ]
+    create_before_destroy = true
+    }
+}
+
+
+# Configure Private App Gateway
 resource "azurerm_application_gateway" "agw_private" {
   name                = "${var.resource_prefix}-agw-private"
   depends_on          = [azurerm_public_ip.agw_public_ip,azurerm_key_vault_access_policy.agw_mi_policy,azurerm_user_assigned_identity.agw_mi]

@@ -19,7 +19,7 @@ variable "agw_subnet_name" {
 }
 
 variable "agw_key_vault_name" {
-  description = "Key Vault Name"
+  description = "Existing Key Vault Name."
   type        = string
 }
 
