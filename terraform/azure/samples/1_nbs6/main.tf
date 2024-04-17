@@ -10,6 +10,7 @@ module nbs6-aci{
     aci_memory = var.aci_memory
 }
 
+
 module nbs6-agw-private{
     source = "../../modules/1_nbs6/agw-private"
     resource_prefix = var.resource_prefix
@@ -22,6 +23,7 @@ module nbs6-agw-private{
     agw_aci_ip = var.agw_aci_ip
     agw_private_ip = var.agw_private_ip
 }
+
 
 module nbs6-sqlmi{
     source = "../../modules/1_nbs6/sqlmi"
