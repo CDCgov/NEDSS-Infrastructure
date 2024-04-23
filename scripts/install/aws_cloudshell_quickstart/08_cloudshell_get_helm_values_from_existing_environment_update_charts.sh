@@ -1,18 +1,87 @@
 #!/bin/bash
-
 # This script helps in setting up an AWS environment for a specific site. It fetches AWS resources, prompts for various credentials,
 # and applies these configurations to specific files. It is designed to facilitate the automation of cloud infrastructure setup
 # and application deployment preparations.
 
-# Default file for storing selected values and entered credentials
+# Default settings
 DEFAULTS_FILE="nbs_defaults.sh"
 HELM_VER_DEFAULT=v7.3.3
 NOOP=0
+DEBUG=0
+DEVELOPMENT=0
+SEARCH_REPLACE=0
+SKIP_QUERY=0  # Added SKIP_QUERY to manage the bypassing of querying
+
+
+# Usage function to display help
+usage() {
+    echo "Usage: $0 [options]"
+    echo "  -h              Display this help message."
+    echo "  -d              Enable debug mode."
+    echo "  -D              Development mode for operations on non-production files."
+    echo "  -s              Perform search and replace."
+    echo "  -n              Skip querying and updating variables, use defaults only."
+    exit 1
+}
+
+# Parse command-line options
+while getopts 'hdsD' OPTION; do
+    case "$OPTION" in
+        h)
+            usage
+            ;;
+        d)
+            DEBUG=1
+            ;;
+        D)
+            DEVELOPMENT=1
+            ;;
+        s)
+            SEARCH_REPLACE=1
+            ;;
+        n)
+            SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
+            ;;
+        ?)
+            usage
+            ;;
+    esac
+done
+
+# Debug function
+debug() {
+    if [ "$DEBUG" -eq 1 ]; then
+        echo "Debug: $1"
+    fi
+}
+
+
 
 # Function to load saved defaults
 load_defaults() {
     if [ -f "$DEFAULTS_FILE" ]; then
         source "$DEFAULTS_FILE"
+    fi
+}
+
+# Function to check AWS access and confirm account
+check_aws_access() {
+    local account_id=$(aws sts get-caller-identity --query "Account" --output text)
+    local account_alias=$(aws iam list-account-aliases --query 'AccountAliases[0]' --output text)
+    if [ -z "$account_id" ]; then
+        echo "Error verifying AWS access."
+        exit 1
+    else
+        echo "You are currently accessing AWS Account ID: $account_id"
+        # aws  iam list-account-aliases only works from organization owner
+        # account
+        #echo "Account Alias: $account_alias"
+        echo "Account Alias: not available except from organization owner"
+        read -p "Is this the intended AWS account? (y/n): " confirmation
+        if [[ "$confirmation" != "y" ]]; then
+            echo "AWS account verification failed. Exiting."
+            exit 1
+        fi
     fi
 }
 
@@ -40,6 +109,8 @@ select_db_endpoint() {
     done
     echo "Selected DB Endpoint: $DB_ENDPOINT"
 }
+
+# select an EFS volume
 select_efs_volume() {
     echo "Fetching EFS volumes..."
     mapfile -t efs_volumes < <(aws efs describe-file-systems --query 'FileSystems[].[FileSystemId]' --output text)
@@ -51,6 +122,27 @@ select_efs_volume() {
     done
     echo "Selected EFS Volume: $EFS_ID"
 }
+
+# Function to select an MSK cluster and fetch its Kafka endpoint
+select_msk_cluster() {
+    echo "Fetching MSK clusters..."
+    mapfile -t msk_clusters < <(aws kafka list-clusters --query 'ClusterInfoList[].[ClusterArn, ClusterName]' --output text)
+    
+    echo "Available MSK Clusters:" > /dev/tty
+    select msk_option in "${msk_clusters[@]}"; do
+        MSK_CLUSTER_ARN=$(echo $msk_option | awk '{print $1}') # Assuming ARN is the first column
+        MSK_CLUSTER_NAME=$(echo $msk_option | awk '{print $2}') # Assuming Name is the second column
+        break
+    done
+    echo "Selected MSK Cluster ARN: $MSK_CLUSTER_ARN"
+    echo "Selected MSK Cluster Name: $MSK_CLUSTER_NAME"
+
+    # Fetch the Kafka endpoint for the selected MSK cluster
+    MSK_KAFKA_ENDPOINT=$(aws kafka get-bootstrap-brokers --cluster-arn $MSK_CLUSTER_ARN --query 'BootstrapBrokerStringTls')
+    echo "Selected MSK Kafka Endpoint: $MSK_KAFKA_ENDPOINT"
+}
+
+
 
 #EFS_ID=$(aws efs describe-file-systems | jq -r '.FileSystems[0].FileSystemId')
 #echo "EFS_ID=${EFS_ID}"
@@ -112,86 +204,113 @@ apply_substitutions_and_copy() {
 }
 
 
+# Check AWS access and confirm account
+check_aws_access;
+
 # Load saved defaults
-load_defaults
+load_defaults;
 
 # Start resource selection and prompts for credentials
 #LEGACY_CIDR_BLOCK=$(select_cidr $LEGACY_VPC_ID)
 #update_defaults "LEGACY_CIDR_BLOCK" "$LEGACY_CIDR_BLOCK"
 
-select_db_endpoint;
-update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
+if [ "$SKIP_QUERY" -eq 0 ]; then
+    select_db_endpoint;
+    update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
 
-select_efs_volume; 
-update_defaults "EFS_ID" "$EFS_ID"
+    select_efs_volume; 
+    update_defaults "EFS_ID" "$EFS_ID"
 
-# Prompt for missing values with defaults
-read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
-HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
-update_defaults HELM_VER $HELM_VER
+    select_msk_cluster;
+    update_defaults "MSK_CLUSTER_ARN" "$MSK_CLUSTER_ARN"
+    update_defaults "MSK_CLUSTER_NAME" "$MSK_CLUSTER_NAME"
+    update_defaults "MSK_KAFKA_ENDPOINT" "$MSK_KAFKA_ENDPOINT"
 
-read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_install_dir
-INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
-update_defaults INSTALL_DIR $INSTALL_DIR
+    # Prompt for missing values with defaults
+    read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
+    HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
+    update_defaults HELM_VER $HELM_VER
 
-# Proceed with the rest of the script
-HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
+    read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_install_dir
+    INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
+    update_defaults INSTALL_DIR $INSTALL_DIR
 
-# Prompts for additional information
-read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
-# read -p "Enter Image Name [$IMAGE_NAME_DEFAULT]: " IMAGE_NAME && IMAGE_NAME=${IMAGE_NAME:-$IMAGE_NAME_DEFAULT}
-update_defaults "SITE_NAME" "$SITE_NAME"
+    # Proceed with the rest of the script
+    HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 
-read -p "Please enter domain name e.g. nbspreview.com [${EXAMPLE_DOMAIN_DEFAULT}]: " EXAMPLE_DOMAIN  && EXAMPLE_DOMAIN=${EXAMPLE_DOMAIN:-$EXAMPLE_DOMAIN_DEFAULT}
-update_defaults "EXAMPLE_DOMAIN" "$EXAMPLE_DOMAIN"
+    # Prompts for additional information
+    read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
+    # read -p "Enter Image Name [$IMAGE_NAME_DEFAULT]: " IMAGE_NAME && IMAGE_NAME=${IMAGE_NAME:-$IMAGE_NAME_DEFAULT}
+    update_defaults "SITE_NAME" "$SITE_NAME"
 
-read -sp "Please enter the Keycloak admin password[${KEYCLOAK_ADMIN_PASSWORD_DEFAULT}]: " KEYCLOAK_ADMIN_PASSWORD && KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-$KEYCLOAK_ADMIN_PASSWORD_DEFAULT}
-echo
-update_defaults "KEYCLOAK_ADMIN_PASSWORD" "$KEYCLOAK_ADMIN_PASSWORD"
+    read -p "Please enter domain name e.g. nbspreview.com [${EXAMPLE_DOMAIN_DEFAULT}]: " EXAMPLE_DOMAIN  && EXAMPLE_DOMAIN=${EXAMPLE_DOMAIN:-$EXAMPLE_DOMAIN_DEFAULT}
+    update_defaults "EXAMPLE_DOMAIN" "$EXAMPLE_DOMAIN"
 
-read -sp "Please enter the Keycloak DB password[${KEYCLOAK_DB_PASSWORD_DEFAULT}]: " KEYCLOAK_DB_PASSWORD && KEYCLOAK_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD:-$KEYCLOAK_DB_PASSWORD_DEFAULT}
-echo
-update_defaults "KEYCLOAK_DB_PASSWORD" "$KEYCLOAK_DB_PASSWORD"
+    read -sp "Please enter the Keycloak admin password[${KEYCLOAK_ADMIN_PASSWORD_DEFAULT}]: " KEYCLOAK_ADMIN_PASSWORD && KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-$KEYCLOAK_ADMIN_PASSWORD_DEFAULT}
+    echo
+    update_defaults "KEYCLOAK_ADMIN_PASSWORD" "$KEYCLOAK_ADMIN_PASSWORD"
 
-read -p "Please enter the modernization-api DB user[${MODERNIZATION_API_DB_USER_DEFAULT}]: " MODERNIZATION_API_DB_USER && MODERNIZATION_API_DB_USER=${MODERNIZATION_API_DB_USER:-$MODERNIZATION_API_DB_USER_DEFAULT}
-update_defaults "MODERNIZATION_API_DB_USER" "$MODERNIZATION_API_DB_USER"
+    read -sp "Please enter the Keycloak DB password[${KEYCLOAK_DB_PASSWORD_DEFAULT}]: " KEYCLOAK_DB_PASSWORD && KEYCLOAK_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD:-$KEYCLOAK_DB_PASSWORD_DEFAULT}
+    echo
+    update_defaults "KEYCLOAK_DB_PASSWORD" "$KEYCLOAK_DB_PASSWORD"
 
-read -sp "Please enter the modernization-api DB user password[${MODERNIZATION_API_DB_USER_PASSWORD_DEFAULT}]: " MODERNIZATION_API_DB_USER_PASSWORD && MODERNIZATION_API_DB_USER_PASSWORD=${MODERNIZATION_API_DB_USER_PASSWORD:-$MODERNIZATION_API_DB_USER_PASSWORD_DEFAULT}
-echo
-update_defaults "MODERNIZATION_API_DB_USER_PASSWORD" "$MODERNIZATION_API_DB_USER_PASSWORD"
+    read -p "Please enter the modernization-api DB user[${MODERNIZATION_API_DB_USER_DEFAULT}]: " MODERNIZATION_API_DB_USER && MODERNIZATION_API_DB_USER=${MODERNIZATION_API_DB_USER:-$MODERNIZATION_API_DB_USER_DEFAULT}
+    update_defaults "MODERNIZATION_API_DB_USER" "$MODERNIZATION_API_DB_USER"
 
-read -p "Please enter the Cert-Manager email address[${CERT_MANAGER_EMAIL_DEFAULT}]: " CERT_MANAGER_EMAIL && CERT_MANAGER_EMAIL=${CERT_MANAGER_EMAIL:-$CERT_MANAGER_EMAIL_DEFAULT}
-update_defaults "CERT_MANAGER_EMAIL" "$CERT_MANAGER_EMAIL"
+    read -sp "Please enter the modernization-api DB user password[${MODERNIZATION_API_DB_USER_PASSWORD_DEFAULT}]: " MODERNIZATION_API_DB_USER_PASSWORD && MODERNIZATION_API_DB_USER_PASSWORD=${MODERNIZATION_API_DB_USER_PASSWORD:-$MODERNIZATION_API_DB_USER_PASSWORD_DEFAULT}
+    echo
+    update_defaults "MODERNIZATION_API_DB_USER_PASSWORD" "$MODERNIZATION_API_DB_USER_PASSWORD"
 
-read -p "Please enter the DB Name [${DB_NAME_DEFAULT}]: " DB_NAME && DB_NAME=${DB_NAME:-$DB_NAME_DEFAULT}
-update_defaults "DB_NAME" "$DB_NAME"
+    read -p "Please enter the Cert-Manager email address[${CERT_MANAGER_EMAIL_DEFAULT}]: " CERT_MANAGER_EMAIL && CERT_MANAGER_EMAIL=${CERT_MANAGER_EMAIL:-$CERT_MANAGER_EMAIL_DEFAULT}
+    update_defaults "CERT_MANAGER_EMAIL" "$CERT_MANAGER_EMAIL"
 
-read -p "Please enter the DB_USER [${DB_USER_DEFAULT}]: " DB_USER && DB_USER=${DB_USER:-$DB_USER_DEFAULT}
-update_defaults "DB_USER" "$DB_USER"
+    read -p "Please enter the DB Name [${DB_NAME_DEFAULT}]: " DB_NAME && DB_NAME=${DB_NAME:-$DB_NAME_DEFAULT}
+    update_defaults "DB_NAME" "$DB_NAME"
 
-read -sp "Please enter the DB_USER_PASSWORD[${DB_USER_PASSWORD_DEFAULT}]: " DB_USER_PASSWORD && DB_USER_PASSWORD=${DB_USER_PASSWORD:-$DB_USER_PASSWORD_DEFAULT}
-update_defaults "DB_USER_PASSWORD" "$DB_USER_PASSWORD"
+    read -p "Please enter the DB_USER [${DB_USER_DEFAULT}]: " DB_USER && DB_USER=${DB_USER:-$DB_USER_DEFAULT}
+    update_defaults "DB_USER" "$DB_USER"
 
-#read -p "Please enter the [${XXX_DEFAULT}]: " XXX && XXX=${XXX:-$XXX_DEFAULT}
-#update_defaults "XXX" "$XXX"
+    read -sp "Please enter the DB_USER_PASSWORD[${DB_USER_PASSWORD_DEFAULT}]: " DB_USER_PASSWORD && DB_USER_PASSWORD=${DB_USER_PASSWORD:-$DB_USER_PASSWORD_DEFAULT}
+    update_defaults "DB_USER_PASSWORD" "$DB_USER_PASSWORD"
 
-#EXAMPLE_DB_NAME
-#EXAMPLE_DB_USER
-#EXAMPLE_DB_USER_PASSWORD
+	#read -p "Please enter the [${XXX_DEFAULT}]: " XXX && XXX=${XXX:-$XXX_DEFAULT}
+	#update_defaults "XXX" "$XXX"
+
+else
+	echo "skipping update of variables"
+
+fi
 
 # Call the apply_substitutions_and_copy function for each required file
 #apply_substitutions_and_copy "inputs.tfvars" "./" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/charts/modernization-api/values.yaml" "${HELM_DIR}/charts/modernization-api" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/charts/nbs-gateway/values.yaml" "${HELM_DIR}/charts/nbs-gateway" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_DIR}/charts/nifi-efs" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
-apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
+if [ "${SEARCH_REPLACE}" -eq 1 ]
+then
+	echo "NOTICE: performing search and replace on released containers"
+	apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/modernization-api/values.yaml" "${HELM_DIR}/charts/modernization-api" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nbs-gateway/values.yaml" "${HELM_DIR}/charts/nbs-gateway" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_DIR}/charts/nifi-efs" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
+
+	if [ "$DEVELOPMENT" -eq 1 ]; then
+		echo "running search and replace on development containers"
+    	apply_substitutions_and_copy "${HELM_DIR}/charts/person-reporting-service/values.yaml" "${HELM_DIR}/charts/person-reporting-service" "$SITE_NAME"
+    	apply_substitutions_and_copy "${HELM_DIR}/charts/organization-reporting-service/values.yaml" "${HELM_DIR}/charts/organization-reporting-service" "$SITE_NAME"
+	fi
+else
+	echo "NOTICE: not performing search and replace"
+
+fi
+
+
+
 
 echo 
 echo "Configuration files have been updated and are ready for use."
 
 
+####################################################################
