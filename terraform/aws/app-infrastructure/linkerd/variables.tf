@@ -27,33 +27,28 @@ variable "eks_cluster_endpoint" {
   description = "Name of the EKS cluster"  
 }
 
-variable "resource_prefix" {
-  type        = string
-  description = "Prefix for resource names"
-  default     = "cdc-nbs"
-}
+# variable "resource_prefix" {
+#   type        = string
+#   description = "Prefix for resource names"
+#   default     = "cdc-nbs"
+# }
 
-variable "oidc_provider_arn" {
-  type        = string
-  description = "the ARN of the OIDC provider"
-}
-variable "oidc_provider_url" {
-  type        = string
-  description = "the URL of the OIDC provider"
-}
+# variable "oidc_provider_arn" {
+#   type        = string
+#   description = "the ARN of the OIDC provider"
+# }
+# variable "oidc_provider_url" {
+#   type        = string
+#   description = "the URL of the OIDC provider"
+# }
 
-variable "region" {
-  type        = string
-  description = "aws region"
-  default     = "us-east-1"
-}
+# variable "region" {
+#   type        = string
+#   description = "aws region"
+#   default     = "us-east-1"
+# }
 
 variable "cluster_certificate_authority_data" {
   type = string
   description = "TBase64 encoded certificate data required to communicate with the cluster"
 }
-
-variable "eks_cluster_endpoint" {
-  type = string
-  description = "The endpoint of the EKS cluster"
-} 
