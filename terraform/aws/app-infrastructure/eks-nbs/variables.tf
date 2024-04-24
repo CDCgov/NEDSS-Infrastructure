@@ -38,7 +38,7 @@ variable "sso_role_arn" {
 
 variable "cluster_version" {
   description = "Version of the AWS EKS cluster to provision"
-  default = "1.28"
+  default = "1.26"
 }
 
 variable "desired_nodes_count" {
