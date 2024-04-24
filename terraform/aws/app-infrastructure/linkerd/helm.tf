@@ -1,27 +1,5 @@
 # Deploys linkerd, linkerd control plane and linkerd visualization dashboard
 # #############################################################
-# data "aws_eks_cluster_auth" "cluster" {
-#   name = "cdc-nbs-fts1-eks"
-# }
-
-# data "aws_eks_cluster" "eks_cluster" {
-#   name = "cdc-nbs-fts1-eks"
-# }
-
-# provider "helm" {
-#   kubernetes {
-#     host                   = data.aws_eks_cluster.eks_cluster.endpoint                              # module.eks.cluster_endpoint
-#     cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks_cluster.certificate_authority[0].data) # base64decode(var.cluster_certificate_authority_data) # base64decode(module.eks.cluster_certificate_authority_data)
-#     token                  = data.aws_eks_cluster_auth.cluster.token
-#   }
-# }
-
-# provider "kubernetes" {
-#   host                   = data.aws_eks_cluster.eks_cluster.endpoint
-#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks_cluster.certificate_authority[0].data) # base64decode(var.cluster_certificate_authority_data)
-#   token                  = data.aws_eks_cluster_auth.cluster.token
-# }
-
 # linkerd helm release
 resource "helm_release" "linkerd_crds" {
   name            = "linkerd-crds"
@@ -98,13 +76,6 @@ resource "helm_release" "linkerd_control_plane" {
   depends_on = [
     helm_release.linkerd_crds
   ]
-}
-
-# annotate namespace to inject linkerd sidecars
-resource "null_resource" "annotate_namespace" {
-  provisioner "local-exec" {
-    command = "kubectl annotate namespace default linkerd.io/inject=enabled"
-  }
 }
 
 # deploy linkerd-viz
