@@ -10,6 +10,7 @@ resource "helm_release" "prometheus" {
     templatefile(var.values_file_path, { AWS_REGION = "${var.region}", WORKSPACE_ID = "${var.workspace_id}", IAM_PROXY_PROMETHEUS_ROLE_ARN = "${var.iam_proxy_prometheus_role_arn}", SERVICE_ACCOUNT_NAME = "${var.service_account_amp_ingest_name}"})
   ]
     namespace = var.namespace_name
+    create_namespace = true
 }
 
 
