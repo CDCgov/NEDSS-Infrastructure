@@ -1,8 +1,8 @@
-resource "kubernetes_namespace" "observability" {  
-  provider         = kubernetes
-  metadata {
-    labels = var.observability_labels
-    name = var.observability_namespace
-  }
-  depends_on = [ module.eks ]
-}
+# resource "kubernetes_namespace" "observability" {  
+#   provider         = kubernetes
+#   metadata {
+#     labels = var.observability_labels
+#     name = var.observability_namespace
+#   }
+#   depends_on = [ module.eks ]
+# }

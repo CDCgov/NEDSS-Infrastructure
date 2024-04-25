@@ -18,11 +18,11 @@ module "prometheus-workspace" {
   resource_prefix = var.resource_prefix
 }
 
-module "k8s-namespace" {
-  source           = "./modules/k8s-namespace"
-  create_namespace = false
-  namespace_name   = var.namespace_name
-}
+# module "k8s-namespace" {
+#   source           = "./modules/k8s-namespace"
+#   create_namespace = false
+#   namespace_name   = var.namespace_name
+# }
 
 module "prometheus-helm" {
   source                        = "./modules/prometheus-helm"

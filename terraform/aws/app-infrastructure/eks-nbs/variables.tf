@@ -89,22 +89,22 @@ variable "istio_version" {
   default     = "1.17.2"
 }
 
-variable "observability_namespace" {
-  description = "Name for the observability namespace with the EKS cluster to be created"
-  type        = string
-  default     = "observability"
-}
+# variable "observability_namespace" {
+#   description = "Name for the observability namespace with the EKS cluster to be created"
+#   type        = string
+#   default     = "observability"
+# }
 
-variable "observability_labels" {
-  description = "Labels to add to observability namespace"
-  type        = map(string)
-  default     = null
+# variable "observability_labels" {
+#   description = "Labels to add to observability namespace"
+#   type        = map(string)
+#   default     = null
 
-  # sample label
-  # default     = {
-  #   my_label_key = "my_label_value"
-  # }
-}
+#   # sample label
+#   # default     = {
+#   #   my_label_key = "my_label_value"
+#   # }
+# }
 
 variable "use_ecr_pull_through_cache" {
   description = "Create and use ECR pull through caching for bootstrapped helm charts"
