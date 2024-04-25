@@ -7,9 +7,9 @@
 # these need to be updated with each release or prompted and saved in an rc
 # file
 
-RELEASE_VER=v7.3.1
-INFRA_VER=v1.2.1
-HELM_VER=v7.3.1
+RELEASE_VER=v7.4.0
+INFRA_VER=v1.2.4
+HELM_VER=v7.4.0
 
 INFRA_FILE_BASE=nbs-infrastructure-${INFRA_VER}
 HELM_FILE_BASE=nbs-helm-${HELM_VER}

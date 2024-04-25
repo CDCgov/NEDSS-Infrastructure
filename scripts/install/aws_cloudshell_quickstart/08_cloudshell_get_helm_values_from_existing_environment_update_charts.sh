@@ -5,7 +5,7 @@
 
 # Default settings
 DEFAULTS_FILE="nbs_defaults.sh"
-HELM_VER_DEFAULT=v7.3.3
+HELM_VER_DEFAULT=v7.4.0
 NOOP=0
 DEBUG=0
 DEVELOPMENT=0
