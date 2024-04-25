@@ -4,7 +4,7 @@
 ACCT_NUM=0000000
 
 # modify this for each release or prompt and save to rc file
-INFRA_VER=v1.2.1
+INFRA_VER=v1.2.5
 
 INSTALL_DIR=nbs_install
 
