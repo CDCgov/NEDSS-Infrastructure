@@ -1,12 +1,12 @@
 # Deploys linkerd, linkerd control plane and linkerd visualization dashboard 
 # ##############################################
 
-provider "azurerm" {
-  features {}
-}
+# provider "azurerm" {
+#   features {}
+# }
 
 data "azurerm_resource_group" "rg" {
-  name = "csels-nbs-dev-low-rg"
+  name = var.resource_group_name 
 }
 
 data "azurerm_kubernetes_cluster" "aks_cluster" {
@@ -15,27 +15,9 @@ data "azurerm_kubernetes_cluster" "aks_cluster" {
 }
 
 data "azurerm_kubernetes_cluster" "aks_cluster_auth" {
-  # name                = data.azurerm_kubernetes_cluster.aks_cluster.name
-  # resource_group_name = data.azurerm_kubernetes_cluster.aks_cluster.resource_group_name
   name                = var.aks_cluster_name
   resource_group_name = var.resource_group_name
-
-#   kube_config {
-#     cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.0.cluster_ca_certificate)
-#     client_certificate     = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.0.client_certificate)
-#     client_key             = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.0.client_key)
-#     host                   = data.azurerm_kubernetes_cluster.aks_cluster.kube_config.0.host
-#     password               = var.service_principal_client_secret
-#     username               = var.service_principal_client_id
-#   }
 }
-# provider "helm" {
-#   kubernetes {
-#     host                   = data.aws_aks_cluster.aks_cluster.endpoint  # var.aks_cluster_endpoint                             # module.aks.cluster_endpoint
-#     cluster_ca_certificate = base64decode(data.aws_aks_cluster.aks_cluster.certificate_authority[0].data) # base64decode(var.cluster_certificate_authority_data) # base64decode(module.aks.cluster_certificate_authority_data)
-#     token                  = data.aws_aks_cluster_auth.cluster.token
-#   }
-# }
 
 provider "helm" {
   kubernetes {
@@ -45,12 +27,6 @@ provider "helm" {
   cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].cluster_ca_certificate)
   }
 }
-
-# provider "kubernetes" {
-#   host                   = data.aws_aks_cluster.aks_cluster.endpoint  # var.aks_cluster_endpoint
-#   cluster_ca_certificate = base64decode(data.aws_aks_cluster.aks_cluster.certificate_authority[0].data) # base64decode(var.cluster_certificate_authority_data)
-#   token                  = data.aws_aks_cluster_auth.cluster.token
-# }
 
 provider "kubernetes" {
   host                   = data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].host

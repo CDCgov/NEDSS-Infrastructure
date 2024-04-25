@@ -25,25 +25,4 @@ variable "linkerd_viz_namespace_name" {
 
 variable "resource_group_name" {
     type = string
-    default = "csels-nbs-dev-low-rg"
 }
-#### GENERAL
-# variable "cluster_certificate_authority_data" {
-#   type = string
-#   description = "TBase64 encoded certificate data required to communicate with the cluster"
-# }
-
-# variable "eks_cluster_endpoint" {
-#   type = string
-#   description = "The endpoint of the EKS cluster"
-# } 
-
-# variable "eks_cluster_name" {
-#   type = string
-#   description = "Name of the EKS cluster"
-# } 
-
-# variable "eks_aws_role_arn" {
-#   type = string
-#   description = "IAM role ARN of the EKS cluster"
-# }
