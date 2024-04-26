@@ -22,7 +22,7 @@ data "azurerm_kubernetes_cluster" "main" {
 }
 
 provider "helm" {
-    provider "kubernetes" {
+    kubernetes {
         host                   = data.azurerm_kubernetes_cluster.main.kube_config[0].host
         username               = data.azurerm_kubernetes_cluster.main.kube_config[0].username
         password               = data.azurerm_kubernetes_cluster.main.kube_config[0].password
