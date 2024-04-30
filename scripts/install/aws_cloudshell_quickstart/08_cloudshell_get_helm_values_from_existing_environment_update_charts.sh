@@ -19,8 +19,8 @@ usage() {
     echo "  -h              Display this help message."
     echo "  -d              Enable debug mode."
     echo "  -D              Development mode for operations on non-production files."
-    # echo "  -s              Perform search and replace."
-    echo "  -n              Skip querying and updating variables, use defaults only."
+    echo "  -s              Perform search and replace."
+    # echo "  -n              Skip querying and updating variables, use defaults only."
     exit 1
 }
 
@@ -216,8 +216,15 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_NIFI_ADMIN_USER_PASSWORD/${NIFI_ADMIN_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_ADMIN_USER/${NIFI_ADMIN_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_SENSITIVE_PROPS/${NIFI_SENSITIVE_PROPS}/" "$new_file_path"
+
+    sed -i "s/EXAMPLE_SFTP_ENABLED/${SFTP_ENABLED}/" "$new_file_path"
+    sed -i "s/EXAMPLE_SFTP_HOST/${SFTP_HOST}/" "$new_file_path"
+    sed -i "s/EXAMPLE_SFTP_USER/${SFTP_USER}/" "$new_file_path"
+    sed -i "s/EXAMPLE_SFTP_PASS/${SFTP_PASS}/" "$new_file_path"
+
     # Add more sed commands as needed for other placeholders
     #sed -i "s/EXAMPLE_XXX/${XXX}/" "$new_file_path"
+
 }
 
 
@@ -300,8 +307,24 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
 	read -p "Please enter the NIFI_SENSITIVE_PROPS[${NIFI_SENSITIVE_PROPS_DEFAULT}]: " NIFI_SENSITIVE_PROPS && NIFI_SENSITIVE_PROPS=${NIFI_SENSITIVE_PROPS:-$NIFI_SENSITIVE_PROPS_DEFAULT}
 	update_defaults "NIFI_SENSITIVE_PROPS" "$NIFI_SENSITIVE_PROPS"
 
-	#read -p "Please enter the [${XXX_DEFAULT}]: " XXX && XXX=${XXX:-$XXX_DEFAULT}
+	read -p "Please enter the SFTP_ENABLED flag (enabled/disabled) [${SFTP_ENABLED_DEFAULT}]: " SFTP_ENABLED && SFTP_ENABLED=${SFTP_ENABLED:-$SFTP_ENABLED_DEFAULT}
+	update_defaults "SFTP_ENABLED" "$SFTP_ENABLED"
+
+	read -p "Please enter the SFTP_HOST [${SFTP_HOST_DEFAULT}]: " SFTP_HOST && SFTP_HOST=${SFTP_HOST:-$SFTP_HOST_DEFAULT}
+	update_defaults "SFTP_HOST" "$SFTP_HOST"
+
+	read -p "Please enter the SFTP_USER[${SFTP_USER_DEFAULT}]: " SFTP_USER && SFTP_USER=${SFTP_USER:-$SFTP_USER_DEFAULT}
+	update_defaults "SFTP_USER" "$SFTP_USER"
+
+	read -sp "Please enter the SFTP_PASSWORD [${SFTP_PASS_DEFAULT}]: " SFTP_PASS && SFTP_PASS=${SFTP_PASS:-$SFTP_PASS_DEFAULT}
+    echo
+	update_defaults "SFTP_PASS" "$SFTP_PASS"
+
+
+
+	#read -p "Please enter the XXX [${XXX_DEFAULT}]: " XXX && XXX=${XXX:-$XXX_DEFAULT}
 	#update_defaults "XXX" "$XXX"
+
 
 else
 	echo "skipping update of variables"
