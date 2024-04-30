@@ -119,3 +119,52 @@ variable "msk_ebs_volume_size" {
   type        = number
   default     = 20
 }
+
+###########################################################
+# Serial: 2024042601
+
+
+variable "fluentbit_force_destroy_log_bucket" {
+  description = "If true, the log bucket will be deleted on terraform destroy with all contents. Defaults to `false`"
+  type        = bool
+  default = false
+}
+
+variable "use_ecr_pull_through_cache" {
+  type    = bool
+  default = false
+}
+
+variable "external_cidr_blocks" {
+  type    = list(any)
+  default = []
+}
+
+variable "eks_allow_endpoint_public_access" {
+  description = "Allow both public and private access to EKS api endpoint"
+  type        = bool
+  default     = true
+}
+
+variable "create_prometheus_vpc_endpoint" {
+  description = "Create Prometheus VPC endpoint and security group?"
+  type        = bool
+  default     = true
+}
+
+variable "create_grafana_vpc_endpoint" {
+  description = "Create Grafana VPC endpoint and security group?"
+  type        = bool
+  default     = true
+}
+
+variable "observability_namespace_name" {
+  description = "namespace for fluentbit, prometheus, grafana etc"
+  type        = string
+  default     = "observability"
+}
+
+variable "fluentbit_bucket_name" {
+  description = "name of fluentbit logs bucket, must be unique so include account number"
+  type        = string
+}

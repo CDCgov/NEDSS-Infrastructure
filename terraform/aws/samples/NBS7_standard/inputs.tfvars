@@ -40,4 +40,4 @@ aws_admin_role_name = "AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE"
 
 # S3 buckets
 fluentbit_bucket_prefix = "EXAMPLE-fluentbit-bucket"
-
+fluentbit_bucket_name = "EXAMPLE-fluentbit-logs"
