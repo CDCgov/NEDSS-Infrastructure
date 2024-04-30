@@ -1,25 +1,31 @@
-# CDCgov GitHub Organization Open Source Project Template
-
-**Template for clearance: This project serves as a template to aid projects in starting up and moving through clearance procedures. To start, create a new repository and implement the required [open practices](open_practices.md), train on and agree to adhere to the organization's [rules of behavior](rules_of_behavior.md), and [send a request through the create repo form](https://forms.office.com/Pages/ResponsePage.aspx?id=aQjnnNtg_USr6NJ2cHf8j44WSiOI6uNOvdWse4I-C2NUNk43NzMwODJTRzA4NFpCUk1RRU83RTFNVi4u) using language from this template as a Guide.**
-
-**General disclaimer** This repository was created for use by CDC programs to collaborate on public health related projects in support of the [CDC mission](https://www.cdc.gov/about/organization/mission.htm).  GitHub is not hosted by the CDC, but is a third party website used by CDC and its partners to share information and collaborate on software. CDC use of GitHub does not imply an endorsement of any one particular service, product, or enterprise. 
-
-## Access Request, Repo Creation Request
-
-* [CDC GitHub Open Project Request Form](https://forms.office.com/Pages/ResponsePage.aspx?id=aQjnnNtg_USr6NJ2cHf8j44WSiOI6uNOvdWse4I-C2NUNk43NzMwODJTRzA4NFpCUk1RRU83RTFNVi4u) _[Requires a CDC Office365 login, if you do not have a CDC Office365 please ask a friend who does to submit the request on your behalf. If you're looking for access to the CDCEnt private organization, please use the [GitHub Enterprise Cloud Access Request form](https://forms.office.com/Pages/ResponsePage.aspx?id=aQjnnNtg_USr6NJ2cHf8j44WSiOI6uNOvdWse4I-C2NUQjVJVDlKS1c0SlhQSUxLNVBaOEZCNUczVS4u).]_
-
-## Related documents
-
-* [Open Practices](open_practices.md)
-* [Rules of Behavior](rules_of_behavior.md)
-* [Thanks and Acknowledgements](thanks.md)
-* [Disclaimer](DISCLAIMER.md)
-* [Contribution Notice](CONTRIBUTING.md)
-* [Code of Conduct](code-of-conduct.md)
+terraform# NEDSS Infrastructure
 
 ## Overview
 
 Infrastructure required by the NEDSS application is contained within. Currently, the main method of deployment is Terraform which have been split out into modules.
+
+## Modules
+
+### AWS
+
+All tested and released modules are contained under the [app-infrastructure](terraform/aws/app-infrastructure) directory.
+
+1. [aws-prometheus-grafana](terraform/aws/app-infrastructure/aws-prometheus-grafana) - Module for deploying AWS managed Prometheus and Grafana, including Helm chart components to be deployed into a Kubernetes cluster.
+2. [efs](terraform/aws/app-infrastructure/efs) - Module for deploying AWS managed Elastic FileSystem (EFS) and related EFS resources
+3. [eks-nbs](terraform/aws/app-infrastructure/eks-nbs) - Module for deploying AWS managed Kubernetes (EKS)and related EKS resources
+4. [fluentbit](terraform/aws/app-infrastructure/fluentbit) - Module for deploying the Fluenbit Helm chart in an EKS cluster
+5. [kms](terraform/aws/app-infrastructure/kms) - Module for deploying a single AWS Key Management Service (KMS)
+6. [linkerd](terraform/aws/app-infrastructure/linkerd) - Module for deploying the Linkerd Helm chart in an EKS cluster
+7. [msk](terraform/aws/app-infrastructure/msk) - Module for deploying AWS Managed Streaming for Apache Kafka (MSK)
+8. [s3-bucket](terraform/aws/app-infrastructure/s3-bucket) - Module for deploying a single S3 bucket
+9. [vpc](terraform/aws/app-infrastructure/vpc) - Module for deploying a single Virtual Private Network (VPC)
+10. [vpc-endpoints-nbs](terraform/aws/app-infrastructure/vpc-endpoints-nbs) - Module for deploying a private endpoints required for AWS managed Prometheus and Grafana
+
+### Samples
+
+Samples for quick deployments into a cloud environment.
+
+- [AWS Sample Deployment](terraform/aws/samples/NBS7_standard/) - a directory containing a sample deploy of the modernized infrastructure into an environment containing NBS6.
   
 ## Public Domain Standard Notice
 This repository constitutes a work of the United States Government and is not
