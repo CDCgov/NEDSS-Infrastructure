@@ -1,4 +1,4 @@
-terraform# NEDSS Infrastructure
+# NEDSS Infrastructure
 
 ## Overview
 
