@@ -25,7 +25,7 @@ usage() {
 }
 
 # Parse command-line options
-while getopts 'hdsD' OPTION; do
+while getopts 'hdsDn?' OPTION; do
     case "$OPTION" in
         h)
             usage
@@ -235,8 +235,6 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
     update_defaults INSTALL_DIR $INSTALL_DIR
 
-    # Proceed with the rest of the script
-    HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 
     # Prompts for additional information
     read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
@@ -281,11 +279,20 @@ else
 
 fi
 
+# Proceed with the rest of the script
+HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
+debug HELM_DIR=${HELM_DIR};
+
 # Call the apply_substitutions_and_copy function for each required file
 #apply_substitutions_and_copy "inputs.tfvars" "./" "$SITE_NAME"
 if [ "${SEARCH_REPLACE}" -eq 1 ]
 then
+
 	echo "NOTICE: performing search and replace on released containers"
+    
+    debug HELM_DIR=${HELM_DIR};
+    debug "apply_substitutions_and_copy ${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml ${HELM_DIR}/k8-manifests $SITE_NAME"
+
 	apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"

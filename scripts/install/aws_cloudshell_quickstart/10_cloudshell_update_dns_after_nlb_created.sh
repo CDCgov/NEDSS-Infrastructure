@@ -45,7 +45,7 @@ while getopts "dst" opt; do
         d ) DEBUG_MODE=1 ;;
         s ) STEP_MODE=1 ;;
         t ) TEST_MODE=1 ;;
-        \? ) echo "Usage: cmd [-d] [-s] [-t]"
+        \? ) echo "Usage: $0 [-d] [-s] [-t]"
              exit 1 ;;
     esac
 done
