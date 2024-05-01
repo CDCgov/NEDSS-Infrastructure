@@ -2,7 +2,7 @@
 
 ## Overview
 
-Infrastructure required by the NEDSS application is contained within. Currently, the main method of deployment is Terraform which have been split out into modules.
+Infrastructure required by the NEDSS application is contained within. Currently, the main method of deployment is Terraform which is a compilation of independent modules that comprise an NBS7 environment.
 
 ## Modules
 
