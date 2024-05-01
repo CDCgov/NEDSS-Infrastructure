@@ -121,6 +121,7 @@ function helm_safe_install() {
     else
         debug_message "$name is already installed, checking for updates..."
         helm upgrade $name -f ./$path/values-${SITE_NAME}.yaml $path
+        sleep ${SLEEP_TIME}
     fi
     pause_step
 }
@@ -130,12 +131,42 @@ cd ${HELM_DIR}/charts
 check_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
+check_dns dataingestion.${SITE_NAME}.${EXAMPLE_DOMAIN};
 
 helm_safe_install elasticsearch elasticsearch-efs
 helm_safe_install page-builder-api page-builder-api
 helm_safe_install modernization-api modernization-api
 helm_safe_install nifi nifi-efs
 helm_safe_install nbs-gateway nbs-gateway
+
+read -p "Has the keycloak database been created? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_prompt "loading keycloak pod"
+    #helm_safe_install keycloak keycloak
+    # need a name space
+    helm install keycloak -n keycloak -f ./keycloak/values-${SITE_NAME}.yaml keycloak
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "keycloak loaded"
+else
+    echo "keycloak skipped."
+fi
+kubectl get pods -n keycloak
+
+read -p "Has the dataingestion database been created? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_prompt "loading dataingestion pod"
+    helm_safe_install dataingestion dataingestion-service
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "dataingestion loaded"
+else
+    echo "dataingestion skipped."
+fi
+
+kubectl get pods 
 
 exit 0
 

@@ -5,15 +5,18 @@
 
 # Default settings
 DEFAULTS_FILE="nbs_defaults.sh"
-HELM_VER_DEFAULT=v7.4.0
+HELM_VER_DEFAULT=v7.4.1
 NOOP=0
 DEBUG=0
 DEVELOPMENT=0
 SEARCH_REPLACE=0
+ZIP_FILES=0
+NEW_FILES=()
 SKIP_QUERY=0  # Added SKIP_QUERY to manage the bypassing of querying
 
 
 # Usage function to display help
+
 usage() {
     echo "Usage: $0 [options]"
     echo "  -h              Display this help message."
@@ -21,12 +24,13 @@ usage() {
     echo "  -D              Development mode for operations on non-production files."
     echo "  -s              Perform search and replace."
     # echo "  -n              Skip querying and updating variables, use defaults only."
+    echo "  -z              Create a zip file of the modified files."
     exit 1
 }
 
 # Parse command-line options
 #while getopts 'hdsDn?' OPTION; do
-while getopts 'hdsD?' OPTION; do
+while getopts 'hdsD?z' OPTION; do
     case "$OPTION" in
         h)
             usage
@@ -43,6 +47,9 @@ while getopts 'hdsD?' OPTION; do
         #n)
         #    SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
         #    ;;
+        z)
+            ZIP_FILES=1
+            ;;
         ?)
             usage
             ;;
@@ -55,8 +62,6 @@ debug() {
         echo "Debug: $1"
     fi
 }
-
-
 
 # Function to load saved defaults
 load_defaults() {
@@ -179,8 +184,10 @@ apply_substitutions_and_copy() {
     debug "echo creating $new_file_path"
     cp -ip "$src_file_path" "$new_file_path"
 
-    if [ ! -f $new_file_path ]
+    if [ -f $new_file_path ]
     then
+		NEW_FILES+=("$new_file_path")
+	else
         echo "ERROR: $new_file_path not created"
         exit 1
     fi
@@ -225,7 +232,18 @@ apply_substitutions_and_copy() {
     # Add more sed commands as needed for other placeholders
     #sed -i "s/EXAMPLE_XXX/${XXX}/" "$new_file_path"
 
+
+
 }
+
+zip_new_files() {
+    local zip_file_name="helm_local_customizations_${SITE_NAME}.zip"
+    echo "Zipping new files into ${zip_file_name}..."
+    zip "$zip_file_name" "${NEW_FILES[@]}"  # Add all tracked new files to the zip
+    echo "Files zipped successfully."
+}
+
+
 
 
 # Check AWS access and confirm account
@@ -301,7 +319,8 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
 	read -p "Please enter the NIFI_ADMIN_USER[${NIFI_ADMIN_USER_DEFAULT}]: " NIFI_ADMIN_USER && NIFI_ADMIN_USER=${NIFI_ADMIN_USER:-$NIFI_ADMIN_USER_DEFAULT}
 	update_defaults "NIFI_ADMIN_USER" "$NIFI_ADMIN_USER"
 
-	read -p "Please enter the NIFI_ADMIN_USER_PASSWORD[${NIFI_ADMIN_USER_PASSWORD_DEFAULT}]: " NIFI_ADMIN_USER_PASSWORD && NIFI_ADMIN_USER_PASSWORD=${NIFI_ADMIN_USER_PASSWORD:-$NIFI_ADMIN_USER_PASSWORD_DEFAULT}
+	read -sp "Please enter the NIFI_ADMIN_USER_PASSWORD[${NIFI_ADMIN_USER_PASSWORD_DEFAULT}]: " NIFI_ADMIN_USER_PASSWORD && NIFI_ADMIN_USER_PASSWORD=${NIFI_ADMIN_USER_PASSWORD:-$NIFI_ADMIN_USER_PASSWORD_DEFAULT}
+    echo
 	update_defaults "NIFI_ADMIN_USER_PASSWORD" "$NIFI_ADMIN_USER_PASSWORD"
 
 	read -p "Please enter the NIFI_SENSITIVE_PROPS[${NIFI_SENSITIVE_PROPS_DEFAULT}]: " NIFI_SENSITIVE_PROPS && NIFI_SENSITIVE_PROPS=${NIFI_SENSITIVE_PROPS:-$NIFI_SENSITIVE_PROPS_DEFAULT}
@@ -367,6 +386,15 @@ else
 	echo "NOTICE: not performing search and replace"
 
 fi
+
+
+# Final operations
+if [ "$ZIP_FILES" -eq 1 ]; then
+    zip_new_files
+fi
+
+echo 
+echo "Configuration files have been updated and are ready for use."
 
 
 
