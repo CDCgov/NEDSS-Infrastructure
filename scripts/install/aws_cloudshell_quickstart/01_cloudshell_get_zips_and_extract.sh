@@ -5,6 +5,8 @@ DEBUG_MODE=0
 STEP_MODE=0
 TEST_MODE=0
 RELEASE_VER=v7.4.0
+INFRA_VER=v1.2.6
+HELM_VER=v7.4.0
 INSTALL_DIR=nbs_install
 SOURCE="github"  # Default to GitHub, other options are 's3' and 'local'
 
@@ -25,7 +27,7 @@ update_defaults() {
     local var_name=$1
     local var_value=$2
     if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
-        sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
     else
         echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
     fi
@@ -53,23 +55,6 @@ while getopts "dsi:r:lc:" opt; do
     esac
 done
 
-load_defaults
-step_pause
-
-log_debug "Using INSTALL_DIR: $INSTALL_DIR"
-log_debug "Using RELEASE_VER: $RELEASE_VER"
-log_debug "Using SOURCE: $SOURCE"
-
-INFRA_VER=v1.2.6
-HELM_VER=v7.4.0
-
-INFRA_FILE_BASE=nbs-infrastructure-${INFRA_VER}
-HELM_FILE_BASE=nbs-helm-${HELM_VER}
-
-#mkdir -p ~/${INSTALL_DIR}
-#cd ~/${INSTALL_DIR}
-mkdir -p ${INSTALL_DIR}
-cd ${INSTALL_DIR}
 
 # Function to download and extract files
 download_and_extract() {
@@ -104,6 +89,38 @@ download_and_extract() {
     fi
 }
 
+load_defaults
+step_pause
+
+# Prompt for missing values with defaults
+read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
+HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
+update_defaults HELM_VER $HELM_VER
+
+read -p "Please enter Infrastructure version [${INFRA_VER_DEFAULT}]: " input_infra_ver
+INFRA_VER=${input_infra_ver:-$INFRA_VER_DEFAULT}
+update_defaults INFRA_VER $INFRA_VER
+
+read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_install_dir
+INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
+update_defaults INSTALL_DIR $INSTALL_DIR
+
+# Prompts for additional information
+read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
+# read -p "Enter Image Name [$IMAGE_NAME_DEFAULT]: " IMAGE_NAME && IMAGE_NAME=${IMAGE_NAME:-$IMAGE_NAME_DEFAULT}
+update_defaults "SITE_NAME" "$SITE_NAME"
+
+log_debug "Using INSTALL_DIR: $INSTALL_DIR"
+log_debug "Using RELEASE_VER: $RELEASE_VER"
+log_debug "Using SOURCE: $SOURCE"
+
+INFRA_FILE_BASE=nbs-infrastructure-${INFRA_VER}
+HELM_FILE_BASE=nbs-helm-${HELM_VER}
+
+#mkdir -p ~/${INSTALL_DIR}
+#cd ~/${INSTALL_DIR}
+mkdir -p ${INSTALL_DIR}
+cd ${INSTALL_DIR}
 # Define GitHub URLs
 INFRA_URL="https://github.com/CDCgov/NEDSS-Infrastructure/releases/download/${RELEASE_VER}/${INFRA_FILE_BASE}.zip"
 HELM_URL="https://github.com/CDCgov/NEDSS-Helm/releases/download/${RELEASE_VER}/${HELM_FILE_BASE}.zip"
