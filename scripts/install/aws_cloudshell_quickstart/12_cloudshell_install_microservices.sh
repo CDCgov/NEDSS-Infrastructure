@@ -1,14 +1,31 @@
 #!/bin/bash
-HELM_VER=v7.3.3
-#exit 1
+
+# Description:
+# This script automates the installation and configuration of various microservices using Helm.
+# It manages Helm chart installations for services like Elasticsearch, NiFi, and several APIs,
+# ensuring that each component is properly configured and deployed within a specified Kubernetes environment.
+# It supports idempotent operation, meaning it can safely be re-run without unintended side effects.
+
+# Requirements:
+# - Helm 3 installed and configured
+# - Kubernetes cluster access with configured kubectl
+# - Internet access for resolving DNS and fetching Helm charts
+# - dig command available for DNS checks
+# - Bash 4.0 or newer
+
+# Usage:
+# ./this_script.sh [options]
+# Options:
+#  -d : Enable debug mode for verbose output
+#  -s : Enable step mode to proceed through the script interactively
+
+HELM_VER=v7.4.0
 INSTALL_DIR=~/nbs_install
-DEBUG=1
-STEP=1
-NOOP=0
-SLEEP_TIME=60
-# must edit with each release or prompt and save
-# Default file for storing selected values and entered credentials
 DEFAULTS_FILE="nbs_defaults.sh"
+SLEEP_TIME=60
+DEBUG=0
+STEP=0
+NOOP=0
 
 # Function to load saved defaults
 load_defaults() {
@@ -17,127 +34,140 @@ load_defaults() {
     fi
 }
 
+# Update defaults safely
 update_defaults() {
     local var_name=$1
     local var_value=$2
     if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
-        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
         sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
     else
         echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
     fi
 }
 
+# Parsing command-line options
+while getopts "ds" opt; do
+  case $opt in
+    d)
+      DEBUG=1
+      ;;
+    s)
+      STEP=1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
 load_defaults;
 
-# Prompt for missing values with defaults
+function debug_message() {
+    if [[ $DEBUG -eq 1 ]]; then
+        echo "DEBUG: $1"
+    fi
+}
+
+function pause_step() {
+    if [[ $STEP -eq 1 ]]; then
+        read -p "Press [Enter] to continue..."
+    fi
+}
+
+# Only update if input changes
 read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
-HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
-update_defaults HELM_VER $HELM_VER
+if [ "$input_helm_ver" != "$HELM_VER_DEFAULT" ]; then
+    HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
+    update_defaults HELM_VER $HELM_VER
+fi
 
 read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_install_dir
-INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
-update_defaults INSTALL_DIR $INSTALL_DIR
+if [ "$input_install_dir" != "$INSTALL_DIR_DEFAULT" ]; then
+    INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
+    update_defaults INSTALL_DIR $INSTALL_DIR
+fi
 
-# Read necessary input from user
-read -p "Please enter the site name [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
-read -p "Please enter domain name [${EXAMPLE_DOMAIN_DEFAULT}]: " EXAMPLE_DOMAIN  && EXAMPLE_DOMAIN=${EXAMPLE_DOMAIN:-$EXAMPLE_DOMAIN_DEFAULT}
-# Update defaults
+# Prompts for additional information
+read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
+# read -p "Enter Image Name [$IMAGE_NAME_DEFAULT]: " IMAGE_NAME && IMAGE_NAME=${IMAGE_NAME:-$IMAGE_NAME_DEFAULT}
 update_defaults "SITE_NAME" "$SITE_NAME"
+
+read -p "Please enter domain name e.g. nbspreview.com [${EXAMPLE_DOMAIN_DEFAULT}]: " EXAMPLE_DOMAIN  && EXAMPLE_DOMAIN=${EXAMPLE_DOMAIN:-$EXAMPLE_DOMAIN_DEFAULT}
 update_defaults "EXAMPLE_DOMAIN" "$EXAMPLE_DOMAIN"
 
-# Proceed with the rest of the script
+
 HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
-
-
 cd ${INSTALL_DIR}
-# sleep between containers
 
-
-#
-#echo "what is the domain you will be using?"
-#read TMP_DOMAIN
-
-#TMP_DOMAIN=site.example.com
-
-#echo "TMP_DOMAIN=${TMP_DOMAIN}"
-
-#check_dns()
-#{
-#	TMP_HOST=$1
-#
-#	echo "checking ${TMP_HOST}"
-#
-#	if ! host ${TMP_HOST} > /dev/null
-#	then
-#		echo "No ip for ${TMP_HOST}"
-#	fi
-#
-#	#host ${TMP_HOST}
-#	echo "hit return to continue"
-#	read junk
-#
-#}
-
-#
-check_dns() 
-{
+function check_dns() {
   local TMP_HOST="$1"
-
-   echo "checking ${TMP_HOST}"
-  # Try to resolve the TMP_HOST to an IP address.
+  debug_message "Checking DNS for ${TMP_HOST}"
   local ip_address=$(dig +short "$TMP_HOST")
-
-  # If the IP address is empty, the TMP_HOST does not resolve.
   if [[ -z "$ip_address" ]]; then
     echo "ERROR: $TMP_HOST does not resolve!!"
     exit 1
   fi
 }
 
-
+function helm_safe_install() {
+    local name=$1
+    local path=$2
+    if ! helm list --short | grep -q "^${name}$"; then
+        debug_message "Installing $name"
+        helm install $name -f ./$path/values-${SITE_NAME}.yaml $path
+        echo "Sleeping for ${SLEEP_TIME} seconds"
+        sleep ${SLEEP_TIME}
+    else
+        debug_message "$name is already installed, checking for updates..."
+        helm upgrade $name -f ./$path/values-${SITE_NAME}.yaml $path
+        sleep ${SLEEP_TIME}
+    fi
+    pause_step
+}
 
 cd ${HELM_DIR}/charts
 
 check_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
+check_dns dataingestion.${SITE_NAME}.${EXAMPLE_DOMAIN};
 
-echo "installing elasticsearch"
-echo "hit return to continue"
-read junk
-helm install elasticsearch -f ./elasticsearch-efs/values-${SITE_NAME}.yaml elasticsearch-efs 
-echo "sleeping for ${SLEEP_TIME} seconds"
-sleep ${SLEEP_TIME}
+helm_safe_install elasticsearch elasticsearch-efs
+helm_safe_install page-builder-api page-builder-api
+helm_safe_install modernization-api modernization-api
+helm_safe_install nifi nifi-efs
+helm_safe_install nbs-gateway nbs-gateway
 
+read -p "Has the keycloak database been created? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_prompt "loading keycloak pod"
+    #helm_safe_install keycloak keycloak
+    # need a name space
+    helm install keycloak -n keycloak -f ./keycloak/values-${SITE_NAME}.yaml keycloak
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "keycloak loaded"
+else
+    echo "keycloak skipped."
+fi
+kubectl get pods -n keycloak
 
-echo "installing page-builder-api"
-echo "hit return to continue"
-read junk
-helm install page-builder-api -f ./page-builder-api/values-${SITE_NAME}.yaml page-builder-api
-echo "sleeping for ${SLEEP_TIME} seconds"
-sleep ${SLEEP_TIME}
+read -p "Has the dataingestion database been created? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_prompt "loading dataingestion pod"
+    helm_safe_install dataingestion dataingestion-service
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "dataingestion loaded"
+else
+    echo "dataingestion skipped."
+fi
 
-echo "installing modernization-api"
-echo "hit return to continue"
-read junk
-helm install modernization-api -f ./modernization-api/values-${SITE_NAME}.yaml modernization-api
-echo "sleeping for ${SLEEP_TIME} seconds"
-sleep ${SLEEP_TIME}
-
-echo "installing nifi"
-echo "hit return to continue"
-read junk
-helm install nifi -f ./nifi-efs/values-${SITE_NAME}.yaml nifi-efs
-echo "sleeping for ${SLEEP_TIME} seconds"
-sleep ${SLEEP_TIME}
-
-echo "installing nbs-gateway"
-echo "hit return to continue"
-read junk
-helm install nbs-gateway -f ./nbs-gateway/values-${SITE_NAME}.yaml nbs-gateway
-echo "sleeping for ${SLEEP_TIME} seconds"
-sleep ${SLEEP_TIME}
+kubectl get pods 
 
 exit 0
+
 

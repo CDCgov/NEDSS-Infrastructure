@@ -5,27 +5,32 @@
 
 # Default settings
 DEFAULTS_FILE="nbs_defaults.sh"
-HELM_VER_DEFAULT=v7.3.3
+HELM_VER_DEFAULT=v7.4.1
 NOOP=0
 DEBUG=0
 DEVELOPMENT=0
 SEARCH_REPLACE=0
+ZIP_FILES=0
+NEW_FILES=()
 SKIP_QUERY=0  # Added SKIP_QUERY to manage the bypassing of querying
 
 
 # Usage function to display help
+
 usage() {
     echo "Usage: $0 [options]"
     echo "  -h              Display this help message."
     echo "  -d              Enable debug mode."
     echo "  -D              Development mode for operations on non-production files."
     echo "  -s              Perform search and replace."
-    echo "  -n              Skip querying and updating variables, use defaults only."
+    # echo "  -n              Skip querying and updating variables, use defaults only."
+    echo "  -z              Create a zip file of the modified files."
     exit 1
 }
 
 # Parse command-line options
-while getopts 'hdsD' OPTION; do
+#while getopts 'hdsDn?' OPTION; do
+while getopts 'hdsD?z' OPTION; do
     case "$OPTION" in
         h)
             usage
@@ -39,8 +44,11 @@ while getopts 'hdsD' OPTION; do
         s)
             SEARCH_REPLACE=1
             ;;
-        n)
-            SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
+        #n)
+        #    SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
+        #    ;;
+        z)
+            ZIP_FILES=1
             ;;
         ?)
             usage
@@ -55,12 +63,13 @@ debug() {
     fi
 }
 
-
-
 # Function to load saved defaults
 load_defaults() {
+    echo "NOTICE: reading previous values from $DEFAULTS_FILE"
     if [ -f "$DEFAULTS_FILE" ]; then
         source "$DEFAULTS_FILE"
+    else
+        echo "NOTICE: $DEFAULTS_FILE does not exist"
     fi
 }
 
@@ -154,6 +163,8 @@ apply_substitutions_and_copy() {
     local dest_dir=$2
     local site_name=$3
 
+    debug "echo  src_file_path=$1 dest_dir=$2 site_name=$3"
+
     # Extract filename and extension
     local filename=$(basename -- "$src_file_path")
     local extension="${filename##*.}"
@@ -170,7 +181,16 @@ apply_substitutions_and_copy() {
 
     # Copy and apply substitutions
     #echo cp -ip "$src_file_path" "$new_file_path"
+    debug "echo creating $new_file_path"
     cp -ip "$src_file_path" "$new_file_path"
+
+    if [ -f $new_file_path ]
+    then
+		NEW_FILES+=("$new_file_path")
+	else
+        echo "ERROR: $new_file_path not created"
+        exit 1
+    fi
 
     # Apply substitutions
     sed -i "s/vpc-LEGACY-EXAMPLE/${LEGACY_VPC_ID}/" "$new_file_path"
@@ -200,8 +220,30 @@ apply_substitutions_and_copy() {
     sed -i "s/MODERNIZATION_API_DB_USER_PASSWORD/${MODERNIZATION_API_DB_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/MODERNIZATION_API_DB_USER/${MODERNIZATION_API_DB_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_EFS_ID/${EFS_ID}/" "$new_file_path"
+    sed -i "s/EXAMPLE_NIFI_ADMIN_USER_PASSWORD/${NIFI_ADMIN_USER_PASSWORD}/" "$new_file_path"
+    sed -i "s/EXAMPLE_NIFI_ADMIN_USER/${NIFI_ADMIN_USER}/" "$new_file_path"
+    sed -i "s/EXAMPLE_NIFI_SENSITIVE_PROPS/${NIFI_SENSITIVE_PROPS}/" "$new_file_path"
+
+    sed -i "s/EXAMPLE_SFTP_ENABLED/${SFTP_ENABLED}/" "$new_file_path"
+    sed -i "s/EXAMPLE_SFTP_HOST/${SFTP_HOST}/" "$new_file_path"
+    sed -i "s/EXAMPLE_SFTP_USER/${SFTP_USER}/" "$new_file_path"
+    sed -i "s/EXAMPLE_SFTP_PASS/${SFTP_PASS}/" "$new_file_path"
+
     # Add more sed commands as needed for other placeholders
+    #sed -i "s/EXAMPLE_XXX/${XXX}/" "$new_file_path"
+
+
+
 }
+
+zip_new_files() {
+    local zip_file_name="helm_local_customizations_${SITE_NAME}.zip"
+    echo "Zipping new files into ${zip_file_name}..."
+    zip "$zip_file_name" "${NEW_FILES[@]}"  # Add all tracked new files to the zip
+    echo "Files zipped successfully."
+}
+
+
 
 
 # Check AWS access and confirm account
@@ -214,6 +256,8 @@ load_defaults;
 #LEGACY_CIDR_BLOCK=$(select_cidr $LEGACY_VPC_ID)
 #update_defaults "LEGACY_CIDR_BLOCK" "$LEGACY_CIDR_BLOCK"
 
+# TODO: fix skip query flag, does not work because variable names in
+# defautls file have _DEFAULT added!!!!
 if [ "$SKIP_QUERY" -eq 0 ]; then
     select_db_endpoint;
     update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
@@ -235,8 +279,6 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
     update_defaults INSTALL_DIR $INSTALL_DIR
 
-    # Proceed with the rest of the script
-    HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 
     # Prompts for additional information
     read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
@@ -271,21 +313,60 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     update_defaults "DB_USER" "$DB_USER"
 
     read -sp "Please enter the DB_USER_PASSWORD[${DB_USER_PASSWORD_DEFAULT}]: " DB_USER_PASSWORD && DB_USER_PASSWORD=${DB_USER_PASSWORD:-$DB_USER_PASSWORD_DEFAULT}
+    echo
     update_defaults "DB_USER_PASSWORD" "$DB_USER_PASSWORD"
 
-	#read -p "Please enter the [${XXX_DEFAULT}]: " XXX && XXX=${XXX:-$XXX_DEFAULT}
+	read -p "Please enter the NIFI_ADMIN_USER[${NIFI_ADMIN_USER_DEFAULT}]: " NIFI_ADMIN_USER && NIFI_ADMIN_USER=${NIFI_ADMIN_USER:-$NIFI_ADMIN_USER_DEFAULT}
+	update_defaults "NIFI_ADMIN_USER" "$NIFI_ADMIN_USER"
+
+	read -sp "Please enter the NIFI_ADMIN_USER_PASSWORD[${NIFI_ADMIN_USER_PASSWORD_DEFAULT}]: " NIFI_ADMIN_USER_PASSWORD && NIFI_ADMIN_USER_PASSWORD=${NIFI_ADMIN_USER_PASSWORD:-$NIFI_ADMIN_USER_PASSWORD_DEFAULT}
+    echo
+	update_defaults "NIFI_ADMIN_USER_PASSWORD" "$NIFI_ADMIN_USER_PASSWORD"
+
+	read -p "Please enter the NIFI_SENSITIVE_PROPS[${NIFI_SENSITIVE_PROPS_DEFAULT}]: " NIFI_SENSITIVE_PROPS && NIFI_SENSITIVE_PROPS=${NIFI_SENSITIVE_PROPS:-$NIFI_SENSITIVE_PROPS_DEFAULT}
+	update_defaults "NIFI_SENSITIVE_PROPS" "$NIFI_SENSITIVE_PROPS"
+
+	read -p "Please enter the SFTP_ENABLED flag (enabled/disabled) [${SFTP_ENABLED_DEFAULT}]: " SFTP_ENABLED && SFTP_ENABLED=${SFTP_ENABLED:-$SFTP_ENABLED_DEFAULT}
+	update_defaults "SFTP_ENABLED" "$SFTP_ENABLED"
+
+	read -p "Please enter the SFTP_HOST [${SFTP_HOST_DEFAULT}]: " SFTP_HOST && SFTP_HOST=${SFTP_HOST:-$SFTP_HOST_DEFAULT}
+	update_defaults "SFTP_HOST" "$SFTP_HOST"
+
+	read -p "Please enter the SFTP_USER[${SFTP_USER_DEFAULT}]: " SFTP_USER && SFTP_USER=${SFTP_USER:-$SFTP_USER_DEFAULT}
+	update_defaults "SFTP_USER" "$SFTP_USER"
+
+	read -sp "Please enter the SFTP_PASSWORD [${SFTP_PASS_DEFAULT}]: " SFTP_PASS && SFTP_PASS=${SFTP_PASS:-$SFTP_PASS_DEFAULT}
+    echo
+	update_defaults "SFTP_PASS" "$SFTP_PASS"
+
+
+
+	#read -p "Please enter the XXX [${XXX_DEFAULT}]: " XXX && XXX=${XXX:-$XXX_DEFAULT}
 	#update_defaults "XXX" "$XXX"
+
 
 else
 	echo "skipping update of variables"
 
 fi
 
+# Proceed with the rest of the script
+HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
+debug HELM_DIR=${HELM_DIR};
+debug INSTALL_DIR=${INSTALL_DIR};
+debug INSTALL_DIR_DEFAULT=${INSTALL_DIR_DEFAULT};
+
 # Call the apply_substitutions_and_copy function for each required file
 #apply_substitutions_and_copy "inputs.tfvars" "./" "$SITE_NAME"
 if [ "${SEARCH_REPLACE}" -eq 1 ]
 then
+
 	echo "NOTICE: performing search and replace on released containers"
+    
+    debug HELM_DIR=${HELM_DIR};
+    debug "apply_substitutions_and_copy ${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml ${HELM_DIR}/k8-manifests $SITE_NAME"
+    debug "pwd=`pwd`"
+
 	apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
@@ -305,6 +386,15 @@ else
 	echo "NOTICE: not performing search and replace"
 
 fi
+
+
+# Final operations
+if [ "$ZIP_FILES" -eq 1 ]; then
+    zip_new_files
+fi
+
+echo 
+echo "Configuration files have been updated and are ready for use."
 
 
 

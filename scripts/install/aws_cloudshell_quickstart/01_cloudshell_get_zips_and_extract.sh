@@ -1,107 +1,138 @@
 #!/bin/bash
 
-# get old repo zip
-# will be merged into instructure zip
-#
+# Initialize default values
+DEBUG_MODE=0
+STEP_MODE=0
+TEST_MODE=0
+RELEASE_VER=v7.4.0
+INFRA_VER=v1.2.6
+HELM_VER=v7.4.0
+INSTALL_DIR=nbs_install
+SOURCE="github"  # Default to GitHub, other options are 's3' and 'local'
 
-# these need to be updated with each release or prompted and saved in an rc
-# file
+DEFAULTS_FILE="nbs_defaults.sh"
 
-RELEASE_VER=v7.3.1
-INFRA_VER=v1.2.1
-HELM_VER=v7.3.1
+# Function to log debug messages
+log_debug() {
+    [[ $DEBUG_MODE -eq 1 ]] && echo "DEBUG: $*"
+}
+
+# Function to pause for step mode
+step_pause() {
+    [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
+}
+
+# Function to update defaults file
+update_defaults() {
+    local var_name=$1
+    local var_value=$2
+    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
+        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
+    else
+        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
+    fi
+}
+
+# Load saved defaults
+load_defaults() {
+    if [ -f "$DEFAULTS_FILE" ]; then
+        source "$DEFAULTS_FILE"
+        log_debug "Loaded defaults from $DEFAULTS_FILE"
+    fi
+}
+
+# Parse command-line options
+while getopts "dsi:r:lc:" opt; do
+    case ${opt} in
+        d ) DEBUG_MODE=1 ;;
+        s ) STEP_MODE=1 ;;
+        i ) INSTALL_DIR=${OPTARG} ;;
+        r ) RELEASE_VER=${OPTARG} ;;
+        l ) SOURCE="local" ;;
+        c ) COPY_FROM_DIR=${OPTARG} ;;
+        \? ) echo "Usage: cmd [-d] [-s] [-i install_directory] [-r release_version] [-l] [-c copy_from_directory]"
+             exit 1 ;;
+    esac
+done
+
+
+# Function to download and extract files
+download_and_extract() {
+    local file_base=$1
+    local url=$2
+    if [ -f ${file_base}.zip ]; then
+        log_debug "${file_base}.zip exists, not downloading"
+    else
+        case $SOURCE in
+            "s3")
+                echo "Downloading from S3: ${url}"
+                aws s3 cp ${url} ${file_base}.zip
+                ;;
+            "local")
+                echo "Copying from local directory: $COPY_FROM_DIR/${file_base}.zip"
+                cp $COPY_FROM_DIR/${file_base}.zip .
+                ;;
+            "github")
+                echo "Downloading from GitHub: ${url}"
+                wget -q ${url} -O ${file_base}.zip
+                ;;
+        esac
+        step_pause
+    fi
+
+    if [ -d ${file_base} ]; then
+        log_debug "${file_base} directory exists, not unzipping"
+    else
+        log_debug "Unzipping ${file_base}.zip"
+        unzip -q ${file_base}.zip -d ${file_base}
+        step_pause
+    fi
+}
+
+load_defaults
+step_pause
+
+# Prompt for missing values with defaults
+read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
+HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
+update_defaults HELM_VER $HELM_VER
+
+read -p "Please enter Infrastructure version [${INFRA_VER_DEFAULT}]: " input_infra_ver
+INFRA_VER=${input_infra_ver:-$INFRA_VER_DEFAULT}
+update_defaults INFRA_VER $INFRA_VER
+
+read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_install_dir
+INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
+update_defaults INSTALL_DIR $INSTALL_DIR
+
+# Prompts for additional information
+read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
+# read -p "Enter Image Name [$IMAGE_NAME_DEFAULT]: " IMAGE_NAME && IMAGE_NAME=${IMAGE_NAME:-$IMAGE_NAME_DEFAULT}
+update_defaults "SITE_NAME" "$SITE_NAME"
+
+log_debug "Using INSTALL_DIR: $INSTALL_DIR"
+log_debug "Using RELEASE_VER: $RELEASE_VER"
+log_debug "Using SOURCE: $SOURCE"
 
 INFRA_FILE_BASE=nbs-infrastructure-${INFRA_VER}
 HELM_FILE_BASE=nbs-helm-${HELM_VER}
-INSTALL_DIR=nbs_install
-TMP_S3=s3://cdc-nbs-terraform-nbs-video-demo
 
-INFRA_URL=https://github.com/CDCgov/NEDSS-Infrastructure/releases/download/${RELEASE_VER}/${INFRA_FILE_BASE}.zip
-HELM_URL=https://github.com/CDCgov/NEDSS-Helm/releases/download/${RELEASE_VER}/${HELM_FILE_BASE}.zip
+#mkdir -p ~/${INSTALL_DIR}
+#cd ~/${INSTALL_DIR}
+mkdir -p ${INSTALL_DIR}
+cd ${INSTALL_DIR}
+# Define GitHub URLs
+INFRA_URL="https://github.com/CDCgov/NEDSS-Infrastructure/releases/download/${RELEASE_VER}/${INFRA_FILE_BASE}.zip"
+HELM_URL="https://github.com/CDCgov/NEDSS-Helm/releases/download/${RELEASE_VER}/${HELM_FILE_BASE}.zip"
 
-mkdir -p ~/${INSTALL_DIR}
-cd ~/${INSTALL_DIR}
+# Execute file handling based on source type
+download_and_extract $INFRA_FILE_BASE $INFRA_URL
+download_and_extract $HELM_FILE_BASE $HELM_URL
 
+update_defaults "INSTALL_DIR" "$INSTALL_DIR"
+update_defaults "RELEASE_VER" "$RELEASE_VER"
 
-
-
-if [ -f ${INFRA_FILE_BASE}.zip ]
-then
-	echo "INFO: ${INFRA_FILE_BASE}.zip exists, not downloading"
-
-else
-	# get modules
-	#wget https://github.com/CDCgov/NEDSS-Infrastructure/archive/refs/tags/1.0.0-prerelease.zip
-	#mv 1.0.0-prerelease.zip NEDSS-Infrastructure-1.0.0-prerelease.zip
-
-	echo "grabbing file from s3 as a placeholder"
-	aws s3 cp ${TMP_S3}/${INFRA_FILE_BASE}.zip .
-	# extract temp old repo
-	#echo "unzipping infra.zip"
-	#unzip -q infra.zip
-
-	echo "getting ${INFRA_URL}"
-	#aws s3 cp s3://<local-bucket-placeholder-acct-num>/NEDSS-<repo>-<branchname>.zip infra.zip
-	# wget -q ${INFRA_URL}
-	# wget ${INFRA_URL}
-	#
-fi 
-
-if [ -d ${INFRA_FILE_BASE} ]
-then
-	echo "INFO: ${INFRA_FILE_BASE} exists, not unzipping"
-else
-	
-	#echo "unzipping ${INFRA_FILE_BASE}.zip into ${INFRA_FILE_BASE}"
-	echo "unzipping ${INFRA_FILE_BASE}.zip"
-	#mkdir -p ${INSTALL_DIR}/${INFRA_FILE_BASE}
-	#unzip -q ${INFRA_FILE_BASE}.zip -d ${INFRA_FILE_BASE}
-	unzip -q ${INFRA_FILE_BASE}.zip -d ${INFRA_FILE_BASE}
-fi
-
-echo "INFO: make the scripts executable"
-chmod 755 ${INFRA_FILE_BASE}/scripts/*/*/*.sh
-
-#exit 1
-# get helm
-#wget  https://github.com/CDCgov/NEDSS-Helm/archive/refs/tags/1.0.0-prerelease.zip
-echo 
-echo "getting ${HELM_URL}"
-aws s3 cp ${TMP_S3}/${HELM_FILE_BASE}.zip .
-wget -q ${HELM_URL}
-#mv 1.0.0-prerelease.zip NEDSS-Helm-1.0.0-prerelease.zip
-#unzip  NEDSS-Helm-1.0.0-prerelease.zip
-echo "unzipping ${HELM_FILE_BASE}.zip into ${HELM_FILE_BASE}"
-#mkdir -p ${INSTALL_DIR}/${HELM_FILE_BASE}
-unzip -q  ${HELM_FILE_BASE}.zip  -d ${HELM_FILE_BASE}
+echo "Installation setup complete. Please run subsequent scripts to complete the installation."
+exit 0
 
 
-# make scripts executable
-#chmod 755 NEDSS-DevOpsTools-*/terraform/aws/account-template/scripts/1_cloudshell_check_install_prereq.sh
-#echo "TODO: need to make the scripts executable once they are included in git zip file"
-#echo chmod 755 <dirname>/scripts/*.sh
-#echo chmod 755 <dirname>/scripts/*.sh
-
-# install pre-reqs in bash/cloudshell/aws linux/RHEL?
-#
-cd ~/${INSTALL_DIR}
-echo "then run ${INSTALL_DIR}/${INFRA_FILE_BASE}/scripts/install/aws_cloudshell_quickstart/02_cloudshell_check_install_prereq.sh and all the other numbered install scripts in order"
-#NEDSS-DevOpsTools-*/terraform/aws/account-template/scripts/01_cloudshell_check_install_prereq.sh
-# ~/scripts/01_cloudshell_check_install_prereq.sh
-
-exit 0 
-
-#rm *.zip
-#cd NEDSS-<repo>-*/terraform/aws/ats-modern*/
-
-
-#get/create local copy of secrets (can be scripted later) 
-
-# inputs.tfvars template modification documented elsewhere
-#aws s3 cp s3://<bucketname>/terraform.tfvars .
-
-
-#exit 0 
-
-#modify bucket and key in terraform.tf (   bucket  = "state-bucketname"
-#    key     = "cdc-nbs-ats-modern/infrastructure-artifacts" ) for s3 backend, choose a local bucket (precreated) 

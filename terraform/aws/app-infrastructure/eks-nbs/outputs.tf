@@ -30,7 +30,7 @@ output "eks_aws_role_arn" {
   value       = module.eks.cluster_iam_role_arn
 }
 
-output "precreated_observability_namespace_name" {
-  description = "Name of the observability namespace"
-  value       = var.observability_namespace
-}
+# output "precreated_observability_namespace_name" {
+#   description = "Name of the observability namespace"
+#   value       = var.observability_namespace
+# }

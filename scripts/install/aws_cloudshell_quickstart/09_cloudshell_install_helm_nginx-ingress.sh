@@ -8,7 +8,7 @@
 # for AWS account and Kubernetes cluster connectivity.
 
 # Default values
-HELM_VER_DEFAULT=v7.3.3
+HELM_VER_DEFAULT=v7.4.0
 INGRESS_VER=4.7.2
 INSTALL_DIR_DEFAULT=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
@@ -130,13 +130,17 @@ read -p "Please enter installation directory [${INSTALL_DIR_DEFAULT}]: " input_i
 INSTALL_DIR=${input_install_dir:-$INSTALL_DIR_DEFAULT}
 update_defaults INSTALL_DIR $INSTALL_DIR
 
+read -p "Please enter SITE NAME[${SITE_NAME_DEFAULT}]: " input_site_name
+SITE_NAME=${input_site_name:-$SITE_NAME_DEFAULT}
+update_defaults SITE_NAME $SITE_NAME
+
 # Proceed with the rest of the script
 HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 [ $NOOP -eq 0 ] && execute_command "cd ${HELM_DIR}/charts"
 
 # nginx ingress installation
 #execute_command "helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -f nginx-ingress/values.yaml --namespace ingress-nginx --create-namespace --version ${INGRESS_VER}"
-execute_command "helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -f nginx-ingress/values.yaml --namespace ingress-nginx --create-namespace --version ${INGRESS_VER}"
+execute_command "helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -f nginx-ingress/values-${SITE_NAME}.yaml --namespace ingress-nginx --create-namespace --version ${INGRESS_VER}"
 
 # Check for running pods in ingress-nginx namespace
 execute_command "kubectl get po -n ingress-nginx"

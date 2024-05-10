@@ -4,11 +4,13 @@
 ACCT_NUM=0000000
 
 # modify this for each release or prompt and save to rc file
-INFRA_VER=v1.2.1
+INFRA_VER=v1.2.6
 
-INSTALL_DIR=nbs_install
+#INSTALL_DIR=nbs_install
+INSTALL_DIR=./nbs_install
 
-cd ~/${INSTALL_DIR}
+#cd ~/${INSTALL_DIR}
+cd ${INSTALL_DIR}
 rm *.zip
 
 echo "what is the site name"
