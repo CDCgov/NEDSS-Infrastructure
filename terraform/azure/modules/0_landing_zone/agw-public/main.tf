@@ -5,11 +5,12 @@ locals {
   frontend_port_name_http        = "${var.resource_prefix}-agw-frontend-http-port"
   frontend_ip_configuration_name = "${var.resource_prefix}-agw-frontend-ip-configuration"
   https_setting_name             = "${var.resource_prefix}-agw-backend-https-settings"
-  listener_name                  = "${var.resource_prefix}-agw-https-listener"
+  listener_name_https            = "${var.resource_prefix}-agw-https-listener"
   listener_name_http             = "${var.resource_prefix}-agw-http-listener"
   probe_name                     = "${var.resource_prefix}-agw-custom-probe"
   cert_name                      = "${var.resource_prefix}-agw-cert"
   redirect_configuration_name    = "${var.resource_prefix}-agw-redirect-configuration"
+  rewrite_rule_set_name          = "${var.resource_prefix}-hsts-rule"
 }
 
 
@@ -78,6 +79,9 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
   object_id          = azurerm_user_assigned_identity.agw_mi.principal_id
   secret_permissions = ["Get","List"]
 }
+
+
+
 
 # Create WAF Policy. By default should be blocked on NSG
 # resource "azurerm_web_application_firewall_policy" "agw_waf_policy" {
@@ -213,7 +217,7 @@ resource "azurerm_application_gateway" "agw_public" {
 
   # https listener rule for Https
   http_listener {
-    name                           = local.listener_name
+    name                           = local.listener_name_https
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Https"
@@ -233,15 +237,16 @@ resource "azurerm_application_gateway" "agw_public" {
     name                       = "${var.resource_prefix}-agw-rule"
     priority                   = 2
     rule_type                  = "Basic"
-    http_listener_name         = local.listener_name
+    http_listener_name         = local.listener_name_https
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.https_setting_name
+    rewrite_rule_set_name       = local.rewrite_rule_set_name
   }
 
   redirect_configuration {
     name                 = local.redirect_configuration_name
     redirect_type        = "Permanent"
-    target_listener_name = local.listener_name
+    target_listener_name = local.listener_name_https
     include_path         = true
     include_query_string = true
   }
@@ -254,6 +259,28 @@ resource "azurerm_application_gateway" "agw_public" {
     http_listener_name          = local.listener_name_http
     redirect_configuration_name = local.redirect_configuration_name
   }
+
+  ssl_policy {
+    policy_type = "Predefined"
+    policy_name = "AppGwSslPolicy20220101"
+  }
+
+  rewrite_rule_set {
+      name = local.rewrite_rule_set_name
+
+      rewrite_rule {
+        name          = local.rewrite_rule_set_name
+        rule_sequence = 100
+
+        response_header_configuration {
+          header_name = "Strict-Transport-Security"
+          header_value = "max-age=31536000"
+        }
+
+      }
+
+    }
+
 
   # This should be set if no WAF Policy and only default OWASP rules are required
   # waf_configuration {
