@@ -37,3 +37,8 @@ variable "agw_aks_ip" {
   description = "AKS Internal Loadbalancer IP"
   type        = string
 }
+
+variable "nsg_akamai_ips" {
+  description = "List of Akamai IPs to allow inbound traffic on port 443"
+  type        = list(string)
+}
