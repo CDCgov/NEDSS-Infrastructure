@@ -356,6 +356,7 @@ debug HELM_DIR=${HELM_DIR};
 debug INSTALL_DIR=${INSTALL_DIR};
 debug INSTALL_DIR_DEFAULT=${INSTALL_DIR_DEFAULT};
 
+echo
 # Call the apply_substitutions_and_copy function for each required file
 #apply_substitutions_and_copy "inputs.tfvars" "./" "$SITE_NAME"
 if [ "${SEARCH_REPLACE}" -eq 1 ]
@@ -382,8 +383,9 @@ then
     	apply_substitutions_and_copy "${HELM_DIR}/charts/person-reporting-service/values.yaml" "${HELM_DIR}/charts/person-reporting-service" "$SITE_NAME"
     	apply_substitutions_and_copy "${HELM_DIR}/charts/organization-reporting-service/values.yaml" "${HELM_DIR}/charts/organization-reporting-service" "$SITE_NAME"
 	fi
+    echo "NOTICE: Configuration files have been updated and are ready for use."
 else
-	echo "NOTICE: not performing search and replace"
+	echo "WARNING: not performing search and replace"
 
 fi
 
@@ -396,11 +398,6 @@ fi
 echo 
 echo "Configuration files have been updated and are ready for use."
 
-
-
-
-echo 
-echo "Configuration files have been updated and are ready for use."
 
 
 ####################################################################

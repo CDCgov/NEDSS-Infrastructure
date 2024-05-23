@@ -79,6 +79,14 @@ kubectl get pods
 
 echo "helm charts installed"
 helm list
+echo "removing dataingestion"
+echo "hit return to continue"
+read junk
+#helm uninstall dataingestion-service
+helm uninstall dataingestion
+
+
+helm list
 echo "removing nbs-gateway"
 echo "hit return to continue"
 read junk
@@ -108,7 +116,7 @@ echo "hit return to continue"
 read junk
 helm uninstall elasticsearch 
 
-remove_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
+#remove_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 remove_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 remove_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
 

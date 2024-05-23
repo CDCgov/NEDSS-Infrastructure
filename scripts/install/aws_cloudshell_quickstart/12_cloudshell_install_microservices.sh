@@ -113,14 +113,17 @@ function check_dns() {
 function helm_safe_install() {
     local name=$1
     local path=$2
-    if ! helm list --short | grep -q "^${name}$"; then
+    local namespace=$3
+    #if ! helm list --short | grep -q "^${name}$"; then
+    if ! helm list -n ${namespace} --short | grep -q "^${name}$"; then
         debug_message "Installing $name"
-        helm install $name -f ./$path/values-${SITE_NAME}.yaml $path
+        helm install $name -n ${namespace} --create-namespace -f ./$path/values-${SITE_NAME}.yaml $path
         echo "Sleeping for ${SLEEP_TIME} seconds"
         sleep ${SLEEP_TIME}
     else
         debug_message "$name is already installed, checking for updates..."
-        helm upgrade $name -f ./$path/values-${SITE_NAME}.yaml $path
+        helm upgrade $name -n ${namespace} -f ./$path/values-${SITE_NAME}.yaml $path
+        echo "Sleeping for ${SLEEP_TIME} seconds"
         sleep ${SLEEP_TIME}
     fi
     pause_step
@@ -133,18 +136,18 @@ check_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns dataingestion.${SITE_NAME}.${EXAMPLE_DOMAIN};
 
-helm_safe_install elasticsearch elasticsearch-efs
-helm_safe_install page-builder-api page-builder-api
-helm_safe_install modernization-api modernization-api
-helm_safe_install nifi nifi-efs
-helm_safe_install nbs-gateway nbs-gateway
+helm_safe_install elasticsearch elasticsearch-efs default
+helm_safe_install page-builder-api page-builder-api default
+helm_safe_install modernization-api modernization-api default
+helm_safe_install nifi nifi-efs default
+helm_safe_install nbs-gateway nbs-gateway default
 
 read -p "Has the keycloak database been created? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    debug_prompt "loading keycloak pod"
-    #helm_safe_install keycloak keycloak
+    debug_message "loading keycloak pod"
+    helm_safe_install keycloak keycloak keycloak
     # need a name space
-    helm install keycloak -n keycloak -f ./keycloak/values-${SITE_NAME}.yaml keycloak
+    #helm install keycloak -n keycloak --create-namespace -f ./keycloak/values-${SITE_NAME}.yaml keycloak
     if [ $? -ne 0 ]; then
         echo "Error: Failed to load"
     fi
@@ -156,7 +159,7 @@ kubectl get pods -n keycloak
 
 read -p "Has the dataingestion database been created? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    debug_prompt "loading dataingestion pod"
+    debug_message "loading dataingestion pod"
     helm_safe_install dataingestion dataingestion-service
     if [ $? -ne 0 ]; then
         echo "Error: Failed to load"
