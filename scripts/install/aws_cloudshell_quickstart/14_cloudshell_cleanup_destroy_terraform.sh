@@ -30,7 +30,24 @@ update_defaults() {
     fi
 }
 
+remove_dns() 
+{
+  local TMP_HOST="$1"
+
+  # Try to resolve the TMP_HOST to an IP address.
+  local ip_address=$(dig +short "$TMP_HOST")
+
+  # If the IP address is empty, the TMP_HOST does not resolve.
+  if [[ ! -z "$ip_address" ]]; then
+    echo "WARNING: now entry for $TMP_HOST is stale"
+    #exit 1
+  fi
+  echo "manually remove dns entries for  ${TMP_HOST}"
+}
+
+
 load_defaults;
+
 
 # Prompt for missing values with defaults
 read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
@@ -94,6 +111,7 @@ echo hit return to continue
 read junk
 terraform destroy -var-file=inputs.tfvars
 
+remove_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 
 echo "empty fluentbit s3 bucket manually and rerun terraform destroy"
 echo hit return to continue

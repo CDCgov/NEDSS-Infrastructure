@@ -68,3 +68,7 @@ kubectl apply -f cluster-issuer-prod-${SITE_NAME}.yaml
 echo "check status, should be ready"
 echo "running, kubectl get clusterissuer"
 kubectl get clusterissuer
+
+echo "check certs, should have one or more listed"
+echo "running, kubectl get certificates"
+kubectl get certificates -A
