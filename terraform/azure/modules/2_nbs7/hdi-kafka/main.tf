@@ -44,7 +44,7 @@ resource "azurerm_storage_account" "kafka-storage-account" {
 
 # # Kafka HDinsight storage container
 resource "azurerm_storage_container" "hdi-kafka-storage-container" {
-  name                  = "${var.resource_prefix}-${var.kafka_storag_container_name}" 
+  name                  = "${var.resource_prefix}-${var.kafka_storage_container_name}" 
   storage_account_name  = azurerm_storage_account.kafka-storage-account.name
   container_access_type = var.container_access_type 
 }

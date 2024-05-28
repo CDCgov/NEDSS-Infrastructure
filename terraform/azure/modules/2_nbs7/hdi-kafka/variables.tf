@@ -23,7 +23,7 @@ variable "account_replication_type" {
     default = "LRS"
 } 
 
-variable "kafka_storag_container_name"{ 
+variable "kafka_storage_container_name"{ 
     type = string
 }
 
