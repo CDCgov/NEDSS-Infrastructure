@@ -23,9 +23,9 @@ variable "account_replication_type" {
     default = "LRS"
 } 
 
-variable "kafka_storag_container_name"{ 
-    type = string
-}
+# variable "kafka_storage_container_name"{ 
+#     type = string
+# }
 
 variable "container_access_type" {
     type = string
