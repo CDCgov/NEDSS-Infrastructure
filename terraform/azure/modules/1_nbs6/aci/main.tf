@@ -47,7 +47,7 @@ resource "azurerm_container_group" "aci" {
     }
 
     environment_variables = {
-      DATABASE_ENDPOINT = data.azurerm_sql_managed_instance.sqlmi_endpoint.fqdn
+      DATABASE_ENDPOINT = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
       GITHUB_RELEASE_TAG = var.aci_github_release_tag
     }
 
