@@ -17,7 +17,7 @@ data "azurerm_subnet" "aci_subnet" {
 }
 
 # Get SQL Managed Instance Endpoint
-data "azurerm_sql_managed_instance" "sqlmi_endpoint" {
+data "azurerm_mssql_managed_instance" "sqlmi_endpoint" {
   name                = "${var.resource_prefix}-sql-managed-instance"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
