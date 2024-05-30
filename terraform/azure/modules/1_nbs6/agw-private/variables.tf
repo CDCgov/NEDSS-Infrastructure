@@ -23,6 +23,11 @@ variable "agw_key_vault_name" {
   type        = string
 }
 
+variable "agw_key_vault_cert_rg" {
+  description = "Key Vault Certificate Resource Group"
+  type        = string
+}
+
 variable "agw_key_vault_cert_name" {
   description = "Key Vault Certificate Name"
   type        = string
