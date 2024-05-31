@@ -6,6 +6,13 @@ data "azurerm_resource_group" "rg" {
   name     = var.agw_resource_group_name
 }
 
+# Get SSL Certificate KeyVault Resource Group Data
+# NOTE: Certificate KeyVault Resource Group is created by CDC Cloud Team  
+data "azurerm_resource_group" "key_vault_cert_rg" {
+  name     = var.agw_key_vault_cert_rg
+}
+
+
 # Get vNet Data
 data "azurerm_virtual_network" "vnet" {
   name                = var.agw_vnet_name
@@ -22,7 +29,7 @@ data "azurerm_subnet" "agw_subnet" {
 # Get KeyVault Id
 data "azurerm_key_vault" "key_vault" {
   name                = var.agw_key_vault_name
-  resource_group_name = data.azurerm_resource_group.rg.name
+  resource_group_name = data.azurerm_resource_group.key_vault_cert_rg.name
 }
 
 # Get Certificate from KeyVault
