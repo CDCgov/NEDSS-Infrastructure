@@ -41,7 +41,7 @@ variable "kafka_cluster_name" {
 }
 variable "cluster_version" {
     type = string
-    default = "4.0"
+    default = "5.1"
 }
 variable "cluster_tier" {
     type = string
@@ -49,7 +49,7 @@ variable "cluster_tier" {
 }
 variable "component_version" {
     type = string
-    default = "2.1"
+    default = "3.2.0"
 }
 
  variable "gtwy_username" {
