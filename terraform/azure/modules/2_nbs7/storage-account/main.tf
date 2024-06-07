@@ -46,10 +46,19 @@ resource "azurerm_private_endpoint" "blob" {
     subresource_names              = ["blob"]
     is_manual_connection           = false
   }
+
+  ip_configuration {
+    name = "${var.storage_account_name}-blob-ipconfig"
+    private_ip_address = var.blob_private_ip_address
+  }
  
-  private_dns_zone_group {
-    name                 = "${var.storage_account_name}-blob-connection"
-    private_dns_zone_ids = [var.dns_zone_id_blob]
+  dynamic private_dns_zone_group {
+    for_each = var.create_dns_record ? ["apply"] : []
+    content {
+      name                 = "${var.storage_account_name}-blob-connection"
+      private_dns_zone_ids = [var.dns_zone_id_blob]
+      
+    }    
   }
  
   depends_on = [
@@ -78,6 +87,11 @@ resource "azurerm_private_endpoint" "file" {
     subresource_names              = ["file"]
     is_manual_connection           = false
   }
+
+  ip_configuration {
+    name = "${var.storage_account_name}-file-ipconfig"
+    private_ip_address = var.blob_private_ip_address
+  }
  
   private_dns_zone_group {
     name                 = "${var.storage_account_name}-file-connection"
@@ -104,6 +118,7 @@ data "azurerm_virtual_network" "vnet" {
 }
  
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_blob" {
+  count = var.create_dns_record ? 1 : 0
   name                  = "${var.storage_account_name}-blob"
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = var.dns_zone_name_blob
@@ -112,6 +127,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_blob" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_file" {
+  count = var.create_dns_record ? 1 : 0
   name                  = "${var.storage_account_name}-file"
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = var.dns_zone_name_file
