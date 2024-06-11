@@ -93,9 +93,13 @@ resource "azurerm_private_endpoint" "file" {
     private_ip_address = var.blob_private_ip_address
   }
  
-  private_dns_zone_group {
-    name                 = "${var.storage_account_name}-file-zone-group"
-    private_dns_zone_ids = [var.dns_zone_id_file]
+  dynamic private_dns_zone_group {
+    for_each = var.create_dns_record ? ["apply"] : []
+    content {
+      name                 = "${var.storage_account_name}-file-zone-group"
+      private_dns_zone_ids = [var.dns_zone_id_file]
+      
+    }    
   }
  
   depends_on = [
