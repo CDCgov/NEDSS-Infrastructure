@@ -69,6 +69,6 @@ echo "check status, should be ready"
 echo "running, kubectl get clusterissuer"
 kubectl get clusterissuer
 
-echo "check certs, should have one or more listed"
+echo "check certs, should not have any listed until microservices added"
 echo "running, kubectl get certificates"
 kubectl get certificates -A

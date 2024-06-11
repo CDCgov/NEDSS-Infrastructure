@@ -224,6 +224,7 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_NIFI_ADMIN_USER/${NIFI_ADMIN_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_SENSITIVE_PROPS/${NIFI_SENSITIVE_PROPS}/" "$new_file_path"
 
+    sed -i "s/EXAMPLE_MSK_KAFKA_ENDPOINT/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_ENABLED/${SFTP_ENABLED}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_HOST/${SFTP_HOST}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_USER/${SFTP_USER}/" "$new_file_path"

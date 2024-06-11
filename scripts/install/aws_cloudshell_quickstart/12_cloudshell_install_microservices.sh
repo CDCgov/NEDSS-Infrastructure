@@ -19,7 +19,7 @@
 #  -d : Enable debug mode for verbose output
 #  -s : Enable step mode to proceed through the script interactively
 
-HELM_VER=v7.4.0
+HELM_VER=v7.4.1
 INSTALL_DIR=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
 SLEEP_TIME=60
@@ -160,7 +160,7 @@ kubectl get pods -n keycloak
 read -p "Has the dataingestion database been created? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     debug_message "loading dataingestion pod"
-    helm_safe_install dataingestion dataingestion-service
+    helm_safe_install dataingestion dataingestion-service default
     if [ $? -ne 0 ]; then
         echo "Error: Failed to load"
     fi

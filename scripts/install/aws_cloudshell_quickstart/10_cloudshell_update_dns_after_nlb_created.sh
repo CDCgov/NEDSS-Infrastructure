@@ -108,7 +108,8 @@ update_defaults() {
 select_nlb() {
     echo "Fetching NLBs..."
     #mapfile -t nlbs < <(aws elbv2 describe-load-balancers --type network --query 'LoadBalancers[].[LoadBalancerName, DNSName]' --output text)
-    mapfile -t nlbs < <(aws elbv2 describe-load-balancers --query 'LoadBalancers[].[LoadBalancerName, DNSName]' --output text)
+    #mapfile -t nlbs < <(aws elbv2 describe-load-balancers --query 'LoadBalancers[].[LoadBalancerName, DNSName]' --output text)
+    mapfile -t nlbs < <(aws elbv2 describe-load-balancers --query 'LoadBalancers[].[LoadBalancerName, DNSName]' --output text| grep -v alb)
     
     echo "Available NLBs:" > /dev/tty
     select nlb_option in "${nlbs[@]}"; do
@@ -123,7 +124,8 @@ select_nlb() {
 # Function to select a Hosted Zone
 select_hosted_zone() {
     echo "Fetching Hosted Zones..."
-    mapfile -t hosted_zones < <(aws route53 list-hosted-zones --query 'HostedZones[].[Name, Id]' --output text)
+    #mapfile -t hosted_zones < <(aws route53 list-hosted-zones --query 'HostedZones[].[Name, Id]' --output text)
+    mapfile -t hosted_zones < <(aws route53 list-hosted-zones --query 'HostedZones[].[Name, Id]' --output text | grep -v privat)
     
     echo "Available Hosted Zones:" > /dev/tty
     PS3="Please select a Hosted Zone: "

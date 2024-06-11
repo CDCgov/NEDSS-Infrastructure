@@ -50,12 +50,12 @@ update_defaults "EXAMPLE_DOMAIN" "$EXAMPLE_DOMAIN"
 HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 #
 #
-echo "what is the domain you will be using?"
-read TMP_DOMAIN
+#echo "what is the domain you will be using?"
+#read TMP_DOMAIN
 
 #TMP_DOMAIN=site.example.com
 
-echo "TMP_DOMAIN=${TMP_DOMAIN}"
+#echo "TMP_DOMAIN=${TMP_DOMAIN}"
 
 remove_dns() 
 {
