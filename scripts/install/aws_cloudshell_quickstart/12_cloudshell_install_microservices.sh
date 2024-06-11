@@ -19,13 +19,15 @@
 #  -d : Enable debug mode for verbose output
 #  -s : Enable step mode to proceed through the script interactively
 
-HELM_VER=v7.4.0
+HELM_VER=v7.4.2
 INSTALL_DIR=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
 SLEEP_TIME=60
 DEBUG=0
 STEP=0
 NOOP=0
+KC_NAMESPACE=default
+DEFAULT_NAMESPACE=default
 
 # Function to load saved defaults
 load_defaults() {
@@ -136,16 +138,12 @@ check_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns dataingestion.${SITE_NAME}.${EXAMPLE_DOMAIN};
 
-helm_safe_install elasticsearch elasticsearch-efs default
-helm_safe_install page-builder-api page-builder-api default
-helm_safe_install modernization-api modernization-api default
-helm_safe_install nifi nifi-efs default
-helm_safe_install nbs-gateway nbs-gateway default
+helm_safe_install elasticsearch elasticsearch-efs ${DEFAULT_NAMESPACE}
 
 read -p "Has the keycloak database been created? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     debug_message "loading keycloak pod"
-    helm_safe_install keycloak keycloak keycloak
+    helm_safe_install keycloak keycloak ${KC_NAMESPACE}
     # need a name space
     #helm install keycloak -n keycloak --create-namespace -f ./keycloak/values-${SITE_NAME}.yaml keycloak
     if [ $? -ne 0 ]; then
@@ -157,10 +155,33 @@ else
 fi
 kubectl get pods -n keycloak
 
+#########################################################################
+# this portion should be modified to not repeat logic
+read -p "are you are using keycloak for auth? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    read -p "has keycloak imported required realm and modified client secrets reflected created? [y/N] " -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        helm_safe_install page-builder-api page-builder-api ${DEFAULT_NAMESPACE}
+        helm_safe_install modernization-api modernization-api ${DEFAULT_NAMESPACE}
+        helm_safe_install nifi nifi-efs ${DEFAULT_NAMESPACE}
+        helm_safe_install nbs-gateway nbs-gateway ${DEFAULT_NAMESPACE}
+    else
+        echo "WARNING: microservices install skipped. unfinished" 
+        exit 1
+    fi
+else
+    echo "NOTICE: installing other microservices without keycloak integrations"
+    helm_safe_install page-builder-api page-builder-api ${DEFAULT_NAMESPACE}
+    helm_safe_install modernization-api modernization-api ${DEFAULT_NAMESPACE}
+    helm_safe_install nifi nifi-efs ${DEFAULT_NAMESPACE}
+    helm_safe_install nbs-gateway nbs-gateway ${DEFAULT_NAMESPACE}
+fi 
+
+
 read -p "Has the dataingestion database been created? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     debug_message "loading dataingestion pod"
-    helm_safe_install dataingestion dataingestion-service
+    helm_safe_install dataingestion dataingestion-service ${DEFAULT_NAMESPACE}
     if [ $? -ne 0 ]; then
         echo "Error: Failed to load"
     fi

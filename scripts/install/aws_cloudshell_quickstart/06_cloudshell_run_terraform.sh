@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # this needs to be changed with each release or prompted and saved
-INFRA_VER=v1.2.6
+INFRA_VER=v1.2.8
 echo "change line 4 and run again"
 exit 1
 
