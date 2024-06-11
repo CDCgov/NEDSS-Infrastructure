@@ -20,7 +20,7 @@ variable "sqlmi_subnet_name" {
 }
 
 variable "sqlmi_key_vault" {
-  description = "Key Vault Name to Store SQLMI Credentials"
+  description = "KeyVault Name to Store SQLMI Credentials. KeyVault Should be Manually Created"
   type        = string
   sensitive = true
 }

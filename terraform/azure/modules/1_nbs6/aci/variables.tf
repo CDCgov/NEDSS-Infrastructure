@@ -28,11 +28,6 @@ variable "aci_memory" {
   type        = string
 }
 
-variable "aci_sql_database_endpoint" {
-  description = "SQL Database endpoint"
-  type        = string
-}
-
 variable "aci_github_release_tag" {
   description = "Create URL and download Release Package from Release Artifacts. Default is always latest even if empty"
   type        = string
