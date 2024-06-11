@@ -55,7 +55,7 @@ resource "azurerm_private_endpoint" "blob" {
   dynamic private_dns_zone_group {
     for_each = var.create_dns_record ? ["apply"] : []
     content {
-      name                 = "${var.storage_account_name}-blob-connection"
+      name                 = "${var.storage_account_name}-blob-zone-group"
       private_dns_zone_ids = [var.dns_zone_id_blob]
       
     }    
@@ -94,7 +94,7 @@ resource "azurerm_private_endpoint" "file" {
   }
  
   private_dns_zone_group {
-    name                 = "${var.storage_account_name}-file-connection"
+    name                 = "${var.storage_account_name}-file-zone-group"
     private_dns_zone_ids = [var.dns_zone_id_file]
   }
  
