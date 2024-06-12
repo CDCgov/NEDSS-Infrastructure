@@ -55,7 +55,7 @@ resource "azurerm_container_group" "aci" {
 ##########################
   container {
       name   = "fluentbit"
-      image  = "fluent/fluent-bit:1.7"
+      image  = "fluent/fluent-bit" # "fluent/fluent-bit:1.7"
       cpu    = "1.0"
       memory = "1.5"
 
