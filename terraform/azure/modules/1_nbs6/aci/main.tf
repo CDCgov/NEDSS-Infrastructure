@@ -52,8 +52,33 @@ resource "azurerm_container_group" "aci" {
     }
 
   }
+##########################
+  container {
+      name   = "fluentbit"
+      image  = "fluent/fluent-bit:1.7"
+      cpu    = "1.0"
+      memory = "1.5"
 
-
+      commands = [
+        "fluent-bit.exe",
+        "-v",
+        "-i", "tail",
+        "-p", "path=C:\\nbs\\wildfly-10.0.0.Final\\nedssdomain\\log\\*.log",
+        "-o", "splunk",
+        "-p", "host=https://http-inputs.cdc.splunkcloudgc.com:443/services/collector/event",
+        "-p", "token=<Your-HEC-Token>",
+        "-p", "tls=On",
+        "-p", "tls.verify=Off",
+        "-p", "splunk_send_raw=On",
+        "-p", "format=json"
+      ]
+      volume {
+        name       = "fluentbit-logs"
+        mount_path = "C:\\nbs\\wildfly-10.0.0.Final\\nedssdomain\\log"
+        read_only  = true
+      }
+    }
+###########################################
   diagnostics {
     log_analytics {
       workspace_id = azurerm_log_analytics_workspace.aci_log.workspace_id
@@ -79,3 +104,5 @@ resource "azurerm_container_group" "aci" {
       ]
     }
 }
+
+##########################
