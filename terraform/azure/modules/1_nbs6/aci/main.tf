@@ -56,7 +56,7 @@ resource "azurerm_container_group" "aci" {
       mount_path           = "C:\\nbs\\wildfly-10.0.0.Final\\nedssdomain\\log"
       share_name           = "nbs6fluentbitsplunk"  # azurerm_storage_share.container_share.name
       storage_account_name = "fluenbitsplunktest"   # azurerm_storage_account.aci_storage.name
-      storage_account_key  = var.aci_storage.primary_access_key
+      storage_account_key  = var.aci_storage_primary_access_key
     }
   }
 

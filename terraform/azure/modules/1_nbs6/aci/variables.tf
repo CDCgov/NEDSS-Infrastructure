@@ -39,6 +39,6 @@ variable "aci_quay_nbs6_repository" {
   type        = string
 }
 
-variable "aci_storage.primary_access_key" {
+variable "aci_storage_primary_access_key" {
   sensitive = true
 }
