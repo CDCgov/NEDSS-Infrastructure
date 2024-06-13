@@ -45,7 +45,14 @@ resource "azurerm_container_group" "aci" {
       port     = 7001
       protocol = "TCP"
     }
-
+################################
+    volume {
+      name       = "app-logs"
+      mount_path = "C:\\nbs\\wildfly-10.0.0.Final\\nedssdomain\\log"
+      read_only  = false
+      empty_dir = true
+    }
+###############################
     environment_variables = {
       DATABASE_ENDPOINT = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
       GITHUB_RELEASE_TAG = var.aci_github_release_tag
@@ -66,18 +73,20 @@ resource "azurerm_container_group" "aci" {
         "-p", "path=C:\\nbs\\wildfly-10.0.0.Final\\nedssdomain\\log\\*.log",
         "-o", "splunk",
         "-p", "host=https://http-inputs.cdc.splunkcloudgc.com:443/services/collector/event",
-        "-p", "token=<Your-HEC-Token>",
+        "-p", "token=F1EC1BA3-8D3D-4E3D-99EA-75D674B8DBA8",
         "-p", "tls=On",
         "-p", "tls.verify=Off",
         "-p", "splunk_send_raw=On",
         "-p", "format=json"
       ]
       volume {
-        name       = "fluentbit-logs"
+        name       = "app-logs"
         mount_path = "C:\\nbs\\wildfly-10.0.0.Final\\nedssdomain\\log"
         read_only  = true
+        empty_dir = true
       }
     }
+
 ###########################################
   diagnostics {
     log_analytics {
