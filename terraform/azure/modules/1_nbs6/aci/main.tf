@@ -50,7 +50,14 @@ resource "azurerm_container_group" "aci" {
       DATABASE_ENDPOINT = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
       GITHUB_RELEASE_TAG = var.aci_github_release_tag
     }
-
+    volume {
+      name                 = "app-logs"
+      read_only            = false
+      mount_path           = "C:\\nbs\\wildfly-10.0.0.Final\\nedssdomain\\log"
+      share_name           = "nbs6fluentbitsplunk"  # azurerm_storage_share.container_share.name
+      storage_account_name = "fluenbitsplunktest"   # azurerm_storage_account.aci_storage.name
+      storage_account_key  = var.aci_storage.primary_access_key
+    }
   }
 
 
