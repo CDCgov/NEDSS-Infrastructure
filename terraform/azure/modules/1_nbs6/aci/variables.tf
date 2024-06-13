@@ -38,3 +38,7 @@ variable "aci_quay_nbs6_repository" {
   description = "Quay.io NBS6 Repository"
   type        = string
 }
+
+variable "aci_storage.primary_access_key" {
+  sensitive = true
+}
