@@ -74,6 +74,7 @@ resource "helm_release" "fluentbit" {
             splunk_send_raw on
             splunk_token ${var.splunk_auth_token} 
             tls on
+            tls.verify off
 
         [OUTPUT]        
             name                  azure_blob
