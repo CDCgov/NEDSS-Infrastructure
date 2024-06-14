@@ -70,7 +70,6 @@ resource "helm_release" "fluentbit" {
             Name splunk 
             match *
             host ${var.splunk_hec_url} 
-            port 8088
             splunk_send_raw on
             splunk_token ${var.splunk_auth_token} 
             tls on
