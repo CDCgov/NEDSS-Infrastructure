@@ -81,7 +81,7 @@ resource "helm_release" "fluentbit" {
             match                 *
             host                  https://http-inputs.cdc.splunkcloudgc.com:443/services/collector/event
             splunk_token          ee7edc62-19ad-4d1e-b957-448d3b326fb6
-            Splunk_Send_Raw       On
+            Splunk_Send_Raw       on
             tls                   on
     EOF
   ]
