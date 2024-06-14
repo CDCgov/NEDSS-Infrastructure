@@ -35,3 +35,12 @@ variable "azure_container_name" {
   
 }
 
+variable "splunk_hec_url" {
+  type = string
+  description = "Splunk endpoint url"
+}
+
+variable "splunk_auth_token" {
+  type = string
+  description = "Splunk authorization token"
+}

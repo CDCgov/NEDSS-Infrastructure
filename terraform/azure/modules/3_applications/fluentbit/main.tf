@@ -75,12 +75,13 @@ resource "helm_release" "fluentbit" {
             container_name        ${var.azure_container_name}
             auto_create_container on
             tls                   on
+
         [OUTPUT]
             name splunk 
             match *
-            host https://http-inputs.cdc.splunkcloudgc.com:443/services/collector/event
+            host ${var.splunk_hec_url} 
             splunk_send_raw on
-            splunk_token ee7edc62-19ad-4d1e-b957-448d3b326fb6 
+            splunk_token ${var.splunk_auth_token} 
             tls on
     EOF
   ]
