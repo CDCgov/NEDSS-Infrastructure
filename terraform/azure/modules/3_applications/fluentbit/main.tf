@@ -66,7 +66,6 @@ resource "helm_release" "fluentbit" {
 
       ## https://docs.fluentbit.io/manual/pipeline/outputs
       outputs: |
-
         [OUTPUT]
             name splunk 
             match *
@@ -74,7 +73,7 @@ resource "helm_release" "fluentbit" {
             splunk_send_raw on
             splunk_token ${var.splunk_auth_token} 
             tls on
-            
+
         [OUTPUT]        
             name                  azure_blob
             match                 *
