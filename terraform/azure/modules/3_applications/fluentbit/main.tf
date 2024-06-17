@@ -66,14 +66,14 @@ resource "helm_release" "fluentbit" {
 
       ## https://docs.fluentbit.io/manual/pipeline/outputs
       outputs: |
-        [OUTPUT]
-            Name splunk 
-            match *
-            host ${var.splunk_hec_url} 
-            port 443
-            splunk_token ${var.splunk_auth_token} 
-            tls on
-            tls.verify off
+        # [OUTPUT]
+        #     Name splunk 
+        #     match *
+        #     host ${var.splunk_hec_url} 
+        #     port 443
+        #     splunk_token ${var.splunk_auth_token} 
+        #     tls on
+        #     tls.verify off
 
         [OUTPUT]        
             name                  azure_blob
