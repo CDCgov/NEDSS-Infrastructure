@@ -66,15 +66,15 @@ resource "helm_release" "fluentbit" {
 
       ## https://docs.fluentbit.io/manual/pipeline/outputs
       outputs: |
-        [OUTPUT]        
-            name                  azure_blob
-            match                 *
-            account_name          ${var.blob_account_name}
-            shared_key            ${var.blob_shared_key}
-            path                  kubernetes
-            container_name        ${var.azure_container_name}
-            auto_create_container on
-            tls                   on
+        # [OUTPUT]        
+        #     name                  azure_blob
+        #     match                 *
+        #     account_name          ${var.blob_account_name}
+        #     shared_key            ${var.blob_shared_key}
+        #     path                  kubernetes
+        #     container_name        ${var.azure_container_name}
+        #     auto_create_container on
+        #     tls                   on
 
         [OUTPUT]
             Name splunk 
