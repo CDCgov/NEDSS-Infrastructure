@@ -60,10 +60,11 @@ done
 download_and_extract() {
     local file_base=$1
     local url=$2
-    if [ -f ${file_base}.zip ]; then
-        log_debug "${file_base}.zip exists, not downloading"
+    if [ -s ${file_base}.zip ]; then
+        log_debug "`pwd`/${file_base}.zip exists, not downloading"
     else
-        case $SOURCE in
+        log_debug "SOURCE=${SOURCE}"
+        case ${SOURCE} in
             "s3")
                 echo "Downloading from S3: ${url}"
                 aws s3 cp ${url} ${file_base}.zip
@@ -75,6 +76,10 @@ download_and_extract() {
             "github")
                 echo "Downloading from GitHub: ${url}"
                 wget -q ${url} -O ${file_base}.zip
+                ;;
+            "*")
+                echo "Error: no match found for source"
+                exit 1
                 ;;
         esac
         step_pause
@@ -119,7 +124,9 @@ HELM_FILE_BASE=nbs-helm-${HELM_VER}
 
 #mkdir -p ~/${INSTALL_DIR}
 #cd ~/${INSTALL_DIR}
+log_debug "mkdir ${INSTALL_DIR}"
 mkdir -p ${INSTALL_DIR}
+log_debug "cd ${INSTALL_DIR}"
 cd ${INSTALL_DIR}
 # Define GitHub URLs
 INFRA_URL="https://github.com/CDCgov/NEDSS-Infrastructure/releases/download/${RELEASE_VER}/${INFRA_FILE_BASE}.zip"
