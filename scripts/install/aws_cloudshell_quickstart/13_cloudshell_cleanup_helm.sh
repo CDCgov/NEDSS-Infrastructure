@@ -116,6 +116,12 @@ echo "hit return to continue"
 read junk
 helm uninstall elasticsearch 
 
+helm list
+echo "removing keycloak"
+echo "hit return to continue"
+read junk
+helm uninstall keycloak
+
 #remove_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 remove_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 remove_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
