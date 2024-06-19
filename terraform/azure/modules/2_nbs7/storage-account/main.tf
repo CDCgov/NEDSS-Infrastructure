@@ -49,7 +49,7 @@ resource "azurerm_private_endpoint" "blob" {
 
   ip_configuration {
     name = "${var.storage_account_name}-blob-ipconfig"
-    member_name = "blob"
+    member_name = "blob_eastus"
     private_ip_address = var.blob_private_ip_address
   }
  
@@ -91,7 +91,7 @@ resource "azurerm_private_endpoint" "file" {
 
   ip_configuration {
     name = "${var.storage_account_name}-file-ipconfig"
-    member_name = "file"
+    member_name = "file_eastus"
     private_ip_address = var.blob_private_ip_address
   }
  
