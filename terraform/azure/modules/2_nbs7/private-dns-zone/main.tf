@@ -24,7 +24,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_blob" {
   name                  = "${each.value.name}-blob"
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_blob.name
-  virtual_network_id    = each.value.vnet.id
+  virtual_network_id    = each.value.id
  
 }
 
