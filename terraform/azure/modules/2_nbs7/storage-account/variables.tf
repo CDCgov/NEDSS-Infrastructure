@@ -24,6 +24,24 @@ variable "account_tier" {
   
 }
 
+variable "create_dns_record" {
+  type        = bool
+  description = "Create a DNS entry in an existing DNS zone? False requires manual addition of DNS configuration for private endpoint."
+  default = false
+}
+
+variable "blob_private_ip_address" {
+  type        = string
+  description = "Private IP address to set for storage account file endpoint. (leave null to auto assign)"  
+  default = null
+}
+
+variable "file_private_ip_address" {
+  type        = string
+  description = "Private IP address to set for storage account file endpoint. (leave null to auto assign)"  
+  default = null
+}
+
 # For definitions see https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
 variable "account_replication_type" {
   type        = string
@@ -57,22 +75,26 @@ variable "public_network_access_enabled" {
 
 variable "dns_zone_id_blob" {
   type = string
-  description = "Zone id of DNS to which record will be added for blob storage."
+  description = "Zone id of DNS to which record will be added for blob storage.(create_dns_record must be true)"
+  default = ""
 }
 
 variable "dns_zone_name_blob" {
   type = string
-  description = "Name of DNS zone to which record will be added for blob storage."
+  description = "Name of DNS zone to which record will be added for blob storage. (create_dns_record must be true)"
+  default = ""
 }
 
 variable "dns_zone_id_file" {
   type = string
-  description = "Zone id of DNS to which record will be added for file storage."
+  description = "Zone id of DNS to which record will be added for file storage. (create_dns_record must be true)"
+  default = ""
 }
 
 variable "dns_zone_name_file" {
   type = string
-  description = "Name of DNS zone to which record will be added for file storage."
+  description = "Name of DNS zone to which record will be added for file storage. (create_dns_record must be true)"
+  default = ""
 }
 
 # Data retention
