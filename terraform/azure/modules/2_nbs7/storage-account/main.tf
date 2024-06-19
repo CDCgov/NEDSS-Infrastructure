@@ -94,7 +94,7 @@ resource "azurerm_private_endpoint" "file" {
     name = "${var.storage_account_name}-file-ipconfig"
     member_name = "file"
     subresource_name = "file"
-    private_ip_address = var.blob_private_ip_address
+    private_ip_address = var.file_private_ip_address
   }
  
   dynamic private_dns_zone_group {
