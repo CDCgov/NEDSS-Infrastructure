@@ -26,7 +26,7 @@ variable "account_tier" {
 
 variable "create_dns_record" {
   type        = bool
-  description = "Create a DNS entry in an existing DNS zone?"
+  description = "Create a DNS entry in an existing DNS zone? False requires manual addition of DNS configuration for private endpoint."
   default = false
 }
 
