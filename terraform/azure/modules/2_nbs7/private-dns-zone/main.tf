@@ -21,18 +21,18 @@ data "azurerm_virtual_network" "vnet" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_blob" {
   for_each = data.azurerm_virtual_network.vnet
-  name                  = "${each.value.outputs.vnet.name}-blob"
+  name                  = "${each.value.vnet.name}-blob"
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_blob.name
-  virtual_network_id    = each.value.outputs.vnet.id
+  virtual_network_id    = each.value.vnet.id
  
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_file" {  
   for_each = data.azurerm_virtual_network.vnet
-  name                  = "${each.value.outputs.vnet.name}-file"
+  name                  = "${each.value.vnet.name}-file"
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_file.name
-  virtual_network_id    = each.value.outputs.vnet.id
+  virtual_network_id    = each.value.vnet.id
   
 }
