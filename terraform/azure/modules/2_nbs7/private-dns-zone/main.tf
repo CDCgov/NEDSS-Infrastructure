@@ -29,6 +29,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_blob" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link_file" {  
+  for_each = data.azurerm_virtual_network.vnet
   name                  = "${each.value.outputs.vnet.name}-file"
   resource_group_name   = data.azurerm_resource_group.main.name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_file.name
