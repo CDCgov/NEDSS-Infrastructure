@@ -68,7 +68,7 @@ variable "ebs_volume_size" {
 variable "deploy_argocd_helm" {
   description = "Do you wish to bootstrap ArgoCD with the EKS cluster deployment?"
   type        = string
-  default     = "true"
+  default     = "false"
 }
 
 variable "argocd_version" {
