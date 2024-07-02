@@ -151,5 +151,6 @@ sed  --in-place "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE
 sed  --in-place "s/EXAMPLE_RESOURCE_PREFIX/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_ENVIRONMENT/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE-fluentbit-bucket/${SITE_NAME}-fluentbit-bucket-${TMP_ACCOUNT_ID}/"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/EXAMPLE-fluentbit-logs/${SITE_NAME}-fluentbit-logs-${TMP_ACCOUNT_ID}/"  ${NEW_INPUTS_FILE}
 
 exit 0
