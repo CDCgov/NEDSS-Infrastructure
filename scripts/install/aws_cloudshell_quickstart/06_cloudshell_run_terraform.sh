@@ -6,6 +6,19 @@ echo "change line 4 and run again"
 exit 1
 
 INSTALL_DIR=nbs_install
+DEFAULTS_FILE="./nbs_defaults.sh"
+
+# Function to load saved defaults
+load_defaults() {
+    echo "NOTICE: reading previous values from $DEFAULTS_FILE"
+    if [ -f "$DEFAULTS_FILE" ]; then
+        source "$DEFAULTS_FILE"
+    else
+        echo "NOTICE: $DEFAULTS_FILE does not exist"
+    fi
+}
+load_defaults; 
+
 cd ~/${INSTALL_DIR}
 
 rm *.zip

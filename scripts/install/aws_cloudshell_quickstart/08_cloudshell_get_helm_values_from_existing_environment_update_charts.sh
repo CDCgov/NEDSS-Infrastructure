@@ -56,6 +56,17 @@ while getopts 'hdsD?z' OPTION; do
     esac
 done
 
+if [ "${SEARCH_REPLACE}" -eq 1 ]
+then
+	echo "NOTICE: performing search and replace after prompts"
+else
+	echo "WARNING: not performing search and replace"
+    echo "you will have to rerun to do actual search and replace in files"
+    echo "script will save some selected values as defaults for next run"
+    echo "cntl-c to exit and use -s flag next time, enter to continue"
+    read junk
+fi
+
 # Debug function
 debug() {
     if [ "$DEBUG" -eq 1 ]; then
