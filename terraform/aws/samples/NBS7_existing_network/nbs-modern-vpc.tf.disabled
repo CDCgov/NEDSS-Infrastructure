@@ -1,26 +1,30 @@
+# THIS MODULE ASSUMED WE NEEDED TO CREATE A NEW VPC AND ADD PEERING/ROUTING
+# BETWEEEN THEM, IT IS NOT USED IN THIS CONFIGURATION
+
 # VPC for modernization application components
-module "modernization-vpc" {
-  source          = "../app-infrastructure/vpc"
-  resource_prefix = var.resource_prefix
-  cidr            = var.modern-cidr
-  azs             = var.modern-azs
-  private_subnets = var.modern-private_subnets
-  public_subnets  = var.modern-public_subnets
-
-  create_igw             = var.modern-create_igw
-  enable_nat_gateway     = var.modern-enable_nat_gateway
-  single_nat_gateway     = var.modern-single_nat_gateway
-  one_nat_gateway_per_az = var.modern-one_nat_gateway_per_az
-
-  enable_dns_hostnames = var.modern-enable_dns_hostnames
-  enable_dns_support   = var.modern-enable_dns_support
-
-}
+#module "modernization-vpc" {
+#  source          = "../app-infrastructure/vpc"
+#  resource_prefix = var.resource_prefix
+#  cidr            = var.modern-cidr
+#  azs             = var.modern-azs
+#  private_subnets = var.modern-private_subnets
+#  public_subnets  = var.modern-public_subnets
+#
+#  create_igw             = var.modern-create_igw
+#  enable_nat_gateway     = var.modern-enable_nat_gateway
+#  single_nat_gateway     = var.modern-single_nat_gateway
+#  one_nat_gateway_per_az = var.modern-one_nat_gateway_per_az
+#
+#  enable_dns_hostnames = var.modern-enable_dns_hostnames
+#  enable_dns_support   = var.modern-enable_dns_support
+#
+#}
 
 #Add VPC peering between two resources
 resource "aws_vpc_peering_connection" "peering_connection" {
   peer_owner_id = var.target_account_id
-  peer_vpc_id   = module.modernization-vpc.vpc_id
+  #peer_vpc_id   = module.modernization-vpc.vpc_id
+  peer_vpc_id   = data.aws_vpc.vpc_1.id
   vpc_id        = var.legacy-vpc-id
   auto_accept   = true
 

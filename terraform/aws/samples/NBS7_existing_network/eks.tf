@@ -7,7 +7,8 @@ module "eks_nbs" {
   #subnets                    = module.modernization-vpc.private_subnets
   #vpc_id                     = module.modernization-vpc.vpc_id
   subnets                    = var.modernization-vpc-private-subnets
-  vpc_id                      = var.modernization-vpc-id
+  #vpc_id                     = var.modernization-vpc-id
+  vpc_id                     = data.aws_vpc.vpc_1.id
   aws_role_arn               = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
   sso_role_arn               = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
   #sso_role_arn               = "arn:aws:iam::${var.target_account_id}:role/${var.sso_admin_role_name}"
