@@ -1,21 +1,14 @@
-# Serial: 2024051402
+# Serial: 2024070501
 
 module "fluentbit" {
 
-  #source           = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/fluentbit?ref=v1.2.9-DEV"
-  #source              = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/fluentbit"
-  source              = "../app-infrastructure/fluentbit"
-
   eks_aws_role_arn = "arn:aws:iam::${var.target_account_id}:role/cdc-terraform-user-cross-account-role"
 
-  # source                             = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/fluentbit"
-  # only use this to override for local use this will be used to find path to values file
-  # path_to_fluentbit                   = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/fluentbit"
 
   # SAMPLES
-  #source                             = "../app-infrastructure/fluentbit"
-  #path_to_fluentbit                  = "../app-infrastructure/fluentbit"
-  #eks_aws_role_arn                   = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
+  source                             = "../app-infrastructure/fluentbit"
+  path_to_fluentbit                  = "../app-infrastructure/fluentbit"
+  eks_aws_role_arn                   = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
 
 
   oidc_provider_arn                  = module.eks_nbs.oidc_provider_arn
