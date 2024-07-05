@@ -168,3 +168,9 @@ variable "fluentbit_bucket_name" {
   description = "name of fluentbit logs bucket, must be unique so include account number"
   type        = string
 }
+
+variable "deploy_argocd_helm" {
+  description = "Do you wish to deploy ArgoCD with the EKS cluster deployment?"
+  type        = string
+  default     = "false"
+}
