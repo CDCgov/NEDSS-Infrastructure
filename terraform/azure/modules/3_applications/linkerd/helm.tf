@@ -56,8 +56,9 @@ resource "tls_locally_signed_cert" "issuer" {
 
 resource "helm_release" "linkerd_control_plane" {
   name      = "linkerd-control-plane"
+  repository = var.linkerd_repository
   namespace = var.linkerd_namespace_name
-  chart     = var.linkerd_controlplane_chart
+  chart = var.linkerd_controlplane_chart #"linkerd-control-plane"
 
   set {
     name  = "identityTrustAnchorsPEM"
