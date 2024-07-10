@@ -9,7 +9,7 @@ variable "linkerd_namespace_name" {
     default = "linkerd"
 }
 variable "linkerd_controlplane_chart" {
-    default = "linkerd/linkerd-control-plane"
+    default = "linkerd-control-plane"
 }
 variable "linkerd_viz_chart" {
     default = "linkerd-viz"
