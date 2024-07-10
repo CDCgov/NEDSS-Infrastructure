@@ -56,9 +56,10 @@ resource "tls_locally_signed_cert" "issuer" {
 
 # linkerd control plane
 resource "helm_release" "linkerd_control_plane" {
-  name      = "linkerd-control-plane"
+  name       = "linkerd-control-plane"
+  repository      =  var.linkerd_repository # "https://helm.linkerd.io/stable"
   namespace = var.linkerd_namespace_name 
-  chart     = var.linkerd_controlplane_chart  #"linkerd/linkerd-control-plane"
+  chart     = var.linkerd_controlplane_chart  #"linkerd-control-plane"
 
   set {
     name  = "identityTrustAnchorsPEM"
@@ -77,6 +78,7 @@ resource "helm_release" "linkerd_control_plane" {
     helm_release.linkerd_crds
   ]
 }
+
 
 # deploy linkerd-viz
 resource "helm_release" "linkerd_viz" {
