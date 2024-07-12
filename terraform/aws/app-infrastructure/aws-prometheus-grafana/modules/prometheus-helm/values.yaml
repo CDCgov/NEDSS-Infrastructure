@@ -33,7 +33,12 @@ configmapReload:
     ##
     image:
       repository: quay.io/prometheus-operator/prometheus-config-reloader
-      tag: v0.63.0
+
+      # mossc 2024-07-12 - quick fix, for some reason prometheus-config-reloader was
+      # pegged at specific tag but other components were not - FIXME: need
+      # more thought into what belongs in values file
+      #tag: v0.63.0
+      
       # When digest is set to a non-empty value, images will be pulled by digest (regardless of tag value).
       digest: ""
       pullPolicy: IfNotPresent
