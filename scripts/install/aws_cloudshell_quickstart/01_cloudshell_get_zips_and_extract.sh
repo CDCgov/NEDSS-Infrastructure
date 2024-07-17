@@ -4,9 +4,9 @@
 DEBUG_MODE=0
 STEP_MODE=0
 TEST_MODE=0
-RELEASE_VER=v7.4.3
-INFRA_VER=v1.2.9
-HELM_VER=v7.4.3
+RELEASE_VER=v7.4.4
+INFRA_VER=v1.2.11
+HELM_VER=v7.4.4
 INSTALL_DIR=nbs_install
 SOURCE="github"  # Default to GitHub, other options are 's3' and 'local'
 
