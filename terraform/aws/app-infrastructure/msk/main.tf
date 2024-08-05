@@ -200,6 +200,8 @@ socket.request.max.bytes=104857600
 socket.send.buffer.bytes=102400
 unclean.leader.election.enable=true
 zookeeper.session.timeout.ms=18000
+offsets.topic.replication.factor=2
+transaction.state.log.replication.factor=2
 PROPERTIES
 }
 
