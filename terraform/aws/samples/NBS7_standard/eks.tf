@@ -1,7 +1,11 @@
 # Serial: 2024081201
 
 module "eks_nbs" {
+<<<<<<< HEAD
   #source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/eks-nbs?ref=v1.2.14"
+=======
+  #source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/eks-nbs?ref=v1.2.12"
+>>>>>>> deb6bf37e2d8bb31478dc2aec76f836dcdf0b02d
   #source              = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/eks-nbs"
   source              = "../app-infrastructure/eks-nbs"
   subnets                    = module.modernization-vpc.private_subnets
