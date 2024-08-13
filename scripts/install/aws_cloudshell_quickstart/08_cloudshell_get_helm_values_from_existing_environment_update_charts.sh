@@ -158,7 +158,8 @@ select_msk_cluster() {
     echo "Selected MSK Cluster Name: $MSK_CLUSTER_NAME"
 
     # Fetch the Kafka endpoint for the selected MSK cluster
-    MSK_KAFKA_ENDPOINT=$(aws kafka get-bootstrap-brokers --cluster-arn $MSK_CLUSTER_ARN --query 'BootstrapBrokerStringTls')
+    #MSK_KAFKA_ENDPOINT=$(aws kafka get-bootstrap-brokers --cluster-arn $MSK_CLUSTER_ARN --query 'BootstrapBrokerStringTls')
+    MSK_KAFKA_ENDPOINT=$(aws kafka get-bootstrap-brokers --cluster-arn $MSK_CLUSTER_ARN --query 'BootstrapBrokerStringTls'| sed 's/"//g')
     echo "Selected MSK Kafka Endpoint: $MSK_KAFKA_ENDPOINT"
 }
 
