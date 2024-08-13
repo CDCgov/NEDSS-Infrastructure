@@ -5,8 +5,8 @@ module "alb_sg" {
 
   name        = "${var.resource_prefix}-alb-sg"
   description = "${var.resource_prefix} Security Group for ALB"
-#   vpc_id      = var.legacy_vpc_id
-  vpc_id      = var.vpc_id
+  #   vpc_id      = var.legacy_vpc_id
+  vpc_id = var.vpc_id
 
   ingress_cidr_blocks = ["0.0.0.0/0"]
   ingress_rules       = ["https-443-tcp", "http-80-tcp"]
@@ -15,22 +15,22 @@ module "alb_sg" {
 
 
 # Application load balancer for NBS application server
-module "alb" {  
+module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 8.2"
 
   name = var.deploy_on_ecs ? "${var.resource_prefix}-alb-ecs" : "${var.resource_prefix}-alb-ec2"
 
   load_balancer_type = var.load_balancer_type
-  internal = var.internal
+  internal           = var.internal
 
   # Use `subnet_mapping` to select specific IP  
   subnet_mapping = var.subnet_mapping
 
   # Care here
-#   vpc_id          = var.legacy_vpc_id
+  #   vpc_id          = var.legacy_vpc_id
   vpc_id          = var.vpc_id
-  subnets         = var.load_balancer_subnet_ids 
+  subnets         = var.load_balancer_subnet_ids
   security_groups = [module.alb_sg.security_group_id]
 
 
@@ -58,7 +58,7 @@ module "alb" {
           target_id = module.app_server[0].id
           port      = 7001
         }
-      } 
+      }
     }
   ]
 
@@ -69,6 +69,9 @@ module "alb" {
       # Use terraform create certificate or a precreated certificate
       certificate_arn    = try(module.acm[0].acm_certificate_arn, var.certificate_arn)
       target_group_index = 0
+      # security_policy = ELBSecurityPolicy-TLS13-1-2-2021-06
+      #ssl_policy         = "ELBSecurityPolicy-2016-08"
+      ssl_policy = "ELBSecurityPolicy-TLS13-1-2-2021-06"
     }
   ]
 
