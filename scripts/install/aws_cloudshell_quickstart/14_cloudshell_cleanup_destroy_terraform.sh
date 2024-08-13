@@ -3,7 +3,7 @@
 HELM_VER=v7.5.0
 #exit 1
 INSTALL_DIR=~/nbs_install
-INFRA_VER=v1.2.12
+INFRA_VER=v1.2.14
 DEBUG=1
 STEP=1
 NOOP=0
