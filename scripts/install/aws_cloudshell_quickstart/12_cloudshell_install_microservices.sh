@@ -19,10 +19,11 @@
 #  -d : Enable debug mode for verbose output
 #  -s : Enable step mode to proceed through the script interactively
 
-HELM_VER=v7.4.3
+HELM_VER=v7.5.0
 INSTALL_DIR=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
 SLEEP_TIME=60
+#SLEEP_TIME=10
 DEBUG=0
 STEP=0
 NOOP=0
@@ -116,6 +117,8 @@ function helm_safe_install() {
     local name=$1
     local path=$2
     local namespace=$3
+    echo
+    echo "Installing or upgrading $name"
     #if ! helm list --short | grep -q "^${name}$"; then
     if ! helm list -n ${namespace} --short | grep -q "^${name}$"; then
         debug_message "Installing $name"
@@ -128,7 +131,11 @@ function helm_safe_install() {
         echo "Sleeping for ${SLEEP_TIME} seconds"
         sleep ${SLEEP_TIME}
     fi
+    # add a blank line
+    echo
+
     pause_step
+
 }
 
 cd ${HELM_DIR}/charts
@@ -137,6 +144,29 @@ check_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns dataingestion.${SITE_NAME}.${EXAMPLE_DOMAIN};
+
+#####################################################################
+# linkerd/mtls
+echo "check if namespace is annotated for linkerd/mtls"
+echo " probably not enabled yet, will be blank"
+echo "hit return to continue"
+read junk
+kubectl get namespace ${DEFAULT_NAMESPACE} -o=jsonpath='{.metadata.annotations}'
+
+echo "annotating ${DEFAULT_NAMESPACE} namespace to enable linkerd mtls"
+echo "hit return to continue"
+read junk
+kubectl annotate namespace ${DEFAULT_NAMESPACE} "linkerd.io/inject=enabled"
+
+echo "check if namespace is annotated for linkerd/mtls"
+echo " should show enabled"
+echo "hit return to continue"
+read junk
+kubectl get namespace ${DEFAULT_NAMESPACE} -o=jsonpath='{.metadata.annotations}'
+echo
+
+
+#####################################################################
 
 helm_safe_install elasticsearch elasticsearch-efs ${DEFAULT_NAMESPACE}
 
@@ -153,7 +183,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 else
     echo "keycloak skipped."
 fi
-kubectl get pods -n keycloak
+kubectl get pods -n ${DEFAULT_NAMESPACE}
 
 #########################################################################
 # this portion should be modified to not repeat logic
