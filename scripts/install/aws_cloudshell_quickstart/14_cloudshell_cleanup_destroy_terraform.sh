@@ -76,6 +76,7 @@ HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 
 #cd ~/${INSTALL_DIR}
 cd ${INSTALL_DIR}
+echo PWD=`pwd`
 
 echo "here are the subdirectories in the terraform/aws directory"
 ls -1 NEDSS-Infrastructure-${INFRA_VER}/terraform/aws | grep -v app-infrastructure | grep -v samples
@@ -87,10 +88,12 @@ ls -1 NEDSS-Infrastructure-${INFRA_VER}/terraform/aws | grep -v app-infrastructu
 #cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
 
 cd NEDSS-Infrastructure-${INFRA_VER}/terraform/aws
+echo PWD=`pwd`
 
 #cp samples/NBS6_standard ${TMP_SITE_NAME}
 
 cd ${SITE_NAME}
+echo PWD=`pwd`
 
 
 echo "initialize terraform modules: "
