@@ -43,7 +43,8 @@ module "app_server" {
   # cmoss - we can now disable user data
   # by passing enable_user_data = false
   # user_data = <<EOF
-  user_data = var.enable_user_data ? <<EOF
+  #user_data = var.enable_user_data ? <<EOF
+  user_data = var.enable_user_data ? <<EOF ... EOF : null
 <powershell>
 #Initialize hastable for data sources
 $connectionURLs = @{ "NedssDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_odse";
