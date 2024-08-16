@@ -44,7 +44,8 @@ module "app_server" {
   # by passing enable_user_data = false
   # user_data = <<EOF
   #user_data = var.enable_user_data ? <<EOF
-  user_data = var.enable_user_data ? <<EOF ... EOF : null
+  #user_data = var.enable_user_data ? <<EOF ... EOF : null
+  user_data = var.enable_user_data ? <<EOF
 <powershell>
 #Initialize hastable for data sources
 $connectionURLs = @{ "NedssDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_odse";
@@ -159,7 +160,7 @@ Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Pri
 Start-Service Wildfly
 Restart-Computer -Force
 </powershell>
-EOF   
+EOF : null
 }
 
 # Add in-line IAM role for EC2 access to shared services bucket
