@@ -34,6 +34,8 @@ resource "azurerm_key_vault_secret" "sqlmi_password_secret" {
 # Create Azure SQL Managed Instance
 resource "azurerm_mssql_managed_instance" "sqlmi" {
   name                         = "${var.resource_prefix}-sql-managed-instance"
+  storage_account_type         = var.sqlmi_zone_redundant_enabled
+  zone_redundant_enabled       = var.sqlmi_zone_redundant_enabled
   resource_group_name          = data.azurerm_resource_group.rg.name
   location                     = data.azurerm_resource_group.rg.location
   subnet_id                    = data.azurerm_subnet.sqlmi_subnet.id
