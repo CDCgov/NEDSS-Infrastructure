@@ -43,12 +43,13 @@ variable "sqlmi_sku_name" {
 variable "sqlmi_storage_account_type" {
   description = "Specifies the storage account type used to store backups for this database. Changing this forces a new resource to be created. Possible values are GRS, GZRS, LRS, and ZRS. Defaults to GRS"
   type        = string
+  default     = "ZRS"
 }
-
 
 variable "sqlmi_zone_redundant_enabled" {
   description = "Specifies whether or not the SQL Managed Instance is zone redundant. Defaults to false."
   type        = string
+  default     = true
 }
 
 variable "sqlmi_restoring_from_database_name" {
