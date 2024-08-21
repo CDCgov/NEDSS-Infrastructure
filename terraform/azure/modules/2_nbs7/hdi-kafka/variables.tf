@@ -130,14 +130,13 @@ variable "infrastructure_encryption_enabled" {
     type = bool
     default = true
 }
-
-variable "storage_account_key" {
-  description = "storage account primary access key"
-  type = string
+#############
+variable "kafka_storage_account_name" {
+    type = string
 }
 
-variable "storage_container_id" {
-description = "storage container id"
-  type = string
+variable "kafka_storage_container_name" {
+    type = string
+    sensitive = true
 }
 ###########################################

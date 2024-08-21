@@ -119,8 +119,8 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka-cluster" {
   }
 
   storage_account {
-    storage_container_id = var.storage_container_id # azurerm_storage_container.hdi-kafka-storage-container.id
-    storage_account_key  = var.storage_account_key #azurerm_storage_account.kafka-storage-account.primary_access_key
+    storage_container_id = data.azurerm_storage_container.kafka_sa_container.id  # var.storage_container_id # azurerm_storage_container.hdi-kafka-storage-container.id
+    storage_account_key  = data.azurerm_storage_account.kafka_sa_name.primary_access_key #var.storage_account_key #azurerm_storage_account.kafka-storage-account.primary_access_key
     is_default           = true
   }
 
