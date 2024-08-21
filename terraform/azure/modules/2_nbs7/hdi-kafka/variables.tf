@@ -130,4 +130,14 @@ variable "infrastructure_encryption_enabled" {
     type = bool
     default = true
 }
+
+variable "storage_account_key" {
+  description = "storage account primary access key"
+  type = string
+}
+
+variable "storage_container_id" {
+description = "storage container id"
+  type = string
+}
 ###########################################

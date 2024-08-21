@@ -1,53 +1,40 @@
-## remove this block once testing is done.
-# provider "azurerm" {
-#   features {}
-# }
-
-# terraform {
-#   required_providers {
-#     azurerm = {
-#       source = "hashicorp/azurerm"
-#       version = "=3.0.1"
-#     }
-#   }
-# }
-
+#Deploys Hdinsight Kafka cluster in Azure
 #######################################+++++++++#####$$$$$$$$$$%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Kafka HDinsight storage account
-resource "azurerm_storage_account" "kafka-storage-account" {
-  name                     = "${var.resource_prefix}${var.storage_account_name}" # "hdinsightstor"
-  resource_group_name      = data.azurerm_resource_group.rg.name # azurerm_resource_group.kafka-rg.name
-  location                 = data.azurerm_resource_group.rg.location #azurerm_resource_group.kafka-rg.location
-  account_tier             = var.account_tier # "Standard"
-  account_replication_type = var.account_replication_type # "LRS"
-  infrastructure_encryption_enabled = var.infrastructure_encryption_enabled
-  tags = merge(tomap({"Name"="${var.resource_prefix}-${var.storage_account_name}"}),var.tags)
-   lifecycle {
-	ignore_changes = [ 
-		tags["business_steward"],
-		tags["center"],
-		tags["environment"],
-		tags["escid"],
-		tags["funding_source"],
-		tags["pii_data"],
-		tags["security_compliance"],
-		tags["security_steward"],
-		tags["support_group"],
-		tags["system"],
-		tags["technical_poc"],
-		tags["technical_steward"],
-		tags["zone"]
-		]
-	}
-}
+# resource "azurerm_storage_account" "kafka-storage-account" {
+#   name                     = "${var.resource_prefix}${var.storage_account_name}" # "hdinsightstor"
+#   resource_group_name      = data.azurerm_resource_group.rg.name # azurerm_resource_group.kafka-rg.name
+#   location                 = data.azurerm_resource_group.rg.location #azurerm_resource_group.kafka-rg.location
+#   account_tier             = var.account_tier # "Standard"
+#   account_replication_type = var.account_replication_type # "LRS"
+#   infrastructure_encryption_enabled = var.infrastructure_encryption_enabled
+#   tags = merge(tomap({"Name"="${var.resource_prefix}-${var.storage_account_name}"}),var.tags)
+#    lifecycle {
+# 	ignore_changes = [ 
+# 		tags["business_steward"],
+# 		tags["center"],
+# 		tags["environment"],
+# 		tags["escid"],
+# 		tags["funding_source"],
+# 		tags["pii_data"],
+# 		tags["security_compliance"],
+# 		tags["security_steward"],
+# 		tags["support_group"],
+# 		tags["system"],
+# 		tags["technical_poc"],
+# 		tags["technical_steward"],
+# 		tags["zone"]
+# 		]
+# 	}
+# }
 
 # # Kafka HDinsight storage container
-resource "azurerm_storage_container" "hdi-kafka-storage-container" {
-  name                  = "${var.resource_prefix}-hdinsight-kafka-cluster-data" 
-  storage_account_name  = azurerm_storage_account.kafka-storage-account.name
-  container_access_type = var.container_access_type 
-}
+# resource "azurerm_storage_container" "hdi-kafka-storage-container" {
+#   name                  = "${var.resource_prefix}-hdinsight-kafka-cluster-data" 
+#   storage_account_name  = azurerm_storage_account.kafka-storage-account.name
+#   container_access_type = var.container_access_type 
+# }
 
 # # Kafka HDinsight network security group
 resource "azurerm_network_security_group" "hdi-kafka-sg" {
@@ -97,7 +84,7 @@ resource "azurerm_subnet_network_security_group_association" "kafka-subnet-sg" {
 
 resource "azurerm_hdinsight_kafka_cluster" "kafka-cluster" {
   name                = "${var.resource_prefix}-${var.kafka_cluster_name}" 
-  depends_on = [azurerm_storage_account.kafka-storage-account, azurerm_storage_container.hdi-kafka-storage-container]
+  # depends_on = [azurerm_storage_container.hdi-kafka-storage-container] #[azurerm_storage_account.kafka-storage-account, azurerm_storage_container.hdi-kafka-storage-container]
   resource_group_name = data.azurerm_resource_group.rg.name 
   location            = data.azurerm_resource_group.rg.location 
   cluster_version     = var.cluster_version 
@@ -132,8 +119,8 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka-cluster" {
   }
 
   storage_account {
-    storage_container_id = azurerm_storage_container.hdi-kafka-storage-container.id
-    storage_account_key  = azurerm_storage_account.kafka-storage-account.primary_access_key
+    storage_container_id = var.storage_container_id # azurerm_storage_container.hdi-kafka-storage-container.id
+    storage_account_key  = var.storage_account_key #azurerm_storage_account.kafka-storage-account.primary_access_key
     is_default           = true
   }
 
