@@ -137,6 +137,5 @@ variable "kafka_storage_account_name" {
 
 variable "kafka_storage_container_name" {
     type = string
-    sensitive = true
 }
 ###########################################
