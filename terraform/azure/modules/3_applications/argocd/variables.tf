@@ -74,7 +74,7 @@ variable "deploy_argocd_helm" {
 variable "argocd_version" {
   description = "Version of ArgoCD with which to bootstrap EKS cluster"
   type        = string
-  default     = "5.23.3"
+  default     = "v2.12.3"
 }
 
 # variable "deploy_istio_helm" {
