@@ -1,4 +1,4 @@
-output "oidc_provider_arn" {
+/*output "oidc_provider_arn" {
   description = "The ARN of the OIDC Provider if enable_irsa = true"
   value       = module.eks.oidc_provider_arn
 }
@@ -29,6 +29,7 @@ output "eks_aws_role_arn" {
   description = "IAM role ARN of the EKS cluster"
   value       = module.eks.cluster_iam_role_arn
 }
+*/
 
 # output "precreated_observability_namespace_name" {
 #   description = "Name of the observability namespace"
