@@ -1,8 +1,8 @@
 # set pull-through cache variables for easy reference
-locals {
-  ecr_public_pull = var.use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecr_pull_through_cache_rule.ecr_public[0].id}" : ""
-  quay_pull = var.use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.quay[0].registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecr_pull_through_cache_rule.quay[0].id}" : ""
-}
+#locals {
+#  ecr_public_pull = var.use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.ecr_public[0].registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecr_pull_through_cache_rule.ecr_public[0].id}" : ""
+#  quay_pull = var.use_ecr_pull_through_cache ? "${aws_ecr_pull_through_cache_rule.quay[0].registry_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecr_pull_through_cache_rule.quay[0].id}" : ""
+#}
 
 # # efs local variables
 # locals {  
@@ -59,9 +59,9 @@ locals {
 # }
 
 locals {
-  argocd_global_image_repo = var.use_ecr_pull_through_cache ? "${local.quay_pull}/argoproj/argocd" : "quay.io/argoproj/argocd"
-  argocd_redis_main_image_repo = var.use_ecr_pull_through_cache ? "${local.ecr_public_pull}/docker/library/redis" : "public.ecr.aws/docker/library/redis"
-  argocd_redis_exporter_image_repo = var.use_ecr_pull_through_cache ? "${local.ecr_public_pull}/bitnami/redis-exporter" : "public.ecr.aws/bitnami/redis-exporter"    
+  argocd_global_image_repo = "quay.io/argoproj/argocd"
+  argocd_redis_main_image_repo = "public.ecr.aws/docker/library/redis"
+  argocd_redis_exporter_image_repo = "public.ecr.aws/bitnami/redis-exporter"    
 }
 
 # Create argocd for deployment
