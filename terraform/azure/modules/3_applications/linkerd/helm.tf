@@ -82,6 +82,7 @@ resource "helm_release" "linkerd_control_plane" {
 
 # deploy linkerd-viz
 resource "helm_release" "linkerd_viz" {
+  count = var.create_linkerd_viz ? 1 : 0
   name            = "linkerd-viz"
   repository      = var.linkerd_repository # "https://helm.linkerd.io/stable"
   chart           = var.linkerd_viz_chart # "linkerd-viz"
