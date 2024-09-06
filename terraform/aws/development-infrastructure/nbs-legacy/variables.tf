@@ -207,9 +207,3 @@ variable "internal" {
   type        = bool
   default     = null
 }
-
-
-variable "enable_user_data" {
-  type    = bool
-  default = true
-}
