@@ -83,7 +83,8 @@ echo "removing dataingestion"
 echo "hit return to continue"
 read junk
 #helm uninstall dataingestion-service
-helm uninstall dataingestion
+#helm uninstall dataingestion
+helm uninstall dataingestion-service
 
 
 helm list
