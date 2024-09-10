@@ -390,6 +390,16 @@ then
 	apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_DIR}/charts/nifi-efs" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/liquibase/values.yaml" "${HELM_DIR}/charts/liquibase" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/investigation-reporting-service/values.yaml" "${HELM_DIR}/charts/investigation-reporting-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/ldfdata-reporting-service/values.yaml" "${HELM_DIR}/charts/ldfdata-reporting-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nnd-service/values.yaml" "${HELM_DIR}/charts/nnd-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/observation-reporting-service/values.yaml" "${HELM_DIR}/charts/observation-reporting-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/organization-reporting-service/values.yaml" "${HELM_DIR}/charts/organization-reporting-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/person-reporting-service/values.yaml" "${HELM_DIR}/charts/person-reporting-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/post-processing-reporting-service/values.yaml" "${HELM_DIR}/charts/post-processing-reporting-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/kafka-connect-sink/values.yaml" "${HELM_DIR}/charts/kafka-connect-sink" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/debezium/values.yaml" "${HELM_DIR}/charts/debezium" "$SITE_NAME"
 
 	if [ "$DEVELOPMENT" -eq 1 ]; then
 		echo "running search and replace on development containers"
