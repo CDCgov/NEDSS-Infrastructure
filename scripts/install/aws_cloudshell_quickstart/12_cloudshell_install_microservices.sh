@@ -180,14 +180,17 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo "Error: Failed to load"
     fi
     echo "keycloak loaded"
+    echo "you have 300 seconds to upload to the persistent volume for new themes"
+    echo 
 else
     echo "keycloak skipped."
 fi
+
 kubectl get pods -n ${DEFAULT_NAMESPACE}
 
 #########################################################################
 # this portion should be modified to not repeat logic
-read -p "are you are using keycloak for auth? [y/N] " -r
+read -p "are you are using keycloak for auth(make sure it is ready after initializing)? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     read -p "has keycloak imported required realm and modified client secrets reflected created? [y/N] " -r
     if [[ $REPLY =~ ^[Yy]$ ]]; then
