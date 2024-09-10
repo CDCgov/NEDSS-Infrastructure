@@ -223,8 +223,75 @@ else
     echo "dataingestion skipped."
 fi
 
+echo "ready to start RTR install process"
+read -p "Have the database prep steps been done (CDC, rdb_modern copy, etc)? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_message "loading liquibase pod"
+    helm_safe_install liquibase liquibase-service ${DEFAULT_NAMESPACE}
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "liquibase loaded"
+else
+    echo "liquibase skipped."
+fi
+
+read -p "Have the database prep steps been done for debezium (CDC, etc)? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_message "loading debezium pod"
+    helm_safe_install debezium debezium ${DEFAULT_NAMESPACE}
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "debezium loaded"
+else
+    echo "debezium skipped."
+fi
+
+read -p "Have the database prep steps been done for kafka-connect-sink (CDC, etc)? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_message "loading kafka-connect-sink pod"
+    helm_safe_install kafka-connect-sink kafka-connect-sink ${DEFAULT_NAMESPACE}
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "kafka-connect-sink loaded"
+else
+    echo "kafka-connect-sink skipped."
+fi
+
 kubectl get pods 
 
+read -p "Have the all RTR required containers started correctly? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_message "loading rtr containers"
+    helm_safe_install observation-reporting-service observation-reporting-service ${DEFAULT_NAMESPACE}
+    helm_safe_install organization-reporting-service organization-reporting-service ${DEFAULT_NAMESPACE}
+    helm_safe_install investigation-reporting-service investigation-reporting-service ${DEFAULT_NAMESPACE}
+    helm_safe_install ldfdata-reporting-service ldfdata-reporting-service ${DEFAULT_NAMESPACE}
+    helm_safe_install post-processing-reporting-service post-processing-reporting-service ${DEFAULT_NAMESPACE}
+    helm_safe_install person-reporting-service person-reporting-service ${DEFAULT_NAMESPACE}
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "rtr containers loaded"
+else
+    echo "rtr containers skipped."
+fi
 exit 0
 
+kubectl get pods 
 
+read -p "Have the database prep steps been done for nnd-service (CDC, etc)? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_message "loading nnd-service pod"
+    helm_safe_install nnd-service nnd-service ${DEFAULT_NAMESPACE}
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "nnd-service loaded"
+else
+    echo "nnd-service skipped."
+fi
+
+kubectl get pods 

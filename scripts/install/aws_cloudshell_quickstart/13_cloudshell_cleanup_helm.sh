@@ -73,55 +73,41 @@ remove_dns()
 }
 
 
+helm_remove()
+{
+    helm list
+    TMP_CONTAINER=$1
+    echo "removing ${TMP_CONTAINER}"
+    echo "hit return to continue"
+    read junk
+    helm uninstall ${TMP_CONTAINER} 
+}
+
 # remove pods in reverse of install
 echo "pods running"
 kubectl get pods
 
 echo "helm charts installed"
 helm list
-echo "removing dataingestion"
-echo "hit return to continue"
-read junk
-#helm uninstall dataingestion-service
-#helm uninstall dataingestion
-helm uninstall dataingestion-service
 
+helm_remove nnd-service
+helm_remove person-reporting-service
+helm_remove post-processing-reporting-service
+helm_remove ldfdata-reporting-service
+helm_remove investigation-reporting-service
+helm_remove organization-reporting-service
+helm_remove observation-reporting-service
+helm_remove kafka-connect-sink
+helm_remove debezium
+helm_remove liquibase
 
-helm list
-echo "removing nbs-gateway"
-echo "hit return to continue"
-read junk
-helm uninstall nbs-gateway 
-
-helm list
-echo "removing nifi"
-echo "hit return to continue"
-read junk
-helm uninstall nifi 
-
-helm list
-echo "removing modernization-api"
-echo "hit return to continue"
-read junk
-helm uninstall modernization-api 
-
-helm list
-echo "removing page-builder-api"
-echo "hit return to continue"
-read junk
-helm uninstall page-builder-api 
- 
-helm list
-echo "removing elasticsearch"
-echo "hit return to continue"
-read junk
-helm uninstall elasticsearch 
-
-helm list
-echo "removing keycloak"
-echo "hit return to continue"
-read junk
-helm uninstall keycloak
+helm_remove dataingestion-service
+helm_remove nbs-gateway 
+helm_remove nifi 
+helm_remove modernization-api 
+helm_remove page-builder-api 
+helm_remove elasticsearch 
+helm_remove keycloak
 
 #remove_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 remove_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
