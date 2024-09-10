@@ -65,6 +65,9 @@ echo running kubectl apply -f cluster-issuer-prod-${SITE_NAME}.yaml
 
 kubectl apply -f cluster-issuer-prod-${SITE_NAME}.yaml
 
+echo "sleeping for 30 seconds to allow provisioning to complete"
+sleep 30
+
 echo "check status, should be ready"
 echo "running, kubectl get clusterissuer"
 kubectl get clusterissuer

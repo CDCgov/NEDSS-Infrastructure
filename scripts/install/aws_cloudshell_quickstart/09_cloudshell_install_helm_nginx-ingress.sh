@@ -142,11 +142,11 @@ HELM_DIR=${INSTALL_DIR}/nbs-helm-${HELM_VER}
 #execute_command "helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -f nginx-ingress/values.yaml --namespace ingress-nginx --create-namespace --version ${INGRESS_VER}"
 execute_command "helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -f nginx-ingress/values-${SITE_NAME}.yaml --namespace ingress-nginx --create-namespace --version ${INGRESS_VER}"
 
+echo "sleeping for 30 seconds to allow provisioning to complete"
+sleep 30
 # Check for running pods in ingress-nginx namespace
 execute_command "kubectl get po -n ingress-nginx"
 execute_command "kubectl --namespace ingress-nginx get services -o wide ingress-nginx-controller"
-
-# The script now has enhanced functionality for a safer and more interactive execution.
 
 echo " now make sure efs volume ID is correct in elasticsearch-efs"
 echo " make sure private route 53 zone is bound to modern vpc"
