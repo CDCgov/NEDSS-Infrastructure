@@ -26,3 +26,8 @@ variable "linkerd_viz_namespace_name" {
 variable "resource_group_name" {
     type = string
 }
+
+variable "create_linkerd_viz" {
+  type = bool
+  default = true
+}
