@@ -1,10 +1,5 @@
 variable "resource_prefix" {
-  description = "Prefix used for naming all resources"
-  type        = string
-}
-
-variable "acr_prefix" {
-  description = "Prefix used for naming ACR"
+  description = "Prefix used for naming all resources. Only alpha numeric characters are allowed"
   type        = string
 }
 

@@ -36,9 +36,25 @@ resource "azurerm_container_group" "aci" {
   ip_address_type     = "Private"
   subnet_ids          = toset([data.azurerm_subnet.aci_subnet.id])
 
+ dynamic identity {
+    for_each = var.aci_use_private_acr ? [1] : []
+    content {
+      type = "UserAssigned"
+      identity_ids = [data.azurerm_user_assigned_identity.user_assigned_identity.id]
+    }
+  }
+
+  dynamic image_registry_credential {
+    for_each = var.aci_use_private_acr ? [1] : []
+    content {
+      user_assigned_identity_id = data.azurerm_user_assigned_identity.user_assigned_identity.id
+      server = var.aci_private_acr_server_url
+    }
+  }
+
   container {
     name   = "${var.resource_prefix}-container"
-    image  = var.aci_quay_nbs6_repository
+    image  = var.aci_nbs6_repository
     cpu    = var.aci_cpu
     memory = var.aci_memory
     ports {

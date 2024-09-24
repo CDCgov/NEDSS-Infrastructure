@@ -1,16 +1,19 @@
+#NOTE: THIS WILL BE CREATED BY CDC CLOUD TEAM IF DEPLOYING IN CDC AZURE EXT
+
 # Create Azure Container Registry
 resource "azurerm_container_registry" "acr" {
-  name                          = "${var.acr_prefix}acrprivateacr"
+  name                          = "${var.resource_prefix}acrprivateacr"
   resource_group_name           = data.azurerm_resource_group.rg.name
   location                      = data.azurerm_resource_group.rg.location
   sku                           = "Premium"   # Premium SKU is required for private endpoints
   public_network_access_enabled = false
   zone_redundancy_enabled       = true
+  admin_enabled                 = true # Required for ACI to pull image
   retention_policy              = [{
     enabled = true
     days    = 30
   }]
-  anonymous_pull_enabled        = false
+  anonymous_pull_enabled        = true
   export_policy_enabled         = false
 }
  
