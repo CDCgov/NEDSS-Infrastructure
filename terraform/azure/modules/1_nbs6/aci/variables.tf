@@ -40,7 +40,7 @@ variable "aci_nbs6_repository" {
 }
 
 variable "aci_use_private_acr" {
-  description = "Use private ACR?"
+  description = "Use private ACR? NOTE: If deploying in CDC Azure EXT, ACR needs to be created by Cloud Team"
   type        = string
   default     = false
 }
@@ -52,13 +52,13 @@ variable "aci_private_acr_resource_group_name" {
 }
 
 variable "aci_private_acr_server_url" {
-  description = "Private ACR Server URL"
+  description = "Private ACR Server URL. If deploying in CDC Azure EXT, this needs to be created by Cloud Team"
   type        = string
   default     = "N/A"
 }
 
 variable "aci_user_assigned_identity_name" {
-  description = "User Assigned Idenitity Name. Allows ACI to pull image from private registry"
+  description = "User Assigned Idenitity Name. Allows ACI to pull image from private registry. If deploying in CDC Azure EXT, this needs to be created by Cloud Team"
   type        = string
   default     = "N/A"
 }
