@@ -12,6 +12,11 @@ resource "aws_ecs_task_definition" "sas_task" {
   task_role_arn            = aws_iam_role.ecs_task_role[0].arn
   cpu                      = "${var.sas_ecs_cpu}"
   memory                   = "${var.sas_ecs_memory}"
+  
+  ephemeral_storage {
+    size_in_gib = "${var.sas_ephemeral_storage}"
+  } 
+
   runtime_platform {
     operating_system_family = "LINUX"
   }
