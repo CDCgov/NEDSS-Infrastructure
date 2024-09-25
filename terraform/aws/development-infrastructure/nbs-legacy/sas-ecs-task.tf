@@ -1,5 +1,5 @@
 # NBS6 SAS ECS Task Definition
-resource "aws_ecs_task_definition" "task" {
+resource "aws_ecs_task_definition" "sas_task" {
   count = var.deploy_sas ? 1 : 0
   family                   = "${var.resource_prefix}-sas-task-definition"
   network_mode             = "awsvpc"
