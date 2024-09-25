@@ -1,81 +1,4 @@
-data "aws_region" "current" {}
-
-# ECS Service Execution Role
-resource "aws_iam_role" "ecs_execution_role" {
-  count = var.deploy_on_ecs ? 1 : 0
-  name = "${var.resource_prefix}-ecs-execution-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  ]
-}
-
-# ECS Task Role
-# NOTE: inline_policy is required to allow SSM access in ECS container. This can be further restricted if required.
-resource "aws_iam_role" "ecs_task_role" {
-  count = var.deploy_on_ecs ? 1 : 0
-  name = "${var.resource_prefix}-ecs-task-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-
-  inline_policy {
-      name   = "ecs_task_inline_policy_ssm"
-      policy = jsonencode({
-        Version = "2012-10-17",
-        Statement = [
-          {
-            Effect = "Allow",
-            Action = [
-              "ssmmessages:CreateControlChannel",
-              "ssmmessages:CreateDataChannel",
-              "ssmmessages:OpenControlChannel",
-              "ssmmessages:OpenDataChannel"
-            ],
-            Resource = "*"
-          }
-        ]
-      })
-    }
-}
-
-# NBS 6 ECS CloudWatch Group
-resource "aws_cloudwatch_log_group" "log_group" {
-  count = var.deploy_on_ecs ? 1 : 0
-  name = "/ecs/${var.resource_prefix}-task"
-}
-
-# NBS 6 ECS Cluster Creation
-resource "aws_ecs_cluster" "cluster" {
-  count = var.deploy_on_ecs ? 1 : 0
-  name = "${var.resource_prefix}-app-ecs-cluster"
-  tags = var.tags
-}
-
-# NBS 6 ECS Task Definition
+# NBS 6 app ECS Task Definition
 resource "aws_ecs_task_definition" "task" {
   count = var.deploy_on_ecs ? 1 : 0
   family                   = "${var.resource_prefix}-task-definition"
@@ -131,7 +54,7 @@ resource "aws_ecs_task_definition" "task" {
 }
 
 
-# NBS 6 ECS Service Definition
+# NBS 6 app ECS Service Definition
 # NOTE: enable_execute_command is required to exec in to ecs task
 resource "aws_ecs_service" "service" {
   count = var.deploy_on_ecs ? 1 : 0
@@ -154,4 +77,10 @@ resource "aws_ecs_service" "service" {
   desired_count = 1
   enable_execute_command = true
   tags = var.tags  
+}
+
+# NBS 6 component ECS CloudWatch Group
+resource "aws_cloudwatch_log_group" "log_group" {
+  count = var.deploy_on_ecs ? 1 : 0
+  name = "/ecs/${var.resource_prefix}-task"
 }
