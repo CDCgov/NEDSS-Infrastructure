@@ -101,11 +101,11 @@ resource "aws_ecs_service" "sas_service" {
     security_groups = ["${module.app_sg.security_group_id}"]
   }
 
-  load_balancer {
-    target_group_arn = module.alb.target_group_arns[0]
-    container_name   = "${var.resource_prefix}-sas-task"
-    container_port   = local.container_port
-  }
+  # load_balancer {
+  #   target_group_arn = module.alb.target_group_arns[0]
+  #   container_name   = "${var.resource_prefix}-sas-task"
+  #   container_port   = local.container_port
+  # }
   
   desired_count = 1
   enable_execute_command = true
