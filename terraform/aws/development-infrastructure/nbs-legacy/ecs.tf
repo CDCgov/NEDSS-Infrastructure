@@ -60,6 +60,22 @@ resource "aws_iam_role" "ecs_task_role" {
         ]
       })
     }
+
+    inline_policy {
+      name   = "ecs_task_inline_policy_param_store"
+      policy = jsonencode({
+        Version = "2012-10-17",
+        Statement = [
+          {
+            Effect = "Allow",
+            Action = [
+              "ssm:GetParameters"
+            ],
+            Resource = "*"
+          }
+        ]
+      })
+    }
 }
 
 # NBS 6 component ECS Cluster Creation
