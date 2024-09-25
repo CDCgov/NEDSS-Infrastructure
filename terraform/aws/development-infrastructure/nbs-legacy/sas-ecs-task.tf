@@ -57,11 +57,11 @@ resource "aws_ecs_task_definition" "sas_task" {
       secrets = [
         {
           name = "rdb_pass"
-          value = "${var.rdb_pass}"
+          valueFrom = "${aws_ssm_parameter.rdb_secret.arn}"
         },
         {
           name = "odse_pass"
-          value = "${var.odse_pass}"
+          valueFrom = "${aws_ssm_parameter.odse_secret.arn}"
         }
       ]
         logConfiguration = {
@@ -81,6 +81,19 @@ resource "aws_ecs_task_definition" "sas_task" {
       }
     }
   ])
+}
+
+# Secrets to inject into sas container
+resource "aws_ssm_parameter" "odse_secret" {
+  name  = "${var.resource_prefix}-sas/odse_pass"
+  type  = "SecureString"
+  value = "${var.odse_pass}"
+}
+
+resource "aws_ssm_parameter" "rdb_secret" {
+  name  = "${var.resource_prefix}-sas/rdb_pass"
+  type  = "SecureString"
+  value = "${var.rdb_pass}"
 }
 
 # NBS 6 SAS component ECS CloudWatch Group
