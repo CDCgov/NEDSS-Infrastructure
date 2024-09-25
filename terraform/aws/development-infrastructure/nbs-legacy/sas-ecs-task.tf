@@ -85,13 +85,13 @@ resource "aws_ecs_task_definition" "sas_task" {
 
 # Secrets to inject into sas container
 resource "aws_ssm_parameter" "odse_secret" {
-  name  = "${var.resource_prefix}-sas/odse_pass"
+  name  = "/${var.resource_prefix}-sas/odse_pass"
   type  = "SecureString"
   value = "${var.odse_pass}"
 }
 
 resource "aws_ssm_parameter" "rdb_secret" {
-  name  = "${var.resource_prefix}-sas/rdb_pass"
+  name  = "/${var.resource_prefix}-sas/rdb_pass"
   type  = "SecureString"
   value = "${var.rdb_pass}"
 }
