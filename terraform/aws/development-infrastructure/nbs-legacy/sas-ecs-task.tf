@@ -1,3 +1,7 @@
+locals {
+  container_port = 2323
+}
+
 # NBS6 SAS ECS Task Definition
 resource "aws_ecs_task_definition" "sas_task" {
   count = var.deploy_sas ? 1 : 0
@@ -20,8 +24,8 @@ resource "aws_ecs_task_definition" "sas_task" {
       readonlyRootFilesystem = true,
       portMappings = [
         {
-          containerPort = 2323,
-          hostPort      = 2323
+          containerPort = local.container_port,
+          hostPort      = local.container_port
         }
       ],
       environment = [
@@ -81,6 +85,31 @@ resource "aws_ecs_task_definition" "sas_task" {
       }
     }
   ])
+}
+
+# NBS 6 app ECS Service Definition
+# NOTE: enable_execute_command is required to exec in to ecs task
+resource "aws_ecs_service" "sas_service" {
+  count = var.deploy_sas ? 1 : 0
+  name            = "${var.resource_prefix}-sas-ecs-service"
+  cluster         = aws_ecs_cluster.cluster[0].id
+  task_definition = aws_ecs_task_definition.sas_task[0].arn
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets = var.ecs_subnets
+    security_groups = ["${module.app_sg.security_group_id}"]
+  }
+
+  load_balancer {
+    target_group_arn = module.alb.target_group_arns[0]
+    container_name   = "${var.resource_prefix}-sas-task"
+    container_port   = local.container_port
+  }
+  
+  desired_count = 1
+  enable_execute_command = true
+  tags = var.tags  
 }
 
 # Secrets to inject into sas container
