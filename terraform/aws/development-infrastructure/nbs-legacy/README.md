@@ -23,6 +23,7 @@ Below are the available Variables contained within this NBS Legacy module.
 | kms_arn_shared_services_bucket | string |  | KMS key arn used to encrypt shared services within S3 bucket |
 | legacy_resource_prefix | string |  | Legacy resource prefix for resources created by this module |
 | legacy_vpc_id | string |  | Legacy VPC ID |
+| masteretl_cron_schedule | string | 0 0 * * * | Cron schedule for Master ETL process |
 | modern_vpc_id | string |  | Modern VPC ID |
 | nbs_db_dns | string |  | NBS database server dns |
 | private_subnet_ids | list |  | Subnet ID to be used when creating EC2 instance |
