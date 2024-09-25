@@ -9,7 +9,7 @@ resource "aws_ecs_task_definition" "sas_task" {
   cpu                      = "${var.sas_ecs_cpu}"
   memory                   = "${var.sas_ecs_memory}"
   runtime_platform {
-    operating_system_family = " LINUX"
+    operating_system_family = "LINUX"
   }
 
   container_definitions = jsonencode([
