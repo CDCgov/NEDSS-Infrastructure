@@ -235,7 +235,7 @@ variable "sas_ecs_memory" {
 variable "sas_ephemeral_storage" {
   description = "Ephemeral storage in GB for SAS"
   type        = string
-  default = "50"
+  default = "100"
 }
 
 variable "db_trace_on" {
