@@ -47,7 +47,7 @@ resource "aws_ecs_task_definition" "task" {
         interval    = 60,
         timeout     = 5,
         retries     = 5,
-        startPeriod = 60
+        startPeriod = 300
       }
     }
   ])
