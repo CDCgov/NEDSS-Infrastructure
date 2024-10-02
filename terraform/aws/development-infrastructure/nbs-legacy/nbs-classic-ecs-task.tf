@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "task" {
       name  = "${var.resource_prefix}-task",
       image = "${var.docker_image}",
       tags = var.tags,
-      readonlyRootFilesystem = true,
+      readonlyRootFilesystem = false,
       portMappings = [
         {
           containerPort = 7001,
