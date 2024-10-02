@@ -26,7 +26,7 @@ resource "aws_ecs_task_definition" "sas_task" {
       name  = "${var.resource_prefix}-sas-task",
       image = "${var.sas_docker_image}",
       tags = var.tags,
-      readonlyRootFilesystem = true,
+      readonlyRootFilesystem = false,
       portMappings = [
         {
           containerPort = local.container_port,
