@@ -2,11 +2,11 @@ locals {
   private_zone_name = "private-${var.domain_name}"
 }
 
-# Create public hosted zone
+# Conditional logic to handle when modern_vpc_id is null
 module "zones" {
-
   source  = "terraform-aws-modules/route53/aws//modules/zones"
   version = "~> 2.10"
+
   zones = {
     (var.domain_name) = {
       comment = "${var.domain_name}"
@@ -14,16 +14,19 @@ module "zones" {
 
     (local.private_zone_name) = {
       comment = "${local.private_zone_name}"
-      vpc = [
+      vpc = var.modern_vpc_id != null ? [
         {
           vpc_id = var.legacy_vpc_id
         },
         {
           vpc_id = var.modern_vpc_id
-        },
+        }
+      ] : [
+        {
+          vpc_id = var.legacy_vpc_id
+        }
       ]
     }
-
   }
 
   tags = var.tags
@@ -57,3 +60,4 @@ resource "aws_route53_record" "ns_record" {
   depends_on = [module.zones]
 
 }
+

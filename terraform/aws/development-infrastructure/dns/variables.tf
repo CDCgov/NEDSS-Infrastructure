@@ -15,9 +15,11 @@ variable "tags" {
 }
 
 variable "modern_vpc_id" {
-  description = "Modern VPC Id"
+  description = "The ID of the modern VPC. Optional."
   type        = string
+  default     = null
 }
+
 
 variable "legacy_vpc_id" {
   description = "Legacy VPC Id"
@@ -45,3 +47,4 @@ variable "hosted-zone-id" {
   type        = string
   default     = ""
 }
+
