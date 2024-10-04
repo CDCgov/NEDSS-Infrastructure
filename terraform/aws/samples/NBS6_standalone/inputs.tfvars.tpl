@@ -47,7 +47,7 @@ tags = {
 #deploy_on_ecs          = true
 deploy_on_ecs         = false
 deploy_alb_dns_record = true
-docker_image          = "quay.io/us-cdcgov/cdc-nbs-modernization/nbs6:6.0.15.1"
+docker_image          = "quay.io/us-cdcgov/cdc-nbs-modernization/nbs6:6.0.16"
 #docker_image           = "${var.shared_services_accountid}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/cdc-nbs-legacy/nbs6:latest"
 nbs_github_release_tag = "latest"
 
@@ -62,11 +62,11 @@ ec2_key_name           = "cdc-nbs-ec2-EXAMPLE_SITE_NAME"
 # This needs to change for local environment EXAMPLE_CIDR 
 shared_vpc_cidr_block  = "10.1.0.0/16"
 db_instance_type       = "db.m6i.large"
-db_snapshot_identifier = "cdc-nbs-legacy-rds-mssql-60151-20231103"
+db_snapshot_identifier = "cdc-nbs-6-0-16-test"
 route53_url_name       = "app-classic.EXAMPLE_SITE_NAME.nbspreview.com"
 create_cert            = true
 artifacts_bucket_name  = "cdc-nbs-shared-software"
-deployment_package_key = "wildfly-10.0.0.Final-6.0.15.1.zip"
+deployment_package_key = "wildfly-10.0.0.Final-6.0.16.zip"
 # XXX - mossc - is this still used or are we doing something with resource
 # prefix?????
 nbs_db_dns = "nbs-db"
