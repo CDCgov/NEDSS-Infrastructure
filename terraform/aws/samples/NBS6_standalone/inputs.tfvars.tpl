@@ -65,6 +65,8 @@ db_instance_type       = "db.m6i.large"
 db_snapshot_identifier = "cdc-nbs-6-0-16-test"
 route53_url_name       = "app-classic.EXAMPLE_SITE_NAME.nbspreview.com"
 create_cert            = true
+# May want to use a local aws bucket, this could be the same bucket as the
+# terraform backend 
 artifacts_bucket_name  = "cdc-nbs-shared-software"
 deployment_package_key = "wildfly-10.0.0.Final-6.0.16.zip"
 # XXX - mossc - is this still used or are we doing something with resource
