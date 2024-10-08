@@ -7,12 +7,22 @@
 # search for all other EXAMPLE
 #
 
+################################################################
+# Common
+################################################################
+
+
 # Non-module specific variables
 target_account_id = "EXAMPLE_ACCOUNT_ID"
 resource_prefix   = "EXAMPLE_RESOURCE_PREFIX" # highly recommend using snake case for naming (e.g. this-is-snake-case)
 kms_arn_shared_services_bucket = "arn:aws:kms:us-east-1:EXAMPLE_SHARED_SERVICES_ACCOUNT:key/123456-789"
 
 
+################################################################
+# NBS 6 (Classic) 
+################################################################
+
+# Common
 # Legacy Infrastructure (grab all of these from existing environment)
 # VPC Variables
 # legacy-name                   = "cdc-nbs-legacy-vpc"
@@ -80,5 +90,21 @@ sub_domain_name = "EXAMPLE_SITE_NAME"
 external_cidr_blocks = []
 
 ################################################################
+# NBS 7 (Modern) 
+################################################################
 
+# Modernization Infrastructure
+# VPC Variables
+modern-cidr            = "10.OCTET2a.0.0/16"
+modern-azs             = ["us-east-1a", "us-east-1b"]
+modern-private_subnets = ["10.OCTET2a.1.0/24", "10.OCTET2a.3.0/24"]
+modern-public_subnets  = ["10.OCTET2a.2.0/24", "10.OCTET2a.4.0/24"]
 
+# EKS cluster Variables
+eks_instance_type = "m5.large"
+# grab from login screen
+aws_admin_role_name = "AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE"
+
+# S3 buckets
+#fluentbit_bucket_prefix = "EXAMPLE-fluentbit-bucket"
+#fluentbit_bucket_name = "EXAMPLE-fluentbit-logs"
