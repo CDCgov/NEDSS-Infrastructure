@@ -1,0 +1,35 @@
+# Serial: 2024081301
+
+module "prometheus" {
+
+  source           = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/aws-prometheus-grafana?ref=v1.2.14"
+  eks_aws_role_arn = "arn:aws:iam::${var.target_account_id}:role/cdc-terraform-user-cross-account-role"
+
+  # only use this to override for local use
+  # source  = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/aws-prometheus-grafana"
+  # values_file_path                   = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
+
+  # SAMPLES
+  # source                             = "../app-infrastructure/aws-prometheus-grafana"
+  # values_file_path                   = "../app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
+  # eks_aws_role_arn                   = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
+
+  oidc_provider_arn                  = module.eks_nbs.oidc_provider_arn
+  oidc_provider_url                  = module.eks_nbs.cluster_oidc_issuer_url ##### replace(module.eks_nbs.cluster_oidc_issuer_url, "https://", "") #####
+  tags                               = var.tags
+  eks_cluster_endpoint               = module.eks_nbs.eks_cluster_endpoint
+  cluster_certificate_authority_data = module.eks_nbs.cluster_certificate_authority_data
+  eks_cluster_name                   = module.eks_nbs.eks_cluster_name
+  # are the next three functionally replaced or just unused in second
+  # instance of module?
+  # vpc_id             = module.modernization-vpc.vpc_id
+  # private_subnet_ids = module.modernization-vpc.private_subnets
+  # vpc_cidr_block     = module.modernization-vpc.vpc_cidr_block
+
+  # now created if it doesn't exist in prometheus module
+  #namespace_name  = module.eks_nbs.precreated_observability_namespace_name
+  namespace_name = var.observability_namespace_name
+
+  resource_prefix = var.resource_prefix
+  # grafana_workspace_name             = var.grafana_workspace_name
+}
