@@ -1,5 +1,9 @@
 # Serial: 2024081302
 
+#########################################################################################
+# Common Variables
+#########################################################################################
+
 # Account variables
 variable "target_account_id" {
   description = "The AWS account id where resources will be deployed, must have credentials in environment to run terraform"
@@ -66,6 +70,7 @@ variable "target_account_id" {
 
 #########################################################################################
 # Legacy VPC Variables
+#########################################################################################
 # variable "legacy-name" {
 #   description = "A default name for all classic resources, may use resource_prefix instead of this"
 #   type        = string
