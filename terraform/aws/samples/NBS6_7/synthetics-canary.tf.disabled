@@ -1,0 +1,12 @@
+# Serial: 2024081301
+
+module "synthetics-canary" {
+  #source    = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/synthetics-canary?ref=1.2.14" 
+  source = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/synthetics-canary"
+  # for now we are configuring emails manually to avoid adding them to git
+  # or "secrets"
+  #synthetics_canary_email_addresses = var.synthetics_canary_email_addresses 
+  synthetics_canary_url         = var.synthetics_canary_url
+  synthetics_canary_bucket_name = var.synthetics_canary_bucket_name
+  synthetics_canary_create      = var.synthetics_canary_create
+}
