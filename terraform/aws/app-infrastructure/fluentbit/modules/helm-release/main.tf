@@ -5,9 +5,15 @@ locals {
 
 data "aws_caller_identity" "current" {}
 
+resource "aws_cloudwatch_log_group" "fluentbit-logsgroup" {
+  name = "fluent-bit-cloudwatch"
+  retention_in_days = 3
+}
+
 resource "helm_release" "fluentbit" {
   provider = helm
   name       = var.release_name 
+  depends_on = [aws_cloudwatch_log_group.fluentbit-logsgroup]
   repository = var.repository 
   chart      = var.chart 
   values = [
