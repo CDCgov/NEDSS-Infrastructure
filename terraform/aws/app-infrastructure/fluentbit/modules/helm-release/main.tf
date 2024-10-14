@@ -6,8 +6,8 @@ locals {
 data "aws_caller_identity" "current" {}
 
 resource "aws_cloudwatch_log_group" "fluentbit-logsgroup" {
-  name = "fluent-bit-cloudwatch"
-  retention_in_days = 3
+  name = var.fluentbit_cwlogsgroup_name
+  retention_in_days = var.retention_in_days
 }
 
 resource "helm_release" "fluentbit" {
