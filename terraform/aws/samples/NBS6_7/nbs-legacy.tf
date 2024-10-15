@@ -56,7 +56,7 @@ module "nbs-legacy" {
   internal                 = var.load_balancer_internal
 
   ### Only for EC2
-  instance_type = var.instance_type
+  instance_type = var.ec2_instance_type
   ami           = var.ami
   ec2_key_name  = var.ec2_key_name
   #enable_user_data = var.ec2_enable_user_data
@@ -67,8 +67,5 @@ module "nbs-legacy" {
   # modern_vpc_id          = module.modernization-vpc.vpc_id
   # shared_vpc_cidr_block  = var.shared_vpc_cidr_block
   # legacy_resource_prefix = "cdc-nbs-legacy"
-  # ec2_key_name           = var.ec2_key_name
-  # db_instance_type       = var.db_instance_type
-  # db_snapshot_identifier = var.db_snapshot_identifier
   # ignore_tags            = var.ignore_tags
 }
