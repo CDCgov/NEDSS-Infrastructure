@@ -17,56 +17,56 @@ variable "target_account_id" {
 #   type        = string
 # }
 
-# variable "modern-cidr" {
-#   description = "CIDR for modern VPC"
-#   type        = string
-# }
+variable "modern-cidr" {
+  description = "CIDR for modern VPC"
+  type        = string
+}
 
-# variable "modern-azs" {
-#   description = "A list of AZs for modern resources"
-#   type        = list(any)
-# }
+variable "modern-azs" {
+  description = "A list of AZs for modern resources"
+  type        = list(any)
+}
 
-# variable "modern-private_subnets" {
-#   description = "A list of private subnets for modern resources"
-#   type        = list(any)
-# }
+variable "modern-private_subnets" {
+  description = "A list of private subnets for modern resources"
+  type        = list(any)
+}
 
-# variable "modern-public_subnets" {
-#   description = "A list of public subnets for modern resources"
-#   type        = list(any)
-# }
+variable "modern-public_subnets" {
+  description = "A list of public subnets for modern resources"
+  type        = list(any)
+}
 
-# variable "modern-create_igw" {
-#   description = "Create an internet gateway for the modern VPC (true/false)"
-#   type        = bool
-# }
+variable "modern-create_igw" {
+  description = "Create an internet gateway for the modern VPC (true/false)"
+  type        = bool
+}
 
-# variable "modern-enable_nat_gateway" {
-#   description = "enable nat gateway for modern VPC?  (true/false)"
-#   type        = bool
-# }
+variable "modern-enable_nat_gateway" {
+  description = "enable nat gateway for modern VPC?  (true/false)"
+  type        = bool
+}
 
-# # can this be combined with next variable?
-# variable "modern-single_nat_gateway" {
-#   description = "enable single nat gateway for all AZs on modern VPC?  (true/false)"
-#   type        = bool
-# }
+# can this be combined with next variable?
+variable "modern-single_nat_gateway" {
+  description = "enable single nat gateway for all AZs on modern VPC?  (true/false)"
+  type        = bool
+}
 
-# variable "modern-one_nat_gateway_per_az" {
-#   description = "enable one nat gateway per az on modern VPC?  (true/false)"
-#   type        = bool
-# }
+variable "modern-one_nat_gateway_per_az" {
+  description = "enable one nat gateway per az on modern VPC?  (true/false)"
+  type        = bool
+}
 
-# variable "modern-enable_dns_hostnames" {
-#   description = "Enable modern dns hostnames? (true/false) "
-#   type        = bool
-# }
+variable "modern-enable_dns_hostnames" {
+  description = "Enable modern dns hostnames? (true/false) "
+  type        = bool
+}
 
-# variable "modern-enable_dns_support" {
-#   description = "Enable modern dns support? (true/false) "
-#   type        = bool
-# }
+variable "modern-enable_dns_support" {
+  description = "Enable modern dns support? (true/false) "
+  type        = bool
+}
 
 #########################################################################################
 # Legacy VPC Variables
@@ -270,10 +270,10 @@ variable "kms_arn_shared_services_bucket" {
   type        = string
 }
 
-# variable "msk_ebs_volume_size" {
-#   description = "EBS volume size for the MSK broker nodes in GB"
-#   type        = number
-# }
+variable "msk_ebs_volume_size" {
+  description = "EBS volume size for the MSK broker nodes in GB"
+  type        = number
+}
 
 # variable "environment" {
 #   description = "The environment, either 'development' or 'production'"
@@ -293,45 +293,45 @@ variable "resource_prefix" {
 #   default = "cdc-nbs-classic"
 # }
 
-# variable "aws_admin_role_name" {
-#   description = "IAM role name for EKS sso arn"
-#   type        = string
-#   default     = ""
-# }
+variable "aws_admin_role_name" {
+  description = "IAM role name for EKS sso arn"
+  type        = string
+  default     = ""
+}
 
-# variable "sso_admin_role_name" {
-#   description = "IAM role name for EKS sso arn"
-#   type        = string
-#   default     = ""
-# }
+variable "sso_admin_role_name" {
+  description = "IAM role name for EKS sso arn"
+  type        = string
+  default     = ""
+}
 
-# variable "eks_disk_size" {
-#   description = "Size of EKS volumes in GB"
-#   type        = number
-# }
+variable "eks_disk_size" {
+  description = "Size of EKS volumes in GB"
+  type        = number
+}
 
-# variable "eks_instance_type" {
-#   description = "Instance type to use in EKS cluster"
-#   type        = string
-# }
+variable "eks_instance_type" {
+  description = "Instance type to use in EKS cluster"
+  type        = string
+}
 
-# variable "eks_desired_nodes_count" {
-#   description = "Number of EKS nodes desired (default = 3)"
-#   type        = number
-#   default     = 3
-# }
+variable "eks_desired_nodes_count" {
+  description = "Number of EKS nodes desired (default = 3)"
+  type        = number
+  default     = 3
+}
 
-# variable "eks_max_nodes_count" {
-#   description = "Maximum number of EKS nodes (default = 5)"
-#   type        = number
-#   default     = 5
-# }
+variable "eks_max_nodes_count" {
+  description = "Maximum number of EKS nodes (default = 5)"
+  type        = number
+  default     = 5
+}
 
-# variable "eks_min_nodes_count" {
-#   description = "Number of EKS nodes desired (default = 2)"
-#   type        = number
-#   default     = 2
-# }
+variable "eks_min_nodes_count" {
+  description = "Number of EKS nodes desired (default = 2)"
+  type        = number
+  default     = 2
+}
 
 # NS for DNS
 variable "hosted-zone-iam-arn" {
@@ -473,3 +473,15 @@ variable "ec2_enable_user_data" {
   type    = bool
   default = true
 }
+
+
+
+# variable "aws_role_arn" {
+#   description = "AWS IAM Role arn used to authenticate into the EKS cluster"
+#   type        = string
+# }
+
+# variable "sso_role_arn" {
+#   description = "AWS SSO IAM Role arn used to authenticate into the EKS cluster"
+#   type        = string
+# }
