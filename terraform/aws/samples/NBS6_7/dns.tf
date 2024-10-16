@@ -1,4 +1,4 @@
-# Serial: 2024081301
+# Serial: 2024101601
 
 # #locals on whether to create route53 hosted zone
 # locals {
@@ -20,4 +20,5 @@ module "dns" {
   tags                = var.tags
   hosted-zone-iam-arn = var.hosted-zone-iam-arn
   hosted-zone-id      = var.hosted-zone-id
+  # hosted-zone-account = var.hosted-zone-account
 }

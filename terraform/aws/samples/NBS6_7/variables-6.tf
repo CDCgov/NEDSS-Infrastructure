@@ -1,4 +1,4 @@
-# Serial: 2024101504
+# Serial: 2024101601
 
 #########################################################################################
 # Legacy VPC Variables
@@ -8,6 +8,11 @@
 #  type        = string
 #  default     = "cdc-nbs-legacy-vpc"
 #}
+
+# May want to use a local aws bucket, this could be the same bucket as the
+# terraform backend 
+# XXX - mossc - is this still used or are we doing something with resource
+# prefix?????
 
 # this may be unused with latest deployment file updates
 variable "classic_resource_prefix" {
@@ -95,10 +100,13 @@ variable "load_balancer_internal" {
 variable "db_instance_type" {
   description = "Databae instance type"
   type        = string
+  default     = "db.m6i.large"
 }
+
 variable "db_snapshot_identifier" {
-  description = "Database snapshot to use for RDS instance"
+  description = "Database snapshot to use for RDS instance, must match application version"
   type        = string
+  default     = "cdc-nbs-6-0-16-test"
 }
 variable "manage_master_user_password" {
   description = "Set to true to allow RDS to manage the master user password in Secrets Manager"
@@ -113,8 +121,9 @@ variable "ec2_key_name" {
   type        = string
 }
 variable "ami" {
-  description = "AMI for EC2 instance"
+  description = "AMI for EC2 instance, this is stock windows, default AWS us-east1 as of Oct 2024"
   type        = string
+  default     = "ami-093693792d26e4373"
 }
 variable "ec2_instance_type" {
   description = "Instance type for EC2 instance"
@@ -122,8 +131,9 @@ variable "ec2_instance_type" {
   default     = "m5.large"
 }
 variable "deployment_package_key" {
-  description = "Deployment package S3 key for NBS application"
+  description = "Deployment package S3 key for NBS application, must match versioning DB snapshot"
   type        = string
+  default     = "wildfly-10.0.0.Final-6.0.16.zip"
 }
 # we can disable user data if needed
 # WIP
@@ -156,7 +166,7 @@ variable "deploy_alb_dns_record" {
 variable "docker_image" {
   description = "Docker Image for Classic NBS"
   type        = string
-  default     = ""
+  default     = "quay.io/us-cdcgov/cdc-nbs-modernization/nbs6:6.0.16"
 }
 
 variable "nbs_github_release_tag" {
