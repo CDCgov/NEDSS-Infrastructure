@@ -41,14 +41,6 @@ external_cidr_blocks = []
 # Legacy Infrastructure 
 
 # VPC Variables
-# fill these in if integrating with a pre-existing NBS6 install
-# (grab all of these from existing environment)
-# legacy-name                   = "cdc-nbs-legacy-vpc"
-# legacy-vpc-id                     = "vpc-LEGACY-EXAMPLE"
-# legacy_vpc_private_route_table_id = "rtb-PRIVATE-EXAMPLE"
-# legacy_vpc_public_route_table_id  = "rtb-PUBLIC-EXAMPLE"
-
-# if building NBS6 select these instead
 legacy-cidr                       = "10.OCTET2b.0.0/16"
 legacy-azs                    = ["us-east-1a", "us-east-1b"]
 legacy-private_subnets        = ["10.OCTET2b.1.0/24", "10.OCTET2b.3.0/24"]
@@ -69,16 +61,13 @@ tags = {
 ########################
 # Classic RDS
 # Database snapshot to use for RDS instance, must match application version
+# this needs to match the local DNS snapshot name, the snapshot should be
+# created in advance, we suggest the snapshot name match the name from
+# image shared in the original account
 # db_snapshot_identifier = "cdc-nbs-6-0-16-test"
 
 ########################
-# Classic on container
-# deploy_on_ecs          = true
-
-########################
 # Classic EC2 instance
-
-
 ec2_key_name           = "cdc-nbs-ec2-EXAMPLE_SITE_NAME"
 
 # This needs to change for local environment EXAMPLE_CIDR 
@@ -96,6 +85,7 @@ route53_url_name       = "app-classic.EXAMPLE_SITE_NAME.nbspreview.com"
 artifacts_bucket_name  = "EXAMPLE_BUCKET_NAME"
 
 # ec2 classic application, must match Database snapshot version 
+# that was copied into your local <artifacts_bucket_name>/nbs/<fn.zip>
 # deployment_package_key = "wildfly-10.0.0.Final-6.0.16.zip"
 
 ################################################################
@@ -110,6 +100,6 @@ modern-private_subnets = ["10.OCTET2a.1.0/24", "10.OCTET2a.3.0/24"]
 modern-public_subnets  = ["10.OCTET2a.2.0/24", "10.OCTET2a.4.0/24"]
 
 # EKS cluster Variables
-# grab from login screen
+# grab from login screen if using SSO or 
+# aws sts get-caller-identity 
 aws_admin_role_name = "AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE"
-
