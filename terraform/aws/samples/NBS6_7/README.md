@@ -31,9 +31,14 @@ instances from the snapshot independently.
   creating a new database (MS SQL), restoring the DB data into this
 instance (using ms sql tools or aws DMS) THEN taking a snapshot of the data
 
+- create an ec2 key pair for use, reference it in inputs.tfvars
+ec2_key_name           = "cdc-nbs-ec2-EXAMPLE_SITE_NAME"
 
-## After or during the terraform install
-- if hosting top level domain elsewhere add the delegation from the public
+- copy wildfly zip file to <artifacts_bucket_name>/nbs/<filename.zip>
+
+
+## After or during the terraform install - if hosting top level domain
+elsewhere add the delegation from the public
   route53 address to the authoritative servers for the subdomain created
 with terraform, you MAY get an error if it is hosted in an account you
 don't have permissions from the user running terraform
