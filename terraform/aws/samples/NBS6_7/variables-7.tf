@@ -1,4 +1,4 @@
-# Serial: 2024101503
+# Serial: 2024101602
 
 #########################################################################################
 # Modernization VPC Variables
@@ -101,6 +101,7 @@ variable "eks_disk_size" {
 variable "eks_instance_type" {
   description = "Instance type to use in EKS cluster"
   type        = string
+  default     = "m5.large"
 }
 
 variable "eks_desired_nodes_count" {
