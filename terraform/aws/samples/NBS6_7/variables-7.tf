@@ -1,12 +1,13 @@
-# Serial: 2024101502
+# Serial: 2024101503
 
 #########################################################################################
 # Modernization VPC Variables
 #########################################################################################
-variable "modern-name" {
-  description = "A default name for all modern resources, may use resource_prefix instead of this"
-  type        = string
-}
+#variable "modern-name" {
+#  description = "A default name for all modern resources, may use resource_prefix instead of this"
+#  type        = string
+#  default     = "cdc-nbs-modern-vpc"
+#}
 
 variable "modern-cidr" {
   description = "CIDR for modern VPC"
@@ -69,6 +70,7 @@ variable "modern-enable_dns_support" {
 variable "msk_ebs_volume_size" {
   description = "EBS volume size for the MSK broker nodes in GB"
   type        = number
+  default = 20
 }
 variable "environment" {
   description = "The environment, either 'development' or 'production'"
@@ -93,6 +95,7 @@ variable "sso_admin_role_name" {
 variable "eks_disk_size" {
   description = "Size of EKS volumes in GB"
   type        = number
+  default     = "20"
 }
 
 variable "eks_instance_type" {
@@ -172,6 +175,7 @@ variable "create_prometheus_vpc_endpoint" {
 variable "grafana_workspace_name" {
   description = "The name of the Grafana workspace"
   type        = string
+  default     = ""
 }
 
 variable "create_grafana_vpc_endpoint" {
@@ -195,16 +199,20 @@ variable "synthetics_canary_create" {
 variable "synthetics_canary_bucket_name" {
   description = "bucket name for synthetics output"
   type        = string
+  default     = ""
 }
 
 variable "synthetics_canary_url" {
   description = "A URL to use for monitoring alerts"
   type        = string
+  default     = ""
+  # example = "https://app.EXAMPLE_SITE_NAME.nbspreview.com/nbs/login"
 }
 
 #variable "synthetics_canary_email_addresses" {
 #  description = "A list of email addresses to use for monitoring alerts"
 #  type        = list(string)
+#  default     = ""
 #}
 
 # end synthetics variables

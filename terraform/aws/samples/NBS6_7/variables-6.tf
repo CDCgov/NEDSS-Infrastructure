@@ -1,4 +1,4 @@
-# Serial: 2024101503
+# Serial: 2024101504
 
 #########################################################################################
 # Legacy VPC Variables
@@ -40,6 +40,7 @@ variable "legacy-public_subnets" {
 variable "legacy-create_igw" {
   description = "Create an internet gateway for the classic VPC (true/false)"
   type        = bool
+  default     = true
 }
 
 variable "legacy-enable_nat_gateway" {
