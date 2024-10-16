@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # Description:
 # This script automates the collection of information prior to running
 # terraform in the 
