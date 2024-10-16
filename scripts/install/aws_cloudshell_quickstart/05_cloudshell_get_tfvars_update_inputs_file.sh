@@ -1,5 +1,131 @@
 #!/bin/bash
 
+# Description:
+# This script automates the collection of information prior to running
+# terraform in the 
+# installation directory through flags or prompts. Features include saving defaults,
+# debug logging, step-by-step execution, a test mode, and preliminary access checks
+# for AWS account. 
+
+# Default values
+INSTALL_DIR_DEFAULT=~/nbs_install
+DEFAULTS_FILE="nbs_defaults.sh"
+DEBUG=1
+STEP=0
+NOOP=0
+PROMPT_CLASSIC=0
+
+# Function to log debug messages
+log_debug() {
+    [[ $DEBUG_MODE -eq 1 ]] && echo "DEBUG: $*"
+}
+
+# Function to pause for step mode
+step_pause() {
+    [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
+}
+
+# Function for preliminary AWS access checks
+preliminary_checks() {
+    if ! aws sts get-caller-identity >/dev/null 2>&1; then
+        echo "AWS access check failed. Ensure your AWS CLI is configured correctly."
+        exit 1
+    else
+        log_debug "AWS access check passed."
+    fi
+}
+
+# Load defaults if available
+if [ -f "$DEFAULTS_FILE" ]; then
+    source "$DEFAULTS_FILE"
+else
+    echo "${DEFAULTS_FILE} not found. Using script defaults."
+fi
+
+update_defaults() {
+    local var_name=$1
+    local var_value=$2
+    if grep -q "^${var_name}_DEFAULT=" "${DEFAULTS_FILE}"; then
+        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
+    else
+        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
+    fi
+}
+
+
+# Function to show usage
+usage() {
+    echo "Usage: $0 [-h] [-d INSTALL_DIR] [-c] [-g] [-s] [-t]"
+    echo "  -h  Show this help message."
+    echo "  -c  prompt for classic NBS6 values instead of assuming preexisting (default: ${PROMPT_CLASSIC})."
+    echo "  -d  Specify installation directory (default: ${INSTALL_DIR_DEFAULT})."
+    echo "  -g  Enable debug mode."
+    echo "  -s  Enable step-by-step execution."
+    echo "  -t  Test mode (no operations performed)."
+    exit 1
+}
+
+execute_command() {
+    local cmd=$1
+    if [ $DEBUG -eq 1 ] || [ $NOOP -eq 1 ]; then
+        echo "Command: $cmd"
+    fi
+    if [ $STEP -eq 1 ]; then
+        read -p "Press enter to continue..."
+    fi
+    if [ $NOOP -eq 0 ]; then
+        eval $cmd
+    else
+        echo "No-Op: Command not executed."
+    fi
+}
+
+
+# Parse options
+while getopts "hcd:gst" opt; do
+    case ${opt} in
+        h)
+            usage
+            ;;
+        c)
+            PROMPT_CLASSIC=1
+            ;;
+        d)
+            INSTALL_DIR="$OPTARG"
+            ;;
+        g)
+            DEBUG=1
+            ;;
+        s)
+            STEP=1
+            ;;
+        t)
+            NOOP=1
+            ;;
+        \?)
+            echo "Invalid option: $OPTARG" 1>&2
+            usage
+            ;;
+        :)
+            echo "Invalid option: $OPTARG requires an argument" 1>&2
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+# Preliminary Access Checks
+#if [ $NOOP -eq 0 ]; then
+    if ! execute_command "aws sts get-caller-identity > /dev/null"; then
+        echo "Error verifying AWS access."
+        exit 1
+    fi
+
+
+
+
+
 select_vpc() {
     mapfile -t vpcs < <(aws ec2 describe-vpcs --query 'Vpcs[].[VpcId, Tags[?Key==`Name`].Value | [0]]' --output text | awk '{print $1 " (" $2 ")"}')
     
@@ -86,21 +212,30 @@ select_subnet_octet() {
 
 
 # Example calls and setting return results to appropriate variables
-# grab some stuff from existing environment
-echo "pick the existing vpc that contains the classic application server(vpc peering will be setup between this vpc and modern vpc)"
-LEGACY_VPC_ID=$(select_vpc)
-echo "pick private route table"
-PRIVATE_ROUTE_TABLE_ID=$(select_route_table)
-echo "pick public route table"
-PUBLIC_ROUTE_TABLE_ID=$(select_route_table)
-echo "pick the existing CIDR block that contains the classic application server(routing will be setup between this CIDR and modern CIDR)"
-LEGACY_CIDR_BLOCK=$(select_cidr $LEGACY_VPC_ID)
-echo "LEGACY_CIDR_BLOCK = $LEGACY_CIDR_BLOCK"
+if [ ${PROMPT_CLASSIC} -eq 0 ]
+then
+    # grab some stuff from existing environment
+    echo "pick the existing vpc that contains the classic application server(vpc peering will be setup between this vpc and modern vpc)"
+    LEGACY_VPC_ID=$(select_vpc)
+    echo "pick private route table"
+    PRIVATE_ROUTE_TABLE_ID=$(select_route_table)
+    echo "pick public route table"
+    PUBLIC_ROUTE_TABLE_ID=$(select_route_table)
+    echo "pick the existing CIDR block that contains the classic application server(routing will be setup between this CIDR and modern CIDR)"
+    LEGACY_CIDR_BLOCK=$(select_cidr $LEGACY_VPC_ID)
+    echo "LEGACY_CIDR_BLOCK = $LEGACY_CIDR_BLOCK"
+    echo "select second octet for legacy CIDR, this assumes a /16 etc"
+    OCTET2b=$(select_subnet_octet)
+    # this is legacy octet
+
+else
+    read -p "Please enter the classic octet value for new vpc 10.x.0.0/16: " OCTET2b
+    read -p "need to prompt for other classic VPC info here, hit return to continue" junk
+fi
+
 echo "select an existing bucket for artifacts???"
 BUCKET_NAME=$(select_s3_bucket)
-# this is legacy octet
-echo "select second octet for legacy CIDR, this assumes a /16 etc"
-OCTET2b=$(select_subnet_octet)
+
 
 # prompt for remaining info
 #  SITE_NAME and EXAMPLE_DOMAIN
@@ -118,9 +253,16 @@ INPUTS_FILE=inputs.tfvars
 NEW_INPUTS_FILE=inputs.tfvars.new
 # Displaying the results
 
-echo LEGACY_VPC_ID=${LEGACY_VPC_ID}
-echo PRIVATE_ROUTE_TABLE_ID=${PRIVATE_ROUTE_TABLE_ID}
-echo PUBLIC_ROUTE_TABLE_ID=${PUBLIC_ROUTE_TABLE_ID}
+if [ ${PROMPT_CLASSIC} -eq 0 ]
+then
+    echo LEGACY_VPC_ID=${LEGACY_VPC_ID}
+    echo PRIVATE_ROUTE_TABLE_ID=${PRIVATE_ROUTE_TABLE_ID}
+    echo PUBLIC_ROUTE_TABLE_ID=${PUBLIC_ROUTE_TABLE_ID}
+else
+    read -p "need to save other values for classic VPC info here, hit return to continue" junk
+fi
+
+
 echo OCTET2a=${OCTET2a}
 echo OCTET2b=${OCTET2b}
 echo LEGACY_CIDR_BLOCK=${LEGACY_CIDR_BLOCK}
@@ -144,6 +286,7 @@ sed  --in-place "s?EXAMPLE_LEGACY_CIDR_BLOCK?${LEGACY_CIDR_BLOCK}?" ${NEW_INPUTS
 sed  --in-place "s/EXAMPLE_BUCKET_NAME/${BUCKET_NAME}/"  ${NEW_INPUTS_FILE}
 #sed  --in-place "s/EXAMPLE_OCTET2shared/${OCTET2shared}/g"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_ENVIRONMENT/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/EXAMPLE_SITE_NAME/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_ACCOUNT_ID/${TMP_ACCOUNT_ID}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE}/"  ${NEW_INPUTS_FILE}

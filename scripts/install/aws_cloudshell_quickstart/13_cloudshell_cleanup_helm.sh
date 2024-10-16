@@ -1,6 +1,4 @@
 #!/bin/bash
-#HELM_VER=v7.5.0
-#exit 1
 INSTALL_DIR=~/nbs_install
 DEBUG=1
 STEP=1

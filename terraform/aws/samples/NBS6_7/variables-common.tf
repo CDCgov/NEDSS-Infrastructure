@@ -1,9 +1,10 @@
-# Serial: 2024101502
+# Serial: 2024101602
 
 #########################################################################################
 # Common Variables
 #########################################################################################
 # Account variables
+
 variable "target_account_id" {
   description = "The AWS account id where resources will be deployed, must have credentials in environment to run terraform"
   type        = string
@@ -23,6 +24,7 @@ variable "route53_url_name" {
 variable "create_cert" {
   description = "Do you want to create a public AWS Certificate (if false, must provide certificate ARN)."
   type        = bool
+  default     = true
 }
 
 variable "certificate_arn" {
@@ -60,9 +62,18 @@ variable "hosted-zone-id" {
   type        = string
 }
 
-variable "artifacts_bucket_name" {
-  description = "S3 bucket name used to store build artifacts"
+# only use this if you are hosting DNS within this account OR have cross
+# account access to the account which is authoritative for domain
+variable "hosted-zone-account" {
+  description = "Hosted Zone account ID for the AWS hosted zone where the domain is registered."
   type        = string
+  default     = ""
+}
+
+variable "artifacts_bucket_name" {
+  description = "S3 bucket name used to store build artifacts, this must be in your local account or shared"
+  type        = string
+  #default     = "cdc-nbs-shared-software"
 }
 
 variable "resource_prefix" {
@@ -89,6 +100,7 @@ variable "kms_arn_shared_services_bucket" {
 variable "nbs_db_dns" {
   description = "NBS database server DNS"
   type        = string
+  default     = "nbs-db"
 }
 
 # cmoss - not sure if this is used by both ECS and modern?
