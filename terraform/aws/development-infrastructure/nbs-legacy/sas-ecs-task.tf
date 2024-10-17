@@ -71,6 +71,10 @@ resource "aws_ecs_task_definition" "sas_task" {
         {
           name = "odse_pass"
           valueFrom = "${aws_ssm_parameter.odse_secret.arn}"
+        },
+        {
+          name = "sas_user_pass"
+          valueFrom = "${aws_ssm_parameter.sas_user_pass.arn}"
         }
       ]
         logConfiguration = {
@@ -128,6 +132,12 @@ resource "aws_ssm_parameter" "rdb_secret" {
   name  = "/${var.resource_prefix}-sas/rdb_pass"
   type  = "SecureString"
   value = "${var.rdb_pass}"
+}
+
+resource "aws_ssm_parameter" "sas_user_pass" {
+  name  = "/${var.resource_prefix}-sas/sas_user_pass"
+  type  = "SecureString"
+  value = "${var.sas_user_pass}"
 }
 
 # NBS 6 SAS component ECS CloudWatch Group
