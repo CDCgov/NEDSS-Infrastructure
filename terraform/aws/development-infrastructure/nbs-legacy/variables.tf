@@ -207,12 +207,12 @@ variable "internal" {
   default     = null
 }
 
-# SAS specific variables 
-variable "deploy_sas" {
-  description = "(true/false) Deploy SAS task? Will create ECS cluster if not existing?"
-  type = bool
-  default = false  
-}
+# SAS specific variables (SAS will always be deployed)
+# variable "deploy_sas" {
+#   description = "(true/false) Deploy SAS task? Will create ECS cluster if not existing?"
+#   type = bool
+#   default = false  
+# }
 
 variable "sas_docker_image" {
   description = "Repository plus image tag for SAS container"

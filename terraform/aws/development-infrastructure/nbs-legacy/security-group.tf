@@ -72,3 +72,15 @@ resource "aws_vpc_security_group_ingress_rule" "rdp" {
   to_port     = 3389
   description = "RDP access"
 }
+
+# Allow access on all ports for resources with this security group.
+resource "aws_vpc_security_group_ingress_rule" "sas_rule" {
+  for_each = toset(var.nbs6_rdp_cidr_block)
+  security_group_id = module.app_sg.security_group_id
+
+  referenced_security_group_id = module.app_sg.security_group_id
+  from_port   = 0
+  ip_protocol = "tcp"
+  to_port     = 65535
+  description = "NBS-SAS communication"
+}

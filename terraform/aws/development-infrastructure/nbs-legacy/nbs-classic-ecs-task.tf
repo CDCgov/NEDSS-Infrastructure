@@ -4,8 +4,8 @@ resource "aws_ecs_task_definition" "task" {
   family                   = "${var.resource_prefix}-task-definition"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn       = aws_iam_role.ecs_execution_role[0].arn
-  task_role_arn            = aws_iam_role.ecs_task_role[0].arn
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
   cpu                      = "${var.ecs_cpu}"
   memory                   = "${var.ecs_memory}"
   runtime_platform {
@@ -59,7 +59,7 @@ resource "aws_ecs_task_definition" "task" {
 resource "aws_ecs_service" "service" {
   count = var.deploy_on_ecs ? 1 : 0
   name            = "${var.resource_prefix}-app-ecs-service"
-  cluster         = aws_ecs_cluster.cluster[0].id
+  cluster         = aws_ecs_cluster.cluster.id
   task_definition = aws_ecs_task_definition.task[0].arn
   launch_type     = "FARGATE"
 

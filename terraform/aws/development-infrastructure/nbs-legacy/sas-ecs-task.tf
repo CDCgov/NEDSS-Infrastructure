@@ -4,12 +4,11 @@ locals {
 
 # NBS6 SAS ECS Task Definition
 resource "aws_ecs_task_definition" "sas_task" {
-  count = var.deploy_sas ? 1 : 0
   family                   = "${var.resource_prefix}-sas-task-definition"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn       = aws_iam_role.ecs_execution_role[0].arn
-  task_role_arn            = aws_iam_role.ecs_task_role[0].arn
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
   cpu                      = "${var.sas_ecs_cpu}"
   memory                   = "${var.sas_ecs_memory}"
   
@@ -80,7 +79,7 @@ resource "aws_ecs_task_definition" "sas_task" {
         logConfiguration = {
             logDriver = "awslogs",
             options = {
-            awslogs-group         = aws_cloudwatch_log_group.sas_log_group[0].name,
+            awslogs-group         = aws_cloudwatch_log_group.sas_log_group.name,
             awslogs-region        = data.aws_region.current.name,
             awslogs-stream-prefix = "ecs"
             }
@@ -99,10 +98,9 @@ resource "aws_ecs_task_definition" "sas_task" {
 # NBS 6 app ECS Service Definition
 # NOTE: enable_execute_command is required to exec in to ecs task
 resource "aws_ecs_service" "sas_service" {
-  count = var.deploy_sas ? 1 : 0
   name            = "${var.resource_prefix}-sas-ecs-service"
-  cluster         = aws_ecs_cluster.cluster[0].id
-  task_definition = aws_ecs_task_definition.sas_task[0].arn
+  cluster         = aws_ecs_cluster.cluster.id
+  task_definition = aws_ecs_task_definition.sas_task.arn
   launch_type     = "FARGATE"
 
   network_configuration {
@@ -142,6 +140,5 @@ resource "aws_ssm_parameter" "sas_user_pass" {
 
 # NBS 6 SAS component ECS CloudWatch Group
 resource "aws_cloudwatch_log_group" "sas_log_group" {
-  count = var.deploy_sas ? 1 : 0
   name = "/ecs/${var.resource_prefix}-sas-task"
 }

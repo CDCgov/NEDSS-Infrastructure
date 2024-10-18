@@ -2,7 +2,6 @@ data "aws_region" "current" {}
 
 # ECS Service Execution Role
 resource "aws_iam_role" "ecs_execution_role" {
-  count = var.deploy_on_ecs || var.deploy_sas ? 1 : 0
   name = "${var.resource_prefix}-ecs-execution-role"
 
   assume_role_policy = jsonencode({
@@ -42,7 +41,6 @@ resource "aws_iam_role" "ecs_execution_role" {
 # ECS Task Role
 # NOTE: inline_policy is required to allow SSM access in ECS container. This can be further restricted if required.
 resource "aws_iam_role" "ecs_task_role" {
-  count = var.deploy_on_ecs || var.deploy_sas ? 1 : 0
   name = "${var.resource_prefix}-ecs-task-role"
 
   assume_role_policy = jsonencode({
@@ -80,8 +78,7 @@ resource "aws_iam_role" "ecs_task_role" {
 
 # NBS 6 component ECS Cluster Creation
 resource "aws_ecs_cluster" "cluster" {
-  count = var.deploy_on_ecs || var.deploy_sas ? 1 : 0
-  name = "${var.resource_prefix}-app-ecs-cluster"
+  name = "${var.resource_prefix}-ecs-cluster"
   tags = var.tags
 }
 
