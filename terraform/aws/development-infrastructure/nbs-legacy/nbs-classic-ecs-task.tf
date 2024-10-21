@@ -46,7 +46,7 @@ resource "aws_ecs_task_definition" "task" {
         command     = ["CMD-SHELL", "curl -f http://localhost:7001/nbs/login || exit 1"],
         interval    = 60,
         timeout     = 5,
-        retries     = 5,
+        retries     = 5,        
         startPeriod = 300
       }
     }
