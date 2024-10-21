@@ -50,9 +50,35 @@ resource "azurerm_container_group" "aci" {
       DATABASE_ENDPOINT = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
       GITHUB_RELEASE_TAG = var.aci_github_release_tag
     }
-
   }
 
+  container {
+    name   = "${var.resource_prefix}-sas-container"
+    image  = var.aci_sas_repository
+    cpu    = var.aci_sas_cpu
+    memory = var.aci_sas_memory
+    ports {
+      port     = 2323
+      protocol = "TCP"
+    }
+
+    environment_variables = {
+      db_host = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
+      rdb_user = var.aci_github_release_tag
+      odse_user = 
+      db_trace_on =
+      update_database = 
+      PHCMartETL_cron_schedule =
+      MasterEtl_cron_schedule = 
+    }
+
+    secure_environment_variables = {
+
+      rdb_pass = var.rdb_pass
+      rdb_pass = var.odse_pass
+
+    }
+  }
 
   diagnostics {
     log_analytics {
