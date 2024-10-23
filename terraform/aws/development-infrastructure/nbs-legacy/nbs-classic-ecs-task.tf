@@ -24,15 +24,15 @@ resource "aws_ecs_task_definition" "task" {
           containerPort = 7001
         },
         {
-          containerPortRange= "51681-65535"
-          # containerPort = 7001,
-          # hostPort      = 7001         
-        },
-        {
-          containerPortRange= "49152-51681"
+          containerPortRange= "51700-51800"
           # containerPort = 7001,
           # hostPort      = 7001         
         }
+        # {
+        #   containerPortRange= "49152-51677"
+        #   # containerPort = 7001,
+        #   # hostPort      = 7001         
+        # }
       ],
       environment = [
         {
