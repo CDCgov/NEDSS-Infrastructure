@@ -1,4 +1,4 @@
-# Serial: 2024101601
+# Serial: 2024102301
 
 #########################################################################################
 # Legacy VPC Variables
@@ -106,7 +106,8 @@ variable "db_instance_type" {
 variable "db_snapshot_identifier" {
   description = "Database snapshot to use for RDS instance, must match application version"
   type        = string
-  default     = "cdc-nbs-6-0-16-test"
+  #default     = "cdc-nbs-6-0-16-test"
+  default     = "cdc-nbs-legacy-rds-mssql-60161-2024-10-22-nokc"
 }
 variable "manage_master_user_password" {
   description = "Set to true to allow RDS to manage the master user password in Secrets Manager"
