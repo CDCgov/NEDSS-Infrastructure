@@ -20,11 +20,11 @@ resource "aws_ecs_task_definition" "task" {
       readonlyRootFilesystem = false,
       containerPortRange = 1
       portMappings = [
+        # {
+        #   containerPort = 7001
+        # },
         {
-          containerPort = 7001
-        },
-        {
-          containerPortRange= "51700-51788"
+          containerPortRange= "6950-7050"
           # containerPort = 7001,
           # hostPort      = 7001         
         }
