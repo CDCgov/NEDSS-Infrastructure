@@ -4,7 +4,8 @@
 ACCT_NUM=0000000
 
 # modify this for each release or prompt and save to rc file
-INFRA_VER=v1.2.18
+INFRA_VER=v1.2.19
+SAMPLE_DIR=NBS7_standard
 
 #INSTALL_DIR=nbs_install
 INSTALL_DIR=./nbs_install
@@ -31,7 +32,7 @@ read TMP_SITE_NAME
 #cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
 
 #cd NEDSS-Infrastructure-1.0.0-prerelease/terraform/aws
-cd nbs-infrastructure-${INFRA_VER}/
+cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/
 
 if [ -d  ${TMP_SITE_NAME} ]
 then
@@ -41,10 +42,11 @@ then
 else
 	#cp -pr samples/NBS7_standard ${TMP_SITE_NAME}
 	#cp -pr terraform/aws/samples/NBS7_standard ${TMP_SITE_NAME}
-	cp -pr terraform/aws/samples/NBS7_standard terraform/aws/${TMP_SITE_NAME}
+	cp -pr terraform/aws/samples/${SAMPLE_DIR} terraform/aws/${TMP_SITE_NAME}
+	#cp -pr terraform/aws/samples/${SAMPLE_DIR} ${INSTALL_DIR}/${TMP_SITE_NAME}
 fi
 
-cd terraform/aws/${TMP_SITE_NAME}
+cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${TMP_SITE_NAME}
 
 # 
 # cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
@@ -72,6 +74,15 @@ echo "for s3 backend, choose a local bucket (precreated) probably with versionin
 echo hit return to continue
 read junk
 
+
+# backup existing terraform.tf file
+# should eventually use date instead of "save"
+if [ -f terraform.tf ]
+then
+    cp -p terraform.tf terraform.tf.save
+fi
+
+cp -p terraform.tf.tpl terraform.tf
 vi terraform.tf
 
 # echo "now need to hand edit terraform.tfvars before running next script"
