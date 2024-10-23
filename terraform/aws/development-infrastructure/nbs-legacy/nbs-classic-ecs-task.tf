@@ -21,7 +21,15 @@ resource "aws_ecs_task_definition" "task" {
       containerPortRange = 1
       portMappings = [
         {
-          containerPortRange= "1-65535"
+          containerPort = 7001
+        },
+        {
+          containerPortRange= "51681-65535"
+          # containerPort = 7001,
+          # hostPort      = 7001         
+        },
+        {
+          containerPortRange= "49152-51681"
           # containerPort = 7001,
           # hostPort      = 7001         
         }
