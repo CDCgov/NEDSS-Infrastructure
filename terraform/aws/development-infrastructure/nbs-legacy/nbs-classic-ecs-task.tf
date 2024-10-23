@@ -18,10 +18,12 @@ resource "aws_ecs_task_definition" "task" {
       image = "${var.docker_image}",
       tags = var.tags,
       readonlyRootFilesystem = false,
+      containerPortRange = 1
       portMappings = [
         {
           containerPort = 7001,
-          hostPort      = 7001
+          hostPort      = 7001,
+          containerPortRange ="7002-65535"
         }
       ],
       environment = [
