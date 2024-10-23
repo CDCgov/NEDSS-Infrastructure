@@ -25,7 +25,7 @@ resource "aws_ecs_task_definition" "task" {
           hostPort      = 7001         
         },
         {
-            containerPortRange= "1-65535",
+            containerPortRange= "7002-65535",
             protocol = "tcp"
         }
       ],
