@@ -8,12 +8,18 @@
 # for AWS account. 
 
 # Default values
+#INSTALL_DIR=~/nbs_install
+INFRA_VER=v1.2.19
+# is this needed?
 INSTALL_DIR_DEFAULT=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
+#DEFAULTS_FILE=${INSTALL_DIR_DEFAULT}/nbs_defaults.sh
 DEBUG=1
 STEP=0
 NOOP=0
 PROMPT_CLASSIC=0
+INPUTS_FILE_TEMPLATE=inputs.tfvars.tpl
+NEW_INPUTS_FILE=inputs.tfvars
 
 # Function to log debug messages
 log_debug() {
@@ -35,6 +41,8 @@ preliminary_checks() {
     fi
 }
 
+#cd ${INSTALL_DIR}/terraform/aws/${TMP_SITE_NAME}
+# cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${TMP_SITE_NAME}
 # Load defaults if available
 if [ -f "$DEFAULTS_FILE" ]; then
     source "$DEFAULTS_FILE"
@@ -217,9 +225,9 @@ then
     # grab some stuff from existing environment
     echo "pick the existing vpc that contains the classic application server(vpc peering will be setup between this vpc and modern vpc)"
     LEGACY_VPC_ID=$(select_vpc)
-    echo "pick private route table"
+    echo "pick classic private route table"
     PRIVATE_ROUTE_TABLE_ID=$(select_route_table)
-    echo "pick public route table"
+    echo "pick classic public route table"
     PUBLIC_ROUTE_TABLE_ID=$(select_route_table)
     echo "pick the existing CIDR block that contains the classic application server(routing will be setup between this CIDR and modern CIDR)"
     LEGACY_CIDR_BLOCK=$(select_cidr $LEGACY_VPC_ID)
@@ -249,8 +257,8 @@ TMP_ACCOUNT_ID=$(aws sts get-caller-identity | grep Arn | awk -F':' '{print $6}'
 TMP_ROLE=$(aws sts get-caller-identity | grep Arn | awk -F':' '{print $7}' | awk -F'/' '{print $2}')
 
 
-INPUTS_FILE=inputs.tfvars
-NEW_INPUTS_FILE=inputs.tfvars.new
+#INPUTS_FILE=inputs.tfvars
+#NEW_INPUTS_FILE=inputs.tfvars.new
 # Displaying the results
 
 if [ ${PROMPT_CLASSIC} -eq 0 ]
@@ -275,7 +283,19 @@ echo TMP_ROLE=${TMP_ROLE}
 
 read -p "Hit return to update ${INPUTS_FILE}"
 
-cp -p ${INPUTS_FILE}  ${NEW_INPUTS_FILE}
+#cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${TMP_SITE_NAME}
+cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${SITE_NAME}
+
+if [ $DEBUG -eq 1 ] ; then
+        echo "running cp -p ${INPUTS_FILE}  ${NEW_INPUTS_FILE} from `pwd`"
+fi
+if [ -f ${NEW_INPUTS_FILE} ]
+then
+    cp -p ${NEW_INPUTS_FILE}  ${NEW_INPUTS_FILE}.save
+fi 
+
+cp -p ${INPUTS_FILE_TEMPLATE}  ${NEW_INPUTS_FILE}
+
 sed  --in-place "s/vpc-LEGACY-EXAMPLE/${LEGACY_VPC_ID}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/rtb-PRIVATE-EXAMPLE/${PRIVATE_ROUTE_TABLE_ID}/" ${NEW_INPUTS_FILE}
 sed  --in-place "s/rtb-PUBLIC-EXAMPLE/${PUBLIC_ROUTE_TABLE_ID}/" ${NEW_INPUTS_FILE}

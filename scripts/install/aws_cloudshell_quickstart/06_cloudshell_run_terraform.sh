@@ -1,11 +1,12 @@
 #!/bin/bash
 
 # this needs to be changed with each release or prompted and saved
-INFRA_VER=v1.2.18
-echo "change line 4 and run again"
-exit 1
+INFRA_VER=v1.2.19
+#echo "change line 4 and run again"
+#exit 1
 
-INSTALL_DIR=nbs_install
+#INSTALL_DIR=~/nbs_install
+INSTALL_DIR=.
 DEFAULTS_FILE="./nbs_defaults.sh"
 
 # Function to load saved defaults
@@ -19,7 +20,8 @@ load_defaults() {
 }
 load_defaults; 
 
-cd ~/${INSTALL_DIR}
+#cd ~/${INSTALL_DIR}
+#cd ${INSTALL_DIR}
 
 rm *.zip
 echo "what is the site name"
@@ -29,7 +31,14 @@ cd nbs-infrastructure-${INFRA_VER}/
 
 echo " not running cp samples/NBS6_standard ${TMP_SITE_NAME}"
 
-cd ${TMP_SITE_NAME}
+#cd ${TMP_SITE_NAME}
+if [ $DEBUG -eq 1 ] ; then
+        echo "running cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${SITE_NAME}"
+        echo "or running cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${TMP_SITE_NAME}"
+fi
+
+cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${SITE_NAME}
+cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${TMP_SITE_NAME}
 
 echo " this is where we need to add another script to fill out inputs.tfvars"
 echo " we should also check that the VPC id for classic is correct as well as the route tables ids"
