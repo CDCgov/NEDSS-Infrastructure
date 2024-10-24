@@ -20,33 +20,50 @@ load_defaults() {
         echo "NOTICE: $DEFAULTS_FILE does not exist"
     fi
 }
+
+# Function to update defaults file
+update_defaults() {
+    local var_name=$1
+    local var_value=$2
+    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
+        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
+    else
+        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
+    fi
+}
+
 load_defaults; 
 
 #cd ~/${INSTALL_DIR}
 cd ${INSTALL_DIR}
 rm *.zip
 
-echo "what is the site name"
-read TMP_SITE_NAME
+# Prompts for additional information
+read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
+# read -p "Enter Image Name [$IMAGE_NAME_DEFAULT]: " IMAGE_NAME && IMAGE_NAME=${IMAGE_NAME:-$IMAGE_NAME_DEFAULT}
+update_defaults "SITE_NAME" "$SITE_NAME"
+
+#echo "what is the site name"
+#read TMP_SITE_NAME
 
 #cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
 
 #cd NEDSS-Infrastructure-1.0.0-prerelease/terraform/aws
 cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/
 
-if [ -d  ${TMP_SITE_NAME} ]
+if [ -d  ${SITE_NAME} ]
 then
-	echo "INFO:  ${TMP_SITE_NAME} already exists"
-	#echo "INFO:  ${TMP_SITE_NAME} already exists, exiting"
+	echo "INFO:  ${SITE_NAME} already exists"
+	#echo "INFO:  ${SITE_NAME} already exists, exiting"
 	#exit 1
 else
-	#cp -pr samples/NBS7_standard ${TMP_SITE_NAME}
-	#cp -pr terraform/aws/samples/NBS7_standard ${TMP_SITE_NAME}
-	cp -pr terraform/aws/samples/${SAMPLE_DIR} terraform/aws/${TMP_SITE_NAME}
-	#cp -pr terraform/aws/samples/${SAMPLE_DIR} ${INSTALL_DIR}/${TMP_SITE_NAME}
+	#cp -pr samples/NBS7_standard ${SITE_NAME}
+	#cp -pr terraform/aws/samples/NBS7_standard ${SITE_NAME}
+	cp -pr terraform/aws/samples/${SAMPLE_DIR} terraform/aws/${SITE_NAME}
+	#cp -pr terraform/aws/samples/${SAMPLE_DIR} ${INSTALL_DIR}/${SITE_NAME}
 fi
 
-cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${TMP_SITE_NAME}
+cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${SITE_NAME}
 
 # 
 # cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
