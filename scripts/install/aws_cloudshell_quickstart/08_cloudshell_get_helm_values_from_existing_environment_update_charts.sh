@@ -241,6 +241,9 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_SFTP_HOST/${SFTP_HOST}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_USER/${SFTP_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_PASS/${SFTP_PASS}/" "$new_file_path"
+    sed -i "s?EXAMPLE_TOKEN_SECRET?${TOKEN_SECRET}?" "$new_file_path"
+    sed -i "s?EXAMPLE_PARAMETER_SECRET?${PARAMETER_SECRET}?" "$new_file_path"
+
 
     # Add more sed commands as needed for other placeholders
     #sed -i "s/EXAMPLE_XXX/${XXX}/" "$new_file_path"
@@ -282,6 +285,12 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     update_defaults "MSK_CLUSTER_ARN" "$MSK_CLUSTER_ARN"
     update_defaults "MSK_CLUSTER_NAME" "$MSK_CLUSTER_NAME"
     update_defaults "MSK_KAFKA_ENDPOINT" "$MSK_KAFKA_ENDPOINT"
+
+    echo "generating secrets with openssl"
+    TOKEN_SECRET=$(openssl rand -base64 64 | tr -d '\n')
+    PARAMETER_SECRET=$(openssl rand -base64 32 | cut -c1-32) 
+    update_defaults "TOKEN_SECRET" "$TOKEN_SECRET"
+    update_defaults "PARAMETER_SECRET" "$PARAMETER_SECRET"
 
     # Prompt for missing values with defaults
     read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver

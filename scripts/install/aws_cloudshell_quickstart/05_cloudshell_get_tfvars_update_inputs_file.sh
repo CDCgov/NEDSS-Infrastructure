@@ -246,12 +246,27 @@ BUCKET_NAME=$(select_s3_bucket)
 
 
 # prompt for remaining info
-#  SITE_NAME and EXAMPLE_DOMAIN
+#  SITE_NAME and EXAMPLE_DOMAIN_NAME
 #  # OCTET2a, OCTET2b, OCTET2shared
-read -p "Please enter the site name e.g. fts3: " SITE_NAME
-read -p "Please enter domain name  e.g. nbspreview.com : " EXAMPLE_DOMAIN
+# Prompts for additional information
+
+read -p "Please enter the site name e.g. fts3 [${SITE_NAME_DEFAULT}]: " SITE_NAME && SITE_NAME=${SITE_NAME:-$SITE_NAME_DEFAULT}
+update_defaults "SITE_NAME" "$SITE_NAME"
+#read -p "Please enter the site name e.g. fts3: " SITE_NAME
+
+read -p "Please enter the domain name e.g. nbspreview.com [${EXAMPLE_DOMAIN_NAME_DEFAULT}]: " EXAMPLE_DOMAIN_NAME && EXAMPLE_DOMAIN_NAME=${EXAMPLE_DOMAIN_NAME:-$EXAMPLE_DOMAIN_NAME_DEFAULT}
+update_defaults "EXAMPLE_DOMAIN_NAME" "$EXAMPLE_DOMAIN_NAME"
+#read -p "Please enter domain name  e.g. nbspreview.com : " EXAMPLE_DOMAIN_NAME
+
+# OCTET2shared
+read -p "Please enter the shared octet value for vpn access e.g. 3 will allow 10.3.0.0/16 [${OCTET2shared_DEFAULT}]: " OCTET2shared && OCTET2shared=${OCTET2shared:-$OCTET2shared_DEFAULT}
+update_defaults "OCTET2shared" "$OCTET2shared"
 #read -p "Please enter the shared octet value for vpn access e.g. 3 will allow 10.3.0.0/16: " OCTET2shared
-read -p "Please enter the modern octet value for new vpc 10.x.0.0/16: " OCTET2a
+
+# OCTET2a
+read -p "Please enter the modern octet value for new vpc 10.x.0.0/16 [${OCTET2a_DEFAULT}]: " OCTET2a && OCTET2a=${OCTET2a:-$OCTET2a_DEFAULT}
+update_defaults "OCTET2a" "$OCTET2a"
+#read -p "Please enter the modern octet value for new vpc 10.x.0.0/16: " OCTET2a
 
 TMP_ACCOUNT_ID=$(aws sts get-caller-identity | grep Arn | awk -F':' '{print $6}')
 TMP_ROLE=$(aws sts get-caller-identity | grep Arn | awk -F':' '{print $7}' | awk -F'/' '{print $2}')
@@ -277,7 +292,7 @@ echo LEGACY_CIDR_BLOCK=${LEGACY_CIDR_BLOCK}
 echo BUCKET_NAME=${BUCKET_NAME}
 echo OCTET2shared=${OCTET2shared}
 echo SITE_NAME=${SITE_NAME}
-echo EXAMPLE_DOMAIN=${EXAMPLE_DOMAIN}
+echo EXAMPLE_DOMAIN_NAME=${EXAMPLE_DOMAIN_NAME}
 echo TMP_ACCOUNT_ID=${TMP_ACCOUNT_ID}
 echo TMP_ROLE=${TMP_ROLE}
 
@@ -307,7 +322,7 @@ sed  --in-place "s/EXAMPLE_BUCKET_NAME/${BUCKET_NAME}/"  ${NEW_INPUTS_FILE}
 #sed  --in-place "s/EXAMPLE_OCTET2shared/${OCTET2shared}/g"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_ENVIRONMENT/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_SITE_NAME/${SITE_NAME}/"  ${NEW_INPUTS_FILE}
-sed  --in-place "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/"  ${NEW_INPUTS_FILE}
+sed  --in-place "s/EXAMPLE_DOMAIN_NAME/${EXAMPLE_DOMAIN_NAME}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/EXAMPLE_ACCOUNT_ID/${TMP_ACCOUNT_ID}/"  ${NEW_INPUTS_FILE}
 sed  --in-place "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE}/"  ${NEW_INPUTS_FILE}
 # we may want these the same throughout
