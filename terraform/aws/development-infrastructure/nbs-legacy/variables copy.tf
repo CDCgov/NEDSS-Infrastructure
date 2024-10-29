@@ -1,0 +1,304 @@
+variable "subnet_ids" {
+  description = "Subnet Id to be used when creating EC2 instance"
+  type        = list(any)
+  default = []
+}
+
+variable "domain_name" {
+  description = "Domain name for hosted zone (ex. dev-app.my-domain.com). Required if create_cert == true"
+  type        = string
+  default = ""
+}
+
+variable "load_balancer_subnet_ids" {
+  description = "Subnet Id to be used when creating load balancer. Conflicts with subnet_mapping (which take precedence if set)."
+  type        = list(any)
+  default = null
+}
+
+variable "subnet_mapping" {
+  description = "A list of subnet mapping blocks describing subnets to attach to load balancer. Map keys = subnet_id, private_ipv4_address. Conflicts with load_balancer_subnet_ids (subnet_mapping takes precedence)."
+  type        = list(map(string))
+  default     = []
+
+  # Example
+  # [
+  #   {
+  #     private_ipv4_address_1 = ""
+  #     subnet_id_1     = ""
+  #   },
+  #   {
+  #     private_ipv4_address_2 = ""
+  #     subnet_id_2     = ""
+  #   }
+  # ]
+}
+
+variable "instance_type" {
+  description = "Instance type for EC2 instance. Required if deploy_on_ecs == false."
+  type        = string
+  default = ""
+}
+
+variable "deploy_on_ecs" {
+  description = "Deploy Classic NBS on ECS?"
+  type        = bool
+  default     = false
+}
+
+variable "deploy_alb_dns_record" {
+  description = "Deploy alb dns record"
+  type        = bool
+  default     = true
+}
+
+variable "ecs_subnets" {
+  description = "Classic NBS ECS Subnets Configuration"
+  type        = list(any)
+  default = []
+}
+
+variable "docker_image" {
+  description = "Docker Image for Classic NBS"
+  type        = string
+  default = ""
+}
+
+variable "ecs_cpu" {
+  description = "Classic NBS ECS CPU Configuration"
+  type        = string
+  default     = "2048"
+}
+
+variable "ecs_memory" {
+  description = "Classic NBS ECS Memory Configuration"
+  type        = string
+  default     = "8192"
+}
+
+variable "ami" {
+  description = "AMI for EC2 instance. Required if deploy_on_ecs == false."
+  type        = string
+  default = ""
+}
+
+# variable "legacy_vpc_id" {
+#   description = "VPC ID of virtual private cloud"
+#   type        = string
+# }
+
+# variable "modern_vpc_id" {
+#   description = "VPC ID of virtual private cloud"
+#   type        = string
+# }
+
+variable "vpc_id" {
+  description = "VPC ID of virtual private cloud"
+  type        = string
+}
+
+variable "nbs6_ingress_vpc_cidr_blocks" {
+  description = "List of CIDR blocks which will have access to nbs6 instance"
+  type        = list(any)
+  default = []
+}
+
+variable "nbs6_rdp_cidr_block" {
+  description = "CIDR block in for RDP access"
+  type        = list(any)
+  default = []
+}
+
+variable "resource_prefix" {
+  description = "Legacy resource prefix for resources created by this module"
+  type        = string
+}
+
+# variable "db_instance_type" {
+#   description = "Databae instance type"
+#   type        = string
+# }
+
+# variable "db_snapshot_identifier" {
+#   description = "Database snapshot to use for RDS isntance"
+#   type        = string
+# }
+
+variable "ec2_key_name" {
+  description = "EC2 key pair to manage instance. Required if deploy_on_ecs == false."
+  type        = string
+  default = ""
+}
+
+variable "tags" {
+  description = "map(string) of tags to add to created resources"
+  type        = map(string)
+}
+
+variable "route53_url_name" {
+  description = "URL name for Classic App as an A record in route53 (ex. app-dev.my-domain.com). Requires zone_id to be set."
+  type        = string
+  default = ""
+}
+
+variable "zone_id" {
+  description = "Route53 Hosted Zone Id. Requires route53_url_name to be set."
+  type        = string
+  default = ""
+}
+
+variable "update_route53_a_record" {
+  description = "Updates route53 A record"
+  type        = bool
+  default     = false
+}
+
+variable "create_cert" {
+  description = "Do you want to create a public AWS Certificate (if false (default), must provide certificate_arn). Requires zone_id to be set."
+  type        = bool
+  default     = false
+}
+
+variable "certificate_arn" {
+  description = "If create_cert == false, provide a certificate_arn"
+  type        = string
+  default     = ""
+}
+
+variable "artifacts_bucket_name" {
+  description = "S3 bucket name used to store build artifacts. Required if deploy_on_ecs == false."
+  type        = string
+  default = ""
+
+}
+
+variable "deployment_package_key" {
+  description = "Deployment package S3 key for NBS application. Required if deploy_on_ecs == false."
+  type        = string
+  default = ""
+
+}
+
+variable "nbs_db_dns" {
+  description = "NBS database server dns"
+  type        = string
+}
+
+variable "nbs_github_release_tag" {
+  description = "Create URL and download Release Package. Default is always latest or Null"
+  type        = string
+}
+
+variable "kms_arn_shared_services_bucket" {
+  description = "KMS key arn used to encrypt shared services s3 bucket"
+  type        = string
+  default = ""
+}
+
+variable "load_balancer_type" {
+  description = "The type of load balancer to create. Possible values are `application` or `network`. The default value is `network`"
+  type        = string
+  default     = "network"
+}
+
+variable "internal" {
+  description = "If true, the LB will be internal. Defaults to `false`"
+  type        = bool
+  default     = null
+}
+
+# SAS specific variables (SAS will always be deployed)
+# variable "deploy_sas" {
+#   description = "(true/false) Deploy SAS task? Will create ECS cluster if not existing?"
+#   type = bool
+#   default = false  
+# }
+
+variable "sas_docker_image" {
+  description = "Repository plus image tag for SAS container"
+  type        = string
+  default = ""
+}
+
+variable "sas_ecs_cpu" {
+  description = "Classic NBS ECS CPU Configuration"
+  type        = string
+  default     = "2048"
+}
+
+variable "sas_ecs_memory" {
+  description = "Classic NBS ECS Memory Configuration"
+  type        = string
+  default     = "8192"
+}
+
+variable "sas_ephemeral_storage" {
+  description = "Ephemeral storage in GB for SAS"
+  type        = string
+  default = "100"
+}
+
+variable "db_trace_on" {
+  description = "(Yes/No) Turn on trace to stdout for database connection debugging."
+  type        = string
+  default     = "No"
+}
+
+variable "update_database" {
+  description = "(true/false) Enable SAS container to update Database with its IP address?"
+  type        = string
+  default     = "false"
+}
+
+variable "phcmartetl_cron_schedule" {
+  description = "Cron schedule for PHCMart ETL process"
+  type        = string
+  default     = "0 0 * * *"
+}
+
+variable "masteretl_cron_schedule" {
+  description = "Cron schedule for Master ETL process"
+  type        = string
+  default     = "0 0 * * *"
+}
+
+variable "rdb_user" {
+  description = "NBS user for RDB database"
+  type        = string
+  default = ""
+}
+
+variable "rdb_pass" {
+  description = "NBS password for RDB database"
+  type        = string
+  default = ""
+  sensitive = true
+}
+
+variable "odse_user" {
+  description = "NBS user for ODSE database"
+  type        = string
+  default = ""
+}
+
+variable "odse_pass" {
+  description = "NBS password for ODSE database"
+  type        = string
+  default = ""
+  sensitive = true
+}
+
+variable "sas_user_pass" {
+  description = "Password to set for SAS user"
+  type        = string
+  default = ""
+  sensitive = true
+}
+
+
+
+
+
+
+
+

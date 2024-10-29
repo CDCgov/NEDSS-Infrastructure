@@ -62,9 +62,9 @@ Copy-S3Object -BucketName "${var.artifacts_bucket_name}" -Key "nbs/${var.deploym
 Expand-Archive -Path D:\${var.deployment_package_key} -DestinationPath D:\
 
 # Set environment variables thatdon't go away if server reboots or stopped and restarted 
-[Environment]::SetEnvironmentVariable("JAVA_HOME", "D:\wildfly-10.0.0.Final\Java\jdk1.8.0_181", "Machine")
+[Environment]::SetEnvironmentVariable("JAVA_HOME", "D:\wildfly-10.0.0.Final\Java\jdk8u412b08", "Machine")
 [Environment]::SetEnvironmentVariable("JBOSS_HOME", "D:\wildfly-10.0.0.Final", "Machine")
-[Environment]::SetEnvironmentVariable("Path", $env:Path + ";D:\wildfly-10.0.0.Final\Java\jdk1.8.0_181\bin", "Machine")
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";D:\wildfly-10.0.0.Final\Java\jdk8u412b08\bin", "Machine")
 
 #Replace datasources in standalone.xml file
 $xmlFileName = "D:\wildfly-10.0.0.Final\nedssdomain\configuration\standalone.xml"
