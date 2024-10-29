@@ -150,3 +150,9 @@ variable "sas_user_pass" {
   default = ""
   sensitive = true
 }
+
+variable "aci_sas_use_private_acr" {
+  description = "Use private ACR? NOTE: If deploying in CDC Azure EXT, ACR needs to be created by Cloud Team"
+  type        = string
+  default     = true
+}
