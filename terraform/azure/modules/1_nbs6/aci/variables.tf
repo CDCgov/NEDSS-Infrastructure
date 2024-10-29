@@ -119,3 +119,10 @@ variable "odse_pass" {
   default = ""
   sensitive = true
 }
+
+variable "sas_user_pass" {
+  description = "Password to set for SAS user"
+  type        = string
+  default = ""
+  sensitive = true
+}
