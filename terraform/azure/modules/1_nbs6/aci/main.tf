@@ -83,11 +83,11 @@ resource "azurerm_container_group" "aci" {
       empty_dir = true
     }
 
-    volume {
-      name = "${var.resource_prefix}-pagemanagement"
-      mount_path = "wildfly-10.0.0.Final\\nedssdomain\\Nedss\\pagemanagement"
-      empty_dir = true
-    }
+    # volume {
+    #   name = "${var.resource_prefix}-pagemanagement"
+    #   mount_path = "wildfly-10.0.0.Final\\nedssdomain\\Nedss\\pagemanagement"
+    #   empty_dir = true
+    # }
 
   }
 
