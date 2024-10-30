@@ -62,6 +62,11 @@ resource "azurerm_container_group" "aci" {
       protocol = "TCP"
     }
 
+    ports {
+      port     = 2323
+      protocol = "TCP"
+    }
+
     environment_variables = {
       DATABASE_ENDPOINT = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
       GITHUB_RELEASE_TAG = var.aci_github_release_tag
