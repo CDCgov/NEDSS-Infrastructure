@@ -76,19 +76,6 @@ resource "azurerm_container_group" "aci" {
       DATABASE_ENDPOINT = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
       GITHUB_RELEASE_TAG = var.aci_github_release_tag
     }
-
-    volume {
-      name = "${var.resource_prefix}-log"
-      mount_path = "C:\\wildfly-10.0.0.Final\\nedssdomain\\sgztest"
-      empty_dir = true
-    }
-
-    # volume {
-    #   name = "${var.resource_prefix}-pagemanagement"
-    #   mount_path = "wildfly-10.0.0.Final\\nedssdomain\\Nedss\\pagemanagement"
-    #   empty_dir = true
-    # }
-
   }
 
   diagnostics {
