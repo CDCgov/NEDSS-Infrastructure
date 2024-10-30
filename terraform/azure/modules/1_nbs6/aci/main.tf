@@ -79,7 +79,8 @@ resource "azurerm_container_group" "aci" {
 
     volume {
       name = "${var.resource_prefix}-log"
-      mount_path = "C:\\wildfly-10.0.0.Final\\nedssdomain"
+      mount_path = "C:\\wildfly-10.0.0.Final\\nedssdomain\\log"
+      empty_dir = true
     }
 
   }
