@@ -84,7 +84,7 @@ resource "azurerm_container_group" "aci" {
     }
 
     volume {
-      name = "${var.resource_prefix}-log"
+      name = "${var.resource_prefix}-pagemanagement"
       mount_path = "wildfly-10.0.0.Final\\nedssdomain\\Nedss\\pagemanagement"
       empty_dir = true
     }
