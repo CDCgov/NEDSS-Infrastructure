@@ -77,6 +77,11 @@ resource "azurerm_container_group" "aci" {
       GITHUB_RELEASE_TAG = var.aci_github_release_tag
     }
 
+    volume {
+      name = "${var.resource_prefix}-log"
+      mount_path = "C:\\wildfly-10.0.0.Final\\nedssdomain"
+    }
+
   }
 
   diagnostics {
