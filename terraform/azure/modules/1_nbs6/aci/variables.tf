@@ -88,12 +88,6 @@ variable "aci_sas_memory" {
   default     = "8192"
 }
 
-variable "sas_ephemeral_storage" {
-  description = "Ephemeral storage in GB for SAS"
-  type        = string
-  default = "100"
-}
-
 variable "db_trace_on" {
   description = "(Yes/No) Turn on trace to stdout for database connection debugging."
   type        = string
