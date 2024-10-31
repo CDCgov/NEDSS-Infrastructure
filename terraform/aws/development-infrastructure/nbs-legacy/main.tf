@@ -160,7 +160,7 @@ EOF
 
 # Add in-line IAM role for EC2 access to shared services bucket
 resource "aws_iam_role_policy" "shared_s3_access" {
-  count = var.deploy_on_ecs || var.stlt_own_bucket ? 0 : 1
+  count = var.deploy_on_ecs || var.local_bucket ? 0 : 1
   name = "cross_account_s3_access_policy"
   role = module.app_server[0].iam_role_name
 
