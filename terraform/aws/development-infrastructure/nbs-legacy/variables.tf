@@ -46,6 +46,11 @@ variable "deploy_on_ecs" {
   default     = false
 }
 
+variable "stlt_own_bucket" {
+  description = "STLT's own bucket"
+  type = bool
+}
+
 variable "deploy_alb_dns_record" {
   description = "Deploy alb dns record"
   type        = bool
