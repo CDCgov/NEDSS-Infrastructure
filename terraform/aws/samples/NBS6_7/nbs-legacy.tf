@@ -1,4 +1,4 @@
-# Serial: 2024081301
+# Serial: 2024110101
 
 locals {
   zone_id    = try(module.dns.zone_id["${module.dns.registered_domain_name}"], var.zone_id)
@@ -9,7 +9,7 @@ data "aws_region" "current" {}
 
 module "nbs-legacy" {
 
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=v1.2.14"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=v1.2.20"
 
   #source  = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/nbs-legacy"
 
