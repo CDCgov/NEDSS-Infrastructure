@@ -1,8 +1,8 @@
-# Serial: 2024081301
+# Serial: 2024110101
 
 module "vpc-endpoints" {
 
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/vpc-endpoints-nbs?ref=v1.2.14"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/vpc-endpoints-nbs?ref=v1.2.20"
 
   #source                         = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/vpc-endpoints-nbs"
 

@@ -134,7 +134,7 @@ variable "ec2_instance_type" {
 variable "deployment_package_key" {
   description = "Deployment package S3 key for NBS application, must match versioning DB snapshot"
   type        = string
-  default     = "wildfly-10.0.0.Final-6.0.16.zip"
+  default     = "wildfly-10.0.0.Final-6.0.16.1.zip"
 }
 # we can disable user data if needed
 # WIP
