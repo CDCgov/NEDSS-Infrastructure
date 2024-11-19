@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /home/mossc/work/cdc_create_nbs6_keycloak_users/RCS/create_sql_and_keycloak_json_from_csv_for_new_users.sh,v 1.7 2024/11/05 20:49:17 mossc Exp mossc $
+# $Header: /home/mossc/work/cdc_create_nbs6_keycloak_users/RCS/create_sql_and_keycloak_json_from_csv_for_new_users.sh,v 1.8 2024/11/19 20:51:23 mossc Exp mossc $
 
 # Output Files
 #sql_output="create_nbs6_users.sql"
@@ -10,7 +10,7 @@
 # Usage function to display help
 usage() {
     echo "Usage: $0 -p <password> -f <csv_filename>"
-    echo "  -f <csv_filename>    Specify the input CSV file, format: userid, firstname, lastname, email"
+    echo "  -f <csv_filename>    Specify the input CSV file, format: email, firstname, lastname, userid"
     echo "  -p <password>    initial password for all users, should require changing"
     echo "  -h                   Display this help message."
     echo " it will generate an sql file to import into ODSE database and a"
@@ -375,6 +375,9 @@ echo "${sql_output} and ${json_output} files have been created."
 
 # 
 # $Log: create_sql_and_keycloak_json_from_csv_for_new_users.sh,v $
+# Revision 1.8  2024/11/19 20:51:23  mossc
+# fixed order of usage
+#
 # Revision 1.7  2024/11/05 20:49:17  mossc
 # added comments
 # in usage

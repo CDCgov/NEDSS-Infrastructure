@@ -78,7 +78,8 @@ cd ${INSTALL_DIR}
 echo PWD=`pwd`
 
 echo "here are the subdirectories in the terraform/aws directory"
-ls -1 NEDSS-Infrastructure-${INFRA_VER}/terraform/aws | grep -v app-infrastructure | grep -v samples
+#ls -1 NEDSS-Infrastructure-${INFRA_VER}/terraform/aws | grep -v app-infrastructure | grep -v samples
+ls -1 nbs-infrastructure-${INFRA_VER}/terraform/aws | grep -v app-infrastructure | grep -v samples
 
 
 #echo "what is the site name"
@@ -86,7 +87,8 @@ ls -1 NEDSS-Infrastructure-${INFRA_VER}/terraform/aws | grep -v app-infrastructu
 
 #cd NEDSS-DevOpsTools-*/terraform/aws/ats-modern*/
 
-cd NEDSS-Infrastructure-${INFRA_VER}/terraform/aws
+#cd NEDSS-Infrastructure-${INFRA_VER}/terraform/aws
+cd nbs-infrastructure-${INFRA_VER}/terraform/aws
 echo PWD=`pwd`
 
 #cp samples/NBS6_standard ${TMP_SITE_NAME}
