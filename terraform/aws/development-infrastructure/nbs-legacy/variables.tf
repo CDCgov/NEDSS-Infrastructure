@@ -46,6 +46,12 @@ variable "deploy_on_ecs" {
   default     = false
 }
 
+variable "local_bucket" {
+  description = "Bucket exists in same account where infrastructure is being deployed"
+  type = bool
+  default = false
+}
+
 variable "deploy_alb_dns_record" {
   description = "Deploy alb dns record"
   type        = bool
