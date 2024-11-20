@@ -1,20 +1,23 @@
 #!/bin/bash
 
-# $Header: /home/mossc/work/cdc_create_nbs6_keycloak_users/RCS/create_sql_and_keycloak_json_from_csv_for_new_users.sh,v 1.8 2024/11/19 20:51:23 mossc Exp mossc $
+# $Header: /home/mossc/work/cdc_create_nbs6_keycloak_users/RCS/create_sql_and_keycloak_json_from_csv_for_new_users.sh,v 1.9 2024/11/20 19:04:17 mossc Exp mossc $
 
 # Output Files
 #sql_output="create_nbs6_users.sql"
 #json_output="create_keycloak_users.json"
 
+# initialize password to something 
+TMP_PASSWORD=changeme8675309
+
 
 # Usage function to display help
 usage() {
     echo "Usage: $0 -p <password> -f <csv_filename>"
-    echo "  -f <csv_filename>    Specify the input CSV file, format: email, firstname, lastname, userid"
-    echo "  -p <password>    initial password for all users, should require changing"
+    echo "  -f <csv_filename>    Specify the input CSV file, format: email, firstname, lastname, userid, NO HEADER LINES!"
+    echo "  -p <password>        initial password for all users, should require changing, STRONGLY encouraged to use this flag"
     echo "  -h                   Display this help message."
-    echo " it will generate an sql file to import into ODSE database and a"
-    echo " json file to import into keycloak nbs-users realm"
+    echo "                       it will generate an sql file to import into ODSE database and a"
+    echo "                       json file to import into keycloak nbs-users realm"
     exit 1
 }
 
@@ -336,8 +339,10 @@ EOF
 echo "$sql_header" > "$sql_output"
 echo "$json_header" > "$json_output"
 
-# Read CSV and replace placeholders
-tail -n +1 "$input_file" | while IFS=',' read -r email first_name last_name username
+# tail -n +1 "$input_file" | while IFS=',' read -r email first_name last_name username
+# Read CSV and replace placeholders, deal with dos formatted files/lines
+# with CR/LF
+tail -n +1 "$input_file" | tr -d '\r' | while IFS=',' read -r email first_name last_name username
 do
   # Trim any leading/trailing whitespace
   email=$(echo "$email" | xargs)
@@ -375,6 +380,10 @@ echo "${sql_output} and ${json_output} files have been created."
 
 # 
 # $Log: create_sql_and_keycloak_json_from_csv_for_new_users.sh,v $
+# Revision 1.9  2024/11/20 19:04:17  mossc
+# added conversion of dos format 
+# CSVs and initialize the tmp password
+#
 # Revision 1.8  2024/11/19 20:51:23  mossc
 # fixed order of usage
 #
