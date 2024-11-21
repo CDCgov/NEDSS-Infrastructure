@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /home/mossc/work/cdc_create_nbs6_keycloak_users/RCS/create_sql_and_keycloak_json_from_csv_for_new_users.sh,v 1.10 2024/11/21 19:23:30 mossc Exp mossc $
+# $Header: /home/mossc/work/cdc_create_nbs6_keycloak_users/RCS/create_sql_and_keycloak_json_from_csv_for_new_users.sh,v 1.11 2024/11/21 20:34:08 mossc Exp mossc $
 
 # Output Files
 #sql_output="create_nbs6_users.sql"
@@ -370,24 +370,40 @@ done
 
 # Determine if GNU sed or BSD sed is being used
 # macs require an argument to -i flag
-if sed --version >/dev/null 2>&1; then
-  SED_CMD="sed -i"
-else
-  SED_CMD="sed -i ''"
-fi
+#if sed --version >/dev/null 2>&1; then
+#  SED_CMD="sed -i"
+#else
+#  SED_CMD="sed -i ''"
+#fi
 
-# Remove the last comma from JSON and append the footer
-$SED_CMD '$ s/,$//' "$json_output"
+
+# Remove the last trailing comma from JSON file
+# - Process the input file with `sed` to remove the trailing comma on the
+# last line
+# - Redirect the output to a temporary file
+# - Replace the original file with the temporary file
+# macs require an argument to -i flag so we do not use in-place to make it
+# cross platform use of sed
+sed '$ s/,$//' "$json_output" > "${json_output}.tmp" && mv "${json_output}.tmp" "$json_output"
+
+# Remove the last trailing comma from SQL file
+# - Same logic as above but applied to the SQL output file
+sed '$ s/,$//' "$sql_output" > "${sql_output}.tmp" && mv "${sql_output}.tmp" "$sql_output"
+
+
+# append the JSON footer
 echo "$json_footer" >> "$json_output"
 
-# Remove the last comma from SQL and append the footer
-$SED_CMD '$ s/,$//' "$sql_output"
+# append the SQL footer
 echo "$sql_footer" >> "$sql_output"
 
 echo "${sql_output} and ${json_output} files have been created."
 
 # 
 # $Log: create_sql_and_keycloak_json_from_csv_for_new_users.sh,v $
+# Revision 1.11  2024/11/21 20:34:08  mossc
+# used a temp file so we did not need extra logic for sed version
+#
 # Revision 1.10  2024/11/21 19:23:30  mossc
 # added logic to detect non-gnu sed
 #
