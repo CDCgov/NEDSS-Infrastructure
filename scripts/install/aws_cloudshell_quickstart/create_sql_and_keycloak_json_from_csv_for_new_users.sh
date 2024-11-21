@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /home/mossc/work/cdc_create_nbs6_keycloak_users/RCS/create_sql_and_keycloak_json_from_csv_for_new_users.sh,v 1.9 2024/11/20 19:04:17 mossc Exp mossc $
+# $Header: /home/mossc/work/cdc_create_nbs6_keycloak_users/RCS/create_sql_and_keycloak_json_from_csv_for_new_users.sh,v 1.10 2024/11/21 19:23:30 mossc Exp mossc $
 
 # Output Files
 #sql_output="create_nbs6_users.sql"
@@ -368,18 +368,29 @@ do
   echo "  $json_entry," >> "$json_output"
 done
 
+# Determine if GNU sed or BSD sed is being used
+# macs require an argument to -i flag
+if sed --version >/dev/null 2>&1; then
+  SED_CMD="sed -i"
+else
+  SED_CMD="sed -i ''"
+fi
+
 # Remove the last comma from JSON and append the footer
-sed -i '$ s/,$//' "$json_output"
+$SED_CMD '$ s/,$//' "$json_output"
 echo "$json_footer" >> "$json_output"
 
 # Remove the last comma from SQL and append the footer
-sed -i '$ s/,$//' "$sql_output"
+$SED_CMD '$ s/,$//' "$sql_output"
 echo "$sql_footer" >> "$sql_output"
 
 echo "${sql_output} and ${json_output} files have been created."
 
 # 
 # $Log: create_sql_and_keycloak_json_from_csv_for_new_users.sh,v $
+# Revision 1.10  2024/11/21 19:23:30  mossc
+# added logic to detect non-gnu sed
+#
 # Revision 1.9  2024/11/20 19:04:17  mossc
 # added conversion of dos format 
 # CSVs and initialize the tmp password
