@@ -53,10 +53,11 @@ module "db" {
   apply_immediately = var.apply_immediately
 
   #Custom DB Parameter Group
-  create_db_parameter_group   = true
-  parameter_group_name        = var.parameter_group_name
-  parameter_group_description = var.parameter_group_description
-  parameters                  = var.parameters
+  create_db_parameter_group       = true
+  parameter_group_name            = var.parameter_group_name
+  parameter_group_description     = var.parameter_group_description
+  parameters                      = var.parameters
+  parameter_group_use_name_prefix = false
 }
 
 # Security group for NBS backend RDS database server
