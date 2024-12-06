@@ -46,3 +46,21 @@ variable "vpc_id" {
   description = "VPC ID of virtual private cloud"
   type        = string
 }
+
+variable "parameter_group_name" {
+  description = "Name of the parameter group"
+  type        = string
+}
+
+variable "parameter_group_description" {
+  description = "Description for the parameter group"
+  type        = string
+}
+
+variable "parameters" {
+  description = "List of parameter settings for the parameter group"
+  type        = list(object({
+    name  = string
+    value = string
+  }))
+}
