@@ -43,12 +43,12 @@ module "alb" {
 
       health_check = {
         enabled             = true
-        interval            = 30
+        interval            = 60
         path                = "/nbs/login"
         port                = "traffic-port"
         healthy_threshold   = 3
-        unhealthy_threshold = 3
-        timeout             = 6
+        unhealthy_threshold = 10
+        timeout             = 30
         protocol            = "HTTP"
         matcher             = "200"
       }
