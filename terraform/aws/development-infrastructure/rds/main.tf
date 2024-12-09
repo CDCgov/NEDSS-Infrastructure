@@ -47,11 +47,18 @@ module "db" {
   monitoring_interval                   = 60
 */
   options                   = []
-  create_db_parameter_group = false
   license_model             = "license-included"
   character_set_name        = "SQL_Latin1_General_CP1_CI_AS"
   snapshot_identifier       = var.db_snapshot_identifier
   apply_immediately = var.apply_immediately
+
+# Enabling Custom DB parameter group and its parameter
+  create_db_parameter_group       = true
+  parameter_group_name            = var.parameter_group_name
+  parameter_group_description     = var.parameter_group_description
+  parameters                      = var.parameters
+  parameter_group_use_name_prefix = false
+
 }
 
 # Security group for NBS backend RDS database server
