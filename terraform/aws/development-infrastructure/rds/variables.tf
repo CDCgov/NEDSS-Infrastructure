@@ -50,6 +50,7 @@ variable "vpc_id" {
 variable "parameter_group_name" {
   description = "Name of the parameter group"
   type        = string
+  default     = "custom-db-parameter-group"
 }
 
 variable "parameter_group_description" {
@@ -64,4 +65,7 @@ variable "parameters" {
     name  = string
     value = string
   }))
+  default     = [
+    { name = "ad hoc distributed queries", value = "1" }
+  ]
 }
