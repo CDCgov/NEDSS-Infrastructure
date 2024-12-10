@@ -46,3 +46,26 @@ variable "vpc_id" {
   description = "VPC ID of virtual private cloud"
   type        = string
 }
+
+variable "parameter_group_name" {
+  description = "Name of the parameter group"
+  type        = string
+  default     = "custom-db-parameter-group"
+}
+
+variable "parameter_group_description" {
+  description = "Description for the parameter group"
+  default     = "sql server se 15.0 custom parameter group"
+  type        = string
+}
+
+variable "parameters" {
+  description = "List of parameter settings for the parameter group"
+  type        = list(object({
+    name  = string
+    value = string
+  }))
+  default     = [
+    { name = "ad hoc distributed queries", value = "1" }
+  ]
+}
