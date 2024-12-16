@@ -1,8 +1,8 @@
-# Serial: 2024081301
+# Serial: 2024121601
 
 module "prometheus" {
 
-  source           = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/aws-prometheus-grafana?ref=v1.2.14"
+  source           = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/aws-prometheus-grafana?ref=v1.2.22"
   eks_aws_role_arn = "arn:aws:iam::${var.target_account_id}:role/cdc-terraform-user-cross-account-role"
 
   # only use this to override for local use

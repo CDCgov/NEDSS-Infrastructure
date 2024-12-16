@@ -1,7 +1,7 @@
-# Serial: 2024110101
+# Serial: 2024121601
 
 module "efs" {
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/efs?ref=v1.2.20"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/efs?ref=v1.2.22"
   #source  = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/efs"
   # SAMPLES
   #source  = "../app-infrastructure/efs"
