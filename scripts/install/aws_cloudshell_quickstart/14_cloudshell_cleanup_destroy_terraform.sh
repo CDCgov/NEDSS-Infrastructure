@@ -1,8 +1,8 @@
 #!/bin/bash
-HELM_VER=v7.7.0
+HELM_VER=v7.8.0
 #exit 1
 INSTALL_DIR=~/nbs_install
-INFRA_VER=v1.2.19
+INFRA_VER=v1.2.22
 DEBUG=1
 STEP=1
 NOOP=0
