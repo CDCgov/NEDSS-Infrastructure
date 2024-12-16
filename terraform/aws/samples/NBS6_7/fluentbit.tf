@@ -1,8 +1,8 @@
-# Serial: 2024110101
+# Serial: 2024121601
 
 module "fluentbit" {
 
-  source           = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/fluentbit?ref=v1.2.20"
+  source           = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/fluentbit?ref=v1.2.22"
   eks_aws_role_arn = "arn:aws:iam::${var.target_account_id}:role/cdc-terraform-user-cross-account-role"
 
   # source                             = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/fluentbit"
