@@ -60,6 +60,7 @@ variable "hosted-zone-iam-arn" {
 variable "hosted-zone-id" {
   description = "Hosted Zone ID for the AWS hosted zone where the domain is registered."
   type        = string
+  default     = ""
 }
 
 # only use this if you are hosting DNS within this account OR have cross
