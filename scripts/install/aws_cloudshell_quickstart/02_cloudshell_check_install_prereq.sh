@@ -69,23 +69,37 @@ check_install_dir() {
 
 # Check and install AWS CLI
 current_awscli_version=$(aws --version 2>&1 | cut -d/ -f2 | cut -d' ' -f1)
+#echo "$current_awscli_version  version_compare $current_awscli_version $MIN_AWSCLI_VERSION"
 if [[ -z "$current_awscli_version" ]] || version_compare "$current_awscli_version" "$MIN_AWSCLI_VERSION"; then
     if [ "$auto_yes" = true ]; then
         [ "$quiet_mode" = false ] && echo "Auto-installing aws cli as '-y' flag is set"
         	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         	unzip awscliv2.zip
-        	sudo ./aws/install
+            if `aws --version  2>&1 > /dev/null`
+            then
+                echo "pre-existing aws, updating"
+        	    sudo ./aws/install --update
+            else
+        	    sudo ./aws/install
+            fi
         	rm -rf awscliv2.zip
     else
     	read -p "AWS CLI is missing or its version is less than the minimum. Install/Update? (y/n) " choice
     	if [[ $choice == "y" ]]; then
         	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         	unzip awscliv2.zip
-        	sudo ./aws/install
+            if `aws --version  2>&1 > /dev/null`
+            then
+                echo "pre-existing aws, updating"
+        	    sudo ./aws/install --update
+            else
+        	    sudo ./aws/install
+            fi
         	rm -rf awscliv2.zip
     	fi
     fi
 fi
+#exit 1
 
 
 # Check and install jq
@@ -178,7 +192,11 @@ if ! helm version --short > /dev/null 2>&1 || version_compare "$(helm version --
 fi
 
 
-sudo yum install -y telnet bind-utils -q
+if `which yum > /dev/null`  
+then
+    echo "installing telnet and bind for testing"
+    sudo yum install -y telnet bind-utils -q
+fi
 
 echo "All tools checked and installed/updated as necessary."
 
