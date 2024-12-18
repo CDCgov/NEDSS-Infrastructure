@@ -77,6 +77,12 @@ variable "artifacts_bucket_name" {
   #default     = "cdc-nbs-shared-software"
 }
 
+variable "nbs_local_bucket" {
+  description = "if S3 artifacts bucket is in your local account set to true to avoid attempting to create unneeded policy"
+  type        = bool
+  default     = false
+}
+
 variable "resource_prefix" {
   description = "Prefix for resource names"
   type        = string

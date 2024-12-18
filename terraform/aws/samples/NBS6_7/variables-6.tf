@@ -122,9 +122,10 @@ variable "ec2_key_name" {
   type        = string
 }
 variable "ami" {
-  description = "AMI for EC2 instance, this is stock windows, default AWS us-east1 as of Oct 2024"
+  description = "AMI for EC2 instance, this is stock windows 2019 server base, default AWS us-east1 as of Dec 2024"
   type        = string
-  default     = "ami-093693792d26e4373"
+  #default     = "ami-093693792d26e4373"
+  default     = "ami-05b4ded3ceb71e470"
 }
 variable "ec2_instance_type" {
   description = "Instance type for EC2 instance"
