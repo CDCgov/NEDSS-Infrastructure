@@ -223,6 +223,20 @@ else
     echo "dataingestion skipped."
 fi
 
+echo "ready to start RTI install process"
+read -p "Have the data-processing-service database requirements been implemented? [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_message "loading data-processing-service pod"
+    helm_safe_install data-processing-service data-processing-service ${DEFAULT_NAMESPACE}
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "data-processing-service loaded"
+else
+    echo "data-processing-service skipped."
+fi
+
+
 echo "ready to start RTR install process"
 read -p "Have the database prep steps been done (CDC, rdb_modern copy, etc)? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
