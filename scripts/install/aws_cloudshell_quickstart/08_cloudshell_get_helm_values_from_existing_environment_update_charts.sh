@@ -241,6 +241,7 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_SFTP_HOST/${SFTP_HOST}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_USER/${SFTP_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_PASS/${SFTP_PASS}/" "$new_file_path"
+    sed -i "s/EXAMPLE_NBS_AUTHUSER/${NBS_AUTHUSER}/" "$new_file_path"
     sed -i "s?EXAMPLE_TOKEN_SECRET?${TOKEN_SECRET}?" "$new_file_path"
     sed -i "s?EXAMPLE_PARAMETER_SECRET?${PARAMETER_SECRET}?" "$new_file_path"
 
@@ -361,6 +362,9 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     echo
 	update_defaults "SFTP_PASS" "$SFTP_PASS"
 
+	read -p "Please enter the NBS_AUTHUSER [${NBS_AUTHUSER_DEFAULT}]: " NBS_AUTHUSER && NBS_AUTHUSER=${NBS_AUTHUSER:-$NBS_AUTHUSER_DEFAULT}
+    echo
+	update_defaults "NBS_AUTHUSER" "$NBS_AUTHUSER"
 
 
 	#read -p "Please enter the XXX [${XXX_DEFAULT}]: " XXX && XXX=${XXX:-$XXX_DEFAULT}
@@ -398,6 +402,7 @@ then
 	apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_DIR}/charts/nifi-efs" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/data-processing-service/values.yaml" "${HELM_DIR}/charts/data-processing-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/liquibase/values.yaml" "${HELM_DIR}/charts/liquibase" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/investigation-reporting-service/values.yaml" "${HELM_DIR}/charts/investigation-reporting-service" "$SITE_NAME"
