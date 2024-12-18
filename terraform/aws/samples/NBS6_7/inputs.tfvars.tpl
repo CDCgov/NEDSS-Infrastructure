@@ -19,10 +19,14 @@ target_account_id = "EXAMPLE_ACCOUNT_ID"
 resource_prefix   = "EXAMPLE_RESOURCE_PREFIX" # highly recommend using snake case for naming (e.g. this-is-snake-case)
 kms_arn_shared_services_bucket = "arn:aws:kms:us-east-1:EXAMPLE_SHARED_SERVICES_ACCOUNT:key/123456-789"
 
-# May generate error when Route53 zone is hosted in another AWS account
-hosted-zone-id = "EXAMPLE_HOSTED_ZONE_ID" 
-zone_id = ""
+# delegated zone hosted in the local account manually created
+zone_id = "EXAMPLE_ZONE_ID"
 
+# XXX - testing for STLT
+create_route53_hosted_zone = false
+
+# May generate error when Route53 zone is hosted in another AWS account
+#hosted-zone-id = "EXAMPLE_HOSTED_ZONE_ID" 
 # only use this if you are hosting DNS within this account OR have cross
 # account access to the account which is authoritative for domain
 #hosted-zone-account = "EXAMPLE_ACCOUNT_ID"
@@ -33,6 +37,11 @@ sub_domain_name = "EXAMPLE_SITE_NAME"
 # these cidr blocks will be added to security groups to allow direct access
 external_cidr_blocks = []
 
+nbs_db_dns = "nbs-db.private-EXAMPLE_SITE.EXAMPLE_DOMAIN
+
+# change this if we are getting artifacts from a bucket in this account
+#nbs_local_bucket = true
+nbs_local_bucket = false
 
 ################################################################
 # NBS 6 (Classic) 
