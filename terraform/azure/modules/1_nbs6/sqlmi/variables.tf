@@ -52,19 +52,30 @@ variable "sqlmi_zone_redundant_enabled" {
   default     = true
 }
 
+variable "sqlmi_timezone_id" {
+  description = "The TimeZone ID that the SQL Managed Instance will be operating in"
+  type        = string
+}
+
 variable "sqlmi_restoring_from_database_name" {
   description = "SQL Managed Database Name to Restore From"
   type        = string
+  default     = "N/A"
 }
 
 variable "sqlmi_restoring_from_database_rg" {
   description = "SQL Managed Database to Restore From Resource Group"
-  type        = string  
+  type        = string
+  default     = "N/A"
 }
 
 variable "sqlmi_restore_point_in_time" {
   description = "Restore Point in Time"
   type        = string
+  default     = "N/A"
 }
+
+
+
 
 
