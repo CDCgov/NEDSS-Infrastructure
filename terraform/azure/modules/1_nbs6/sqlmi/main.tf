@@ -43,6 +43,7 @@ resource "azurerm_mssql_managed_instance" "sqlmi" {
   sku_name                     = var.sqlmi_sku_name
   vcores                       = var.sqlmi_vcore
   storage_size_in_gb           = var.sqlmi_storage
+  timezone_id                  = var.sqlmi_timezone_id
   administrator_login          = random_string.sqlmi_username.result
   administrator_login_password = random_password.sqlmi_password.result
   lifecycle {
@@ -63,6 +64,7 @@ resource "azurerm_mssql_managed_instance" "sqlmi" {
       ]
     }
 }
+
 
 # # Restore NBS_DataIngest Database
 # resource "azurerm_mssql_managed_database" "nbs_dataingest_db" {
