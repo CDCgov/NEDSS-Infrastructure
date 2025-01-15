@@ -1,8 +1,8 @@
-# Serial: 2024121601
+# Serial: 2025011501
 
 module "eks_nbs" {
 
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/eks-nbs?ref=v1.2.22"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/eks-nbs?ref=v1.2.23"
   #source              = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/eks-nbs"
   # SAMPLES
   #source              = "../app-infrastructure/eks-nbs"

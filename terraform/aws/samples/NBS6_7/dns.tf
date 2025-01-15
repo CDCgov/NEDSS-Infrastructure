@@ -1,4 +1,4 @@
-# Serial: 2024121601
+# Serial: 2025011501
 
 # #locals on whether to create route53 hosted zone
 # locals {
@@ -7,7 +7,7 @@
 # }
 
 module "dns" {
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/dns?ref=v1.2.22"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/dns?ref=v1.2.23"
   #source  = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/dns"
 
   domain_name     = var.domain_name

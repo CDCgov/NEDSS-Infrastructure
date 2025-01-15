@@ -1,4 +1,4 @@
-# Serial: 2024121801
+# Serial: 2025011501
 
 locals {
 # CHANGE for SAMPLES for some reason this try is not working, mv dns.tf to
@@ -12,7 +12,7 @@ data "aws_region" "current" {}
 
 module "nbs-legacy" {
 
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=v1.2.22"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=v1.2.23"
 
   #source  = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/nbs-legacy"
 
