@@ -88,8 +88,6 @@ kubectl get pods
 echo "helm charts installed"
 helm list
 
-helm_remove modernization-api 
-exit 1
 helm_remove nnd-service
 helm_remove person-reporting-service
 helm_remove post-processing-reporting-service
