@@ -183,7 +183,8 @@ update_defaults "HOSTED_ZONE_ID" "$HOSTED_ZONE_ID"
 #create_route53_records "$HOSTED_ZONE_ID" "dataingestion.$SITE_NAME.$EXAMPLE_DOMAIN" "$NLB_DNS_NAME"
 
 # Example usage of manage_dns_record function for app, nifi, dataingestion subdomains
-for subdomain in app nifi dataingestion; do
+#for subdomain in app nifi dataingestion; do
+for subdomain in app nifi data; do
     record_name="${subdomain}.${SITE_NAME}.${EXAMPLE_DOMAIN}"
     echo manage_dns_record "$HOSTED_ZONE_ID" "$record_name" "$NLB_DNS_NAME"
     step_pause

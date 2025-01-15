@@ -88,6 +88,8 @@ kubectl get pods
 echo "helm charts installed"
 helm list
 
+helm_remove modernization-api 
+exit 1
 helm_remove nnd-service
 helm_remove person-reporting-service
 helm_remove post-processing-reporting-service
@@ -99,7 +101,9 @@ helm_remove kafka-connect-sink
 helm_remove debezium
 helm_remove liquibase
 
-helm_remove dataingestion-service
+helm_remove dataingestion
+#helm_remove dataingestion-service
+
 helm_remove nbs-gateway 
 helm_remove nifi 
 helm_remove modernization-api 
