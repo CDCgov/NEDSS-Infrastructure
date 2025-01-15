@@ -4,9 +4,9 @@
 DEBUG_MODE=0
 STEP_MODE=0
 TEST_MODE=0
-RELEASE_VER=v7.8.0
-INFRA_VER=v1.2.22
-HELM_VER=v7.8.0
+RELEASE_VER=v7.8.1
+INFRA_VER=v1.2.23
+HELM_VER=v7.8.1
 INSTALL_DIR=nbs_install
 SOURCE="github"  # Default to GitHub, other options are 's3' and 'local'
 
@@ -22,6 +22,14 @@ step_pause() {
     [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
 }
 
+# Load saved defaults
+load_defaults() {
+    if [ -f "$DEFAULTS_FILE" ]; then
+        source "$DEFAULTS_FILE"
+        log_debug "Loaded defaults from $DEFAULTS_FILE"
+    fi
+}
+
 # Function to update defaults file
 update_defaults() {
     local var_name=$1
@@ -30,14 +38,6 @@ update_defaults() {
         sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
     else
         echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
-    fi
-}
-
-# Load saved defaults
-load_defaults() {
-    if [ -f "$DEFAULTS_FILE" ]; then
-        source "$DEFAULTS_FILE"
-        log_debug "Loaded defaults from $DEFAULTS_FILE"
     fi
 }
 
@@ -50,7 +50,7 @@ while getopts "dsi:r:lc:" opt; do
         r ) RELEASE_VER=${OPTARG} ;;
         l ) SOURCE="local" ;;
         c ) COPY_FROM_DIR=${OPTARG} ;;
-        \? ) echo "Usage: cmd [-d] [-s] [-i install_directory] [-r release_version] [-l] [-c copy_from_directory]"
+        \? ) echo "Usage: cmd [-d] [-s] [-i install_directory] [-r release_version (e.g. v7.8.1) ] [-l] [-c copy_from_directory]"
              exit 1 ;;
     esac
 done
@@ -98,11 +98,11 @@ load_defaults
 step_pause
 
 # Prompt for missing values with defaults
-read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
+read -p "Please enter Helm version e.g. v7.8.1 [${HELM_VER_DEFAULT}]: " input_helm_ver
 HELM_VER=${input_helm_ver:-$HELM_VER_DEFAULT}
 update_defaults HELM_VER $HELM_VER
 
-read -p "Please enter Infrastructure version [${INFRA_VER_DEFAULT}]: " input_infra_ver
+read -p "Please enter Infrastructure version e.g. v1.2.23 [${INFRA_VER_DEFAULT}]: " input_infra_ver
 INFRA_VER=${input_infra_ver:-$INFRA_VER_DEFAULT}
 update_defaults INFRA_VER $INFRA_VER
 

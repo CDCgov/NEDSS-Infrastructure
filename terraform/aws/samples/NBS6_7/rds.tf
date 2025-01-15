@@ -1,8 +1,8 @@
-# Serial: 2024121601
+# Serial: 2025011501
 
 module "rds" {
 
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/rds?ref=v1.2.22"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/rds?ref=v1.2.23"
 
   #source  = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/rds"
 

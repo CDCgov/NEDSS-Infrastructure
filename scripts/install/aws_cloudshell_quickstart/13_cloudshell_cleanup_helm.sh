@@ -99,7 +99,9 @@ helm_remove kafka-connect-sink
 helm_remove debezium
 helm_remove liquibase
 
-helm_remove dataingestion-service
+helm_remove dataingestion
+#helm_remove dataingestion-service
+
 helm_remove nbs-gateway 
 helm_remove nifi 
 helm_remove modernization-api 

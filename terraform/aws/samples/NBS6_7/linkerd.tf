@@ -1,7 +1,7 @@
-# Serial: 2024121601
+# Serial: 2025011501
 
 module "linkerd" {
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/linkerd?ref=v1.2.22"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/linkerd?ref=v1.2.23"
 
   # Local testing
   # source  = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/linkerd"

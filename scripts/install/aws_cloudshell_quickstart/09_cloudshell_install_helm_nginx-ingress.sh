@@ -8,7 +8,7 @@
 # for AWS account and Kubernetes cluster connectivity.
 
 # Default values
-HELM_VER_DEFAULT=v7.8.0
+HELM_VER_DEFAULT=v7.8.1
 INGRESS_VER=4.7.2
 INSTALL_DIR_DEFAULT=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
@@ -153,4 +153,4 @@ echo " make sure private route 53 zone is bound to modern vpc"
 echo " make sure private dns record for jdbc host is in private domain"
 echo " make sure you can connect from modern-private-subnets (EKS) to dns"
 echo " verify NLB is now created and map dns names for app, nifi,"
-echo " dataingestion pointing to NLB and app-classic to alb"
+echo " data pointing to NLB and app-classic to alb"

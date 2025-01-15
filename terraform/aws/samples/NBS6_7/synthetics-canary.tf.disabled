@@ -1,7 +1,7 @@
-# Serial: 2024121601
+# Serial: 2025011501
 
 module "synthetics-canary" {
-  #source    = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/synthetics-canary?ref=1.2.22" 
+  #source    = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/synthetics-canary?ref=1.2.23" 
   source = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/synthetics-canary"
   # for now we are configuring emails manually to avoid adding them to git
   # or "secrets"

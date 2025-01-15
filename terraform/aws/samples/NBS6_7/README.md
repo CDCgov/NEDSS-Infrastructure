@@ -1,6 +1,7 @@
-# Serial: 2024101601
+# Serial: 2025015501
 # SAMPLES
 
+# Last updated/tested 20250115
 This directory contains sample terraform deployment files for a combined NBS6 and NBS 7 install
 You will need to contact CDC to get access to the latest database snapshot
 

@@ -19,10 +19,11 @@
 #  -d : Enable debug mode for verbose output
 #  -s : Enable step mode to proceed through the script interactively
 
-HELM_VER=v7.8.0
+HELM_VER=v7.8.1
 INSTALL_DIR=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
-SLEEP_TIME=60
+#SLEEP_TIME=60
+SLEEP_TIME=10
 #SLEEP_TIME=10
 DEBUG=0
 STEP=0
