@@ -1,4 +1,4 @@
-# Serial: 2025011501
+# Serial: 2025012201
 
 #########################################################################################
 # Modernization VPC Variables
@@ -97,6 +97,14 @@ variable "eks_disk_size" {
   type        = number
   default     = "20"
 }
+
+# force update if needed and not defaulted in the latest version of eks_nbs
+# module
+#variable "eks_cluster_version" {
+#  description = "version of eks cluster"
+#  type        = string
+#  default     = "1.29"
+#}
 
 variable "eks_instance_type" {
   description = "Instance type to use in EKS cluster"

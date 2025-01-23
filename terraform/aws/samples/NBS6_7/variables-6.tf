@@ -1,4 +1,4 @@
-# Serial: 2025011501
+# Serial: 2025012201
 
 #########################################################################################
 # Legacy VPC Variables
@@ -117,16 +117,19 @@ variable "manage_master_user_password" {
 # end Database settings
 
 # classic on EC2 settings
+# Local to you 
 variable "ec2_key_name" {
   description = "Precreated EC2 key name to manage classic instance"
   type        = string
 }
+# this needs to be updated every few months as AWS deregisters shared AMIs
 variable "ami" {
-  description = "AMI for EC2 instance, this is stock windows 2019 server base, default AWS us-east1 as of Dec 2024"
+  description = "AMI for EC2 instance, this is stock windows 2019 server base, default AWS us-east1 as of Jan 2025"
   type        = string
-  #default     = "ami-093693792d26e4373"
-  default     = "ami-05b4ded3ceb71e470"
+  # server base
+  default     = "ami-049dd04cca2dc5594"
 }
+
 variable "ec2_instance_type" {
   description = "Instance type for EC2 instance"
   type        = string
@@ -147,6 +150,13 @@ variable "ec2_enable_user_data" {
 
 # NBS container on ECS
 
+# change with each release
+variable "docker_image" {
+  description = "Docker Image for Classic NBS"
+  type        = string
+  default     = "quay.io/us-cdcgov/cdc-nbs-modernization/nbs6:6.0.16.1"
+}
+
 variable "shared_services_accountid" {
   description = "Shared Services Account ID. Needed to pull from ECR"
   type        = string
@@ -163,12 +173,6 @@ variable "deploy_alb_dns_record" {
   description = "Deploy alb dns record"
   type        = bool
   default     = true
-}
-
-variable "docker_image" {
-  description = "Docker Image for Classic NBS"
-  type        = string
-  default     = "quay.io/us-cdcgov/cdc-nbs-modernization/nbs6:6.0.16"
 }
 
 variable "nbs_github_release_tag" {

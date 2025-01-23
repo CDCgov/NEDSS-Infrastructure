@@ -12,7 +12,6 @@ module "dns" {
 
   domain_name     = var.domain_name
   sub_domain_name = var.sub_domain_name
-  modern_vpc_id   = module.legacy-vpc.vpc_id
   legacy_vpc_id   = module.legacy-vpc.vpc_id
   # nbs_db_host_name    = module.nbs-legacy.nbs_db_address
   nbs_db_host_name    = module.rds.nbs_db_address
@@ -20,5 +19,13 @@ module "dns" {
   tags                = var.tags
   hosted-zone-iam-arn = var.hosted-zone-iam-arn
   hosted-zone-id      = var.hosted-zone-id
+
+  # FIXME: fix this later
+  # toggle these for SAMPLES in one VPC 
+  #modern_vpc_id   = module.modernization-vpc.vpc_id
+  modern_vpc_id   = module.legacy-vpc.vpc_id
+
+  # comment this for SAMPLES in one account
+  # XXX generates an error
   # hosted-zone-account = var.hosted-zone-account
 }
