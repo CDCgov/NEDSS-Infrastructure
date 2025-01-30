@@ -419,6 +419,7 @@ then
 		echo "running search and replace on development containers"
     	apply_substitutions_and_copy "${HELM_DIR}/charts/person-reporting-service/values.yaml" "${HELM_DIR}/charts/person-reporting-service" "$SITE_NAME"
     	apply_substitutions_and_copy "${HELM_DIR}/charts/organization-reporting-service/values.yaml" "${HELM_DIR}/charts/organization-reporting-service" "$SITE_NAME"
+    	apply_substitutions_and_copy "${HELM_DIR}/charts/srte-data-service/values.yaml" "${HELM_DIR}/charts/srte-data-service" "$SITE_NAME"
 	fi
     echo "NOTICE: Configuration files have been updated and are ready for use."
 else
