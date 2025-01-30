@@ -40,7 +40,7 @@ NBS6_7 in preference to this sample
 
 
 ## File Descriptions
-Used in both NBS Classic(6) and NBS 7:
+### Used in both NBS Classic(6) and NBS 7:
 ---
 - dns.tf - deploys required records in a locally hosted route53 subdomain and can delegate parent domain hosting if hosted in the same account or an account with a cross account role defined 
 - variables-common.tf - variable definition and defaults shared between NBS6 and 7
@@ -49,7 +49,7 @@ Used in both NBS Classic(6) and NBS 7:
 - inputs.tfvars.tpl - template of file defining variables for local setup -
   should be copied and customized 
 
-NBS6/Classic
+### NBS6/Classic
 ---
 - ebs.tf - AWS EC2 volume if NBS6 is hosted on an AWS virtual machine
 - nbs-legacy.tf - EC2, container and other resources used for NBS6
@@ -57,7 +57,7 @@ NBS6/Classic
 - variables-6.tf - variable definition and defaults for NBS6
 - rds.tf - deploys NBS6 database on an AWS RDS instance
 
-NBS7
+### NBS7
 ---
 - efs.tf - persistent file store for containers
 - eks.tf - AWS managed kubernetes service
