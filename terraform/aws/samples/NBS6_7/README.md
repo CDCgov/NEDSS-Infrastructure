@@ -10,9 +10,6 @@ This samples subdirectory assumes you have full administrative access to an AWS 
 It will deploy separate VPCs for NBS6 (Classic) and NBS7 and integrate them
 together.
 
-## Files
-- TBD
-
 ## Preparation
 - you will need an example RDS snapshot with sample data from of the NBS Classic system, this may be
   shared one of two ways from CDC
@@ -50,3 +47,32 @@ don't have permissions from the user running terraform
   install with the exception of WHICH samples directory to copy
 
 
+## File Descriptions
+Used in both NBS Classic(6) and NBS 7:
+--------------
+dns.tf - deploys required records in a locally hosted route53 subdomain and can delegate parent domain hosting if hosted in the same account or an account with a cross account role defined 
+variables-common.tf - variable definition and defaults shared between NBS6 and 7
+terraform.tf.tpl 
+
+NBS6/Classic
+------------
+ebs.tf - AWS EC2 volume if NBS6 is hosted on an AWS virtual machine
+nbs-legacy.tf - EC2, container and other resources used for NBS6
+nbs-legacy-vpc.tf - VPC used for NBS 6 only
+variables-6.tf - variable definition and defaults for NBS6
+rds.tf - deploys NBS6 database on an AWS RDS instance
+
+NBS7
+----------------------------
+efs.tf - persistent file store for containers
+eks.tf - AWS managed kubernetes service
+fluentbit.tf - sets up fluentbit for containers and other resources
+kms.tf - managed KMS key
+linkerd.tf - implements linkerd for MTLS 
+msk.tf - AWS managed kafka service
+nbs-modern-vpc.tf - VPC for NBS7 
+prometheus.tf.disabled - deploys AWS managed prometheus and graphana with a sample dashboard disabled by default with expectation users might have alternative in place
+s3-buckets.tf - fluentbit (and other buckets if needed)
+synthetics-canary.tf.disabled - deploys an AWS cloudwatch synthetics canary to perform basic health checks- disabled  
+variables-7.tf - variable definition and defaults for NBS7
+vpc-endpoints.tf - deploys AWS vpc endpoints when needed
