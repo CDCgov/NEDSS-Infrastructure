@@ -52,7 +52,8 @@ Used in both NBS Classic(6) and NBS 7:
 --------------
 - dns.tf - deploys required records in a locally hosted route53 subdomain and can delegate parent domain hosting if hosted in the same account or an account with a cross account role defined 
 - variables-common.tf - variable definition and defaults shared between NBS6 and 7
-- terraform.tf.tpl 
+- terraform.tf.tpl - template to configure terraform backend where state
+  file is stored, example uses s3
 
 NBS6/Classic
 ------------
