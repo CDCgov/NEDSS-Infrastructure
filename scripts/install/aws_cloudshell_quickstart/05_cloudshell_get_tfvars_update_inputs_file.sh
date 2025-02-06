@@ -9,7 +9,7 @@
 
 # Default values
 #INSTALL_DIR=~/nbs_install
-INFRA_VER=v1.2.23
+INFRA_VER=v1.2.25
 # is this needed?
 INSTALL_DIR_DEFAULT=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
