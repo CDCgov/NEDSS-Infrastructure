@@ -9,12 +9,17 @@
 # initialize password to something 
 TMP_PASSWORD=changeme8675309
 
+PASSWORD_LENGTH=8
+GENERATE_RANDOM_PASSWORD=false
+
 
 # Usage function to display help
 usage() {
     echo "Usage: $0 -p <password> -f <csv_filename>"
     echo "  -f <csv_filename>    Specify the input CSV file, format: email, firstname, lastname, userid, NO HEADER LINES!"
-    echo "  -p <password>        initial password for all users, should require changing, STRONGLY encouraged to use this flag"
+    echo "  -p <password>        initial password for all users, should require changing, STRONGLY encouraged to use this or -r flag"
+    echo "  -r                   Generate a pseudo-random password."
+    echo "  -l <password_length> Specify the length of the generated password (default: 8)."
     echo "  -h                   Display this help message."
     echo "                       it will generate an sql file to import into ODSE database and a"
     echo "                       json file to import into keycloak nbs-users realm"
@@ -22,13 +27,19 @@ usage() {
 }
 
 # Parse command-line arguments
-while getopts ":f:p:h" opt; do
+while getopts ":f:p:rl:h" opt; do
   case $opt in
     f)
       input_file="$OPTARG"
       ;;
     p)
       TMP_PASSWORD="$OPTARG"
+      ;;
+    r)
+      GENERATE_RANDOM_PASSWORD=true
+      ;;
+    l)
+      PASSWORD_LENGTH="$OPTARG"
       ;;
     h)
       usage
@@ -61,6 +72,11 @@ fi
 FILE_PREFIX=$(basename -s .csv ${input_file})
 sql_output="${FILE_PREFIX}_create_nbs6_users.sql"
 json_output="${FILE_PREFIX}_create_keycloak_users.json"
+updated_csv="${FILE_PREFIX}_with_passwords.csv"
+
+generate_password() {
+    tr -dc 'A-Za-z0-9@#%&*' </dev/urandom | head -c "$PASSWORD_LENGTH"
+}
 
 
 # SQL Header, Template, and Footer
@@ -335,9 +351,10 @@ EOF
 )
 
 
-# Create or empty the output files
+# Create or empty the output files using headers
 echo "$sql_header" > "$sql_output"
 echo "$json_header" > "$json_output"
+echo "email,firstname,lastname,userid,password" > "$updated_csv"
 
 # tail -n +1 "$input_file" | while IFS=',' read -r email first_name last_name username
 # Read CSV and replace placeholders, deal with dos formatted files/lines
@@ -349,6 +366,11 @@ do
   first_name=$(echo "$first_name" | xargs)
   last_name=$(echo "$last_name" | xargs)
   username=$(echo "$username" | xargs)
+
+  if [[ $GENERATE_RANDOM_PASSWORD == true ]]; then
+      TMP_PASSWORD=$(generate_password)
+  fi
+  echo "$email,$first_name,$last_name,$username,$TMP_PASSWORD" >> "$updated_csv"
 
   # Replace placeholders in SQL
   sql_entry=${sql_template//TMP_USERNAME/$username}
@@ -366,7 +388,10 @@ do
   # Append entries to the output files
   echo "$sql_entry", >> "$sql_output"
   echo "  $json_entry," >> "$json_output"
+
 done
+
+echo "Updated CSV with passwords saved to $updated_csv"
 
 # Determine if GNU sed or BSD sed is being used
 # macs require an argument to -i flag

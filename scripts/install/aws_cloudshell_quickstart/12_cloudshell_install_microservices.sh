@@ -19,11 +19,10 @@
 #  -d : Enable debug mode for verbose output
 #  -s : Enable step mode to proceed through the script interactively
 
-HELM_VER=v7.8.1
+HELM_VER=v7.8.2
 INSTALL_DIR=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
-#SLEEP_TIME=60
-SLEEP_TIME=10
+SLEEP_TIME=60
 #SLEEP_TIME=10
 DEBUG=0
 STEP=0
@@ -144,7 +143,8 @@ cd ${HELM_DIR}/charts
 check_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
-check_dns dataingestion.${SITE_NAME}.${EXAMPLE_DOMAIN};
+#check_dns dataingestion.${SITE_NAME}.${EXAMPLE_DOMAIN};
+check_dns data.${SITE_NAME}.${EXAMPLE_DOMAIN};
 
 #####################################################################
 # linkerd/mtls
