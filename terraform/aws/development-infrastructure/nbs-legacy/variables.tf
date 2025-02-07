@@ -83,9 +83,9 @@ variable "ecs_memory" {
 }
 
 variable "ami" {
-  description = "AMI for EC2 instance. Required if deploy_on_ecs == false."
+  description = "AMI for EC2 instance. (Defaul) Null will use latest Windows 2022 Core Base ami. Required if deploy_on_ecs == false."
   type        = string
-  default = ""
+  default = null
 }
 
 # variable "legacy_vpc_id" {

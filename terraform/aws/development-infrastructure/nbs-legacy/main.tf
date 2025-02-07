@@ -4,11 +4,14 @@
 # NBS application server
 module "app_server" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 4.0"
+  version = "~> 5.7"
   count = var.deploy_on_ecs ? 0 : 1
+
+  user_data_replace_on_change = true
 
   name                   = "${var.resource_prefix}-app-server"
   ami                    = var.ami
+  ami_ssm_parameter      = "/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base"
   instance_type          = var.instance_type
   vpc_security_group_ids = ["${module.app_sg.security_group_id}"]
   subnet_id              = var.subnet_ids[0]
@@ -40,8 +43,9 @@ module "app_server" {
     }
   ]
 
-  user_data = <<EOF
+  user_data = <<-EOT
 <powershell>
+
 #Initialize hastable for data sources
 $connectionURLs = @{ "NedssDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_odse";
                         "MsgOutDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";
@@ -61,10 +65,16 @@ Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 Copy-S3Object -BucketName "${var.artifacts_bucket_name}" -Key "nbs/${var.deployment_package_key}" -LocalFile D:\${var.deployment_package_key}
 Expand-Archive -Path D:\${var.deployment_package_key} -DestinationPath D:\
 
-# Set environment variables thatdon't go away if server reboots or stopped and restarted 
-[Environment]::SetEnvironmentVariable("JAVA_HOME", "D:\wildfly-10.0.0.Final\Java\jdk1.8.0_181", "Machine")
+# Set environment variables thatdon't go away if server reboots or stopped and restarted
+[Environment]::SetEnvironmentVariable("JAVA_HOME", "D:\wildfly-10.0.0.Final\Java\jdk8u412b08", "Machine")
 [Environment]::SetEnvironmentVariable("JBOSS_HOME", "D:\wildfly-10.0.0.Final", "Machine")
-[Environment]::SetEnvironmentVariable("Path", $env:Path + ";D:\wildfly-10.0.0.Final\Java\jdk1.8.0_181\bin", "Machine")
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";D:\wildfly-10.0.0.Final\Java\jdk8u412b08\bin", "Machine")
+
+# Set local variables for use in script
+$env:JAVA_HOME="D:\wildfly-10.0.0.Final\Java\jdk8u412b08"
+$env:JBOSS_HOME="D:\wildfly-10.0.0.Final"
+$env:Path=$env:Path + ";D:\wildfly-10.0.0.Final\Java\jdk8u412b08\bin"
+
 
 #Replace datasources in standalone.xml file
 $xmlFileName = "D:\wildfly-10.0.0.Final\nedssdomain\configuration\standalone.xml"
@@ -91,14 +101,13 @@ $subsystems | % {
 #Save XML file after connection url replacement
 $xmlDoc.Save($xmlFileName)
 
-#Install wildfly windows service            
+#Install wildfly windows service   
 Set-Location -Path "D:\wildfly-10.0.0.Final\bin\service"
-.\service.bat install
+.\service.bat install 
 
 #Set service to start automatically and start the service
 #Set-Service Wildfly -StartupType Automatic
 sc.exe config Wildfly start= delayed-auto
-
 
 ############# WIN TASK SCHEDULES #################################################################
 ######## Upload script to D drive 
@@ -155,13 +164,14 @@ Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Pri
 Start-Service Wildfly
 Restart-Computer -Force
 </powershell>
-EOF   
+<powershellArguments>-ExecutionPolicy Unrestricted -NonInteractive</powershellArguments>
+EOT   
 }
 
 # Add in-line IAM role for EC2 access to shared services bucket
 resource "aws_iam_role_policy" "shared_s3_access" {
   count = var.deploy_on_ecs || var.local_bucket ? 0 : 1
-  name = "cross_account_s3_access_policy"
+  name = "${var.resource_prefix}-cross-account-s3-access-policy"
   role = module.app_server[0].iam_role_name
 
   # Terraform's "jsonencode" function converts a
