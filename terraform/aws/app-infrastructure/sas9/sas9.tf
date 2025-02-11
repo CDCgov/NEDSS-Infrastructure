@@ -70,7 +70,6 @@ resource "aws_instance" "sas9" {
   associate_public_ip_address = false
 
   root_block_device {
-    device_name = "/dev/xvda"  # This is the root device for most Linux instances
     volume_size = var.sas_root_volume_size # 200         # The size of the root volume, which is 200GB in your case
     volume_type = "gp3"       # You can change this to another volume type (e.g., gp2, io1)
     encrypted   = true        # Enable encryption for the root volume
