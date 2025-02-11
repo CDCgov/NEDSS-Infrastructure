@@ -27,7 +27,7 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_role_policy" {
 }
 
 resource "aws_iam_instance_profile" "sas_iam_profile" {
-  name = "sas_iam_profile"
+  name = "sas-iam-profile"
   role = aws_iam_role.sas_role.name
 }
 
