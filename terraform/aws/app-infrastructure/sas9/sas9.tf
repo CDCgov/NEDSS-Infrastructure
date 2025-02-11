@@ -66,7 +66,7 @@ resource "aws_instance" "sas9" {
   key_name      = var.sas_keypair_name  # Create this key in the account before launching
   subnet_id = var.sas_subnet_id
   iam_instance_profile = aws_iam_instance_profile.sas_iam_profile.name
-  vpc_security_group_ids      = [aws_security_group.sas_sg.name]
+  vpc_security_group_ids      = [aws_security_group.sas_sg.id]
   associate_public_ip_address = false
 
   root_block_device {
