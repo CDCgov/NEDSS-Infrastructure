@@ -4,7 +4,7 @@
 
 # IAM Role for EC2 instance with SSM managed instance core policy
 resource "aws_iam_role" "sas_role" {
-  name               = "sas9-role"
+  name               = "sas-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_role_policy" {
 
 # Security Group to allow vpn and intra vpc traffic
 resource "aws_security_group" "sas_sg" {
-  name        = "sas9-sg"
+  name        = "sas-sg"
   description = "Allow vpn and intra vpc traffic"
 
   ingress {
@@ -64,10 +64,10 @@ resource "aws_instance" "sas9" {
 
   root_block_device {
     device_name = "/dev/xvda"  # This is the root device for most Linux instances
-    volume_size = 200         # The size of the root volume, which is 200GB in your case
+    volume_size = var.sas_root_volume_size # 200         # The size of the root volume, which is 200GB in your case
     volume_type = "gp3"       # You can change this to another volume type (e.g., gp2, io1)
     encrypted   = true        # Enable encryption for the root volume
-    kms_key_id  = aws_kms_key.my_kms_key.id  # Reference the KMS key for encryption
+    kms_key_id  = var.sas_kms_key_id  # Reference the KMS key for encryption
   }
   tags = {
     Name = "SAS9.4"
