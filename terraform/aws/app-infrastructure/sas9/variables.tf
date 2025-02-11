@@ -27,3 +27,11 @@ variable "sas_root_volume_size" {
     description = "root volume size for sas server"
     default = "200"
 }
+
+variable "sas_subnet_id" {
+    description = "private subnet for sas server"
+}
+
+variable "sas_vpc_id" {
+    description = "vpc id for the sas security group"
+}

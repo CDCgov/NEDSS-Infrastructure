@@ -26,10 +26,16 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_instance_profile" "sas_iam_profile" {
+  name = "sas_iam_profile"
+  role = aws_iam_role.sas_role.name
+}
+
 # Security Group to allow vpn and intra vpc traffic
 resource "aws_security_group" "sas_sg" {
   name        = "sas-sg"
   description = "Allow vpn and intra vpc traffic"
+  vpc_id = var.sas_vpc_id
 
   ingress {
     from_port   = 22
@@ -58,9 +64,10 @@ resource "aws_instance" "sas9" {
   ami           = var.sas_ami # "ami-0599348d3e7f1a34e"  # SAS ami in shared services account. sas9.4-02-07-2025
   instance_type = var.sas_instance_type  # "t2.medium"
   key_name      = var.sas_keypair_name  # Create this key in the account before launching
-
+  subnet_id = var.sas_subnet_id
   iam_instance_profile = aws_iam_role.sas_role.name
   security_groups      = [aws_security_group.sas_sg.name]
+  associate_public_ip_address = false
 
   root_block_device {
     device_name = "/dev/xvda"  # This is the root device for most Linux instances
