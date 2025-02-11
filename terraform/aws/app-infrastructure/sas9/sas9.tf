@@ -65,7 +65,7 @@ resource "aws_instance" "sas9" {
   instance_type = var.sas_instance_type  # "t2.medium"
   key_name      = var.sas_keypair_name  # Create this key in the account before launching
   subnet_id = var.sas_subnet_id
-  iam_instance_profile = aws_iam_role.sas_role.name
+  iam_instance_profile = aws_iam_instance_profile.sas_iam_profile.name
   security_groups      = [aws_security_group.sas_sg.name]
   associate_public_ip_address = false
 
