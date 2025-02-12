@@ -45,6 +45,7 @@ module "app_server" {
 
   user_data = <<-EOT
 <powershell>
+Write-Verbose "NOTICE: turn off UAC"
 
 #Initialize hastable for data sources
 $connectionURLs = @{ "NedssDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_odse";
@@ -141,24 +142,53 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 #Create Scheduled Task
 Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
 
-########### DI app required task schedule
-$jobName = "ELRImporter Task"
-$repeat = (New-TimeSpan -Minutes 2)
-$currentDate= ([DateTime]::Now)
-$duration = $currentDate.AddYears(25) -$currentDate
-# Define the file path
-$scriptPath = "D:\wildfly-10.0.0.Final\nedssdomain\Nedss\BatchFiles\ELRImporter.bat"
-$argument = ">ElrImporter.output"
-$scriptDirPath = "D:\wildfly-10.0.0.Final\nedssdomain\Nedss\BatchFiles"
-$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType S4U
-# Action to run the specified batch file
-$action = New-ScheduledTaskAction -Execute "$scriptPath" -Argument "$argument" -WorkingDirectory "$scriptDirPath"
-# Trigger for daily execution once, repeating every 2 minutes
-$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval $repeat -RepetitionDuration $duration
-# Create scheduled task
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
-# Register the scheduled task
-Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+########### NBS Specific Windows Scheduled Tasks
+
+$env:scheduledTaskCsvFile="D:\nbsScheduledTasks.csv"
+Add-Content -Path $env:scheduledTaskCsvFile -Value "filename,scriptPathFromWorkDir,startTime,frequencyDays,frequencyHours,frequencyMinutes"
+
+$env:scheduledTaskCsv="${var.windows_scheduled_tasks}"
+if ($null -ne $env:scheduledTaskCsv -and $env:scheduledTaskCsv -ne "") {
+    Add-Content -Path $env:scheduledTaskCsvFile -Value ($env:scheduledTaskCsv.split(';').replace('"','').replace('''','') | ForEach-Object {$_.Trim()})
+}
+
+# Import new csv file and update
+$csvDataUpdated = Import-Csv -Path $env:scheduledTaskCsvFile
+
+# Set Work dir
+$WorkingDirectory = "$env:JBOSS_HOME\nedssdomain\Nedss\BatchFiles"
+
+# Modify Triggers
+foreach ($row in $csvDataUpdated) { 
+    Write-Output "Adding Task: $row.filename"
+
+    $days=[int]$row.frequencyDays
+    $hours=[int]$row.frequencyHours
+    $minutes=[int]$row.frequencyMinutes
+    $jobName = $row.filename
+    $repeat = (New-TimeSpan -Days $days -Hours $hours -Minutes $minutes)
+    $currentDate= ([DateTime]::Now)
+    $duration = $currentDate.AddYears(25) -$currentDate
+
+    # Define the file path    
+    $filename = $row.filename
+    $filename_noext = $filename.split('.')[0]
+    $scriptPathFromWorkDir = ".\" + $row.scriptPathFromWorkDir + $row.filename
+    $argument = "> " + $filename_noext + ".output 2>&1"
+    
+    $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType S4U
+    # Action to run the specified batch file
+    $action = New-ScheduledTaskAction -Execute "$scriptPathFromWorkDir" -Argument "$argument" -WorkingDirectory "$WorkingDirectory"
+    # Trigger for daily execution once, repeating every 2 minutes
+    $trigger = New-ScheduledTaskTrigger -Once -At $row.startTime -RepetitionInterval $repeat -RepetitionDuration $duration
+    # Create scheduled task
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
+    # Register the scheduled task
+    Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+
+    Write-Output "Scheduled task $WorkingDirectory\" + $row.scriptPathFromWorkDir + $row.filename
+}
+
 ################ END OF TASK SCHEDULES ###############################################################
 
 Start-Service Wildfly
