@@ -26,6 +26,11 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_role_policy_attachment" "ec2_readonly_role_policy" {
+  role       = aws_iam_role.sas_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+}
+
 resource "aws_iam_instance_profile" "sas_iam_profile" {
   name = "sas-iam-profile"
   role = aws_iam_role.sas_role.name
