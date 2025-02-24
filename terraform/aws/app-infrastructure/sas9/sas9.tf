@@ -100,11 +100,11 @@ resource "aws_instance" "sas9" {
         RUN_SQL=$${RUN_SQL:-true}  # Control SQL execution (default: true)
 
         # Default values if parameters are missing
-        DEFAULT_RDS_ENDPOINT="example-rds-endpoint"
-        DEFAULT_SQL_USERNAME="nbs_ods"
-        DEFAULT_SQL_PASSWORD="ods"
-        DEFAULT_EXAMPLE_SAS_USERNAME="SAS"
-        DEFAULT_EXAMPLE_SAS_PASSWORD="test"
+        DEFAULT_RDS_ENDPOINT="EXAMPLE-rds-endpoint"
+        DEFAULT_SQL_USERNAME="EXAMPLE-DB"
+        DEFAULT_SQL_PASSWORD="EXAMPLE-DB-PASS"
+        DEFAULT_EXAMPLE_SAS_USERNAME="EXAMPLE-SAS-USER"
+        DEFAULT_EXAMPLE_SAS_PASSWORD="EXAMPLE-SAS-PASS"
 
         # Ensure REPLACE is false if SYSPREP is true
         if [[ "$SYSPREP" == "true" ]]; then
