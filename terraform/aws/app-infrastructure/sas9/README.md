@@ -29,3 +29,4 @@ TODO:
   AND custom files are already required on the AMI possibly we make all
 that is in user data live on the AMI and just call it from user data
 - add more error checking to script 
+- parameterize more values (DB, user, etc)
