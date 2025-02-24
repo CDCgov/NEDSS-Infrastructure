@@ -18,6 +18,7 @@ The values replaced in the template are derived from the parameter store,
 local IP address and AWS cli logic
 
 TODO: 
+- format README
 - change ec2 module
 - fetch license file from parameter store, secrets manager or local s3?
   don't recall size constraints
