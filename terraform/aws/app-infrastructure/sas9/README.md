@@ -27,4 +27,4 @@ TODO:
 - since the user data script can be used on the system for refresh later
   AND custom files are already required on the AMI possibly we make all
 that is in user data live on the AMI and just call it from user data
-
+- add more error checking to script 
