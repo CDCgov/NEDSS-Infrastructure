@@ -214,6 +214,49 @@ variable "internal" {
   default     = null
 }
 
+variable "param_store_key_id" {
+  description = "(optional) KMS key id used to encrypt parameter store SecureString to be read by EC2 instance"
+  type        = string
+  default = null
+}
+
+# Database credentials to be encrypted and stored as SecureStrings in parameter store
+variable "odse_user" {
+  description = "User for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "odse_pass" {
+  description = "Password for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "rdb_user" {
+  description = "User for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "rdb_pass" {
+  description = "Password for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "srte_user" {
+  description = "User for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "srte_pass" {
+  description = "Password for odse database"
+  type        = string
+  sensitive = true
+}
+
 
 # Variable which creates a Windows Scheduled Task for BatchFiles
 # Batch include .bat scripts located in the nbs6 subdirectory "BatchFiles" or anything within that subdirectory
@@ -229,4 +272,10 @@ variable "windows_scheduled_tasks" {
   description = "Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename,scriptPathFromWorkDir,startTime,frequencyDays,frequencyHours,frequencyMinutes;"
   type = string
   default = "ELRImporter.bat,, 6am, 0, 0, 2; MsgOutProcessor.bat,, 8pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12am, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7pm, 1, 0 , 0; covid19ETL.bat,, 5am, 1, 0 , 0;"
+}
+
+variable "java_memory" {
+  description = "Memory for Wildfly server to run Java (NOTE should not exceed 70% of VM memory)"
+  type = string
+  default = "4g"
 }
