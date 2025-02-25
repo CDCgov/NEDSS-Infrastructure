@@ -288,30 +288,3 @@ resource "aws_iam_role_policy" "shared_s3_access" {
 
   depends_on = [module.app_server]
 }
-
-# # Add in-line IAM role for EC2 access to decrypt parameter store SecureString
-# resource "aws_iam_role_policy" "param_store_access" {
-#   count = var.deploy_on_ecs ? 0 : 1
-#   name = "${var.resource_prefix}-app-server-kms-policy"
-#   role = module.app_server[0].iam_role_name
-
-#   # Terraform's "jsonencode" function converts a
-#   # Terraform expression result to valid JSON syntax.
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [      
-#       {
-#         Action = [
-#           "kms:Decrypt",
-#           "kms:DescribeKey",
-#           "kms:GenerateDataKey"
-#         ]
-#         Effect   = "Allow"
-#         Resource = try(var.param_store_key_id, "*")
-#       },
-#     ]
-#   })
-
-#   depends_on = [module.app_server]
-# }
-
