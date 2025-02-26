@@ -3,9 +3,11 @@
 
 # NBS application server
 module "app_server" {
+  count = var.deploy_on_ecs ? 0 : 1
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 5.7"
-  count = var.deploy_on_ecs ? 0 : 1
+  depends_on = [ aws_ssm_parameter.odse_user, aws_ssm_parameter.odse_pass, aws_ssm_parameter.rdb_user, aws_ssm_parameter.rdb_pass, aws_ssm_parameter.srte_user, aws_ssm_parameter.srte_pass]
+  
 
   user_data_replace_on_change = true
 
@@ -22,6 +24,7 @@ module "app_server" {
   iam_role_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     AmazonS3FullAccess           = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    AmazonSSMReadOnlyAccess      =  "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
   }
 
   tags = var.tags
@@ -46,13 +49,7 @@ module "app_server" {
   user_data = <<-EOT
 <powershell>
 Write-Verbose "NOTICE: turn off UAC"
-
-#Initialize hastable for data sources
-$connectionURLs = @{ "NedssDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_odse";
-                        "MsgOutDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";
-                        "ElrXrefDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";
-                        "RdbDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=rdb";
-                        "SrtDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_srte"}
+reg.exe ADD "HKLM\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f 
             
 #Format windows D drive
 Initialize-Disk  -Number 1 -PartitionStyle "MBR"
@@ -66,16 +63,60 @@ Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 Copy-S3Object -BucketName "${var.artifacts_bucket_name}" -Key "nbs/${var.deployment_package_key}" -LocalFile D:\${var.deployment_package_key}
 Expand-Archive -Path D:\${var.deployment_package_key} -DestinationPath D:\
 
+# install AWS CLI and refresh Path
+Start-Process msiexec.exe -Wait -ArgumentList '/i https://awscli.amazonaws.com/AWSCLIV2.msi /qn /norestart'
+$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ";" + [System.Environment]::GetEnvironmentVariable('Path','User')
+
+# install sqlcmd
+mkdir C:\executables\sqlcmd
+Invoke-WebRequest -Uri https://github.com/microsoft/go-sqlcmd/releases/download/v1.8.2/sqlcmd-windows-amd64.zip -OutFile C:\executables\sqlcmd\sqlcmd-windows-amd64.zip
+Expand-Archive C:\executables\sqlcmd\sqlcmd-windows-amd64.zip C:\executables\sqlcmd\
+[Environment]::SetEnvironmentVariable("Path", "$env:Path;C:\executables\sqlcmd", "Machine")
+
+# Set WildFly Memory and JAVA_TOOL_OPTIONS
+$env:JAVA_OPTS="-Xms$env:${var.java_memory} -Xmx$env:${var.java_memory} -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Xss4m"
+$env:JAVA_OPTS="$env:JAVA_OPTS -Djava.net.preferIPv4Stack=true"
+$env:JAVA_OPTS="$env:JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman"
+$env:JAVA_TOOL_OPTIONS="-Dsun.stdout.encoding=cp437 -Dsun.stderr.encoding=cp437"
+
+# Obtain parameters from parameter store
+$odse_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.odse_user.name} --with-decryption | ConvertFrom-Json).parameter.value
+$odse_pass = $(aws ssm get-parameter --name ${aws_ssm_parameter.odse_pass.name} --with-decryption | ConvertFrom-Json).parameter.value
+$rdb_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.rdb_user.name} --with-decryption | ConvertFrom-Json).parameter.value
+$rdb_pass = $(aws ssm get-parameter --name ${aws_ssm_parameter.rdb_pass.name} --with-decryption | ConvertFrom-Json).parameter.value
+$srte_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.srte_user.name} --with-decryption | ConvertFrom-Json).parameter.value
+$srte_pass = $(aws ssm get-parameter --name ${aws_ssm_parameter.srte_pass.name} --with-decryption | ConvertFrom-Json).parameter.value
+
+#Initialize hastable for data sources
+$connectionURLs = @{ "NedssDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_odse";                     
+                     "MsgOutDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";                     
+                     "ElrXrefDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";                     
+                     "RdbDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=rdb";                    
+                     "SrtDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_srte"}
+
+$connectionURLs_user = @{ "NedssDS" = "$odse_user";                     
+                          "MsgOutDS" = "$odse_user";                    
+                          "ElrXrefDS" = "$odse_user";                     
+                          "RdbDS" = "$rdb_user";                     
+                          "SrtDS" = "$srte_user"}
+
+$connectionURLs_pass = @{ "NedssDS" = "$odse_pass";                     
+                          "MsgOutDS" = "$odse_pass";                     
+                          "ElrXrefDS" = "$odse_pass";                     
+                          "RdbDS" = "$rdb_pass";                     
+                          "SrtDS" = "$srte_pass"}
+
 # Set environment variables thatdon't go away if server reboots or stopped and restarted
 [Environment]::SetEnvironmentVariable("JAVA_HOME", "D:\wildfly-10.0.0.Final\Java\jdk8u412b08", "Machine")
 [Environment]::SetEnvironmentVariable("JBOSS_HOME", "D:\wildfly-10.0.0.Final", "Machine")
-[Environment]::SetEnvironmentVariable("Path", $env:Path + ";D:\wildfly-10.0.0.Final\Java\jdk8u412b08\bin", "Machine")
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\executables\sqlcmd;D:\wildfly-10.0.0.Final\Java\jdk8u412b08\bin", "Machine")
+[Environment]::SetEnvironmentVariable("JAVA_OPTS", $env:JAVA_OPTS, "Machine")
+[Environment]::SetEnvironmentVariable("JAVA_TOOL_OPTIONS", $env:JAVA_TOOL_OPTIONS, "Machine")
 
 # Set local variables for use in script
 $env:JAVA_HOME="D:\wildfly-10.0.0.Final\Java\jdk8u412b08"
 $env:JBOSS_HOME="D:\wildfly-10.0.0.Final"
 $env:Path=$env:Path + ";D:\wildfly-10.0.0.Final\Java\jdk8u412b08\bin"
-
 
 #Replace datasources in standalone.xml file
 $xmlFileName = "D:\wildfly-10.0.0.Final\nedssdomain\configuration\standalone.xml"
@@ -86,21 +127,36 @@ $xmlFileName = "D:\wildfly-10.0.0.Final\nedssdomain\configuration\standalone.xml
 #Read the existing XML file
 [xml]$xmlDoc = Get-Content $xmlFileName
 
-#Search and replace db host name in connection URL
-$subsystems = $xmlDoc. server.profile.subsystem
-$subsystems | % { 
-    if ($_.xmlns -eq "urn:jboss:domain:datasources:4.0") {
+#Search and replace db host name, user, pass in connection URL
+$subsystems = $xmlDoc.server.profile.subsystem
+$subsystems | ForEach-Object { 
+  if ($_.xmlns -eq "urn:jboss:domain:datasources:4.0") {
     $datsources = $_.datasources.datasource
-     $datsources | % {
-         if ( $connectionURLs.ContainsKey($_.'pool-name')) {
-             $_.'connection-url' =  $connectionURLs[$_.'pool-name']
-        }
-    }
-    }
+    $datsources | ForEach-Object {
+      if ( $connectionURLs.ContainsKey($_.'pool-name')) {
+        $_.'connection-url' =  $connectionURLs[$_.'pool-name']
+        $_.security.'user-name' = $connectionURLs_user[$_.'pool-name']
+        $_.security.password = $connectionURLs_pass[$_.'pool-name']
+      }
+    }    
+  }
 }
 
 #Save XML file after connection url replacement
 $xmlDoc.Save($xmlFileName)
+
+# Update static BatchFiles
+# covid19ETL.bat
+
+$setenvFilePath = "$env:JBOSS_HOME\nedssdomain\Nedss\BatchFiles\covid19ETL.bat"
+$currentContent = Get-Content -Path $setenvFilePath
+
+$setEchoOff = "@echo off"
+$setDATABASE_ENDPOINT = "set DATABASE_ENDPOINT=${var.nbs_db_dns}"
+$setrdb_user = "set rdb_user=$rdb_user"
+$setrdb_pass = "set rdb_pass=$rdb_pass"
+$newContent = $setEchoOff, $setDATABASE_ENDPOINT, $setrdb_user, $setrdb_pass, $currentContent
+$newContent | Set-Content -Path $setenvFilePath
 
 #Install wildfly windows service   
 Set-Location -Path "D:\wildfly-10.0.0.Final\bin\service"
@@ -194,7 +250,6 @@ foreach ($row in $csvDataUpdated) {
 Start-Service Wildfly
 Restart-Computer -Force
 </powershell>
-<powershellArguments>-ExecutionPolicy Unrestricted -NonInteractive</powershellArguments>
 EOT   
 }
 
