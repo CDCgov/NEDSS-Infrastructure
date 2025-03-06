@@ -90,6 +90,30 @@ resource "aws_iam_policy" "eks_permissions" {
         Effect   = "Allow"
         Resource = "*"
       },
+          {
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribeAutoScalingInstances",
+        "autoscaling:DescribeLaunchConfigurations",
+        "autoscaling:DescribeScalingActivities",
+        "ec2:DescribeImages",
+        "ec2:DescribeInstanceTypes",
+        "ec2:DescribeLaunchTemplateVersions",
+        "ec2:GetInstanceTypesFromInstanceRequirements",
+        "eks:DescribeNodegroup"
+      ],
+      "Resource": ["*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:SetDesiredCapacity",
+        "autoscaling:TerminateInstanceInAutoScalingGroup"
+      ],
+      "Resource": ["*"]
+    }
+
     ]
   })
 }
@@ -104,3 +128,4 @@ resource "aws_vpc_security_group_ingress_rule" "example" {
   ip_protocol = "tcp"
   to_port     = 443
 }
+
