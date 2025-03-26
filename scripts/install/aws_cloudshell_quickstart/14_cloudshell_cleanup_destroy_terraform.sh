@@ -1,8 +1,8 @@
 #!/bin/bash
-HELM_VER=v7.8.2
+HELM_VER=v7.9.0
 #exit 1
 INSTALL_DIR=~/nbs_install
-INFRA_VER=v1.2.24
+INFRA_VER=v1.2.31
 DEBUG=1
 STEP=1
 NOOP=0
@@ -107,13 +107,15 @@ terraform init
 echo "run  terraform plan"
 echo hit return to continue
 read junk
-terraform plan -var-file=inputs.tfvars
+#terraform plan -var-file=inputs.tfvars
+terraform plan
 
 
 echo "run  terraform destroy"
 echo hit return to continue
 read junk
-terraform destroy -var-file=inputs.tfvars
+#terraform destroy -var-file=inputs.tfvars
+terraform destroy
 
 remove_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 
@@ -124,4 +126,5 @@ read junk
 echo "run  terraform destroy"
 echo hit return to continue
 read junk
-terraform destroy -var-file=inputs.tfvars
+#terraform destroy -var-file=inputs.tfvars
+terraform destroy

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HELM_VER=v7.8.2
+HELM_VER=v7.9.0
 #echo "edit line 4 and comment out exit, then rerun"
 #exit 1
 INSTALL_DIR=~/nbs_install
