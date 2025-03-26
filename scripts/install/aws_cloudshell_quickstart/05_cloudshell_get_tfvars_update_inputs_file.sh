@@ -6,10 +6,12 @@
 # installation directory through flags or prompts. Features include saving defaults,
 # debug logging, step-by-step execution, a test mode, and preliminary access checks
 # for AWS account. 
+#
+# FIXME: swap inputs.tfvars references for terraform.tfvars
 
 # Default values
 #INSTALL_DIR=~/nbs_install
-INFRA_VER=v1.2.25
+INFRA_VER=v1.2.31
 # is this needed?
 INSTALL_DIR_DEFAULT=~/nbs_install
 DEFAULTS_FILE="nbs_defaults.sh"
@@ -18,8 +20,10 @@ DEBUG=1
 STEP=0
 NOOP=0
 PROMPT_CLASSIC=0
-INPUTS_FILE_TEMPLATE=inputs.tfvars.tpl
-NEW_INPUTS_FILE=inputs.tfvars
+#INPUTS_FILE_TEMPLATE=inputs.tfvars.tpl
+#NEW_INPUTS_FILE=inputs.tfvars
+INPUTS_FILE_TEMPLATE=terraform.tfvars.tpl
+NEW_INPUTS_FILE=terraform.tfvars
 
 # Function to log debug messages
 log_debug() {

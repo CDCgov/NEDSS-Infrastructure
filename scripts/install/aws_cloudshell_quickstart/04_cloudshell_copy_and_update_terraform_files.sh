@@ -4,9 +4,9 @@
 ACCT_NUM=0000000
 
 # modify this for each release or prompt and save to rc file
-INFRA_VER=v1.2.25
-#SAMPLE_DIR=NBS7_standard
-SAMPLE_DIR=NBS6_7
+INFRA_VER=v1.2.31
+SAMPLE_DIR=NBS7_standard
+#SAMPLE_DIR=NBS6_7
 
 #INSTALL_DIR=nbs_install
 INSTALL_DIR=./nbs_install
@@ -72,7 +72,7 @@ cd ${INSTALL_DIR}/nbs-infrastructure-${INFRA_VER}/terraform/aws/${SITE_NAME}
 
 #get/create local copy of secrets (can be scripted later) 
 
-# inputs.tfvars template modification documented elsewhere
+# terraform.tfvars template modification documented elsewhere
 
 # echo aws s3 cp s3://install-placeholder-<account-num>/terraform.tfvars terraform.tfvars.froms3
 # edit bucket name and uncomment
