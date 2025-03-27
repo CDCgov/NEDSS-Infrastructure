@@ -279,3 +279,9 @@ variable "java_memory" {
   type = string
   default = "4g"
 }
+
+variable "max_meta_space_size" {
+  description = "Max non-heap memory area used to store metadata such as class definitions, method data, and field data."
+  type = string
+  default = "512M"
+}
