@@ -20,6 +20,22 @@ This Terraform module sets up a SFTP service to load/validate/split/queue hl7 me
 
 ---
 
+## Getting Started
+
+1. Review and update `variables.tf` to match your environment
+2. Customize your `sites` and email lists
+3. Deploy using:
+
+```bash
+terraform init
+terraform apply
+```
+
+4. Confirm SNS subscriptions via email
+5. Upload test HL7 files to your site/publisher S3 folders via SFTP
+
+---
+
 ##  Inputs (Terraform Flags)
 
 - bucket_name
@@ -42,13 +58,15 @@ TBD – could include Transfer Server ID, SNS ARNs, etc.
 
 ## Folder Structure
 
+```bash
 lambda/
   copy_to_inbox.py         # HL7 validation, splitting, success/error notification
   summary_report.py        # Scans DynamoDB and sends summary email
-main.tf                    # Core infrastructure
-variables.tf               # Input variables
+main.tf                    # Core Terraform resources (S3, Lambda, Transfer Family, etc.)
+variables.tf               # Input variables and feature flags
 outputs.tf                 # Output values
-README.md                  # You are here ✅
+README.md                  # Documentation (you are here ✅)
+```
 
 ---
 
@@ -57,6 +75,8 @@ README.md                  # You are here ✅
 - [ ] Connect the `lambda/summary_report.py` Lambda to DynamoDB + SNS
 - [ ] Implement publisher-level filtering (e.g., include/exclude certain publishers)
 - [ ] Auto-expire DynamoDB records (TTL)
+- [ ] Connect downstream systems to consume inbox files
+- [ ] Add virus scanning or schema validation
 
 ---
 
