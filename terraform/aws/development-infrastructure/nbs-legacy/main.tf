@@ -74,7 +74,8 @@ Expand-Archive C:\executables\sqlcmd\sqlcmd-windows-amd64.zip C:\executables\sql
 [Environment]::SetEnvironmentVariable("Path", "$env:Path;C:\executables\sqlcmd", "Machine")
 
 # Set WildFly Memory and JAVA_TOOL_OPTIONS
-$env:JAVA_OPTS="-Xms${var.java_memory} -Xmx${var.java_memory} -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Xss4m"
+$env:JAVA_OPTS="-Xms${var.java_memory} -Xmx${var.java_memory} -XX:MetaspaceSize=96M"
+$env:JAVA_OPTS="$env:JAVA_OPTS -XX:MaxMetaspaceSize=${var.max_meta_space_size} -Xss4m -XX:+UseG1GC -XX:+AggressiveOpts"
 $env:JAVA_OPTS="$env:JAVA_OPTS -Djava.net.preferIPv4Stack=true"
 $env:JAVA_OPTS="$env:JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman"
 $env:JAVA_TOOL_OPTIONS="-Dsun.stdout.encoding=cp437 -Dsun.stderr.encoding=cp437"
