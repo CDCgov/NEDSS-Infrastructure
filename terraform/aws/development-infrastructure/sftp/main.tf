@@ -1,4 +1,3 @@
-
 resource "aws_s3_bucket" "hl7" {
   bucket = var.bucket_name
 }
@@ -30,21 +29,21 @@ resource "aws_sns_topic" "summary" {
 }
 
 resource "aws_sns_topic_subscription" "error_subs" {
-  for_each = var.enable_error_notifications ? toset(var.notification_emails.error) : {}
+  for_each = var.enable_error_notifications ? toset(var.notification_emails.error) : toset([])
   topic_arn = aws_sns_topic.error[0].arn
   protocol  = "email"
   endpoint  = each.value
 }
 
 resource "aws_sns_topic_subscription" "success_subs" {
-  for_each = var.enable_success_notifications ? toset(var.notification_emails.success) : {}
+  for_each = var.enable_success_notifications ? toset(var.notification_emails.success) : toset([])
   topic_arn = aws_sns_topic.success[0].arn
   protocol  = "email"
   endpoint  = each.value
 }
 
 resource "aws_sns_topic_subscription" "summary_subs" {
-  for_each = var.enable_summary_notifications ? toset(var.notification_emails.summary) : {}
+  for_each = var.enable_summary_notifications ? toset(var.notification_emails.summary) : toset([])
   topic_arn = aws_sns_topic.summary[0].arn
   protocol  = "email"
   endpoint  = each.value
