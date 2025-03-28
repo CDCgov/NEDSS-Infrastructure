@@ -1,3 +1,4 @@
+
 resource "aws_s3_bucket" "hl7" {
   bucket = var.bucket_name
 }
@@ -11,6 +12,70 @@ resource "aws_dynamodb_table" "hl7_errors" {
     name = "FileName"
     type = "S"
   }
+}
+
+resource "aws_transfer_server" "sftp" {
+  count                  = var.enable_sftp ? 1 : 0
+  identity_provider_type = "SERVICE_MANAGED"
+  endpoint_type          = "PUBLIC"
+  protocols              = ["SFTP"]
+}
+
+resource "aws_iam_role" "sftp_user" {
+  for_each = var.enable_sftp ? var.sites : {}
+
+  name = "hl7-transfer-user-${each.key}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "transfer.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+
+  inline_policy {
+    name = "sftp-user-access"
+    policy = jsonencode({
+      Version = "2012-10-17",
+      Statement = [
+        {
+          Effect = "Allow",
+          Action = ["s3:ListBucket"],
+          Resource = aws_s3_bucket.hl7.arn,
+          Condition = {
+            StringLike = {
+              "s3:prefix" = ["sites/${each.key}/*"]
+            }
+          }
+        },
+        {
+          Effect = "Allow",
+          Action = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+          Resource = "${aws_s3_bucket.hl7.arn}/sites/${each.key}/*"
+        }
+      ]
+    })
+  }
+}
+
+resource "aws_transfer_user" "sftp" {
+  for_each = var.enable_sftp ? toset(flatten([for site, pubs in var.sites : [for pub in pubs : "${site}/${pub}"]])) : {}
+
+  server_id           = aws_transfer_server.sftp[0].id
+  user_name           = replace(each.key, "/", "_")
+  role                = aws_iam_role.sftp_user[split("/", each.key)[0]].arn
+  home_directory_type = "LOGICAL"
+  home_directory_mappings = [
+    {
+      entry  = "/"
+      target = "/${var.bucket_name}/sites/${split("/", each.key)[0]}/${split("/", each.key)[1]}"
+    }
+  ]
+  ssh_public_key_body = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA..." # Replace with actual key
 }
 
 resource "aws_sns_topic" "error" {
@@ -71,15 +136,8 @@ resource "aws_iam_role_policy" "lambda_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket"
-        ],
-        Resource = [
-          aws_s3_bucket.hl7.arn,
-          "${aws_s3_bucket.hl7.arn}/*"
-        ],
+        Action = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
+        Resource = [aws_s3_bucket.hl7.arn, "${aws_s3_bucket.hl7.arn}/*"],
         Effect = "Allow"
       },
       {
@@ -110,14 +168,13 @@ resource "aws_iam_role_policy" "lambda_policy" {
 }
 
 resource "aws_lambda_function" "hl7_copy" {
-  count = var.enable_split_and_validate ? 1 : 0
-
-  filename         = "lambda/copy_to_inbox.zip"
-  function_name    = "hl7-copy-to-inbox"
-  role             = aws_iam_role.lambda_exec.arn
-  handler          = "copy_to_inbox.lambda_handler"
-  runtime          = "python3.11"
-  source_code_hash = filebase64sha256("lambda/copy_to_inbox.zip")
+  count             = var.enable_split_and_validate ? 1 : 0
+  filename          = "lambda/copy_to_inbox.zip"
+  function_name     = "hl7-copy-to-inbox"
+  role              = aws_iam_role.lambda_exec.arn
+  handler           = "copy_to_inbox.lambda_handler"
+  runtime           = "python3.11"
+  source_code_hash  = filebase64sha256("lambda/copy_to_inbox.zip")
 
   environment {
     variables = {
@@ -128,14 +185,13 @@ resource "aws_lambda_function" "hl7_copy" {
 }
 
 resource "aws_lambda_function" "hl7_summary" {
-  count = var.enable_summary_notifications ? 1 : 0
-
-  filename         = "lambda/summary_report.zip"
-  function_name    = "hl7-daily-summary"
-  role             = aws_iam_role.lambda_exec.arn
-  handler          = "summary_report.lambda_handler"
-  runtime          = "python3.11"
-  source_code_hash = filebase64sha256("lambda/summary_report.zip")
+  count             = var.enable_summary_notifications ? 1 : 0
+  filename          = "lambda/summary_report.zip"
+  function_name     = "hl7-daily-summary"
+  role              = aws_iam_role.lambda_exec.arn
+  handler           = "summary_report.lambda_handler"
+  runtime           = "python3.11"
+  source_code_hash  = filebase64sha256("lambda/summary_report.zip")
 
   environment {
     variables = {
@@ -145,20 +201,20 @@ resource "aws_lambda_function" "hl7_summary" {
 }
 
 resource "aws_cloudwatch_event_rule" "summary_schedule" {
-  count = var.enable_summary_notifications ? 1 : 0
-  name                = "hl7-daily-summary-schedule"
-  schedule_expression = var.summary_schedule_expression
+  count                = var.enable_summary_notifications ? 1 : 0
+  name                 = "hl7-daily-summary-schedule"
+  schedule_expression  = var.summary_schedule_expression
 }
 
 resource "aws_cloudwatch_event_target" "summary_target" {
-  count = var.enable_summary_notifications ? 1 : 0
-  rule      = aws_cloudwatch_event_rule.summary_schedule[0].name
-  target_id = "hl7-summary-lambda"
-  arn       = aws_lambda_function.hl7_summary[0].arn
+  count      = var.enable_summary_notifications ? 1 : 0
+  rule       = aws_cloudwatch_event_rule.summary_schedule[0].name
+  target_id  = "hl7-summary-lambda"
+  arn        = aws_lambda_function.hl7_summary[0].arn
 }
 
 resource "aws_lambda_permission" "allow_eventbridge" {
-  count = var.enable_summary_notifications ? 1 : 0
+  count         = var.enable_summary_notifications ? 1 : 0
   statement_id  = "AllowExecutionFromEventBridge"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.hl7_summary[0].function_name
