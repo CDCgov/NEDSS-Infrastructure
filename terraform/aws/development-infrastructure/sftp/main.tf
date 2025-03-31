@@ -9,17 +9,16 @@ resource "aws_s3_object" "site_folders" {
   key      = "sites/${each.key}/"
 }
 
-
-
 resource "aws_s3_object" "publisher_folders" {
-  for_each = var.enable_sftp ? {
-    for site, pubs in var.sites :
-    for pub in pubs :
-    "${site}/${pub}" => {
-      site = site
-      pub  = pub
+  for_each = var.enable_sftp ? merge([
+    for site, pubs in var.sites : {
+      for pub in pubs :
+      "${site}/${pub}" => {
+        site = site
+        pub  = pub
+      }
     }
-  } : {}
+  ]...) : {}
 
   bucket = aws_s3_bucket.hl7.id
   key    = "sites/${each.value.site}/${each.value.pub}/"
