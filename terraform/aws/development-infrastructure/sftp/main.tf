@@ -1,69 +1,89 @@
 
+
 resource "aws_s3_bucket" "hl7" {
   bucket = var.bucket_name
 }
 
-resource "aws_dynamodb_table" "hl7_errors" {
-  name         = "hl7-error-log"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "FileName"
-
-  attribute {
-    name = "FileName"
-    type = "S"
-  }
+resource "aws_s3_object" "site_folders" {
+  for_each = { for site, pubs in var.sites : site => pubs if var.enable_sftp }
+  bucket   = aws_s3_bucket.hl7.id
+  key      = "sites/${each.key}/"
 }
 
-resource "aws_transfer_server" "sftp" {
-  count                  = var.enable_sftp ? 1 : 0
-  identity_provider_type = "SERVICE_MANAGED"
-  endpoint_type          = "PUBLIC"
-  protocols              = ["SFTP"]
+resource "aws_s3_object" "publisher_folders" {
+  for_each = var.enable_sftp ? tomap({
+    for site, pubs in var.sites :
+    for pub in pubs :
+    "${site}/${pub}" => {
+      site = site
+      pub  = pub
+    }
+  }) : {}
+
+  bucket = aws_s3_bucket.hl7.id
+  key    = "sites/${each.value.site}/${each.value.pub}/"
+}/${pub}" => {
+      site = site
+      pub  = pub
+    }
+  } : {}
+
+  bucket = aws_s3_bucket.hl7.id
+  key    = "sites/${each.value.site}/${each.value.pub}/"
+}/${pub}" => {
+      site = site
+      pub  = pub
+    }
+  }) : {}
+
+  bucket = aws_s3_bucket.hl7.id
+  key    = "sites/${each.value.site}/${each.value.pub}/"
+}/${pub}" => { site = site, pub = pub }
+  }) : {}
+
+  bucket = aws_s3_bucket.hl7.id
+  key    = "sites/${each.value.site}/${each.value.pub}/"
+}]])}
+EOT : "${pair.site}/${pair.pub}" => pair } : {}
+  bucket   = aws_s3_bucket.hl7.id
+  key      = "sites/${each.value.site}/${each.value.pub}/"
+}/${pub}" => { site = site, pub = pub } if var.enable_sftp }
+  bucket   = aws_s3_bucket.hl7.id
+  key      = "sites/${each.value.site}/${each.value.pub}/"
 }
 
-resource "aws_iam_role" "sftp_user" {
-  for_each = var.enable_sftp ? var.sites : {}
+resource "aws_s3_object" "inbox_folders" {
+  for_each = { for site, pubs in var.sites : site => pubs if var.enable_sftp }
+  bucket   = aws_s3_bucket.hl7.id
+  key      = "sites/${each.key}/inbox/"
+}
 
-  name = "hl7-transfer-user-${each.key}"
+resource "tls_private_key" "user_keys" {
+  for_each = var.enable_sftp ? toset(flatten([for site, pubs in var.sites : [for pub in pubs : "${site}/${pub}"]])) : []
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "transfer.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
+resource "random_password" "user_passwords" {
+  for_each = tls_private_key.user_keys
+  length           = 16
+  special          = true
+  override_characters = "!@#%&*"
+}
 
-  inline_policy {
-    name = "sftp-user-access"
-    policy = jsonencode({
-      Version = "2012-10-17",
-      Statement = [
-        {
-          Effect = "Allow",
-          Action = ["s3:ListBucket"],
-          Resource = aws_s3_bucket.hl7.arn,
-          Condition = {
-            StringLike = {
-              "s3:prefix" = ["sites/${each.key}/*"]
-            }
-          }
-        },
-        {
-          Effect = "Allow",
-          Action = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
-          Resource = "${aws_s3_bucket.hl7.arn}/sites/${each.key}/*"
-        }
-      ]
-    })
-  }
+resource "aws_secretsmanager_secret" "user_secrets" {
+  for_each = tls_private_key.user_keys
+  name     = "sftp/${each.key}"
+}
+
+resource "aws_secretsmanager_secret_version" "user_secrets_version" {
+  for_each      = tls_private_key.user_keys
+  secret_id     = aws_secretsmanager_secret.user_secrets[each.key].id
+  secret_string = random_password.user_passwords[each.key].result
 }
 
 resource "aws_transfer_user" "sftp" {
-  for_each = var.enable_sftp ? toset(flatten([for site, pubs in var.sites : [for pub in pubs : "${site}/${pub}"]])) : {}
+  for_each = var.enable_sftp ? tls_private_key.user_keys : {}
 
   server_id           = aws_transfer_server.sftp[0].id
   user_name           = replace(each.key, "/", "_")
@@ -72,153 +92,99 @@ resource "aws_transfer_user" "sftp" {
   home_directory_mappings = [
     {
       entry  = "/"
-      target = "/${var.bucket_name}/sites/${split("/", each.key)[0]}/${split("/", each.key)[1]}"
+      target = "/sites/${split("/", each.key)[0]}/${split("/", each.key)[1]}"
     }
   ]
-  ssh_public_key_body = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA..." # Replace with actual key
+  ssh_public_key_body = each.value.public_key_openssh
+  password            = random_password.user_passwords[each.key].result
 }
 
-resource "aws_sns_topic" "error" {
-  count = var.enable_error_notifications ? 1 : 0
-  name  = "hl7-error-notifications"
+resource "random_password" "admin_passwords" {
+  for_each = var.enable_sftp ? var.sites : {}
+  length           = 20
+  special          = true
+  override_characters = "!@#%&*"
 }
 
-resource "aws_sns_topic" "success" {
-  count = var.enable_success_notifications ? 1 : 0
-  name  = "hl7-success-notifications"
+resource "aws_secretsmanager_secret" "admin_secrets" {
+  for_each = var.enable_sftp ? var.sites : {}
+  name     = "sftp_admins/${each.key}"
 }
 
-resource "aws_sns_topic" "summary" {
-  count = var.enable_summary_notifications ? 1 : 0
-  name  = "hl7-summary-notifications"
+resource "aws_secretsmanager_secret_version" "admin_secrets_version" {
+  for_each      = var.enable_sftp ? var.sites : {}
+  secret_id     = aws_secretsmanager_secret.admin_secrets[each.key].id
+  secret_string = random_password.admin_passwords[each.key].result
 }
 
-resource "aws_sns_topic_subscription" "error_subs" {
-  for_each = var.enable_error_notifications ? toset(var.notification_emails.error) : toset([])
-  topic_arn = aws_sns_topic.error[0].arn
-  protocol  = "email"
-  endpoint  = each.value
+resource "aws_transfer_user" "site_admin" {
+  for_each = var.enable_sftp ? var.sites : {}
+
+  server_id           = aws_transfer_server.sftp[0].id
+  user_name           = "admin_${each.key}"
+  role                = aws_iam_role.sftp_user[each.key].arn
+  home_directory_type = "LOGICAL"
+  home_directory_mappings = [
+    {
+      entry  = "/"
+      target = "/${var.bucket_name}/sites/${each.key}"
+    }
+  ]
+  password = random_password.admin_passwords[each.key].result
 }
 
-resource "aws_sns_topic_subscription" "success_subs" {
-  for_each = var.enable_success_notifications ? toset(var.notification_emails.success) : toset([])
-  topic_arn = aws_sns_topic.success[0].arn
-  protocol  = "email"
-  endpoint  = each.value
-}
-
-resource "aws_sns_topic_subscription" "summary_subs" {
-  for_each = var.enable_summary_notifications ? toset(var.notification_emails.summary) : toset([])
-  topic_arn = aws_sns_topic.summary[0].arn
-  protocol  = "email"
-  endpoint  = each.value
-}
-
-resource "aws_iam_role" "lambda_exec" {
-  name = "hl7-lambda-exec"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Effect = "Allow",
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      }
-    }]
-  })
-}
-
-resource "aws_iam_role_policy" "lambda_policy" {
-  role = aws_iam_role.lambda_exec.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = ["s3:GetObject", "s3:PutObject", "s3:ListBucket"],
-        Resource = [aws_s3_bucket.hl7.arn, "${aws_s3_bucket.hl7.arn}/*"],
-        Effect = "Allow"
-      },
-      {
-        Action = ["dynamodb:PutItem", "dynamodb:Scan"],
-        Effect = "Allow",
-        Resource = aws_dynamodb_table.hl7_errors.arn
-      },
-      {
-        Action = ["sns:Publish"],
-        Effect = "Allow",
-        Resource = concat(
-          aws_sns_topic.error[*].arn,
-          aws_sns_topic.success[*].arn,
-          aws_sns_topic.summary[*].arn
-        )
-      },
-      {
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        Effect = "Allow",
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-resource "aws_lambda_function" "hl7_copy" {
-  count             = var.enable_split_and_validate ? 1 : 0
-  filename          = "lambda/copy_to_inbox.zip"
-  function_name     = "hl7-copy-to-inbox"
-  role              = aws_iam_role.lambda_exec.arn
-  handler           = "copy_to_inbox.lambda_handler"
-  runtime           = "python3.11"
-  source_code_hash  = filebase64sha256("lambda/copy_to_inbox.zip")
-
-  environment {
-    variables = {
-      ERROR_TOPIC_ARN   = try(aws_sns_topic.error[0].arn, "")
-      SUCCESS_TOPIC_ARN = try(aws_sns_topic.success[0].arn, "")
+output "sftp_usernames_and_dirs" {
+  value = {
+    for key, user in aws_transfer_user.sftp :
+    key => {
+      user_name   = user.user_name
+      home_dir    = user.home_directory_mappings[0].target
+      public_key  = tls_private_key.user_keys[key].public_key_openssh
+      private_key = tls_private_key.user_keys[key].private_key_pem
+      password    = random_password.user_passwords[key].result
     }
   }
+  sensitive = true
 }
 
-resource "aws_lambda_function" "hl7_summary" {
-  count             = var.enable_summary_notifications ? 1 : 0
-  filename          = "lambda/summary_report.zip"
-  function_name     = "hl7-daily-summary"
-  role              = aws_iam_role.lambda_exec.arn
-  handler           = "summary_report.lambda_handler"
-  runtime           = "python3.11"
-  source_code_hash  = filebase64sha256("lambda/summary_report.zip")
-
-  environment {
-    variables = {
-      SUMMARY_TOPIC_ARN = aws_sns_topic.summary[0].arn
+output "site_admins" {
+  value = {
+    for key, user in aws_transfer_user.site_admin :
+    key => {
+      user_name = user.user_name
+      home_dir  = user.home_directory_mappings[0].target
+      password  = random_password.admin_passwords[key].result
     }
   }
+  sensitive = true
 }
 
-resource "aws_cloudwatch_event_rule" "summary_schedule" {
-  count                = var.enable_summary_notifications ? 1 : 0
-  name                 = "hl7-daily-summary-schedule"
-  schedule_expression  = var.summary_schedule_expression
-}
-
-resource "aws_cloudwatch_event_target" "summary_target" {
-  count      = var.enable_summary_notifications ? 1 : 0
-  rule       = aws_cloudwatch_event_rule.summary_schedule[0].name
-  target_id  = "hl7-summary-lambda"
-  arn        = aws_lambda_function.hl7_summary[0].arn
-}
-
-resource "aws_lambda_permission" "allow_eventbridge" {
-  count         = var.enable_summary_notifications ? 1 : 0
-  statement_id  = "AllowExecutionFromEventBridge"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.hl7_summary[0].function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.summary_schedule[0].arn
+resource "local_file" "sftp_credentials_csv" {
+  content = <<EOT
+${join("
+", [
+    "user_type,site,publisher,user_name,home_directory,password,public_key",
+    for key, user in aws_transfer_user.sftp :
+    format(
+      "publisher,%s,%s,%s,%s,%s,%s",
+      split("/", key)[0],
+      split("/", key)[1],
+      user.user_name,
+      jsonencode(user.home_directory_mappings[0].target),
+      jsonencode(random_password.user_passwords[key].result),
+      jsonencode(tls_private_key.user_keys[key].public_key_openssh)
+    )
+  ] ++ [
+    for key, user in aws_transfer_user.site_admin :
+    format(
+      "admin,%s,-,%s,%s,%s,",
+      key,
+      user.user_name,
+      jsonencode(user.home_directory_mappings[0].target),
+      jsonencode(random_password.admin_passwords[key].result)
+    )
+  ])
+  filename        = "sftp_credentials_audit.csv"
+  file_permission = "0600"
 }
 
