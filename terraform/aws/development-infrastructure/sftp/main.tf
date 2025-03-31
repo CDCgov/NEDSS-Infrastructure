@@ -253,3 +253,17 @@ resource "aws_iam_role_policy" "sftp_user_policy" {
   })
 }
 
+
+resource "aws_secretsmanager_secret" "ssh_private_keys" {
+  for_each = tls_private_key.user_keys
+
+  name = format("SFTPPrivateKey_%s", replace(each.key, "/", "_"))
+}
+
+resource "aws_secretsmanager_secret_version" "ssh_private_keys_version" {
+  for_each = tls_private_key.user_keys
+
+  secret_id     = aws_secretsmanager_secret.ssh_private_keys[each.key].id
+  secret_string = each.value.private_key_pem
+}
+
