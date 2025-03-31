@@ -1,5 +1,4 @@
 
-
 resource "aws_s3_bucket" "hl7" {
   bucket = var.bucket_name
 }
@@ -22,34 +21,6 @@ resource "aws_s3_object" "publisher_folders" {
 
   bucket = aws_s3_bucket.hl7.id
   key    = "sites/${each.value.site}/${each.value.pub}/"
-}/${pub}" => {
-      site = site
-      pub  = pub
-    }
-  } : {}
-
-  bucket = aws_s3_bucket.hl7.id
-  key    = "sites/${each.value.site}/${each.value.pub}/"
-}/${pub}" => {
-      site = site
-      pub  = pub
-    }
-  }) : {}
-
-  bucket = aws_s3_bucket.hl7.id
-  key    = "sites/${each.value.site}/${each.value.pub}/"
-}/${pub}" => { site = site, pub = pub }
-  }) : {}
-
-  bucket = aws_s3_bucket.hl7.id
-  key    = "sites/${each.value.site}/${each.value.pub}/"
-}]])}
-EOT : "${pair.site}/${pair.pub}" => pair } : {}
-  bucket   = aws_s3_bucket.hl7.id
-  key      = "sites/${each.value.site}/${each.value.pub}/"
-}/${pub}" => { site = site, pub = pub } if var.enable_sftp }
-  bucket   = aws_s3_bucket.hl7.id
-  key      = "sites/${each.value.site}/${each.value.pub}/"
 }
 
 resource "aws_s3_object" "inbox_folders" {
