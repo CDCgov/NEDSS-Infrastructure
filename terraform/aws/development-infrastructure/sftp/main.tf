@@ -106,14 +106,32 @@ resource "random_password" "user_passwords" {
 
 resource "aws_secretsmanager_secret" "user_secrets" {
   for_each = tls_private_key.user_keys
-  name     = "sftp/${each.key}"
+  #name     = "sftp/${each.key}"
+  #name = "AWSTransfer_${aws_transfer_server.sftp.id}_${replace(each.key, \"/\", \"_\")}"
+  name = format("AWSTransfer_%s_%s",
+    aws_transfer_server.sftp.id,
+    replace(each.key, "/", "_")
+  )
 }
 
+
+
 resource "aws_secretsmanager_secret_version" "user_secrets_version" {
-  for_each      = tls_private_key.user_keys
+  for_each = tls_private_key.user_keys
+
   secret_id     = aws_secretsmanager_secret.user_secrets[each.key].id
-  secret_string = random_password.user_passwords[each.key].result
+  secret_string = jsonencode({
+    Password = random_password.user_passwords[each.key].result
+  })
 }
+
+#resource "aws_secretsmanager_secret_version" "user_secrets_version" {
+  #for_each      = tls_private_key.user_keys
+  #secret_id     = aws_secretsmanager_secret.user_secrets[each.key].id
+  #secret_string = random_password.user_passwords[each.key].result
+#}
+
+
 
 resource "aws_transfer_user" "sftp" {
   for_each = var.enable_sftp ? tls_private_key.user_keys : {}
