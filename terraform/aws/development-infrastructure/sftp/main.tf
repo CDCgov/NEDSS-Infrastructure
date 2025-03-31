@@ -40,7 +40,7 @@ resource "random_password" "user_passwords" {
   for_each = tls_private_key.user_keys
   length           = 16
   special          = true
-  override_characters = "!@#%&*"
+  #override_characters = "!@#%&*"
 }
 
 resource "aws_secretsmanager_secret" "user_secrets" {
