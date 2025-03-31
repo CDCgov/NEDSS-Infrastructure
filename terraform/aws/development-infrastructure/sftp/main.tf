@@ -123,9 +123,18 @@ resource "aws_transfer_user" "sftp" {
   user_name           = replace(each.key, "/", "_")
   role                = aws_iam_role.sftp_user[split("/", each.key)[0]].arn
   home_directory_type = "LOGICAL"
-#  home_directory_mappings = [
-#    {
-#      entry  = "/"
+
+  home_directory_mappings {
+    entry  = "/"
+    target = format("/sites/%s/%s", split("/", each.key)[0], split("/", each.key)[1])
+  }
+
+ # home_directory_mappings = [
+ #   {
+ #     entry  = "/"
+ #     #target = "/sites/${split(\"/\", each.key)[0]}/${split(\"/\", each.key)[1]}"
+ #     target = format("/sites/%s/%s", split("/", each.key)[0], split("/", each.key)[1])
+#
 #    }
 #  ]
   #ssh_public_key_body = each.value.public_key_openssh
@@ -158,10 +167,16 @@ resource "aws_transfer_user" "site_admin" {
   user_name           = "admin_${each.key}"
   role                = aws_iam_role.sftp_user[each.key].arn
   home_directory_type = "LOGICAL"
+
+  home_directory_mappings {
+    entry  = "/"
+    #target = format("/sites/%s/%s", split("/", each.key)[0], split("/", each.key)[1])
+    target = "/${var.bucket_name}/sites/${each.key}"
+  }
+
   #home_directory_mappings = [
   #  {
   #    entry  = "/"
-  #    target = "/${var.bucket_name}/sites/${each.key}"
   #  }
   #]
   #password = random_password.admin_passwords[each.key].result
