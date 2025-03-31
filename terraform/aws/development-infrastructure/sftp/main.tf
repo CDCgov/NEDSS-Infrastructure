@@ -30,10 +30,10 @@ resource "aws_dynamodb_table" "hl7_errors" {
     type = "S"
   }
 
-  attribute {
-    name = "Timestamp"
-    type = "S"
-  }
+  #attribute {
+  #  name = "Timestamp"
+  #  type = "S"
+  #}
 
   ttl {
     attribute_name = "TTL"
@@ -167,31 +167,6 @@ resource "aws_transfer_user" "site_admin" {
   #password = random_password.admin_passwords[each.key].result
 }
 
-output "sftp_usernames_and_dirs" {
-  value = {
-    for key, user in aws_transfer_user.sftp :
-    key => {
-      user_name   = user.user_name
-      home_dir    = user.home_directory_mappings[0].target
-      public_key  = tls_private_key.user_keys[key].public_key_openssh
-      private_key = tls_private_key.user_keys[key].private_key_pem
-      password    = random_password.user_passwords[key].result
-    }
-  }
-  sensitive = true
-}
-
-output "site_admins" {
-  value = {
-    for key, user in aws_transfer_user.site_admin :
-    key => {
-      user_name = user.user_name
-      home_dir  = user.home_directory_mappings[0].target
-      password  = random_password.admin_passwords[key].result
-    }
-  }
-  sensitive = true
-}
 
 resource "local_file" "sftp_credentials_csv" {
   content = <<EOT
