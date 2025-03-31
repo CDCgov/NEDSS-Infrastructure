@@ -3,6 +3,12 @@
 This Terraform module sets up a SFTP service to load/validate/split/queue hl7 messages using AWS Transfer Family, S3, Lambda, DynamoDB, and SNS.
 
 ---
+## TODO:
+
+- fix homedir to include server name, when users added manually we pick the bucket and the site name populates
+- fix service managed accounts to use passwords from secrets manager, they should allow them automagically when naming convention is correct
+
+---
 
 ## Features
 
@@ -27,6 +33,7 @@ This Terraform module sets up a SFTP service to load/validate/split/queue hl7 me
 3. Deploy using:
 
 ```bash
+define notification emails, s3 bucket, sites and providers in terraform.tfvars
 terraform init
 terraform apply
 ```
