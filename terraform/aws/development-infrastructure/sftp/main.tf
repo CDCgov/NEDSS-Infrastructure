@@ -133,30 +133,13 @@ output "site_admins" {
 
 resource "local_file" "sftp_credentials_csv" {
   content = <<EOT
-${join("
-", [
-    "user_type,site,publisher,user_name,home_directory,password,public_key",
-    for key, user in aws_transfer_user.sftp :
-    format(
-      "publisher,%s,%s,%s,%s,%s,%s",
-      split("/", key)[0],
-      split("/", key)[1],
-      user.user_name,
-      jsonencode(user.home_directory_mappings[0].target),
-      jsonencode(random_password.user_passwords[key].result),
-      jsonencode(tls_private_key.user_keys[key].public_key_openssh)
-    )
-  ] ++ [
-    for key, user in aws_transfer_user.site_admin :
-    format(
-      "admin,%s,-,%s,%s,%s,",
-      key,
-      user.user_name,
-      jsonencode(user.home_directory_mappings[0].target),
-      jsonencode(random_password.admin_passwords[key].result)
-    )
-  ])
-  filename        = "sftp_credentials_audit.csv"
-  file_permission = "0600"
+username,password,ssh_key
+${join("\n", [
+  for key, val in aws_transfer_user.sftp :
+  "${val.user_name},${random_password.user_passwords[key].result},${tls_private_key.user_keys[key].public_key_openssh}"
+])}
+EOT
+
+  filename = "${path.module}/sftp_credentials.csv"
 }
 
