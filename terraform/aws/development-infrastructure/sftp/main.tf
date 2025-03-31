@@ -1,4 +1,65 @@
 
+resource "aws_iam_role" "transfer_logging" {
+  name = "transfer-logging-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "transfer.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "transfer_logging_policy" {
+  role       = aws_iam_role.transfer_logging.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSTransferLoggingAccess"
+}
+
+
+resource "aws_dynamodb_table" "hl7_errors" {
+  name         = "hl7-error-log"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "FileName"
+
+  attribute {
+    name = "FileName"
+    type = "S"
+  }
+
+  attribute {
+    name = "Timestamp"
+    type = "S"
+  }
+
+  ttl {
+    attribute_name = "TTL"
+    enabled        = false
+  }
+}
+
+resource "aws_sns_topic" "error" {
+  name = "hl7-error-topic"
+}
+
+resource "aws_sns_topic" "success" {
+  name = "hl7-success-topic"
+}
+
+resource "aws_sns_topic" "summary" {
+  name = "hl7-summary-topic"
+}
+
+resource "aws_transfer_server" "sftp" {
+  identity_provider_type = "SERVICE_MANAGED"
+  protocols               = ["SFTP"]
+  endpoint_type           = "PUBLIC"
+  logging_role            = aws_iam_role.transfer_logging.arn
+}
+
 resource "aws_s3_bucket" "hl7" {
   bucket = var.bucket_name
 }
@@ -57,25 +118,25 @@ resource "aws_secretsmanager_secret_version" "user_secrets_version" {
 resource "aws_transfer_user" "sftp" {
   for_each = var.enable_sftp ? tls_private_key.user_keys : {}
 
-  server_id           = aws_transfer_server.sftp[0].id
+  #server_id           = aws_transfer_server.sftp[0].id
+  server_id           = aws_transfer_server.sftp.id
   user_name           = replace(each.key, "/", "_")
   role                = aws_iam_role.sftp_user[split("/", each.key)[0]].arn
   home_directory_type = "LOGICAL"
-  home_directory_mappings = [
-    {
-      entry  = "/"
-      target = "/sites/${split("/", each.key)[0]}/${split("/", each.key)[1]}"
-    }
-  ]
-  ssh_public_key_body = each.value.public_key_openssh
-  password            = random_password.user_passwords[each.key].result
+#  home_directory_mappings = [
+#    {
+#      entry  = "/"
+#    }
+#  ]
+  #ssh_public_key_body = each.value.public_key_openssh
+  #password            = random_password.user_passwords[each.key].result
 }
 
 resource "random_password" "admin_passwords" {
   for_each = var.enable_sftp ? var.sites : {}
   length           = 20
   special          = true
-  override_characters = "!@#%&*"
+  #override_characters = "!@#%&*"
 }
 
 resource "aws_secretsmanager_secret" "admin_secrets" {
@@ -92,17 +153,18 @@ resource "aws_secretsmanager_secret_version" "admin_secrets_version" {
 resource "aws_transfer_user" "site_admin" {
   for_each = var.enable_sftp ? var.sites : {}
 
-  server_id           = aws_transfer_server.sftp[0].id
+  #server_id           = aws_transfer_server.sftp[0].id
+  server_id           = aws_transfer_server.sftp.id
   user_name           = "admin_${each.key}"
   role                = aws_iam_role.sftp_user[each.key].arn
   home_directory_type = "LOGICAL"
-  home_directory_mappings = [
-    {
-      entry  = "/"
-      target = "/${var.bucket_name}/sites/${each.key}"
-    }
-  ]
-  password = random_password.admin_passwords[each.key].result
+  #home_directory_mappings = [
+  #  {
+  #    entry  = "/"
+  #    target = "/${var.bucket_name}/sites/${each.key}"
+  #  }
+  #]
+  #password = random_password.admin_passwords[each.key].result
 }
 
 output "sftp_usernames_and_dirs" {
@@ -141,5 +203,45 @@ ${join("\n", [
 EOT
 
   filename = "${path.module}/sftp_credentials.csv"
+}
+
+resource "aws_iam_role" "sftp_user" {
+  for_each = {
+    for key in keys(var.sites) :
+    key => key
+  }
+
+  name = "sftp_user_${each.key}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "transfer.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "sftp_user_policy" {
+  for_each = aws_iam_role.sftp_user
+
+  name = "SftpUserPolicy-${each.key}"
+  role = each.value.name
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "s3:ListBucket",
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      Resource = "*"
+    }]
+  })
 }
 
