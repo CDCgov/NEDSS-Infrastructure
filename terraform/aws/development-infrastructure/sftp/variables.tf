@@ -1,7 +1,7 @@
 variable "bucket_name" {
   description = "Name of the S3 bucket for HL7 uploads"
   type        = string
-  default     = "my-transfer-bucket"
+  #default     = "my-transfer-bucket"
 }
 
 variable "enable_sftp" {
@@ -41,19 +41,19 @@ variable "notification_emails" {
     success = list(string)
     summary = list(string)
   })
-  default = {
-    error   = ["alerts+errors@example.com"]
-    success = ["alerts+success@example.com"]
-    summary = ["alerts+summary@example.com"]
-  }
+  #default = {
+  #  error   = ["alerts+errors@example.com"]
+  #  success = ["alerts+success@example.com"]
+  #  summary = ["alerts+summary@example.com"]
+  #}
 }
 
 variable "sites" {
-  description = "Map of sites and their publishers"
+  description = "Map of sites and their publishers/providers"
   type = map(list(string))
   default = {
-    siteA = ["publisher1", "publisher2"]
-    siteB = ["publisher3"]
+    siteA = ["lab1", "lab2"]
+    siteB = ["lab3"]
   }
 }
 
