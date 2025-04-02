@@ -87,7 +87,14 @@ $rdb_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.rdb_user.name} --
 $rdb_pass = $(aws ssm get-parameter --name ${aws_ssm_parameter.rdb_pass.name} --with-decryption | ConvertFrom-Json).parameter.value
 $srte_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.srte_user.name} --with-decryption | ConvertFrom-Json).parameter.value
 $srte_pass = $(aws ssm get-parameter --name ${aws_ssm_parameter.srte_pass.name} --with-decryption | ConvertFrom-Json).parameter.value
-$phcrimporter_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.phcrimporter_user.name} --with-decryption | ConvertFrom-Json).parameter.value
+
+$phcrimporter_user_input = ${var.phcrimporter_user}
+if ($phcrimporter_user_input -ne "leave_default") {
+  $phcrimporter_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.phcrimporter_user.name} --with-decryption | ConvertFrom-Json).parameter.value
+} else {
+  $phcrimporter_user = ""
+}
+
 
 #Initialize hastable for data sources
 $connectionURLs = @{ "NedssDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_odse";                     
