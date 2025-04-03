@@ -46,3 +46,11 @@ resource "aws_ssm_parameter" "srte_pass" {
     key_id = var.param_store_key_id 
 }
 
+resource "aws_ssm_parameter" "phcrimporter_user" {    
+    description = "Database password for srte"
+    name  = "/${var.resource_prefix}-app-server/phcrimporter_user"
+    type  = "SecureString"
+    value = "${var.phcrimporter_user}"
+    key_id = var.param_store_key_id 
+}
+

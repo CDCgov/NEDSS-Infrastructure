@@ -257,6 +257,12 @@ variable "srte_pass" {
   sensitive = true
 }
 
+variable "phcrimporter_user" {
+  description = "User needed to run phcrimporter batch job (leave_default=preserve Wildfly default)"
+  type        = string
+  default = "leave_default"
+  sensitive = true
+}
 
 # Variable which creates a Windows Scheduled Task for BatchFiles
 # Batch include .bat scripts located in the nbs6 subdirectory "BatchFiles" or anything within that subdirectory
@@ -271,7 +277,7 @@ variable "srte_pass" {
 variable "windows_scheduled_tasks" {
   description = "Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename,scriptPathFromWorkDir,startTime,frequencyDays,frequencyHours,frequencyMinutes;"
   type = string
-  default = "ELRImporter.bat,, 6am, 0, 0, 2; MsgOutProcessor.bat,, 8pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12am, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7pm, 1, 0 , 0; covid19ETL.bat,, 5am, 1, 0 , 0;"
+  default = "ELRImporter.bat,, 6am, 0, 0, 2; MsgOutProcessor.bat,, 8pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12am, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7pm, 1, 0 , 0; covid19ETL.bat,, 5am, 1, 0 , 0; PHCRImporter.bat,, 6am, 0, 1 , 0;"
 }
 
 variable "java_memory" {

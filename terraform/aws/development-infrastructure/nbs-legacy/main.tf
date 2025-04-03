@@ -88,6 +88,14 @@ $rdb_pass = $(aws ssm get-parameter --name ${aws_ssm_parameter.rdb_pass.name} --
 $srte_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.srte_user.name} --with-decryption | ConvertFrom-Json).parameter.value
 $srte_pass = $(aws ssm get-parameter --name ${aws_ssm_parameter.srte_pass.name} --with-decryption | ConvertFrom-Json).parameter.value
 
+$phcrimporter_user_input = ${var.phcrimporter_user}
+if ($phcrimporter_user_input -ne "leave_default") {
+  $phcrimporter_user = $(aws ssm get-parameter --name ${aws_ssm_parameter.phcrimporter_user.name} --with-decryption | ConvertFrom-Json).parameter.value
+} else {
+  $phcrimporter_user = ""
+}
+
+
 #Initialize hastable for data sources
 $connectionURLs = @{ "NedssDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_odse";                     
                      "MsgOutDS" = "jdbc:sqlserver://${var.nbs_db_dns}:1433;SelectMethod=direct;DatabaseName=nbs_msgoute";                     
@@ -151,6 +159,11 @@ $xmlDoc.Save($xmlFileName)
 
 $setenvFilePath = "$env:JBOSS_HOME\nedssdomain\Nedss\BatchFiles\covid19ETL.bat"
 $currentContent = Get-Content -Path $setenvFilePath
+
+# Update PHCRImporter with user
+if ($null -ne $phcrimporter_user -and $phcrimporter_user -ne "") {
+    (Get-Content -Path "$env:JBOSS_HOME\nedssdomain\Nedss\BatchFiles\PHCRImporter.bat" -Raw) -replace "%1  %2", "$phcrimporter_user" | Set-Content -Path "$env:JBOSS_HOME\nedssdomain\Nedss\BatchFiles\PHCRImporter.bat"
+}
 
 $setEchoOff = "@echo off"
 $setDATABASE_ENDPOINT = "set DATABASE_ENDPOINT=${var.nbs_db_dns}"
