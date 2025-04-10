@@ -21,7 +21,6 @@ module "helm-release" {
   namespace            = var.namespace_name
   tags                 = var.tags
   service_account_name = "${var.resource_prefix}-fluentbit-svc-acc"
-  resource_prefix = var.resource_prefix
   fluentbit_cwlogsgroup_name = "${var.resource_prefix}-fluent-bit-cloudwatch"
 }
 
