@@ -4,7 +4,7 @@
 
 # IAM Role for EC2 instance with SSM managed instance core policy
 resource "aws_iam_role" "sas_role" {
-  name               = "sas-role"
+  name = "${var.resource_prefix}-sas-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -32,13 +32,13 @@ resource "aws_iam_role_policy_attachment" "ec2_readonly_role_policy" {
 }
 
 resource "aws_iam_instance_profile" "sas_iam_profile" {
-  name = "sas-iam-profile"
+  name = "${var.resource_prefix}-sas-iam-profile"
   role = aws_iam_role.sas_role.name
 }
 
 # Security Group to allow vpn and intra vpc traffic
 resource "aws_security_group" "sas_sg" {
-  name        = "sas-sg"
+  name        = "${var.resource_prefix}-sas-sg"
   description = "Allow vpn and intra vpc traffic"
   vpc_id = var.sas_vpc_id
 
@@ -63,7 +63,7 @@ resource "aws_security_group" "sas_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
     tags = {
-    Name = "sas-sg"
+    Name = "${var.resource_prefix}-sas-sg"
   }
 }
 
@@ -84,7 +84,7 @@ resource "aws_instance" "sas9" {
     kms_key_id  = var.sas_kms_key_id  # Reference the KMS key for encryption
   }
   tags = {
-    Name = "SAS9.4"
+    Name = "${var.resource_prefix}-SAS9.4"
   }
 
   user_data = <<-EOF

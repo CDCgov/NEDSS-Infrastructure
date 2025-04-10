@@ -1,3 +1,9 @@
+variable "resource_prefix" {
+  type        = string
+  description = "Prefix for resource names"
+  default     = "cdc-nbs"
+}
+
 variable "vpn_cidr_block" {
     description = "vpn vpc cidr block from which to ssh into ec2"
     default = "10.3.0.0/16"
