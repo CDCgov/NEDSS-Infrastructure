@@ -57,7 +57,8 @@ module "db" {
   parameter_group_name            = var.parameter_group_name
   parameter_group_description     = var.parameter_group_description
   parameters                      = var.parameters
-  parameter_group_use_name_prefix = false
+  #parameter_group_use_name_prefix = false
+  parameter_group_use_name_prefix = true
 }
 
 # Security group for NBS backend RDS database server
