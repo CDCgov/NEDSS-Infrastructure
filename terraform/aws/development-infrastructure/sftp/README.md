@@ -7,6 +7,9 @@ This Terraform module sets up a SFTP service to load/validate/split/queue hl7 me
 
 - fix homedir to include server name, when users added manually we pick the bucket and the site name populates
 - fix service managed accounts to use passwords from secrets manager, they should allow them automagically when naming convention is correct
+- name resources with a prefix or some way identify, not intended to be PART of core install but we MIGHT find cases of adding to full deployment
+- test lambdas and workflow using lambdas, create zip 
+- data calls see comments in https://github.com/CDCgov/NEDSS-Infrastructure/pull/198
 
 ---
 
