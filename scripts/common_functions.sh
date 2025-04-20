@@ -2,7 +2,7 @@
 
 # Common library functions for all scripts
 
-DEFAULTS_FILE="${DEFAULTS_FILE:-./nbs_defaults.sh}"
+DEFAULTS_FILE="${DEFAULTS_FILE:-`pwd`/nbs_defaults.sh}"
 
 log() {
     echo "[INFO] $*"

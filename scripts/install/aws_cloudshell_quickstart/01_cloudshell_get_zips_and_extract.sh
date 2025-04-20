@@ -50,7 +50,7 @@ while getopts "dsi:r:lc:" opt; do
         r ) RELEASE_VER=${OPTARG} ;;
         l ) SOURCE="local" ;;
         c ) COPY_FROM_DIR=${OPTARG} ;;
-        \? ) echo "Usage: cmd [-d] [-s] [-i install_directory] [-r release_version (e.g. v7.8.1) ] [-l] [-c copy_from_directory]"
+        \? ) echo "Usage: cmd [-d] [-s] [-i install_directory] [-r release_version (e.g. v7.9.2) ] [-l] [-c copy_from_directory]"
              exit 1 ;;
     esac
 done
