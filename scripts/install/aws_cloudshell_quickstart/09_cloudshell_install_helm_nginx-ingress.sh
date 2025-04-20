@@ -8,10 +8,10 @@
 # for AWS account and Kubernetes cluster connectivity.
 
 # Default values
-HELM_VER_DEFAULT=v7.9.0
+HELM_VER_DEFAULT=v7.9.1.1
 INGRESS_VER=4.7.2
 INSTALL_DIR_DEFAULT=~/nbs_install
-DEFAULTS_FILE="nbs_defaults.sh"
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 DEBUG=1
 STEP=0
 NOOP=0

@@ -4,8 +4,8 @@
 # and application deployment preparations.
 
 # Default settings
-DEFAULTS_FILE="nbs_defaults.sh"
-HELM_VER_DEFAULT=v7.9.0
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
+HELM_VER_DEFAULT=v7.9.1.1
 NOOP=0
 DEBUG=0
 DEVELOPMENT=0

@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # this needs to be changed with each release or prompted and saved
-INFRA_VER=v1.2.31
+INFRA_VER=v1.2.33
 #echo "change line 4 and run again"
 #exit 1
 
 #INSTALL_DIR=~/nbs_install
 INSTALL_DIR=.
-DEFAULTS_FILE="./nbs_defaults.sh"
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 DEBUG=1
 
 # Function to load saved defaults

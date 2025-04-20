@@ -4,13 +4,13 @@
 DEBUG_MODE=0
 STEP_MODE=0
 TEST_MODE=0
-RELEASE_VER=v7.9.0
-INFRA_VER=v1.2.31
-HELM_VER=v7.9.0
+RELEASE_VER=v7.9.1.1
+INFRA_VER=v1.2.33
+HELM_VER=v7.9.1.1
 INSTALL_DIR=nbs_install
 SOURCE="github"  # Default to GitHub, other options are 's3' and 'local'
 
-DEFAULTS_FILE="nbs_defaults.sh"
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 
 # Function to log debug messages
 log_debug() {

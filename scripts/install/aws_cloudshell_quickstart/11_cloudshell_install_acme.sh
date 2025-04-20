@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HELM_VER=v7.9.0
+HELM_VER=v7.9.1
 #echo "edit line 4 and comment out exit, then rerun"
 #exit 1
 INSTALL_DIR=~/nbs_install
@@ -10,7 +10,7 @@ NOOP=0
 
 # must edit with each release or prompt and save
 # Default file for storing selected values and entered credentials
-DEFAULTS_FILE="nbs_defaults.sh"
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 
 # Function to load saved defaults
 load_defaults() {

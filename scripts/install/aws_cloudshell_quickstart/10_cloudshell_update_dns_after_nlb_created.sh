@@ -14,7 +14,7 @@
 # Ensure AWS CLI is configured with necessary permissions before running this script.
 
 # Initialize default values
-DEFAULTS_FILE="nbs_defaults.sh"
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 DEBUG_MODE=0
 STEP_MODE=0
 TEST_MODE=0

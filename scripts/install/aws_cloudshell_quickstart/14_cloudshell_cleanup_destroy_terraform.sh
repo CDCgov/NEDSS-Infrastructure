@@ -1,15 +1,15 @@
 #!/bin/bash
-HELM_VER=v7.9.0
+HELM_VER=v7.9.1.1
 #exit 1
 INSTALL_DIR=~/nbs_install
-INFRA_VER=v1.2.31
+INFRA_VER=v1.2.33
 DEBUG=1
 STEP=1
 NOOP=0
 SLEEP_TIME=60
 # must edit with each release or prompt and save
 # Default file for storing selected values and entered credentials
-DEFAULTS_FILE="nbs_defaults.sh"
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 
 # Function to load saved defaults
 load_defaults() {
