@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message log_debug  pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
 # this needs to be changed with each release or prompted and saved
 INFRA_VER=v1.2.33
 #echo "change line 4 and run again"

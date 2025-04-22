@@ -23,14 +23,15 @@
 # log debug debug_message pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
 source "$(dirname "$0")/../common_functions.sh"
 
-HELM_VER=v7.9.1.1
-INSTALL_DIR=~/nbs_install
-DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
+#HELM_VER=v7.9.1.1
+#INSTALL_DIR=~/nbs_install
+#DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 SLEEP_TIME=60
 #SLEEP_TIME=10
-DEBUG=0
-STEP=0
-NOOP=0
+#DEBUG=0
+#STEP=0
+#NOOP=0
+
 KC_NAMESPACE=default
 DEFAULT_NAMESPACE=default
 

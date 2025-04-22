@@ -2,29 +2,49 @@
 
 # Common library functions for all scripts
 
-DEFAULTS_FILE="${DEFAULTS_FILE:-`pwd`/nbs_defaults.sh}"
+# system wide variables, should source this file first then 
+# override on a per-script basis
+RELEASE_VER=v7.9.1.1
+INFRA_VER=v1.2.33
+HELM_VER=v7.9.1.1
+INSTALL_DIR=nbs_install
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
+#DEFAULTS_FILE="${DEFAULTS_FILE:-`pwd`/nbs_defaults.sh}"
+DEBUG=0
+NOOP=0
+DEBUG_MODE=0
+STEP_MODE=0
+TEST_MODE=0
 
 log() {
     echo "[INFO] $*"
 }
 
+#########################################################
 # combine the next three
 debug() {
     if [ "${DEBUG:-0}" -eq 1 ]; then
         echo "[DEBUG] $*"
     fi
 }
-
 function debug_message() {
     if [[ $DEBUG -eq 1 ]]; then
         echo "DEBUG: $1"
     fi
 }
-
 log_debug() {
     [[ $DEBUG_MODE -eq 1 ]] && echo "DEBUG: $*"
 }
+#########################################################
 
+debug_prompt() {
+    if [ "$DEBUG" -eq 1 ]; then
+        echo "[DEBUG] $1"
+        read -p "Press enter to continue..."
+    fi
+}
+
+#########################################################
 # combine next two functions
 function pause_step() {
     if [[ $STEP -eq 1 ]]; then
@@ -35,8 +55,10 @@ function pause_step() {
 step_pause() {
     [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
 }
+#########################################################
 
-
+#########################################################
+#
 load_defaults() {
     if [ -f "$DEFAULTS_FILE" ]; then
         debug "Loading defaults from $DEFAULTS_FILE"

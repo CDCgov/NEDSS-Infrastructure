@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message log_debug  pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
 # Function to check AWS access and confirm account
 check_aws_access() {
     local account_id=$(aws sts get-caller-identity --query "Account" --output text)

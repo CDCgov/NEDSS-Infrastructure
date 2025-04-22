@@ -1,19 +1,20 @@
 #!/bin/bash
 
 # Initialize default values
-DEBUG_MODE=0
-STEP_MODE=0
-TEST_MODE=0
-RELEASE_VER=v7.9.1.1
-INFRA_VER=v1.2.33
-HELM_VER=v7.9.1.1
-INSTALL_DIR=nbs_install
-SOURCE="github"  # Default to GitHub, other options are 's3' and 'local'
-
-DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 # define some functions used in lots of scripting, need to remove duplication
 # log debug debug_message log_debug  pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
 source "$(dirname "$0")/../common_functions.sh"
+
+#DEBUG_MODE=0
+#STEP_MODE=0
+#TEST_MODE=0
+#RELEASE_VER=v7.9.1.1
+#INFRA_VER=v1.2.33
+#HELM_VER=v7.9.1.1
+#INSTALL_DIR=nbs_install
+SOURCE="github"  # Default to GitHub, other options are 's3' and 'local'
+
+#DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 
 # Function to log debug messages
 #log_debug() {

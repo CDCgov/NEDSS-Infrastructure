@@ -1,9 +1,13 @@
 #!/bin/bash
 
-DEBUG=1
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
+#DEBUG=1
 PROFILE_NAME="example-terraform"
 ROLE_NAME="example-terraform-user"  # Replace with your role's name
-echo "edit line 4,5 and comment exit and rerun"
+echo "edit line 8,9 and comment exit and rerun"
 exit 1
 
 RC_FILE=delete-s3-bucket-objects-before-terraform-destroy.rc
@@ -12,12 +16,12 @@ then
     . ${RC_FILE}
 fi
 
-debug_prompt() {
-    if [ "$DEBUG" -eq 1 ]; then
-        echo "[DEBUG] $1"
-        read -p "Press enter to continue..."
-    fi
-}
+#debug_prompt() {
+#    if [ "$DEBUG" -eq 1 ]; then
+#        echo "[DEBUG] $1"
+#        read -p "Press enter to continue..."
+#    fi
+#}
 
 # Check if the profile exists
 debug_prompt "Checking if profile $PROFILE_NAME exists..."

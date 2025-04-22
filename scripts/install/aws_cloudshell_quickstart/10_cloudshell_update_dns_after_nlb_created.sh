@@ -18,9 +18,9 @@
 source "$(dirname "$0")/../common_functions.sh"
 
 # Initialize default values
-DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
-DEBUG_MODE=0
-STEP_MODE=0
+#DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
+#DEBUG_MODE=0
+#STEP_MODE=0
 TEST_MODE=0
 
 # Function to log debug messages
