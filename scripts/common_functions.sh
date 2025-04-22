@@ -8,11 +8,34 @@ log() {
     echo "[INFO] $*"
 }
 
+# combine the next three
 debug() {
     if [ "${DEBUG:-0}" -eq 1 ]; then
         echo "[DEBUG] $*"
     fi
 }
+
+function debug_message() {
+    if [[ $DEBUG -eq 1 ]]; then
+        echo "DEBUG: $1"
+    fi
+}
+
+log_debug() {
+    [[ $DEBUG_MODE -eq 1 ]] && echo "DEBUG: $*"
+}
+
+# combine next two functions
+function pause_step() {
+    if [[ $STEP -eq 1 ]]; then
+        read -p "Press [Enter] to continue..."
+    fi
+}
+# Function to pause for step mode
+step_pause() {
+    [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
+}
+
 
 load_defaults() {
     if [ -f "$DEFAULTS_FILE" ]; then

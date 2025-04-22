@@ -9,6 +9,10 @@
 #
 # FIXME: swap inputs.tfvars references for terraform.tfvars
 
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message log_debug  pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
 # Default values
 #INSTALL_DIR=~/nbs_install
 INFRA_VER=v1.2.33
@@ -26,14 +30,14 @@ INPUTS_FILE_TEMPLATE=terraform.tfvars.tpl
 NEW_INPUTS_FILE=terraform.tfvars
 
 # Function to log debug messages
-log_debug() {
-    [[ $DEBUG_MODE -eq 1 ]] && echo "DEBUG: $*"
-}
+#log_debug() {
+#    [[ $DEBUG_MODE -eq 1 ]] && echo "DEBUG: $*"
+#}
 
 # Function to pause for step mode
-step_pause() {
-    [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
-}
+#step_pause() {
+#    [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
+#}
 
 # Function for preliminary AWS access checks
 preliminary_checks() {
@@ -41,7 +45,7 @@ preliminary_checks() {
         echo "AWS access check failed. Ensure your AWS CLI is configured correctly."
         exit 1
     else
-        log_debug "AWS access check passed."
+        debug "AWS access check passed."
     fi
 }
 

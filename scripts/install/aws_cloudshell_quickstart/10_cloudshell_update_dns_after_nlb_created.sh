@@ -13,6 +13,10 @@
 #
 # Ensure AWS CLI is configured with necessary permissions before running this script.
 
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message log_debug  pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
 # Initialize default values
 DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 DEBUG_MODE=0
@@ -20,14 +24,14 @@ STEP_MODE=0
 TEST_MODE=0
 
 # Function to log debug messages
-log_debug() {
-    [[ $DEBUG_MODE -eq 1 ]] && echo "DEBUG: $*"
-}
+#log_debug() {
+#    [[ $DEBUG_MODE -eq 1 ]] && echo "DEBUG: $*"
+#}
 
 # Function to pause for step mode
-step_pause() {
-    [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
-}
+#step_pause() {
+#    [[ $STEP_MODE -eq 1 ]] && read -p "Press [Enter] key to continue..."
+#}
 
 # Function for preliminary AWS access checks
 preliminary_checks() {
@@ -35,7 +39,7 @@ preliminary_checks() {
         echo "AWS access check failed. Ensure your AWS CLI is configured correctly."
         exit 1
     else
-        log_debug "AWS access check passed."
+        debug "AWS access check passed."
     fi
 }
 
@@ -57,7 +61,7 @@ step_pause
 load_defaults() {
     if [ -f "$DEFAULTS_FILE" ]; then
         source "$DEFAULTS_FILE"
-        log_debug "Loaded defaults from $DEFAULTS_FILE"
+        debug "Loaded defaults from $DEFAULTS_FILE"
     fi
 }
 load_defaults
@@ -71,7 +75,7 @@ manage_dns_record() {
     local record_name=$2
     local nlb_dns_name=$3
 
-    log_debug "Checking for existing DNS record: $record_name"
+    debug "Checking for existing DNS record: $record_name"
     existing_record=$(aws route53 list-resource-record-sets --hosted-zone-id "$zone_id" --query "ResourceRecordSets[?Name == '$record_name.']" --output json)
 
     if [[ -n "$existing_record" && $(echo "$existing_record" | jq -r '.[0].ResourceRecords[0].Value') != "$nlb_dns_name" ]]; then

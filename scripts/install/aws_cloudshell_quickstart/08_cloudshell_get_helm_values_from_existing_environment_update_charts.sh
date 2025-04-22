@@ -6,7 +6,7 @@
 # Default settings
 DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 # define some functions used in lots of scripting, need to remove duplication
-# log debug load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+# log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
 source "$(dirname "$0")/../common_functions.sh"
 
 HELM_VER_DEFAULT=v7.9.1.1
