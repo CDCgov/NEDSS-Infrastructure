@@ -19,34 +19,41 @@
 #  -d : Enable debug mode for verbose output
 #  -s : Enable step mode to proceed through the script interactively
 
-HELM_VER=v7.9.0
-INSTALL_DIR=~/nbs_install
-DEFAULTS_FILE="nbs_defaults.sh"
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
+#HELM_VER=v7.9.1.1
+#INSTALL_DIR=~/nbs_install
+#DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 SLEEP_TIME=60
 #SLEEP_TIME=10
-DEBUG=0
-STEP=0
-NOOP=0
+#DEBUG=0
+#STEP=0
+#NOOP=0
+
 KC_NAMESPACE=default
 DEFAULT_NAMESPACE=default
 
 # Function to load saved defaults
-load_defaults() {
-    if [ -f "$DEFAULTS_FILE" ]; then
-        source "$DEFAULTS_FILE"
-    fi
-}
+# moved to common_functions
+#load_defaults() {
+#    if [ -f "$DEFAULTS_FILE" ]; then
+#        source "$DEFAULTS_FILE"
+#    fi
+#}
 
 # Update defaults safely
-update_defaults() {
-    local var_name=$1
-    local var_value=$2
-    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
-        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
-    else
-        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
-    fi
-}
+# moved to common_functions
+#update_defaults() {
+#    local var_name=$1
+#    local var_value=$2
+#    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
+#        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
+#    else
+#        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
+#    fi
+#}
 
 # Parsing command-line options
 while getopts "ds" opt; do
@@ -66,17 +73,19 @@ done
 
 load_defaults;
 
-function debug_message() {
-    if [[ $DEBUG -eq 1 ]]; then
-        echo "DEBUG: $1"
-    fi
-}
+# moved to common_functions
+#function debug_message() {
+#    if [[ $DEBUG -eq 1 ]]; then
+#        echo "DEBUG: $1"
+#    fi
+#}
 
-function pause_step() {
-    if [[ $STEP -eq 1 ]]; then
-        read -p "Press [Enter] to continue..."
-    fi
-}
+# moved to common_functions
+#function pause_step() {
+#    if [[ $STEP -eq 1 ]]; then
+#        read -p "Press [Enter] to continue..."
+#    fi
+#}
 
 # Only update if input changes
 read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver

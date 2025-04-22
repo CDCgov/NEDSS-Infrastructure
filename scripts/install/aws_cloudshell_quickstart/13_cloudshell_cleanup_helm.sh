@@ -1,30 +1,35 @@
 #!/bin/bash
-INSTALL_DIR=~/nbs_install
+
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
+#INSTALL_DIR=~/nbs_install
+#NOOP=0
+# Default file for storing selected values and entered credentials
+#DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 DEBUG=1
 STEP=1
-NOOP=0
 SLEEP_TIME=60
 # must edit with each release or prompt and save
-# Default file for storing selected values and entered credentials
-DEFAULTS_FILE="nbs_defaults.sh"
 
 # Function to load saved defaults
-load_defaults() {
-    if [ -f "$DEFAULTS_FILE" ]; then
-        source "$DEFAULTS_FILE"
-    fi
-}
+#load_defaults() {
+#    if [ -f "$DEFAULTS_FILE" ]; then
+#        source "$DEFAULTS_FILE"
+#    fi
+#}
 
-update_defaults() {
-    local var_name=$1
-    local var_value=$2
-    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
-        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
-        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
-    else
-        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
-    fi
-}
+#update_defaults() {
+#    local var_name=$1
+#    local var_value=$2
+#    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
+#        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+#        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
+#    else
+#        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
+#    fi
+#}
 
 load_defaults;
 

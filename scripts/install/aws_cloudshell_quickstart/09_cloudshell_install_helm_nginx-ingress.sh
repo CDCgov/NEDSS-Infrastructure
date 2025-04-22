@@ -7,13 +7,17 @@
 # debug logging, step-by-step execution, a test mode, and preliminary access checks
 # for AWS account and Kubernetes cluster connectivity.
 
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
 # Default values
-HELM_VER_DEFAULT=v7.9.0
+#HELM_VER_DEFAULT=v7.9.1.1
 INGRESS_VER=4.7.2
-INSTALL_DIR_DEFAULT=~/nbs_install
-DEFAULTS_FILE="nbs_defaults.sh"
+#INSTALL_DIR_DEFAULT=~/nbs_install
+#DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 DEBUG=1
-STEP=0
+#STEP=0
 NOOP=0
 
 # Load defaults if available

@@ -4,14 +4,14 @@
 ACCT_NUM=0000000
 
 # modify this for each release or prompt and save to rc file
-INFRA_VER=v1.2.31
+INFRA_VER=v1.2.33
 SAMPLE_DIR=NBS7_standard
 #SAMPLE_DIR=NBS6_7
 
 #INSTALL_DIR=nbs_install
 INSTALL_DIR=./nbs_install
 
-DEFAULTS_FILE="./nbs_defaults.sh"
+DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 # Function to load saved defaults
 load_defaults() {
     echo "NOTICE: reading previous values from $DEFAULTS_FILE"

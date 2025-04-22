@@ -3,11 +3,16 @@
 # and applies these configurations to specific files. It is designed to facilitate the automation of cloud infrastructure setup
 # and application deployment preparations.
 
+# define some functions used in lots of scripting, need to remove duplication
+# log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+source "$(dirname "$0")/../common_functions.sh"
+
 # Default settings
-DEFAULTS_FILE="nbs_defaults.sh"
-HELM_VER_DEFAULT=v7.9.0
+#DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
+
+#HELM_VER_DEFAULT=v7.9.1.1
+#DEBUG=0
 NOOP=0
-DEBUG=0
 DEVELOPMENT=0
 SEARCH_REPLACE=0
 ZIP_FILES=0
@@ -68,21 +73,21 @@ else
 fi
 
 # Debug function
-debug() {
-    if [ "$DEBUG" -eq 1 ]; then
-        echo "Debug: $1"
-    fi
-}
+#debug() {
+#    if [ "$DEBUG" -eq 1 ]; then
+#        echo "Debug: $1"
+#    fi
+#}
 
 # Function to load saved defaults
-load_defaults() {
-    echo "NOTICE: reading previous values from $DEFAULTS_FILE"
-    if [ -f "$DEFAULTS_FILE" ]; then
-        source "$DEFAULTS_FILE"
-    else
-        echo "NOTICE: $DEFAULTS_FILE does not exist"
-    fi
-}
+#load_defaults() {
+#    echo "NOTICE: reading previous values from $DEFAULTS_FILE"
+#    if [ -f "$DEFAULTS_FILE" ]; then
+#        source "$DEFAULTS_FILE"
+#    else
+#        echo "NOTICE: $DEFAULTS_FILE does not exist"
+#    fi
+#}
 
 # Function to check AWS access and confirm account
 check_aws_access() {
@@ -105,16 +110,16 @@ check_aws_access() {
     fi
 }
 
-update_defaults() {
-    local var_name=$1
-    local var_value=$2
-    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
-        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
-        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
-    else
-        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
-    fi
-}
+#update_defaults() {
+#    local var_name=$1
+#    local var_value=$2
+#    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
+#        #sed -i "s/^${var_name}_DEFAULT=.*/${var_name}_DEFAULT=${var_value}/" "${DEFAULTS_FILE}"
+#        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
+#    else
+#        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
+#    fi
+#}
 
 
 # Function to select a DB endpoint
@@ -205,6 +210,19 @@ apply_substitutions_and_copy() {
     fi
 
     # Apply substitutions
+    # adding new way of delimiting passwords first
+    # the pipe helps with special characters in pass, the <<varname>> construct in template 
+    # is meant to fail if not replaced in terraform, helm, sql
+    sed -i "s|<<EXAMPLE_ENVIRONMENT>>|${SITE_NAME}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_DB_NAME>>|${DB_NAME}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_DB_USER>>|${DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_DB_USER_PASSWORD>>|$(escape_sed "$DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_RDB_DB_USER_PASSWORD>>|$(escape_sed "$RDB_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_SRTE_DB_USER_PASSWORD>>|$(escape_sed "$SRTE_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KC_DB_USER_PASSWORD")|g" "$new_file_path"
+
+    # keep old substitutions until all replaced in HELM terraform.tfvars etc 
     sed -i "s/vpc-LEGACY-EXAMPLE/${LEGACY_VPC_ID}/" "$new_file_path"
     sed -i "s/rtb-PRIVATE-EXAMPLE/${PRIVATE_ROUTE_TABLE_ID}/" "$new_file_path"
     sed -i "s/rtb-PUBLIC-EXAMPLE/${PUBLIC_ROUTE_TABLE_ID}/" "$new_file_path"
@@ -249,6 +267,7 @@ apply_substitutions_and_copy() {
     # Add more sed commands as needed for other placeholders
     #sed -i "s/EXAMPLE_XXX/${XXX}/" "$new_file_path"
 
+    check_for_placeholders "$new_file_path"
 
 
 }
