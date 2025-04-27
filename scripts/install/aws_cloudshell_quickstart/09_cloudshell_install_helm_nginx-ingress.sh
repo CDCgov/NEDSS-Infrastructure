@@ -17,7 +17,7 @@ INGRESS_VER=4.7.2
 #INSTALL_DIR_DEFAULT=~/nbs_install
 #DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 DEBUG=1
-#STEP=0
+STEP=0
 NOOP=0
 
 # Load defaults if available
