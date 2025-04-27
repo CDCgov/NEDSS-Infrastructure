@@ -2,7 +2,7 @@
 
 # define some functions used in lots of scripting, need to remove duplication
 # log debug debug_message log_debug  pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
-source "$(dirname "$0")/../common_functions.sh"
+source "$(dirname "$0")/../../common_functions.sh"
 
 # Function to check AWS access and confirm account
 check_aws_access() {
@@ -31,7 +31,10 @@ check_aws_access;
 # maybe read from inputs.tfvars?
 #TMP_CLUSTER=cdc-nbs-sandbox
 echo "grabbing cluster name from current environment, THIS ONLY WORKS IF THERE IS ONLY ONE CLUSTER"
-TMP_CLUSTER=$(aws eks list-clusters --query 'clusters' --output text)
+#TMP_CLUSTER=$(aws eks list-clusters --query 'clusters' --output text | tr "\t" "\n" | head)
+#TMP_CLUSTER=$(aws eks list-clusters --query 'clusters' --output text | tr "\t" "\n" | grep $(grep -i ^resource_prefix terraform.tfvars | awk '{print $3}'))
+RESOURCE_PREFIX=$(grep -i ^resource_prefix terraform.tfvars | sed 's|"||g' | awk '{print $3}')
+TMP_CLUSTER=$(aws eks list-clusters --query 'clusters' --output text | tr "\t" "\n" | grep ${RESOURCE_PREFIX})
 
 # configure kubectl to point to correct cluster
 aws eks --region us-east-1 update-kubeconfig --name ${TMP_CLUSTER}

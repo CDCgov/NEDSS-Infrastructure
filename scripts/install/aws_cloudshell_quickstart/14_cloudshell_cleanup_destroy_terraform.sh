@@ -2,7 +2,7 @@
 
 # define some functions used in lots of scripting, need to remove duplication
 # log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
-source "$(dirname "$0")/../common_functions.sh"
+source "$(dirname "$0")/../../common_functions.sh"
 
 #HELM_VER=v7.9.1.1
 #exit 1

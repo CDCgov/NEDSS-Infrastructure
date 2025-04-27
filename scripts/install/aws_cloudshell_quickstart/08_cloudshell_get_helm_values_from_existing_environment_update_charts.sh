@@ -5,7 +5,7 @@
 
 # define some functions used in lots of scripting, need to remove duplication
 # log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
-source "$(dirname "$0")/../common_functions.sh"
+source "$(dirname "$0")/../../common_functions.sh"
 
 # Default settings
 #DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
@@ -138,11 +138,13 @@ select_db_endpoint() {
 # select an EFS volume
 select_efs_volume() {
     echo "Fetching EFS volumes..."
-    mapfile -t efs_volumes < <(aws efs describe-file-systems --query 'FileSystems[].[FileSystemId]' --output text)
+    #mapfile -t efs_volumes < <(aws efs describe-file-systems --query 'FileSystems[].[FileSystemId]' --output text)
+    mapfile -t efs_volumes < <(aws efs describe-file-systems --query 'FileSystems[].[FileSystemId,Name]' --output text)
     
     echo "Available EFS Instances:" > /dev/tty
     select efs_option in "${efs_volumes[@]}"; do
-        EFS_ID=$(echo $efs_option | awk '{print $NF}')
+        #EFS_ID=$(echo $efs_option | awk '{print $NF}')
+        EFS_ID=$(echo $efs_option | awk '{print $1}')
         break
     done
     echo "Selected EFS Volume: $EFS_ID"
@@ -217,11 +219,18 @@ apply_substitutions_and_copy() {
     sed -i "s|<<EXAMPLE_DB_NAME>>|${DB_NAME}|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_DB_USER>>|${DB_USER}|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_DB_USER_PASSWORD>>|$(escape_sed "$DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_ODSE_DB_USER>>|${DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$DB_USER_PASSWORD")|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_RDB_DB_USER_PASSWORD>>|$(escape_sed "$RDB_DB_USER_PASSWORD")|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_SRTE_DB_USER_PASSWORD>>|$(escape_sed "$SRTE_DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
+    #sed -i "s|<<EXAMPLE_ODSE_DB_USER>>|${ODSE_DB_USER}|g" "$new_file_path"
+    #sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KC_DB_USER_PASSWORD")|g" "$new_file_path"
 
+    sed -i "s|EXAMPLE_ODSE_DB_USER|${ODSE_DB_USER}|g" "$new_file_path"
+    sed -i "s|EXAMPLE_ODSE_DB_USER_PASSWORD|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
+
+    #echo step 1
     # keep old substitutions until all replaced in HELM terraform.tfvars etc 
     sed -i "s/vpc-LEGACY-EXAMPLE/${LEGACY_VPC_ID}/" "$new_file_path"
     sed -i "s/rtb-PRIVATE-EXAMPLE/${PRIVATE_ROUTE_TABLE_ID}/" "$new_file_path"
@@ -236,12 +245,18 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_USER@EXAMPLE_DOMAIN/${CERT_MANAGER_EMAIL}/" "$new_file_path"
     #sed -i "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/" "$new_file_path"
     # TODO: FIXME: tweak helm charts to have more psi
+    #
+    #echo step 2
+    #
     sed -i "s/EXAMPLE_DOMAIN/${SITE_NAME}.${EXAMPLE_DOMAIN}/" "$new_file_path"
     sed -i "s/EXAMPLE_ACCOUNT_ID/${TMP_ACCOUNT_ID}/" "$new_file_path"
     sed -i "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE}/" "$new_file_path"
     sed -i "s/EXAMPLE_RESOURCE_PREFIX/${SITE_NAME}/g" "$new_file_path"
     sed -i "s/EXAMPLE-fluentbit-bucket/${SITE_NAME}-fluentbit-bucket-${TMP_ACCOUNT_ID}/" "$new_file_path"
     sed -i "s/EXAMPLE_KC_PASSWORD8675309/${KEYCLOAK_ADMIN_PASSWORD}/" "$new_file_path"
+    sed -i "s/EXAMPLE_KC_PASS8675309/${KEYCLOAK_ADMIN_PASSWORD}/" "$new_file_path"
+    sed -i "s/EXAMPLE_KEYCLOAK_ADMIN_PASSWORD/${KEYCLOAK_ADMIN_PASSWORD}/" "$new_file_path"
+    sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
     sed -i "s/EXAMPLE_KCDB_PASS8675309/${KEYCLOAK_DB_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_ENDPOINT/${DB_ENDPOINT}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_NAME/${DB_NAME}/" "$new_file_path"
@@ -254,11 +269,25 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_NIFI_ADMIN_USER/${NIFI_ADMIN_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_SENSITIVE_PROPS/${NIFI_SENSITIVE_PROPS}/" "$new_file_path"
 
+    #echo step 3
     sed -i "s/EXAMPLE_MSK_KAFKA_ENDPOINT/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+    sed -i "s/EXAMPLE_KAFKA_ENDPOINT/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+    sed -i "s/EXAMPLE_KAFKA_CLUSTER/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+
+
     sed -i "s/EXAMPLE_SFTP_ENABLED/${SFTP_ENABLED}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_HOST/${SFTP_HOST}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_USER/${SFTP_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_PASS/${SFTP_PASS}/" "$new_file_path"
+
+    sed -i "s/EXAMPLE_SFTP_FILE_EXTNS/${SFTP_FILE_EXTNS}/" "$new_file_path"
+    sed -i "s/EXAMPLE_FILE_EXTNS/${SFTP_FILE_EXTNS}/" "$new_file_path"
+    sed -i "s|EXAMPLE_SFTP_FILE_PATHS|$(escape_sed "$SFTP_FILE_PATHS")|" "$new_file_path"
+    sed -i "s|EXAMPLE_FILE_PATHS|$(escape_sed "$SFTP_FILE_PATHS")|" "$new_file_path"
+#    sed -i "s|EXAMPLE_ODSE_DB_USER_PASSWORD|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
+
+
+
     sed -i "s/EXAMPLE_NBS_AUTHUSER/${NBS_AUTHUSER}/" "$new_file_path"
     sed -i "s?EXAMPLE_TOKEN_SECRET?${TOKEN_SECRET}?" "$new_file_path"
     sed -i "s?EXAMPLE_PARAMETER_SECRET?${PARAMETER_SECRET}?" "$new_file_path"
@@ -380,6 +409,12 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
 	read -sp "Please enter the SFTP_PASSWORD [${SFTP_PASS_DEFAULT}]: " SFTP_PASS && SFTP_PASS=${SFTP_PASS:-$SFTP_PASS_DEFAULT}
     echo
 	update_defaults "SFTP_PASS" "$SFTP_PASS"
+
+	read -p "Please enter the SFTP_FILE_EXTNS(hl7,txt) [${SFTP_FILE_EXTNS_DEFAULT}]: " SFTP_FILE_EXTNS && SFTP_FILE_EXTNS=${SFTP_FILE_EXTNS:-$SFTP_FILE_EXTNS_DEFAULT}
+	update_defaults "SFTP_FILE_EXTNS" "$SFTP_FILE_EXTNS"
+
+	read -p "Please enter the SFTP_FILE_PATHS(/) [${SFTP_FILE_PATHS_DEFAULT}]: " SFTP_FILE_PATHS && SFTP_FILE_PATHS=${SFTP_FILE_PATHS:-$SFTP_FILE_PATHS_DEFAULT}
+	update_defaults "SFTP_FILE_PATHS" "$SFTP_FILE_PATHS"
 
 	read -p "Please enter the NBS_AUTHUSER e.g. superuser [${NBS_AUTHUSER_DEFAULT}]: " NBS_AUTHUSER && NBS_AUTHUSER=${NBS_AUTHUSER:-$NBS_AUTHUSER_DEFAULT}
     echo

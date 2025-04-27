@@ -11,7 +11,7 @@
 
 # define some functions used in lots of scripting, need to remove duplication
 # log debug debug_message log_debug  pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
-source "$(dirname "$0")/../common_functions.sh"
+source "$(dirname "$0")/../../common_functions.sh"
 
 # Default values
 #INSTALL_DIR=~/nbs_install

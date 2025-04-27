@@ -11,27 +11,30 @@ SAMPLE_DIR=NBS7_standard
 #INSTALL_DIR=nbs_install
 INSTALL_DIR=./nbs_install
 
-DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
+#DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
+source "$(dirname "$0")/../../common_functions.sh"
+
 # Function to load saved defaults
-load_defaults() {
-    echo "NOTICE: reading previous values from $DEFAULTS_FILE"
-    if [ -f "$DEFAULTS_FILE" ]; then
-        source "$DEFAULTS_FILE"
-    else
-        echo "NOTICE: $DEFAULTS_FILE does not exist"
-    fi
-}
+#load_defaults() {
+#    echo "NOTICE: reading previous values from $DEFAULTS_FILE"
+#    if [ -f "$DEFAULTS_FILE" ]; then
+#        source "$DEFAULTS_FILE"
+#    else
+#        echo "NOTICE: $DEFAULTS_FILE does not exist"
+#    fi
+#}
 
 # Function to update defaults file
-update_defaults() {
-    local var_name=$1
-    local var_value=$2
-    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
-        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
-    else
-        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
-    fi
-}
+#update_defaults() {
+#    local var_name=$1
+#    local var_value=$2
+#    if grep -q "^${var_name}_DEFAULT=" "$DEFAULTS_FILE"; then
+#        sed -i "s?^${var_name}_DEFAULT=.*?${var_name}_DEFAULT=${var_value}?" "${DEFAULTS_FILE}"
+#    else
+#        echo "${var_name}_DEFAULT=${var_value}" >> "${DEFAULTS_FILE}"
+#    fi
+#}
+
 
 load_defaults; 
 
