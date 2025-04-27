@@ -4,11 +4,11 @@
 # This script automates the installation or upgrade of an NGINX Ingress controller
 # in a Kubernetes cluster using Helm. It supports specifying Helm version and
 # installation directory through flags or prompts. Features include saving defaults,
-# debug logging, step-by-step execution, a test mode, and preliminary access checks
+# debug logging, STEP_MODE-by-STEP_MODE execution, a test mode, and preliminary access checks
 # for AWS account and Kubernetes cluster connectivity.
 
 # define some functions used in lots of scripting, need to remove duplication
-# log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
+# log debug debug_message log_debug  pause_STEP_MODE STEP_MODE_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
 source "$(dirname "$0")/../../common_functions.sh"
 
 # Default values
@@ -17,7 +17,7 @@ INGRESS_VER=4.7.2
 #INSTALL_DIR_DEFAULT=~/nbs_install
 #DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 DEBUG=1
-STEP=0
+#STEP_MODE=0
 NOOP=0
 
 # Load defaults if available
@@ -58,7 +58,7 @@ usage() {
     echo "  -v  Specify Helm version (default: ${HELM_VER_DEFAULT})."
     echo "  -d  Specify installation directory (default: ${INSTALL_DIR_DEFAULT})."
     echo "  -g  Enable debug mode."
-    echo "  -s  Enable step-by-step execution."
+    echo "  -s  Enable STEP_MODE-by-STEP_MODE execution."
     echo "  -t  Test mode (no operations performed)."
     exit 1
 }
@@ -68,7 +68,7 @@ execute_command() {
     if [ $DEBUG -eq 1 ] || [ $NOOP -eq 1 ]; then
         echo "Command: $cmd"
     fi
-    if [ $STEP -eq 1 ]; then
+    if [ $STEP_MODE -eq 1 ]; then
         read -p "Press enter to continue..."
     fi
     if [ $NOOP -eq 0 ]; then
@@ -95,7 +95,7 @@ while getopts "hv:d:gst" opt; do
             DEBUG=1
             ;;
         s)
-            STEP=1
+            STEP_MODE=1
             ;;
         t)
             NOOP=1
