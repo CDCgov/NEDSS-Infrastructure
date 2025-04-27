@@ -109,21 +109,45 @@ update_defaults() {
 }
 
 # Function to select an NLB
-select_nlb() {
-    echo "Fetching NLBs..."
-    #mapfile -t nlbs < <(aws elbv2 describe-load-balancers --type network --query 'LoadBalancers[].[LoadBalancerName, DNSName]' --output text)
-    #mapfile -t nlbs < <(aws elbv2 describe-load-balancers --query 'LoadBalancers[].[LoadBalancerName, DNSName]' --output text)
-    mapfile -t nlbs < <(aws elbv2 describe-load-balancers --query 'LoadBalancers[].[LoadBalancerName, DNSName]' --output text| grep -v alb)
-    
+#select_nlb() {
+#    echo "Fetching NLBs..."
+#    mapfile -t nlbs < <(aws elbv2 describe-load-balancers --query 'LoadBalancers[].[LoadBalancerName, DNSName, Name]' --output text| grep -v alb)
+#    
+#    echo "Available NLBs:" > /dev/tty
+#    select nlb_option in "${nlbs[@]}"; do
+#        NLB_NAME=$(echo $nlb_option | awk '{print $1}')
+#        NLB_DNS_NAME=$(echo $nlb_option | awk '{print $2}')
+#        break
+#    done
+#    echo "Selected NLB: $NLB_NAME"
+#    echo "NLB DNS Name: $NLB_DNS_NAME"
+#}
+
+
+select_nlb() { 
+    echo "Fetching NLBs..." > /dev/tty
+
+    # Get NLBs (type=network)
+    mapfile -t nlbs < <(
+        aws elbv2 describe-load-balancers --query "LoadBalancers[?Type=='network'].[LoadBalancerName, DNSName, LoadBalancerArn]" --output text | while read lb_name lb_dns lb_arn; do
+            name_tag=$(aws elbv2 describe-tags --resource-arns "$lb_arn" --query "TagDescriptions[0].Tags[?Key=='Name'].Value" --output text 2>/dev/null)
+            echo -e "$lb_name\t$lb_dns\t${name_tag:-No-Name-Tag}"
+        done
+    )
+
     echo "Available NLBs:" > /dev/tty
     select nlb_option in "${nlbs[@]}"; do
-        NLB_NAME=$(echo $nlb_option | awk '{print $1}')
-        NLB_DNS_NAME=$(echo $nlb_option | awk '{print $2}')
+        NLB_NAME=$(echo "$nlb_option" | awk '{print $1}')
+        NLB_DNS_NAME=$(echo "$nlb_option" | awk '{print $2}')
+        NLB_TAG_NAME=$(echo "$nlb_option" | awk '{print $3}')
         break
     done
+
     echo "Selected NLB: $NLB_NAME"
     echo "NLB DNS Name: $NLB_DNS_NAME"
+    echo "NLB Name Tag: $NLB_TAG_NAME"
 }
+
 
 # Function to select a Hosted Zone
 select_hosted_zone() {
