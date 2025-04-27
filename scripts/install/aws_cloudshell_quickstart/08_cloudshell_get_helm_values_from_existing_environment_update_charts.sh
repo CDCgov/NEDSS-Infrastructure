@@ -259,6 +259,7 @@ apply_substitutions_and_copy() {
     sed -i "s|<<EXAMPLE_SRTE_DB_USER>>|${SRTE_DB_USER}|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_SRTE_DB_USER_PASSWORD>>|$(escape_sed "$SRTE_DB_USER_PASSWORD")|g" "$new_file_path"
     sed -i "s|EXAMPLE_SRTE_DB_USER|${SRTE_DB_USER}|g" "$new_file_path"
+    sed -i "s|EXAMPLE_SRTE_CLIENT_ID|${SRTE_CLIENT_ID}|g" "$new_file_path"
 
     sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KC_DB_USER_PASSWORD")|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_KC_PASSWORD>>|$(escape_sed "$KEYCLOAK_ADMIN_PASSWORD")|g" "$new_file_path"
@@ -468,6 +469,8 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     ###########################################################################################################
 
     ###########################################################################################################
+    read -p "Please enter the SRTE keycloak client id (e.g. srte-data-keycloak-client) [${SRTE_CLIENT_ID_DEFAULT}]: " SRTE_CLIENT_ID && SRTE_CLIENT_ID=${SRTE_CLIENT_ID:-$SRTE_CLIENT_ID_DEFAULT}
+
     read -p "Please enter the SRTE DB Name [${SRTE_DB_NAME_DEFAULT}]: " SRTE_DB_NAME && SRTE_DB_NAME=${SRTE_DB_NAME:-$SRTE_DB_NAME_DEFAULT}
     update_defaults "SRTE_DB_NAME" "$SRTE_DB_NAME"
 
