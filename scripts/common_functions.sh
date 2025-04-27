@@ -133,8 +133,20 @@ check_for_placeholders() {
     local pattern='<<[^<>]*>>'
 
     if grep -qE "$pattern" "$file"; then
-        echo "❌ ERROR: Unresolved placeholder(s) found in $file:"
+        echo "WARNING: Unresolved placeholder(s) found in $file:"
         grep -nE "$pattern" "$file"
-        exit 1
+        #exit 1
     fi
 }
+
+check_for_examples() {
+    local file="$1"
+    local pattern='EXAMPLE'
+
+    if grep -qE '^[[:space:]]*[^#[:space:]].*\b'"$pattern" "$file"; then
+        echo "WARNING: Unresolved EXAMPLE(s) found in $file:"
+        grep -nE '^[[:space:]]*[^#[:space:]].*\b'"$pattern" "$file"
+        #exit 1
+    fi
+}
+

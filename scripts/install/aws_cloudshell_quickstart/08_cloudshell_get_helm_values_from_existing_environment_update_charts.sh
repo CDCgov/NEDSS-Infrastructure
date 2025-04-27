@@ -18,6 +18,8 @@ SEARCH_REPLACE=0
 ZIP_FILES=0
 NEW_FILES=()
 SKIP_QUERY=0  # Added SKIP_QUERY to manage the bypassing of querying
+SKIP_SELECTION=0  # Added SKIP_QUERY to manage the bypassing of querying
+OVERWRITE=0 # when true will overwrite values files without prompt
 
 
 # Usage function to display help
@@ -28,14 +30,16 @@ usage() {
     echo "  -d              Enable debug mode."
     echo "  -D              Development mode for operations on non-production files."
     echo "  -s              Perform search and replace."
-    # echo "  -n              Skip querying and updating variables, use defaults only."
+    echo "  -n              Skip querying and updating variables, use defaults only. still can do search and replace"
+    echo "  -k              Skip querying and updating variables with multiple selection logic. still can do search and replace"
     echo "  -z              Create a zip file of the modified files."
+    echo "  -o              overwrite existing values files"
     exit 1
 }
 
 # Parse command-line options
 #while getopts 'hdsDn?' OPTION; do
-while getopts 'hdsD?z' OPTION; do
+while getopts 'hdskoD?z' OPTION; do
     case "$OPTION" in
         h)
             usage
@@ -49,9 +53,15 @@ while getopts 'hdsD?z' OPTION; do
         s)
             SEARCH_REPLACE=1
             ;;
-        #n)
-        #    SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
-        #    ;;
+        n)
+            SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
+            ;;
+        k)
+            SKIP_SELECTION=1  # Set SKIP_QUERY if the -n flag is used
+            ;;
+        o)
+            OVERWRITE=1  # Set SKIP_QUERY if the -n flag is used
+            ;;
         z)
             ZIP_FILES=1
             ;;
@@ -102,7 +112,11 @@ check_aws_access() {
         # account
         #echo "Account Alias: $account_alias"
         echo "Account Alias: not available except from organization owner"
-        read -p "Is this the intended AWS account? (y/n): " confirmation
+
+        # now make this default to y is user hits enter
+        read -p "Is this the intended AWS account? (y/n)[y]: " confirmation
+        confirmation=${confirmation:-y}
+
         if [[ "$confirmation" != "y" ]]; then
             echo "AWS account verification failed. Exiting."
             exit 1
@@ -201,7 +215,17 @@ apply_substitutions_and_copy() {
     # Copy and apply substitutions
     #echo cp -ip "$src_file_path" "$new_file_path"
     debug "echo creating $new_file_path"
-    cp -ip "$src_file_path" "$new_file_path"
+
+    # add a line break
+    echo 
+    echo "------------------------------------------"
+
+    if [ "$OVERWRITE" -eq 1 ]; then
+        echo "NOTICE: overwriting $new_file_path"
+        cp -p "$src_file_path" "$new_file_path"
+    else
+        cp -ip "$src_file_path" "$new_file_path"
+    fi
 
     if [ -f $new_file_path ]
     then
@@ -216,19 +240,35 @@ apply_substitutions_and_copy() {
     # the pipe helps with special characters in pass, the <<varname>> construct in template 
     # is meant to fail if not replaced in terraform, helm, sql
     sed -i "s|<<EXAMPLE_ENVIRONMENT>>|${SITE_NAME}|g" "$new_file_path"
+
     sed -i "s|<<EXAMPLE_DB_NAME>>|${DB_NAME}|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_DB_USER>>|${DB_USER}|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_DB_USER_PASSWORD>>|$(escape_sed "$DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_ODSE_DB_USER>>|${DB_USER}|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_RDB_DB_USER_PASSWORD>>|$(escape_sed "$RDB_DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_SRTE_DB_USER_PASSWORD>>|$(escape_sed "$SRTE_DB_USER_PASSWORD")|g" "$new_file_path"
-    #sed -i "s|<<EXAMPLE_ODSE_DB_USER>>|${ODSE_DB_USER}|g" "$new_file_path"
-    #sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KC_DB_USER_PASSWORD")|g" "$new_file_path"
 
-    sed -i "s|EXAMPLE_ODSE_DB_USER|${ODSE_DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_ODSE_DB_NAME>>|${ODSE_DB_NAME}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_ODSE_DB_USER>>|${ODSE_DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
     sed -i "s|EXAMPLE_ODSE_DB_USER_PASSWORD|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|EXAMPLE_ODSE_DB_USER|${ODSE_DB_USER}|g" "$new_file_path"
+
+    sed -i "s|<<EXAMPLE_RDB_DB_NAME>>|${RDB_DB_NAME}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_RDB_DB_USER>>|${RDB_DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_RDB_DB_USER_PASSWORD>>|$(escape_sed "$RDB_DB_USER_PASSWORD")|g" "$new_file_path"
+
+    sed -i "s|<<EXAMPLE_SRTE_DB_NAME>>|${SRTE_DB_NAME}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_SRTE_DB_USER>>|${SRTE_DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_SRTE_DB_USER_PASSWORD>>|$(escape_sed "$SRTE_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|EXAMPLE_SRTE_DB_USER|${SRTE_DB_USER}|g" "$new_file_path"
+
+    sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KC_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_KC_PASSWORD>>|$(escape_sed "$KEYCLOAK_ADMIN_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_KEYCLOAK_ADMIN_PASSWORD>>|$(escape_sed "$KEYCLOAK_ADMIN_PASSWORD")|g" "$new_file_path"
+    sed -i "s|EXAMPLE_KC_PASSWORD8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KC_PASS8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KCDB_PASS8675309|${KEYCLOAK_DB_PASSWORD}|" "$new_file_path"
+
 
     #echo step 1
     # keep old substitutions until all replaced in HELM terraform.tfvars etc 
@@ -253,17 +293,22 @@ apply_substitutions_and_copy() {
     sed -i "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE}/" "$new_file_path"
     sed -i "s/EXAMPLE_RESOURCE_PREFIX/${SITE_NAME}/g" "$new_file_path"
     sed -i "s/EXAMPLE-fluentbit-bucket/${SITE_NAME}-fluentbit-bucket-${TMP_ACCOUNT_ID}/" "$new_file_path"
-    sed -i "s/EXAMPLE_KC_PASSWORD8675309/${KEYCLOAK_ADMIN_PASSWORD}/" "$new_file_path"
-    sed -i "s/EXAMPLE_KC_PASS8675309/${KEYCLOAK_ADMIN_PASSWORD}/" "$new_file_path"
-    sed -i "s/EXAMPLE_KEYCLOAK_ADMIN_PASSWORD/${KEYCLOAK_ADMIN_PASSWORD}/" "$new_file_path"
+
+    sed -i "s|EXAMPLE_KC_PASSWORD8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KC_PASS8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
     sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
-    sed -i "s/EXAMPLE_KCDB_PASS8675309/${KEYCLOAK_DB_PASSWORD}/" "$new_file_path"
+    sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KCDB_PASS8675309|${KEYCLOAK_DB_PASSWORD}|" "$new_file_path"
+
+
     sed -i "s/EXAMPLE_DB_ENDPOINT/${DB_ENDPOINT}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_NAME/${DB_NAME}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_USER_PASSWORD/${DB_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_USER/${DB_USER}/" "$new_file_path"
+
     sed -i "s/MODERNIZATION_API_DB_USER_PASSWORD/${MODERNIZATION_API_DB_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/MODERNIZATION_API_DB_USER/${MODERNIZATION_API_DB_USER}/" "$new_file_path"
+
     sed -i "s/EXAMPLE_EFS_ID/${EFS_ID}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_ADMIN_USER_PASSWORD/${NIFI_ADMIN_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_ADMIN_USER/${NIFI_ADMIN_USER}/" "$new_file_path"
@@ -289,14 +334,15 @@ apply_substitutions_and_copy() {
 
 
     sed -i "s/EXAMPLE_NBS_AUTHUSER/${NBS_AUTHUSER}/" "$new_file_path"
-    sed -i "s?EXAMPLE_TOKEN_SECRET?${TOKEN_SECRET}?" "$new_file_path"
-    sed -i "s?EXAMPLE_PARAMETER_SECRET?${PARAMETER_SECRET}?" "$new_file_path"
+    sed -i "s|EXAMPLE_TOKEN_SECRET|${TOKEN_SECRET}|" "$new_file_path"
+    sed -i "s|EXAMPLE_PARAMETER_SECRET|${PARAMETER_SECRET}|" "$new_file_path"
 
 
     # Add more sed commands as needed for other placeholders
     #sed -i "s/EXAMPLE_XXX/${XXX}/" "$new_file_path"
 
     check_for_placeholders "$new_file_path"
+    check_for_examples "$new_file_path"
 
 
 }
@@ -324,22 +370,24 @@ load_defaults;
 # TODO: fix skip query flag, does not work because variable names in
 # defautls file have _DEFAULT added!!!!
 if [ "$SKIP_QUERY" -eq 0 ]; then
-    select_db_endpoint;
-    update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
+    if [ "$SKIP_SELECTION" -eq 0 ]; then
+        select_db_endpoint;
+        update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
 
-    select_efs_volume; 
-    update_defaults "EFS_ID" "$EFS_ID"
+        select_efs_volume; 
+        update_defaults "EFS_ID" "$EFS_ID"
 
-    select_msk_cluster;
-    update_defaults "MSK_CLUSTER_ARN" "$MSK_CLUSTER_ARN"
-    update_defaults "MSK_CLUSTER_NAME" "$MSK_CLUSTER_NAME"
-    update_defaults "MSK_KAFKA_ENDPOINT" "$MSK_KAFKA_ENDPOINT"
+        select_msk_cluster;
+        update_defaults "MSK_CLUSTER_ARN" "$MSK_CLUSTER_ARN"
+        update_defaults "MSK_CLUSTER_NAME" "$MSK_CLUSTER_NAME"
+        update_defaults "MSK_KAFKA_ENDPOINT" "$MSK_KAFKA_ENDPOINT"
 
-    echo "generating secrets with openssl"
-    TOKEN_SECRET=$(openssl rand -base64 64 | tr -d '\n')
-    PARAMETER_SECRET=$(openssl rand -base64 32 | cut -c1-32) 
-    update_defaults "TOKEN_SECRET" "$TOKEN_SECRET"
-    update_defaults "PARAMETER_SECRET" "$PARAMETER_SECRET"
+        echo "generating secrets with openssl"
+        TOKEN_SECRET=$(openssl rand -base64 64 | tr -d '\n')
+        PARAMETER_SECRET=$(openssl rand -base64 32 | cut -c1-32) 
+        update_defaults "TOKEN_SECRET" "$TOKEN_SECRET"
+        update_defaults "PARAMETER_SECRET" "$PARAMETER_SECRET"
+    fi
 
     # Prompt for missing values with defaults
     read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
@@ -377,6 +425,7 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     read -p "Please enter the Cert-Manager email address[${CERT_MANAGER_EMAIL_DEFAULT}]: " CERT_MANAGER_EMAIL && CERT_MANAGER_EMAIL=${CERT_MANAGER_EMAIL:-$CERT_MANAGER_EMAIL_DEFAULT}
     update_defaults "CERT_MANAGER_EMAIL" "$CERT_MANAGER_EMAIL"
 
+    ###########################################################################################################
     read -p "Please enter the DB Name [${DB_NAME_DEFAULT}]: " DB_NAME && DB_NAME=${DB_NAME:-$DB_NAME_DEFAULT}
     update_defaults "DB_NAME" "$DB_NAME"
 
@@ -386,6 +435,48 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     read -sp "Please enter the DB_USER_PASSWORD[${DB_USER_PASSWORD_DEFAULT}]: " DB_USER_PASSWORD && DB_USER_PASSWORD=${DB_USER_PASSWORD:-$DB_USER_PASSWORD_DEFAULT}
     echo
     update_defaults "DB_USER_PASSWORD" "$DB_USER_PASSWORD"
+    ###########################################################################################################
+    
+    ###########################################################################################################
+    # should do away with above section without ODSE distinction
+    read -p "Please enter the ODSE DB Name(this is probably the same as plain DB above) [${ODSE_DB_NAME_DEFAULT}]: " ODSE_DB_NAME && ODSE_DB_NAME=${ODSE_DB_NAME:-$ODSE_DB_NAME_DEFAULT}
+    update_defaults "ODSE_DB_NAME" "$ODSE_DB_NAME"
+
+    read -p "Please enter the ODSE_DB_USER [${ODSE_DB_USER_DEFAULT}]: " ODSE_DB_USER && ODSE_DB_USER=${ODSE_DB_USER:-$ODSE_DB_USER_DEFAULT}
+    update_defaults "ODSE_DB_USER" "$ODSE_DB_USER"
+
+    read -sp "Please enter the ODSE_DB_USER_PASSWORD[${ODSE_DB_USER_PASSWORD_DEFAULT}]: " ODSE_DB_USER_PASSWORD && ODSE_DB_USER_PASSWORD=${ODSE_DB_USER_PASSWORD:-$ODSE_DB_USER_PASSWORD_DEFAULT}
+    echo
+    update_defaults "ODSE_DB_USER_PASSWORD" "$ODSE_DB_USER_PASSWORD"
+    ###########################################################################################################
+
+
+    ###########################################################################################################
+    read -p "Please enter the RDB DB Name [${RDB_DB_NAME_DEFAULT}]: " RDB_DB_NAME && RDB_DB_NAME=${RDB_DB_NAME:-$RDB_DB_NAME_DEFAULT}
+    update_defaults "RDB_DB_NAME" "$RDB_DB_NAME"
+
+    read -p "Please enter the RDB_DB_USER [${RDB_DB_USER_DEFAULT}]: " RDB_DB_USER && RDB_DB_USER=${RDB_DB_USER:-$RDB_DB_USER_DEFAULT}
+    update_defaults "RDB_DB_USER" "$RDB_DB_USER"
+
+    read -sp "Please enter the RDB_DB_USER_PASSWORD[${RDB_DB_USER_PASSWORD_DEFAULT}]: " RDB_DB_USER_PASSWORD && RDB_DB_USER_PASSWORD=${RDB_DB_USER_PASSWORD:-$RDB_DB_USER_PASSWORD_DEFAULT}
+    echo
+    update_defaults "RDB_DB_USER_PASSWORD" "$RDB_DB_USER_PASSWORD"
+    ###########################################################################################################
+
+    ###########################################################################################################
+    read -p "Please enter the SRTE DB Name [${SRTE_DB_NAME_DEFAULT}]: " SRTE_DB_NAME && SRTE_DB_NAME=${SRTE_DB_NAME:-$SRTE_DB_NAME_DEFAULT}
+    update_defaults "SRTE_DB_NAME" "$SRTE_DB_NAME"
+
+    read -p "Please enter the SRTE_DB_USER [${SRTE_DB_USER_DEFAULT}]: " SRTE_DB_USER && SRTE_DB_USER=${SRTE_DB_USER:-$SRTE_DB_USER_DEFAULT}
+    update_defaults "SRTE_DB_USER" "$SRTE_DB_USER"
+
+    read -sp "Please enter the SRTE_DB_USER_PASSWORD[${SRTE_DB_USER_PASSWORD_DEFAULT}]: " SRTE_DB_USER_PASSWORD && SRTE_DB_USER_PASSWORD=${SRTE_DB_USER_PASSWORD:-$SRTE_DB_USER_PASSWORD_DEFAULT}
+    echo
+    update_defaults "SRTE_DB_USER_PASSWORD" "$SRTE_DB_USER_PASSWORD"
+    ###########################################################################################################
+
+
+
 
 	read -p "Please enter the NIFI_ADMIN_USER e.g. admin [${NIFI_ADMIN_USER_DEFAULT}]: " NIFI_ADMIN_USER && NIFI_ADMIN_USER=${NIFI_ADMIN_USER:-$NIFI_ADMIN_USER_DEFAULT}
 	update_defaults "NIFI_ADMIN_USER" "$NIFI_ADMIN_USER"
@@ -449,25 +540,25 @@ then
     debug "pwd=`pwd`"
 
 	apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/modernization-api/values.yaml" "${HELM_DIR}/charts/modernization-api" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/nbs-gateway/values.yaml" "${HELM_DIR}/charts/nbs-gateway" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_DIR}/charts/nifi-efs" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/data-processing-service/values.yaml" "${HELM_DIR}/charts/data-processing-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nbs-gateway/values.yaml" "${HELM_DIR}/charts/nbs-gateway" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/liquibase/values.yaml" "${HELM_DIR}/charts/liquibase" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/investigation-reporting-service/values.yaml" "${HELM_DIR}/charts/investigation-reporting-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/debezium/values.yaml" "${HELM_DIR}/charts/debezium" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/kafka-connect-sink/values.yaml" "${HELM_DIR}/charts/kafka-connect-sink" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/ldfdata-reporting-service/values.yaml" "${HELM_DIR}/charts/ldfdata-reporting-service" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/nnd-service/values.yaml" "${HELM_DIR}/charts/nnd-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/data-processing-service/values.yaml" "${HELM_DIR}/charts/data-processing-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/investigation-reporting-service/values.yaml" "${HELM_DIR}/charts/investigation-reporting-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/observation-reporting-service/values.yaml" "${HELM_DIR}/charts/observation-reporting-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/organization-reporting-service/values.yaml" "${HELM_DIR}/charts/organization-reporting-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/person-reporting-service/values.yaml" "${HELM_DIR}/charts/person-reporting-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/post-processing-reporting-service/values.yaml" "${HELM_DIR}/charts/post-processing-reporting-service" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/kafka-connect-sink/values.yaml" "${HELM_DIR}/charts/kafka-connect-sink" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/debezium/values.yaml" "${HELM_DIR}/charts/debezium" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nnd-service/values.yaml" "${HELM_DIR}/charts/nnd-service" "$SITE_NAME"
 
 	if [ "$DEVELOPMENT" -eq 1 ]; then
 		echo "running search and replace on development containers"
