@@ -20,6 +20,8 @@ NEW_FILES=()
 SKIP_QUERY=0  # Added SKIP_QUERY to manage the bypassing of querying
 SKIP_SELECTION=0  # Added SKIP_QUERY to manage the bypassing of querying
 OVERWRITE=0 # when true will overwrite values files without prompt
+SKIP_IF_EXISTS=0   # new flag: skip overwrite if file already exists
+
 
 
 # Usage function to display help
@@ -34,12 +36,13 @@ usage() {
     echo "  -k              Skip querying and updating variables with multiple selection logic. still can do search and replace"
     echo "  -z              Create a zip file of the modified files."
     echo "  -o              overwrite existing values files"
+    echo "  -e              do not overwrite EXISTING values files"
     exit 1
 }
 
 # Parse command-line options
 #while getopts 'hdsDn?' OPTION; do
-while getopts 'hdskoD?z' OPTION; do
+while getopts 'hdskoeD?z' OPTION; do
     case "$OPTION" in
         h)
             usage
@@ -57,10 +60,13 @@ while getopts 'hdskoD?z' OPTION; do
             SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
             ;;
         k)
-            SKIP_SELECTION=1  # Set SKIP_QUERY if the -n flag is used
+            SKIP_SELECTION=1  
             ;;
         o)
-            OVERWRITE=1  # Set SKIP_QUERY if the -n flag is used
+            OVERWRITE=1  
+            ;;
+        e)
+            SKIP_IF_EXISTS=1  
             ;;
         z)
             ZIP_FILES=1
@@ -152,12 +158,10 @@ select_db_endpoint() {
 # select an EFS volume
 select_efs_volume() {
     echo "Fetching EFS volumes..."
-    #mapfile -t efs_volumes < <(aws efs describe-file-systems --query 'FileSystems[].[FileSystemId]' --output text)
     mapfile -t efs_volumes < <(aws efs describe-file-systems --query 'FileSystems[].[FileSystemId,Name]' --output text)
     
     echo "Available EFS Instances:" > /dev/tty
     select efs_option in "${efs_volumes[@]}"; do
-        #EFS_ID=$(echo $efs_option | awk '{print $NF}')
         EFS_ID=$(echo $efs_option | awk '{print $1}')
         break
     done
@@ -182,6 +186,41 @@ select_msk_cluster() {
     #MSK_KAFKA_ENDPOINT=$(aws kafka get-bootstrap-brokers --cluster-arn $MSK_CLUSTER_ARN --query 'BootstrapBrokerStringTls')
     MSK_KAFKA_ENDPOINT=$(aws kafka get-bootstrap-brokers --cluster-arn $MSK_CLUSTER_ARN --query 'BootstrapBrokerStringTls'| sed 's/"//g')
     echo "Selected MSK Kafka Endpoint: $MSK_KAFKA_ENDPOINT"
+}
+
+
+# Function to select an EKS cluster
+select_eks_cluster() {
+    echo "Fetching EKS clusters..."
+    eks_clusters_raw=$(aws eks list-clusters --query 'clusters' --output text)
+
+    # Split into an array
+    IFS=$'\t' read -r -a eks_clusters <<< "$eks_clusters_raw"
+
+    echo "Available EKS Clusters:" > /dev/tty
+    select eks_option in "${eks_clusters[@]}"; do
+        EKS_CLUSTER_NAME="$eks_option"
+        break
+    done
+    echo "Selected EKS Cluster Name: $EKS_CLUSTER_NAME"
+}
+
+
+
+# Function to select an Auto Scaling Group
+select_autoscaling_group() {
+    echo "Fetching Auto Scaling Groups..."
+    asg_raw=$(aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[].AutoScalingGroupName' --output text)
+
+    # Split into an array
+    IFS=$'\t' read -r -a asgs <<< "$asg_raw"
+
+    echo "Available Auto Scaling Groups:" > /dev/tty
+    select asg_option in "${asgs[@]}"; do
+        AUTOSCALING_GROUP_NAME="$asg_option"
+        break
+    done
+    echo "Selected Auto Scaling Group Name: $AUTOSCALING_GROUP_NAME"
 }
 
 
@@ -220,12 +259,27 @@ apply_substitutions_and_copy() {
     echo 
     echo "------------------------------------------"
 
-    if [ "$OVERWRITE" -eq 1 ]; then
-        echo "NOTICE: overwriting $new_file_path"
-        cp -p "$src_file_path" "$new_file_path"
-    else
-        cp -ip "$src_file_path" "$new_file_path"
-    fi
+#    if [ "$OVERWRITE" -eq 1 ]; then
+#        echo "NOTICE: overwriting $new_file_path"
+#        cp -p "$src_file_path" "$new_file_path"
+#    else
+#        cp -ip "$src_file_path" "$new_file_path"
+#    fi
+
+	if [ "$OVERWRITE" -eq 1 ]; then
+    	echo "NOTICE: overwriting $new_file_path"
+    	cp -p "$src_file_path" "$new_file_path"
+	elif [ "$SKIP_IF_EXISTS" -eq 1 ]; then
+    	if [ -f "$new_file_path" ]; then
+        	echo "NOTICE: file exists, skipping without overwrite: $new_file_path"
+        	return 0
+    	else
+        	cp -p "$src_file_path" "$new_file_path"
+    	fi
+	else
+    	cp -ip "$src_file_path" "$new_file_path"
+	fi
+
 
     if [ -f $new_file_path ]
     then
@@ -343,6 +397,11 @@ apply_substitutions_and_copy() {
     sed -i "s|EXAMPLE_PARAMETER_SECRET|${PARAMETER_SECRET}|" "$new_file_path"
 
 
+	# used for cluster autoscaler
+	sed -i "s|<<EXAMPLE_EKS_CLUSTER_NAME>>|${EKS_CLUSTER_NAME}|g" "$new_file_path"
+	sed -i "s|<<EXAMPLE_AUTOSCALING_GROUP_NAME>>|${AUTOSCALING_GROUP_NAME}|g" "$new_file_path"
+
+
     # Add more sed commands as needed for other placeholders
     #sed -i "s/EXAMPLE_XXX/${XXX}/" "$new_file_path"
 
@@ -386,6 +445,13 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
         update_defaults "MSK_CLUSTER_ARN" "$MSK_CLUSTER_ARN"
         update_defaults "MSK_CLUSTER_NAME" "$MSK_CLUSTER_NAME"
         update_defaults "MSK_KAFKA_ENDPOINT" "$MSK_KAFKA_ENDPOINT"
+
+		select_eks_cluster;
+		update_defaults "EKS_CLUSTER_NAME" "$EKS_CLUSTER_NAME"
+
+		select_autoscaling_group;
+		update_defaults "AUTOSCALING_GROUP_NAME" "$AUTOSCALING_GROUP_NAME"
+
 
         echo "generating secrets with openssl"
         TOKEN_SECRET=$(openssl rand -base64 64 | tr -d '\n')
@@ -548,6 +614,7 @@ then
 
 	apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/cluster-autoscaler/values.yaml" "${HELM_DIR}/charts/cluster-autoscaler" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/modernization-api/values.yaml" "${HELM_DIR}/charts/modernization-api" "$SITE_NAME"
