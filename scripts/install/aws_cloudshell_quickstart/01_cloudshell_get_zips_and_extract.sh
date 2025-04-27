@@ -3,7 +3,8 @@
 # Initialize default values
 # define some functions used in lots of scripting, need to remove duplication
 # log debug debug_message log_debug  pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
-source "$(dirname "$0")/../common_functions.sh"
+echo sourcing "$(dirname "$0")/../../common_functions.sh"
+source "$(dirname "$0")/../../common_functions.sh"
 
 #DEBUG_MODE=0
 #STEP_MODE=0
@@ -54,7 +55,7 @@ while getopts "dsi:r:lc:" opt; do
         r ) RELEASE_VER=${OPTARG} ;;
         l ) SOURCE="local" ;;
         c ) COPY_FROM_DIR=${OPTARG} ;;
-        \? ) echo "Usage: cmd [-d] [-s] [-i install_directory] [-r release_version (e.g. v7.9.2) ] [-l] [-c copy_from_directory]"
+        \? ) echo "Usage: $0 [-d] [-s] [-i install_directory] [-r release_version (e.g. v7.9.2) ] [-l] [-c copy_from_directory]"
              exit 1 ;;
     esac
 done

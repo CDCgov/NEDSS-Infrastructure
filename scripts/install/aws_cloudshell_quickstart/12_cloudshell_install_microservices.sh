@@ -21,7 +21,7 @@
 
 # define some functions used in lots of scripting, need to remove duplication
 # log debug debug_message pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
-source "$(dirname "$0")/../common_functions.sh"
+source "$(dirname "$0")/../../common_functions.sh"
 
 #HELM_VER=v7.9.1.1
 #INSTALL_DIR=~/nbs_install
@@ -128,6 +128,11 @@ function helm_safe_install() {
     local namespace=$3
     echo
     echo "Installing or upgrading $name"
+
+    check_for_placeholders_exit ./$path/values-${SITE_NAME}.yaml
+    check_for_examples_exit ./$path/values-${SITE_NAME}.yaml
+
+
     #if ! helm list --short | grep -q "^${name}$"; then
     if ! helm list -n ${namespace} --short | grep -q "^${name}$"; then
         debug_message "Installing $name"
@@ -149,11 +154,11 @@ function helm_safe_install() {
 
 cd ${HELM_DIR}/charts
 
-check_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns app.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns nifi.${SITE_NAME}.${EXAMPLE_DOMAIN};
 #check_dns dataingestion.${SITE_NAME}.${EXAMPLE_DOMAIN};
 check_dns data.${SITE_NAME}.${EXAMPLE_DOMAIN};
+echo not running "check_dns app-classic.${SITE_NAME}.${EXAMPLE_DOMAIN};"
 
 #####################################################################
 # linkerd/mtls
@@ -175,6 +180,15 @@ read junk
 kubectl get namespace ${DEFAULT_NAMESPACE} -o=jsonpath='{.metadata.annotations}'
 echo
 
+
+#####################################################################
+# cluster autoscaler
+
+helm repo add autoscaler https://kubernetes.github.io/autoscaler
+#helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler -f ./cluster-autoscaler/values--${SITE_NAME}.yaml --namespace kube-system
+# not sure autoscaler/cluster-autoscaler makes sense???
+# maybe helm_safe_install cluster-autoscaler cluster-autoscaler kube-system
+helm_safe_install cluster-autoscaler cluster-autoscaler kube-system
 
 #####################################################################
 

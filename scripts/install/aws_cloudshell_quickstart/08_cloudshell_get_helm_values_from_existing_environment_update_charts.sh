@@ -5,7 +5,7 @@
 
 # define some functions used in lots of scripting, need to remove duplication
 # log debug debug_message log_debug  pause_step step_pause load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
-source "$(dirname "$0")/../common_functions.sh"
+source "$(dirname "$0")/../../common_functions.sh"
 
 # Default settings
 #DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
@@ -18,6 +18,10 @@ SEARCH_REPLACE=0
 ZIP_FILES=0
 NEW_FILES=()
 SKIP_QUERY=0  # Added SKIP_QUERY to manage the bypassing of querying
+SKIP_SELECTION=0  # Added SKIP_QUERY to manage the bypassing of querying
+OVERWRITE=0 # when true will overwrite values files without prompt
+SKIP_IF_EXISTS=0   # new flag: skip overwrite if file already exists
+
 
 
 # Usage function to display help
@@ -28,14 +32,17 @@ usage() {
     echo "  -d              Enable debug mode."
     echo "  -D              Development mode for operations on non-production files."
     echo "  -s              Perform search and replace."
-    # echo "  -n              Skip querying and updating variables, use defaults only."
+    echo "  -n              Skip querying and updating variables, use defaults only. still can do search and replace"
+    echo "  -k              Skip querying and updating variables with multiple selection logic. still can do search and replace"
     echo "  -z              Create a zip file of the modified files."
+    echo "  -o              overwrite existing values files"
+    echo "  -e              do not overwrite EXISTING values files"
     exit 1
 }
 
 # Parse command-line options
 #while getopts 'hdsDn?' OPTION; do
-while getopts 'hdsD?z' OPTION; do
+while getopts 'hdskoeD?z' OPTION; do
     case "$OPTION" in
         h)
             usage
@@ -49,9 +56,18 @@ while getopts 'hdsD?z' OPTION; do
         s)
             SEARCH_REPLACE=1
             ;;
-        #n)
-        #    SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
-        #    ;;
+        n)
+            SKIP_QUERY=1  # Set SKIP_QUERY if the -n flag is used
+            ;;
+        k)
+            SKIP_SELECTION=1  
+            ;;
+        o)
+            OVERWRITE=1  
+            ;;
+        e)
+            SKIP_IF_EXISTS=1  
+            ;;
         z)
             ZIP_FILES=1
             ;;
@@ -102,7 +118,11 @@ check_aws_access() {
         # account
         #echo "Account Alias: $account_alias"
         echo "Account Alias: not available except from organization owner"
-        read -p "Is this the intended AWS account? (y/n): " confirmation
+
+        # now make this default to y is user hits enter
+        read -p "Is this the intended AWS account? (y/n)[y]: " confirmation
+        confirmation=${confirmation:-y}
+
         if [[ "$confirmation" != "y" ]]; then
             echo "AWS account verification failed. Exiting."
             exit 1
@@ -138,11 +158,11 @@ select_db_endpoint() {
 # select an EFS volume
 select_efs_volume() {
     echo "Fetching EFS volumes..."
-    mapfile -t efs_volumes < <(aws efs describe-file-systems --query 'FileSystems[].[FileSystemId]' --output text)
+    mapfile -t efs_volumes < <(aws efs describe-file-systems --query 'FileSystems[].[FileSystemId,Name]' --output text)
     
     echo "Available EFS Instances:" > /dev/tty
     select efs_option in "${efs_volumes[@]}"; do
-        EFS_ID=$(echo $efs_option | awk '{print $NF}')
+        EFS_ID=$(echo $efs_option | awk '{print $1}')
         break
     done
     echo "Selected EFS Volume: $EFS_ID"
@@ -166,6 +186,41 @@ select_msk_cluster() {
     #MSK_KAFKA_ENDPOINT=$(aws kafka get-bootstrap-brokers --cluster-arn $MSK_CLUSTER_ARN --query 'BootstrapBrokerStringTls')
     MSK_KAFKA_ENDPOINT=$(aws kafka get-bootstrap-brokers --cluster-arn $MSK_CLUSTER_ARN --query 'BootstrapBrokerStringTls'| sed 's/"//g')
     echo "Selected MSK Kafka Endpoint: $MSK_KAFKA_ENDPOINT"
+}
+
+
+# Function to select an EKS cluster
+select_eks_cluster() {
+    echo "Fetching EKS clusters..."
+    eks_clusters_raw=$(aws eks list-clusters --query 'clusters' --output text)
+
+    # Split into an array
+    IFS=$'\t' read -r -a eks_clusters <<< "$eks_clusters_raw"
+
+    echo "Available EKS Clusters:" > /dev/tty
+    select eks_option in "${eks_clusters[@]}"; do
+        EKS_CLUSTER_NAME="$eks_option"
+        break
+    done
+    echo "Selected EKS Cluster Name: $EKS_CLUSTER_NAME"
+}
+
+
+
+# Function to select an Auto Scaling Group
+select_autoscaling_group() {
+    echo "Fetching Auto Scaling Groups..."
+    asg_raw=$(aws autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[].AutoScalingGroupName' --output text)
+
+    # Split into an array
+    IFS=$'\t' read -r -a asgs <<< "$asg_raw"
+
+    echo "Available Auto Scaling Groups:" > /dev/tty
+    select asg_option in "${asgs[@]}"; do
+        AUTOSCALING_GROUP_NAME="$asg_option"
+        break
+    done
+    echo "Selected Auto Scaling Group Name: $AUTOSCALING_GROUP_NAME"
 }
 
 
@@ -199,7 +254,32 @@ apply_substitutions_and_copy() {
     # Copy and apply substitutions
     #echo cp -ip "$src_file_path" "$new_file_path"
     debug "echo creating $new_file_path"
-    cp -ip "$src_file_path" "$new_file_path"
+
+    # add a line break
+    echo 
+    echo "------------------------------------------"
+
+#    if [ "$OVERWRITE" -eq 1 ]; then
+#        echo "NOTICE: overwriting $new_file_path"
+#        cp -p "$src_file_path" "$new_file_path"
+#    else
+#        cp -ip "$src_file_path" "$new_file_path"
+#    fi
+
+	if [ "$OVERWRITE" -eq 1 ]; then
+    	echo "NOTICE: overwriting $new_file_path"
+    	cp -p "$src_file_path" "$new_file_path"
+	elif [ "$SKIP_IF_EXISTS" -eq 1 ]; then
+    	if [ -f "$new_file_path" ]; then
+        	echo "NOTICE: file exists, skipping without overwrite: $new_file_path"
+        	return 0
+    	else
+        	cp -p "$src_file_path" "$new_file_path"
+    	fi
+	else
+    	cp -ip "$src_file_path" "$new_file_path"
+	fi
+
 
     if [ -f $new_file_path ]
     then
@@ -214,14 +294,38 @@ apply_substitutions_and_copy() {
     # the pipe helps with special characters in pass, the <<varname>> construct in template 
     # is meant to fail if not replaced in terraform, helm, sql
     sed -i "s|<<EXAMPLE_ENVIRONMENT>>|${SITE_NAME}|g" "$new_file_path"
+
     sed -i "s|<<EXAMPLE_DB_NAME>>|${DB_NAME}|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_DB_USER>>|${DB_USER}|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_DB_USER_PASSWORD>>|$(escape_sed "$DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_RDB_DB_USER_PASSWORD>>|$(escape_sed "$RDB_DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_SRTE_DB_USER_PASSWORD>>|$(escape_sed "$SRTE_DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
-    sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KC_DB_USER_PASSWORD")|g" "$new_file_path"
 
+    sed -i "s|<<EXAMPLE_ODSE_DB_NAME>>|${ODSE_DB_NAME}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_ODSE_DB_USER>>|${ODSE_DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_ODSE_DB_USER_PASSWORD>>|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|EXAMPLE_ODSE_DB_USER_PASSWORD|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|EXAMPLE_ODSE_DB_USER|${ODSE_DB_USER}|g" "$new_file_path"
+
+    sed -i "s|<<EXAMPLE_RDB_DB_NAME>>|${RDB_DB_NAME}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_RDB_DB_USER>>|${RDB_DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_RDB_DB_USER_PASSWORD>>|$(escape_sed "$RDB_DB_USER_PASSWORD")|g" "$new_file_path"
+
+    sed -i "s|<<EXAMPLE_SRTE_DB_NAME>>|${SRTE_DB_NAME}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_SRTE_DB_USER>>|${SRTE_DB_USER}|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_SRTE_DB_USER_PASSWORD>>|$(escape_sed "$SRTE_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|EXAMPLE_SRTE_DB_USER|${SRTE_DB_USER}|g" "$new_file_path"
+    sed -i "s|EXAMPLE_SRTE_CLIENT_ID|${SRTE_CLIENT_ID}|g" "$new_file_path"
+
+    sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KC_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_KC_PASSWORD>>|$(escape_sed "$KEYCLOAK_ADMIN_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_KEYCLOAK_ADMIN_PASSWORD>>|$(escape_sed "$KEYCLOAK_ADMIN_PASSWORD")|g" "$new_file_path"
+    sed -i "s|EXAMPLE_KC_PASSWORD8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KC_PASS8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KCDB_PASS8675309|${KEYCLOAK_DB_PASSWORD}|" "$new_file_path"
+
+
+    #echo step 1
     # keep old substitutions until all replaced in HELM terraform.tfvars etc 
     sed -i "s/vpc-LEGACY-EXAMPLE/${LEGACY_VPC_ID}/" "$new_file_path"
     sed -i "s/rtb-PRIVATE-EXAMPLE/${PRIVATE_ROUTE_TABLE_ID}/" "$new_file_path"
@@ -236,38 +340,73 @@ apply_substitutions_and_copy() {
     sed -i "s/EXAMPLE_USER@EXAMPLE_DOMAIN/${CERT_MANAGER_EMAIL}/" "$new_file_path"
     #sed -i "s/EXAMPLE_DOMAIN/${EXAMPLE_DOMAIN}/" "$new_file_path"
     # TODO: FIXME: tweak helm charts to have more psi
+    #
+    #echo step 2
+    #
     sed -i "s/EXAMPLE_DOMAIN/${SITE_NAME}.${EXAMPLE_DOMAIN}/" "$new_file_path"
     sed -i "s/EXAMPLE_ACCOUNT_ID/${TMP_ACCOUNT_ID}/" "$new_file_path"
     sed -i "s/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE/${TMP_ROLE}/" "$new_file_path"
     sed -i "s/EXAMPLE_RESOURCE_PREFIX/${SITE_NAME}/g" "$new_file_path"
     sed -i "s/EXAMPLE-fluentbit-bucket/${SITE_NAME}-fluentbit-bucket-${TMP_ACCOUNT_ID}/" "$new_file_path"
-    sed -i "s/EXAMPLE_KC_PASSWORD8675309/${KEYCLOAK_ADMIN_PASSWORD}/" "$new_file_path"
-    sed -i "s/EXAMPLE_KCDB_PASS8675309/${KEYCLOAK_DB_PASSWORD}/" "$new_file_path"
+
+    sed -i "s|EXAMPLE_KC_PASSWORD8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KC_PASS8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KCDB_PASS8675309|${KEYCLOAK_DB_PASSWORD}|" "$new_file_path"
+
+
     sed -i "s/EXAMPLE_DB_ENDPOINT/${DB_ENDPOINT}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_NAME/${DB_NAME}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_USER_PASSWORD/${DB_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_DB_USER/${DB_USER}/" "$new_file_path"
+
     sed -i "s/MODERNIZATION_API_DB_USER_PASSWORD/${MODERNIZATION_API_DB_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/MODERNIZATION_API_DB_USER/${MODERNIZATION_API_DB_USER}/" "$new_file_path"
+
     sed -i "s/EXAMPLE_EFS_ID/${EFS_ID}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_ADMIN_USER_PASSWORD/${NIFI_ADMIN_USER_PASSWORD}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_ADMIN_USER/${NIFI_ADMIN_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_NIFI_SENSITIVE_PROPS/${NIFI_SENSITIVE_PROPS}/" "$new_file_path"
 
+    #echo step 3
+    sed -i "s/<<EXAMPLE_MSK_KAFKA_ENDPOINT>>/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+    sed -i "s/<<EXAMPLE_KAFKA_ENDPOINT>>/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+    sed -i "s/<<EXAMPLE_KAFKA_CLUSTER>>/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
     sed -i "s/EXAMPLE_MSK_KAFKA_ENDPOINT/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+    sed -i "s/EXAMPLE_KAFKA_ENDPOINT/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+    sed -i "s/EXAMPLE_KAFKA_CLUSTER/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+    sed -i "s/EXAMPLE_MSK_KAFKA_CLUSTER/${MSK_KAFKA_ENDPOINT}/" "$new_file_path"
+
+
     sed -i "s/EXAMPLE_SFTP_ENABLED/${SFTP_ENABLED}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_HOST/${SFTP_HOST}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_USER/${SFTP_USER}/" "$new_file_path"
     sed -i "s/EXAMPLE_SFTP_PASS/${SFTP_PASS}/" "$new_file_path"
+
+    sed -i "s/EXAMPLE_SFTP_FILE_EXTNS/${SFTP_FILE_EXTNS}/" "$new_file_path"
+    sed -i "s/EXAMPLE_FILE_EXTNS/${SFTP_FILE_EXTNS}/" "$new_file_path"
+    sed -i "s|EXAMPLE_SFTP_FILE_PATHS|$(escape_sed "$SFTP_FILE_PATHS")|" "$new_file_path"
+    sed -i "s|EXAMPLE_FILE_PATHS|$(escape_sed "$SFTP_FILE_PATHS")|" "$new_file_path"
+#    sed -i "s|EXAMPLE_ODSE_DB_USER_PASSWORD|$(escape_sed "$ODSE_DB_USER_PASSWORD")|g" "$new_file_path"
+
+
+
     sed -i "s/EXAMPLE_NBS_AUTHUSER/${NBS_AUTHUSER}/" "$new_file_path"
-    sed -i "s?EXAMPLE_TOKEN_SECRET?${TOKEN_SECRET}?" "$new_file_path"
-    sed -i "s?EXAMPLE_PARAMETER_SECRET?${PARAMETER_SECRET}?" "$new_file_path"
+    sed -i "s|EXAMPLE_TOKEN_SECRET|${TOKEN_SECRET}|" "$new_file_path"
+    sed -i "s|EXAMPLE_PARAMETER_SECRET|${PARAMETER_SECRET}|" "$new_file_path"
+
+
+	# used for cluster autoscaler
+	sed -i "s|<<EXAMPLE_EKS_CLUSTER_NAME>>|${EKS_CLUSTER_NAME}|g" "$new_file_path"
+	sed -i "s|<<EXAMPLE_AUTOSCALING_GROUP_NAME>>|${AUTOSCALING_GROUP_NAME}|g" "$new_file_path"
 
 
     # Add more sed commands as needed for other placeholders
     #sed -i "s/EXAMPLE_XXX/${XXX}/" "$new_file_path"
 
     check_for_placeholders "$new_file_path"
+    check_for_examples "$new_file_path"
 
 
 }
@@ -295,22 +434,31 @@ load_defaults;
 # TODO: fix skip query flag, does not work because variable names in
 # defautls file have _DEFAULT added!!!!
 if [ "$SKIP_QUERY" -eq 0 ]; then
-    select_db_endpoint;
-    update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
+    if [ "$SKIP_SELECTION" -eq 0 ]; then
+        select_db_endpoint;
+        update_defaults "DB_ENDPOINT" "$DB_ENDPOINT"
 
-    select_efs_volume; 
-    update_defaults "EFS_ID" "$EFS_ID"
+        select_efs_volume; 
+        update_defaults "EFS_ID" "$EFS_ID"
 
-    select_msk_cluster;
-    update_defaults "MSK_CLUSTER_ARN" "$MSK_CLUSTER_ARN"
-    update_defaults "MSK_CLUSTER_NAME" "$MSK_CLUSTER_NAME"
-    update_defaults "MSK_KAFKA_ENDPOINT" "$MSK_KAFKA_ENDPOINT"
+        select_msk_cluster;
+        update_defaults "MSK_CLUSTER_ARN" "$MSK_CLUSTER_ARN"
+        update_defaults "MSK_CLUSTER_NAME" "$MSK_CLUSTER_NAME"
+        update_defaults "MSK_KAFKA_ENDPOINT" "$MSK_KAFKA_ENDPOINT"
 
-    echo "generating secrets with openssl"
-    TOKEN_SECRET=$(openssl rand -base64 64 | tr -d '\n')
-    PARAMETER_SECRET=$(openssl rand -base64 32 | cut -c1-32) 
-    update_defaults "TOKEN_SECRET" "$TOKEN_SECRET"
-    update_defaults "PARAMETER_SECRET" "$PARAMETER_SECRET"
+		select_eks_cluster;
+		update_defaults "EKS_CLUSTER_NAME" "$EKS_CLUSTER_NAME"
+
+		select_autoscaling_group;
+		update_defaults "AUTOSCALING_GROUP_NAME" "$AUTOSCALING_GROUP_NAME"
+
+
+        echo "generating secrets with openssl"
+        TOKEN_SECRET=$(openssl rand -base64 64 | tr -d '\n')
+        PARAMETER_SECRET=$(openssl rand -base64 32 | cut -c1-32) 
+        update_defaults "TOKEN_SECRET" "$TOKEN_SECRET"
+        update_defaults "PARAMETER_SECRET" "$PARAMETER_SECRET"
+    fi
 
     # Prompt for missing values with defaults
     read -p "Please enter Helm version [${HELM_VER_DEFAULT}]: " input_helm_ver
@@ -348,6 +496,7 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     read -p "Please enter the Cert-Manager email address[${CERT_MANAGER_EMAIL_DEFAULT}]: " CERT_MANAGER_EMAIL && CERT_MANAGER_EMAIL=${CERT_MANAGER_EMAIL:-$CERT_MANAGER_EMAIL_DEFAULT}
     update_defaults "CERT_MANAGER_EMAIL" "$CERT_MANAGER_EMAIL"
 
+    ###########################################################################################################
     read -p "Please enter the DB Name [${DB_NAME_DEFAULT}]: " DB_NAME && DB_NAME=${DB_NAME:-$DB_NAME_DEFAULT}
     update_defaults "DB_NAME" "$DB_NAME"
 
@@ -357,6 +506,50 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     read -sp "Please enter the DB_USER_PASSWORD[${DB_USER_PASSWORD_DEFAULT}]: " DB_USER_PASSWORD && DB_USER_PASSWORD=${DB_USER_PASSWORD:-$DB_USER_PASSWORD_DEFAULT}
     echo
     update_defaults "DB_USER_PASSWORD" "$DB_USER_PASSWORD"
+    ###########################################################################################################
+    
+    ###########################################################################################################
+    # should do away with above section without ODSE distinction
+    read -p "Please enter the ODSE DB Name(this is probably the same as plain DB above) [${ODSE_DB_NAME_DEFAULT}]: " ODSE_DB_NAME && ODSE_DB_NAME=${ODSE_DB_NAME:-$ODSE_DB_NAME_DEFAULT}
+    update_defaults "ODSE_DB_NAME" "$ODSE_DB_NAME"
+
+    read -p "Please enter the ODSE_DB_USER [${ODSE_DB_USER_DEFAULT}]: " ODSE_DB_USER && ODSE_DB_USER=${ODSE_DB_USER:-$ODSE_DB_USER_DEFAULT}
+    update_defaults "ODSE_DB_USER" "$ODSE_DB_USER"
+
+    read -sp "Please enter the ODSE_DB_USER_PASSWORD[${ODSE_DB_USER_PASSWORD_DEFAULT}]: " ODSE_DB_USER_PASSWORD && ODSE_DB_USER_PASSWORD=${ODSE_DB_USER_PASSWORD:-$ODSE_DB_USER_PASSWORD_DEFAULT}
+    echo
+    update_defaults "ODSE_DB_USER_PASSWORD" "$ODSE_DB_USER_PASSWORD"
+    ###########################################################################################################
+
+
+    ###########################################################################################################
+    read -p "Please enter the RDB DB Name [${RDB_DB_NAME_DEFAULT}]: " RDB_DB_NAME && RDB_DB_NAME=${RDB_DB_NAME:-$RDB_DB_NAME_DEFAULT}
+    update_defaults "RDB_DB_NAME" "$RDB_DB_NAME"
+
+    read -p "Please enter the RDB_DB_USER [${RDB_DB_USER_DEFAULT}]: " RDB_DB_USER && RDB_DB_USER=${RDB_DB_USER:-$RDB_DB_USER_DEFAULT}
+    update_defaults "RDB_DB_USER" "$RDB_DB_USER"
+
+    read -sp "Please enter the RDB_DB_USER_PASSWORD[${RDB_DB_USER_PASSWORD_DEFAULT}]: " RDB_DB_USER_PASSWORD && RDB_DB_USER_PASSWORD=${RDB_DB_USER_PASSWORD:-$RDB_DB_USER_PASSWORD_DEFAULT}
+    echo
+    update_defaults "RDB_DB_USER_PASSWORD" "$RDB_DB_USER_PASSWORD"
+    ###########################################################################################################
+
+    ###########################################################################################################
+    read -p "Please enter the SRTE keycloak client id (e.g. srte-data-keycloak-client) [${SRTE_CLIENT_ID_DEFAULT}]: " SRTE_CLIENT_ID && SRTE_CLIENT_ID=${SRTE_CLIENT_ID:-$SRTE_CLIENT_ID_DEFAULT}
+
+    read -p "Please enter the SRTE DB Name [${SRTE_DB_NAME_DEFAULT}]: " SRTE_DB_NAME && SRTE_DB_NAME=${SRTE_DB_NAME:-$SRTE_DB_NAME_DEFAULT}
+    update_defaults "SRTE_DB_NAME" "$SRTE_DB_NAME"
+
+    read -p "Please enter the SRTE_DB_USER [${SRTE_DB_USER_DEFAULT}]: " SRTE_DB_USER && SRTE_DB_USER=${SRTE_DB_USER:-$SRTE_DB_USER_DEFAULT}
+    update_defaults "SRTE_DB_USER" "$SRTE_DB_USER"
+
+    read -sp "Please enter the SRTE_DB_USER_PASSWORD[${SRTE_DB_USER_PASSWORD_DEFAULT}]: " SRTE_DB_USER_PASSWORD && SRTE_DB_USER_PASSWORD=${SRTE_DB_USER_PASSWORD:-$SRTE_DB_USER_PASSWORD_DEFAULT}
+    echo
+    update_defaults "SRTE_DB_USER_PASSWORD" "$SRTE_DB_USER_PASSWORD"
+    ###########################################################################################################
+
+
+
 
 	read -p "Please enter the NIFI_ADMIN_USER e.g. admin [${NIFI_ADMIN_USER_DEFAULT}]: " NIFI_ADMIN_USER && NIFI_ADMIN_USER=${NIFI_ADMIN_USER:-$NIFI_ADMIN_USER_DEFAULT}
 	update_defaults "NIFI_ADMIN_USER" "$NIFI_ADMIN_USER"
@@ -380,6 +573,12 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
 	read -sp "Please enter the SFTP_PASSWORD [${SFTP_PASS_DEFAULT}]: " SFTP_PASS && SFTP_PASS=${SFTP_PASS:-$SFTP_PASS_DEFAULT}
     echo
 	update_defaults "SFTP_PASS" "$SFTP_PASS"
+
+	read -p "Please enter the SFTP_FILE_EXTNS(hl7,txt) [${SFTP_FILE_EXTNS_DEFAULT}]: " SFTP_FILE_EXTNS && SFTP_FILE_EXTNS=${SFTP_FILE_EXTNS:-$SFTP_FILE_EXTNS_DEFAULT}
+	update_defaults "SFTP_FILE_EXTNS" "$SFTP_FILE_EXTNS"
+
+	read -p "Please enter the SFTP_FILE_PATHS(/) [${SFTP_FILE_PATHS_DEFAULT}]: " SFTP_FILE_PATHS && SFTP_FILE_PATHS=${SFTP_FILE_PATHS:-$SFTP_FILE_PATHS_DEFAULT}
+	update_defaults "SFTP_FILE_PATHS" "$SFTP_FILE_PATHS"
 
 	read -p "Please enter the NBS_AUTHUSER e.g. superuser [${NBS_AUTHUSER_DEFAULT}]: " NBS_AUTHUSER && NBS_AUTHUSER=${NBS_AUTHUSER:-$NBS_AUTHUSER_DEFAULT}
     echo
@@ -414,25 +613,26 @@ then
     debug "pwd=`pwd`"
 
 	apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/cluster-autoscaler/values.yaml" "${HELM_DIR}/charts/cluster-autoscaler" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/modernization-api/values.yaml" "${HELM_DIR}/charts/modernization-api" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/nbs-gateway/values.yaml" "${HELM_DIR}/charts/nbs-gateway" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/nifi-efs/values.yaml" "${HELM_DIR}/charts/nifi-efs" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/data-processing-service/values.yaml" "${HELM_DIR}/charts/data-processing-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nbs-gateway/values.yaml" "${HELM_DIR}/charts/nbs-gateway" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/page-builder-api/values.yaml" "${HELM_DIR}/charts/page-builder-api" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/liquibase/values.yaml" "${HELM_DIR}/charts/liquibase" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/investigation-reporting-service/values.yaml" "${HELM_DIR}/charts/investigation-reporting-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/dataingestion-service/values.yaml" "${HELM_DIR}/charts/dataingestion-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/debezium/values.yaml" "${HELM_DIR}/charts/debezium" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/kafka-connect-sink/values.yaml" "${HELM_DIR}/charts/kafka-connect-sink" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/ldfdata-reporting-service/values.yaml" "${HELM_DIR}/charts/ldfdata-reporting-service" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/nnd-service/values.yaml" "${HELM_DIR}/charts/nnd-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/data-processing-service/values.yaml" "${HELM_DIR}/charts/data-processing-service" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/investigation-reporting-service/values.yaml" "${HELM_DIR}/charts/investigation-reporting-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/observation-reporting-service/values.yaml" "${HELM_DIR}/charts/observation-reporting-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/organization-reporting-service/values.yaml" "${HELM_DIR}/charts/organization-reporting-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/person-reporting-service/values.yaml" "${HELM_DIR}/charts/person-reporting-service" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/post-processing-reporting-service/values.yaml" "${HELM_DIR}/charts/post-processing-reporting-service" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/kafka-connect-sink/values.yaml" "${HELM_DIR}/charts/kafka-connect-sink" "$SITE_NAME"
-	apply_substitutions_and_copy "${HELM_DIR}/charts/debezium/values.yaml" "${HELM_DIR}/charts/debezium" "$SITE_NAME"
+	apply_substitutions_and_copy "${HELM_DIR}/charts/nnd-service/values.yaml" "${HELM_DIR}/charts/nnd-service" "$SITE_NAME"
 
 	if [ "$DEVELOPMENT" -eq 1 ]; then
 		echo "running search and replace on development containers"

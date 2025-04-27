@@ -2,9 +2,9 @@
 
 source "$(dirname "$0")/../common_functions.sh"
 
-escape_sed() {
-    echo "$1" | sed -e 's/[\\/&]/\\\\&/g'
-}
+#escape_sed() {
+    #echo "$1" | sed -e 's/[\\/&]/\\\\&/g'
+#}
 
 DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 SEARCH_REPLACE=0
