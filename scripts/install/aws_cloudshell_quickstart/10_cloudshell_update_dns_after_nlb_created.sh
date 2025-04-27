@@ -124,29 +124,62 @@ update_defaults() {
 #}
 
 
-select_nlb() { 
+#select_nlb() { 
+#    echo "Fetching NLBs..." > /dev/tty
+#
+#    # Get NLBs (type=network)
+#    mapfile -t nlbs < <(
+#        aws elbv2 describe-load-balancers --query "LoadBalancers[?Type=='network'].[LoadBalancerName, DNSName, LoadBalancerArn]" --output text | while read lb_name lb_dns lb_arn; do
+#            name_tag=$(aws elbv2 describe-tags --resource-arns "$lb_arn" --query "TagDescriptions[0].Tags[?Key=='Name'].Value" --output text 2>/dev/null)
+#            echo -e "$lb_name\t$lb_dns\t${name_tag:-No-Name-Tag}"
+#        done
+#    )
+#
+#    echo "Available NLBs:" > /dev/tty
+#    select nlb_option in "${nlbs[@]}"; do
+#        NLB_NAME=$(echo "$nlb_option" | awk '{print $1}')
+#        NLB_DNS_NAME=$(echo "$nlb_option" | awk '{print $2}')
+#        NLB_TAG_NAME=$(echo "$nlb_option" | awk '{print $3}')
+#        break
+#    done
+#
+#    echo "Selected NLB: $NLB_NAME"
+#    echo "NLB DNS Name: $NLB_DNS_NAME"
+#    echo "NLB Name Tag: $NLB_TAG_NAME"
+#}
+#
+
+select_nlb() {
     echo "Fetching NLBs..." > /dev/tty
 
-    # Get NLBs (type=network)
     mapfile -t nlbs < <(
         aws elbv2 describe-load-balancers --query "LoadBalancers[?Type=='network'].[LoadBalancerName, DNSName, LoadBalancerArn]" --output text | while read lb_name lb_dns lb_arn; do
-            name_tag=$(aws elbv2 describe-tags --resource-arns "$lb_arn" --query "TagDescriptions[0].Tags[?Key=='Name'].Value" --output text 2>/dev/null)
-            echo -e "$lb_name\t$lb_dns\t${name_tag:-No-Name-Tag}"
+            # Look for the kubernetes.io/cluster/* tag
+            cluster_tag=$(aws elbv2 describe-tags --resource-arns "$lb_arn" --query 'TagDescriptions[0].Tags[?starts_with(Key, `kubernetes.io/cluster/`)].Key' --output text 2>/dev/null)
+            # Extract the cluster name portion
+            cluster_name=$(basename "$cluster_tag" 2>/dev/null)
+            echo -e "$lb_name\t$lb_dns\t${cluster_name:-No-Cluster-Tag}"
         done
     )
+
+    if [ ${#nlbs[@]} -eq 0 ]; then
+        echo "No NLBs found." > /dev/tty
+        return 1
+    fi
 
     echo "Available NLBs:" > /dev/tty
     select nlb_option in "${nlbs[@]}"; do
         NLB_NAME=$(echo "$nlb_option" | awk '{print $1}')
         NLB_DNS_NAME=$(echo "$nlb_option" | awk '{print $2}')
-        NLB_TAG_NAME=$(echo "$nlb_option" | awk '{print $3}')
+        NLB_CLUSTER_NAME=$(echo "$nlb_option" | awk '{print $3}')
         break
     done
 
     echo "Selected NLB: $NLB_NAME"
     echo "NLB DNS Name: $NLB_DNS_NAME"
-    echo "NLB Name Tag: $NLB_TAG_NAME"
+    echo "NLB Cluster Name: $NLB_CLUSTER_NAME"
 }
+
 
 
 # Function to select a Hosted Zone
