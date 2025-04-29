@@ -400,6 +400,7 @@ apply_substitutions_and_copy() {
 	# used for cluster autoscaler
 	sed -i "s|<<EXAMPLE_EKS_CLUSTER_NAME>>|${EKS_CLUSTER_NAME}|g" "$new_file_path"
 	sed -i "s|<<EXAMPLE_AUTOSCALING_GROUP_NAME>>|${AUTOSCALING_GROUP_NAME}|g" "$new_file_path"
+	sed -i "s|<<EXAMPLE_AWS_AUTOSCALING_GROUP_NAME>>|${AUTOSCALING_GROUP_NAME}|g" "$new_file_path"
 
 
     # Add more sed commands as needed for other placeholders
