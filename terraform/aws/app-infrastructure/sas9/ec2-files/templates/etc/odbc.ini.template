@@ -1,0 +1,53 @@
+ # [DSN name]
+[nedss1]
+Driver = ODBC Driver 18 for SQL Server
+Trace=Yes
+TraceFile=/dev/stdout
+Authentication = SqlPassword
+ApplicationIntent = ReadWrite
+Server = tcp:<DB_ENDPOINT>,1433
+Encrypt = YES
+TrustServerCertificate = YES
+Database = NBS_ODSE
+UID = nbs_ods
+PWD = <<ODSE_DB_USER_PASSWORD>>
+
+[nbs_srt]
+Driver = ODBC Driver 18 for SQL Server
+Trace=Yes
+TraceFile=/dev/stdout
+Authentication = SqlPassword
+ApplicationIntent = ReadWrite
+Server = tcp:<DB_ENDPOINT>,1433
+Encrypt = YES
+TrustServerCertificate = YES
+Database = NBS_SRTE
+UID = nbs_ods
+PWD = <<ODSE_DB_USER_PASSWORD>>
+
+[nbs_rdb]
+Driver = ODBC Driver 18 for SQL Server
+Trace=Yes
+TraceFile=/dev/stdout
+Authentication = SqlPassword
+ApplicationIntent = ReadWrite
+Server = tcp:<DB_ENDPOINT>,1433
+Encrypt = YES
+TrustServerCertificate = YES
+AutoTranslate = NO
+Database = RDB
+UID = nbs_rdb
+PWD = <<RDB_DB_USER_PASSWORD>>
+
+[nbs_msg]
+Driver = ODBC Driver 18 for SQL Server
+Trace=Yes
+TraceFile=/dev/stdout
+Authentication = SqlPassword
+ApplicationIntent = ReadWrite
+Server = tcp:<DB_ENDPOINT>,1433
+Encrypt = YES
+TrustServerCertificate = YES
+Database = NBS_MSGOUTE
+UID = nbs_ods
+PWD = <<ODSE_DB_USER_PASSWORD>>

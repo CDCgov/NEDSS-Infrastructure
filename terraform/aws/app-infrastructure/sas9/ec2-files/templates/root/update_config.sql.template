@@ -1,0 +1,36 @@
+USE NBS_ODSE;
+GO
+
+UPDATE NBS_configuration 
+SET config_value='D://wildfly-10.0.0.Final//nedssdomain//Nedss//report//pgm//' 
+WHERE config_key='REPORT_ADMIN_SAS_PGM_LOCATION';
+
+UPDATE NBS_configuration 
+SET config_value='//opt//wildfly-10.0.0.Final//nedssdomain//Nedss//report//' 
+WHERE config_key='SAS_LOCATION';
+
+UPDATE NBS_configuration 
+SET config_value='9.4' 
+WHERE config_key='SAS_VERSION';
+
+UPDATE NBS_configuration 
+SET config_value='EXAMPLE_SAS_USERNAME' 
+WHERE config_key='USERNAME';
+
+UPDATE NBS_configuration 
+SET config_value='<PRIVATE_IP>' 
+WHERE config_key='SASServerIP';
+
+UPDATE NBS_configuration 
+SET config_value='<<SAS_USER_PASSWORD>>' 
+WHERE config_key='PASSWORD';
+
+SELECT config_key, config_value, desc_txt
+FROM NBS_configuration
+WHERE config_key IN (
+    'REPORT_ADMIN_SAS_PGM_LOCATION', 'SAS_LOCATION', 
+    'SASServerArchitecture', 'SASServerIP', 'SAS_VERSION', 
+    'USERNAMEPROMPT', 'USERNAME', 'PASSWORDPROMPT', 'PASSWORD'
+);
+GO
+

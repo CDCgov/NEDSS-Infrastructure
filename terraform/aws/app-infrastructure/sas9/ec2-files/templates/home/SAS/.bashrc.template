@@ -1,0 +1,48 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+if [ -d ~/.bashrc.d ]; then
+	for rc in ~/.bashrc.d/*; do
+		if [ -f "$rc" ]; then
+			. "$rc"
+		fi
+	done
+fi
+
+unset rc
+
+# SAS specific required variables
+ulimit -n 2048
+export CONNECTKEEPALIVE=300
+
+# Set up required environment variables
+export db_host="<DB_ENDPOINT>"
+export odse_user=nbs_ods
+export odse_pass=<<ODSE_DB_USER_PASSWORD>>
+export rdb_user=nbs_rdb
+export rdb_pass=<<RDB_DB_USER_PASSWORD>>
+export PATH=$PATH:/opt/mssql-tools18/bin
+export WILDFLY_HOME=/opt
+export SAS_HOME=/opt/sas9.4/install/SASHome/SASFoundation/9.4
+
+
+######## added while troubleshooting
+export SAS_EXTERNAL_BIND_ADDR=<PRIVATE_IP>
+export SAS_BIND_ADDR=<PRIVATE_IP>
+export SASDAEMONHOST=<HOSTNAME>
+
