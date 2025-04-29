@@ -1,13 +1,10 @@
 #!/bin/bash
-#
-# this script can search and replace variables in all needed files 
 
 # debug
 #set -x
 
-#SITE_NAME=$1
-DEBUG=1
 SITE_NAME=$1
+DEBUG=1
 
 PREFIX="/nbs/${SITE_NAME}"
 
@@ -31,7 +28,7 @@ if [[ "$SYSPREP" == "true" ]]; then
     REPLACE=false
 fi
 
-FILES="/etc/systemd/system/sas_spawner.env /home/SAS/.odbc.ini /etc/odbc.ini /home/SAS/.bashrc /home/SAS/update_config.sql /opt/wildfly-10.0.0.Final/nedssdomain/Nedss/report/autoexec.sas"
+FILES="/etc/systemd/system/sas_spawner.env /home/SAS/.odbc.ini /etc/odbc.ini /home/SAS/.bashrc /home/SAS/update_config.sql /home/SAS/SAS_user_cronjobs.cron.template /opt/wildfly-10.0.0.Final/nedssdomain/Nedss/report/autoexec.sas"
 
 TMP_DATE=$(date +%F-%H-%M)
 
