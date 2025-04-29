@@ -7,6 +7,7 @@ SITE_NAME=$1
 DEBUG=1
 
 PREFIX="/nbs/${SITE_NAME}"
+CRON_FILE="/home/SAS/SAS_user_cronjobs.cron"
 
 # Set variables only if they are not already defined
 BACKUP=${BACKUP:-true}
@@ -28,7 +29,13 @@ if [[ "$SYSPREP" == "true" ]]; then
     REPLACE=false
 fi
 
-FILES="/etc/systemd/system/sas_spawner.env /home/SAS/.odbc.ini /etc/odbc.ini /home/SAS/.bashrc /home/SAS/update_config.sql /home/SAS/SAS_user_cronjobs.cron.template /opt/wildfly-10.0.0.Final/nedssdomain/Nedss/report/autoexec.sas"
+# Ensure script is run as root
+if [[ $EUID -ne 0 ]]; then
+  echo "This script must be run as root" >&2
+  exit 1
+fi
+
+FILES="/etc/systemd/system/sas_spawner.env /home/SAS/.odbc.ini /etc/odbc.ini /home/SAS/.bashrc /home/SAS/update_config.sql ${CRON_FILE} /opt/wildfly-10.0.0.Final/nedssdomain/Nedss/report/autoexec.sas"
 
 TMP_DATE=$(date +%F-%H-%M)
 
@@ -182,3 +189,36 @@ if [[ "$REPLACE" == "true" ]]; then
 	#systemctl stop sas_spawner.service; systemctl daemon-reload; systemctl start sas_spawner.service; systemctl status sas_spawner.service
 	systemctl stop sas_spawner.service; systemctl daemon-reload; systemctl start sas_spawner.service
 fi
+
+
+echo "TODO: set SAS user password"
+echo "TODO: add SAS user cronjobs"
+
+
+# Set SAS user password non-interactively
+echo "Setting password for SAS user..."
+echo "SAS:$SAS_USER_PASSWORD" | chpasswd
+
+if [[ $? -ne 0 ]]; then
+  echo "Failed to set password for SAS user." >&2
+  exit 1
+fi
+
+# Check if cron file exists
+if [[ ! -f "$CRON_FILE" ]]; then
+  echo "Cron job file not found: $CRON_FILE" >&2
+  exit 2
+fi
+
+# Step 3: Set cron jobs for SAS user
+echo "Installing cron jobs for SAS user from $CRON_FILE..."
+crontab -u SAS "$CRON_FILE"
+
+if [[ $? -eq 0 ]]; then
+  echo "Cron jobs installed successfully."
+else
+  echo "Failed to install cron jobs." >&2
+  exit 3
+fi
+
+
