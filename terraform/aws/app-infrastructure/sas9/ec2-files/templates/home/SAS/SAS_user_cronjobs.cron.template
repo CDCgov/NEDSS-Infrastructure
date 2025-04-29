@@ -1,0 +1,10 @@
+db_host=<DB_ENDPOINT>
+odse_user=nbs_ods
+odse_pass=<<ODSE_DB_USER_PASSWORD>>
+rdb_user=nbs_rdb
+rdb_pass=<<RDB_DB_USER_PASSWORD>>
+SAS_HOME=/opt/sas9.4/install/SASHome/SASFoundation/9.4
+WILDFLY_HOME=/opt
+PATH=/home/SAS/.local/bin:/home/SAS/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/mssql-tools18/bin:/opt/mssql-tools18/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/mssql-tools18/bin
+0 0 * * * /opt/wildfly-10.0.0.Final/nedssdomain/Nedss/BatchFiles/PHCMartETL.sh
+30 0 * * * /opt/wildfly-10.0.0.Final/nedssdomain/Nedss/BatchFiles/MasterEtl.sh
