@@ -110,7 +110,7 @@ resource "aws_secretsmanager_secret" "user_secrets" {
   #name = "AWSTransfer_${aws_transfer_server.sftp.id}_${replace(each.key, \"/\", \"_\")}"
   name = format("AWSTransfer_%s_%s",
     aws_transfer_server.sftp.id,
-    replace(each.key, "/", "_")
+    split("/", each.key)[1]
   )
 }
 
@@ -138,7 +138,8 @@ resource "aws_transfer_user" "sftp" {
 
   #server_id           = aws_transfer_server.sftp[0].id
   server_id           = aws_transfer_server.sftp.id
-  user_name           = replace(each.key, "/", "_")
+  #user_name           = replace(each.key, "/", "_")
+  user_name           = split("/", each.key)[1]
   role                = aws_iam_role.sftp_user[split("/", each.key)[0]].arn
   home_directory_type = "LOGICAL"
 
