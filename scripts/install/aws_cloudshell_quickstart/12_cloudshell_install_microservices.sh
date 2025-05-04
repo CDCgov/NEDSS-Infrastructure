@@ -23,7 +23,7 @@
 # log debug debug_message pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
 source "$(dirname "$0")/../../common_functions.sh"
 
-#HELM_VER=v7.9.1.1
+#HELM_VER=v7.9.2
 #INSTALL_DIR=~/nbs_install
 #DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 SLEEP_TIME=60
@@ -234,6 +234,18 @@ else
     helm_safe_install nbs-gateway nbs-gateway ${DEFAULT_NAMESPACE}
 fi 
 
+read -p "Ready to run liquibase? (it now needs to run before DI) [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_message "loading liquibase pod"
+    helm_safe_install liquibase liquibase-service ${DEFAULT_NAMESPACE}
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "liquibase loaded"
+else
+    echo "liquibase skipped."
+fi
+
 
 read -p "Has the dataingestion database been created? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -260,20 +272,7 @@ else
     echo "data-processing-service skipped."
 fi
 
-
 echo "ready to start RTR install process"
-read -p "Have the database prep steps been done (CDC, rdb_modern copy, etc)? [y/N] " -r
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    debug_message "loading liquibase pod"
-    helm_safe_install liquibase liquibase-service ${DEFAULT_NAMESPACE}
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to load"
-    fi
-    echo "liquibase loaded"
-else
-    echo "liquibase skipped."
-fi
-
 read -p "Have the database prep steps been done for debezium (CDC, etc)? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     debug_message "loading debezium pod"
