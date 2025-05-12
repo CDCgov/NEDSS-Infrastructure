@@ -4,9 +4,9 @@
 
 # system wide variables, should source this file first then 
 # override on a per-script basis
-RELEASE_VER=v7.9.2
+RELEASE_VER=v7.9.3
 INFRA_VER=v1.2.33
-HELM_VER=v7.9.2
+HELM_VER=v7.9.3
 INSTALL_DIR=nbs_install
 DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 #DEFAULTS_FILE="${DEFAULTS_FILE:-`pwd`/nbs_defaults.sh}"
