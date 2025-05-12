@@ -23,7 +23,7 @@
 # log debug debug_message pause_step load_defaults update_defaults resolve_secret prompt_for_value check_for_placeholders
 source "$(dirname "$0")/../../common_functions.sh"
 
-#HELM_VER=v7.9.1.1
+#HELM_VER=v7.9.2
 #INSTALL_DIR=~/nbs_install
 #DEFAULTS_FILE="`pwd`/nbs_defaults.sh"
 SLEEP_TIME=60
@@ -56,13 +56,19 @@ DEFAULT_NAMESPACE=default
 #}
 
 # Parsing command-line options
-while getopts "ds" opt; do
+BACKUP=0
+DATE_SUFFIX=$(date +%Y%m%d%H%M%S)
+
+while getopts "dsb" opt; do
   case $opt in
     d)
       DEBUG=1
       ;;
     s)
       STEP=1
+      ;;
+    b)
+      BACKUP=1
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -129,27 +135,30 @@ function helm_safe_install() {
     echo
     echo "Installing or upgrading $name"
 
-    check_for_placeholders_exit ./$path/values-${SITE_NAME}.yaml
-    check_for_examples_exit ./$path/values-${SITE_NAME}.yaml
+    local values_file="./$path/values-${SITE_NAME}.yaml"
+    check_for_placeholders_exit "$values_file"
+    check_for_examples_exit "$values_file"
 
-
-    #if ! helm list --short | grep -q "^${name}$"; then
-    if ! helm list -n ${namespace} --short | grep -q "^${name}$"; then
-        debug_message "Installing $name"
-        helm install $name -n ${namespace} --create-namespace -f ./$path/values-${SITE_NAME}.yaml $path
-        echo "Sleeping for ${SLEEP_TIME} seconds"
-        sleep ${SLEEP_TIME}
-    else
+    if helm list -n ${namespace} --short | grep -q "^${name}$"; then
         debug_message "$name is already installed, checking for updates..."
-        helm upgrade $name -n ${namespace} -f ./$path/values-${SITE_NAME}.yaml $path
-        echo "Sleeping for ${SLEEP_TIME} seconds"
-        sleep ${SLEEP_TIME}
+
+        if [[ "$BACKUP" -eq 1 ]]; then
+            debug_message "Backing up Helm manifests and values for $name"
+            helm get manifest $name -n $namespace > "$path/${name}.manifest.${DATE_SUFFIX}.yaml"
+            helm get values $name -n $namespace --all > "$path/${name}.values.${DATE_SUFFIX}.yaml"
+        fi
+
+        helm upgrade $name -n ${namespace} -f "$values_file" "$path"
+    else
+        debug_message "Installing $name"
+        helm install $name -n ${namespace} --create-namespace -f "$values_file" "$path"
     fi
-    # add a blank line
+
+    echo "Sleeping for ${SLEEP_TIME} seconds"
+    sleep ${SLEEP_TIME}
     echo
 
     pause_step
-
 }
 
 cd ${HELM_DIR}/charts
@@ -185,10 +194,11 @@ echo
 # cluster autoscaler
 
 helm repo add autoscaler https://kubernetes.github.io/autoscaler
-#helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler -f ./cluster-autoscaler/values--${SITE_NAME}.yaml --namespace kube-system
+helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler -f ./cluster-autoscaler/values-${SITE_NAME}.yaml --namespace kube-system
 # not sure autoscaler/cluster-autoscaler makes sense???
 # maybe helm_safe_install cluster-autoscaler cluster-autoscaler kube-system
-helm_safe_install cluster-autoscaler cluster-autoscaler kube-system
+# helm_safe_install cluster-autoscaler cluster-autoscaler kube-system
+#helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler -f ./cluster-autoscaler/values.yaml --namespace kube-system
 
 #####################################################################
 
@@ -234,6 +244,18 @@ else
     helm_safe_install nbs-gateway nbs-gateway ${DEFAULT_NAMESPACE}
 fi 
 
+read -p "Ready to run liquibase? (it now needs to run before DI) [y/N] " -r
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    debug_message "loading liquibase pod"
+    helm_safe_install liquibase liquibase ${DEFAULT_NAMESPACE}
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to load"
+    fi
+    echo "liquibase loaded"
+else
+    echo "liquibase skipped."
+fi
+
 
 read -p "Has the dataingestion database been created? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -260,20 +282,7 @@ else
     echo "data-processing-service skipped."
 fi
 
-
 echo "ready to start RTR install process"
-read -p "Have the database prep steps been done (CDC, rdb_modern copy, etc)? [y/N] " -r
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    debug_message "loading liquibase pod"
-    helm_safe_install liquibase liquibase-service ${DEFAULT_NAMESPACE}
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to load"
-    fi
-    echo "liquibase loaded"
-else
-    echo "liquibase skipped."
-fi
-
 read -p "Have the database prep steps been done for debezium (CDC, etc)? [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     debug_message "loading debezium pod"
