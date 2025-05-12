@@ -315,14 +315,14 @@ apply_substitutions_and_copy() {
     sed -i "s|EXAMPLE_SRTE_DB_USER|${SRTE_DB_USER}|g" "$new_file_path"
     sed -i "s|EXAMPLE_SRTE_CLIENT_ID|${SRTE_CLIENT_ID}|g" "$new_file_path"
 
-    sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KC_DB_USER_PASSWORD")|g" "$new_file_path"
+    sed -i "s|<<EXAMPLE_KC_DB_USER_PASSWORD>>|$(escape_sed "$KEYCLOAK_DB_USER_PASSWORD")|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_KC_PASSWORD>>|$(escape_sed "$KEYCLOAK_ADMIN_PASSWORD")|g" "$new_file_path"
     sed -i "s|<<EXAMPLE_KEYCLOAK_ADMIN_PASSWORD>>|$(escape_sed "$KEYCLOAK_ADMIN_PASSWORD")|g" "$new_file_path"
     sed -i "s|EXAMPLE_KC_PASSWORD8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
     sed -i "s|EXAMPLE_KC_PASS8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
     sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
     sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
-    sed -i "s|EXAMPLE_KCDB_PASS8675309|${KEYCLOAK_DB_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KCDB_PASS8675309|${KEYCLOAK_DB_USER_PASSWORD}|" "$new_file_path"
 
 
     #echo step 1
@@ -353,7 +353,7 @@ apply_substitutions_and_copy() {
     sed -i "s|EXAMPLE_KC_PASS8675309|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
     sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
     sed -i "s|EXAMPLE_KEYCLOAK_ADMIN_PASSWORD|${KEYCLOAK_ADMIN_PASSWORD}|" "$new_file_path"
-    sed -i "s|EXAMPLE_KCDB_PASS8675309|${KEYCLOAK_DB_PASSWORD}|" "$new_file_path"
+    sed -i "s|EXAMPLE_KCDB_PASS8675309|${KEYCLOAK_DB_USER_PASSWORD}|" "$new_file_path"
 
 
     sed -i "s/EXAMPLE_DB_ENDPOINT/${DB_ENDPOINT}/" "$new_file_path"
@@ -483,9 +483,9 @@ if [ "$SKIP_QUERY" -eq 0 ]; then
     echo
     update_defaults "KEYCLOAK_ADMIN_PASSWORD" "$KEYCLOAK_ADMIN_PASSWORD"
 
-    read -sp "Please enter the Keycloak DB password[${KEYCLOAK_DB_PASSWORD_DEFAULT}]: " KEYCLOAK_DB_PASSWORD && KEYCLOAK_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD:-$KEYCLOAK_DB_PASSWORD_DEFAULT}
+    read -sp "Please enter the Keycloak DB password[${KEYCLOAK_DB_USER_PASSWORD_DEFAULT}]: " KEYCLOAK_DB_USER_PASSWORD && KEYCLOAK_DB_USER_PASSWORD=${KEYCLOAK_DB_USER_PASSWORD:-$KEYCLOAK_DB_USER_PASSWORD_DEFAULT}
     echo
-    update_defaults "KEYCLOAK_DB_PASSWORD" "$KEYCLOAK_DB_PASSWORD"
+    update_defaults "KEYCLOAK_DB_USER_PASSWORD" "$KEYCLOAK_DB_USER_PASSWORD"
 
     read -p "Please enter the modernization-api DB user[${MODERNIZATION_API_DB_USER_DEFAULT}]: " MODERNIZATION_API_DB_USER && MODERNIZATION_API_DB_USER=${MODERNIZATION_API_DB_USER:-$MODERNIZATION_API_DB_USER_DEFAULT}
     update_defaults "MODERNIZATION_API_DB_USER" "$MODERNIZATION_API_DB_USER"
@@ -615,6 +615,11 @@ then
 
 	apply_substitutions_and_copy "${HELM_DIR}/k8-manifests/cluster-issuer-prod.yaml" "${HELM_DIR}/k8-manifests" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/nginx-ingress/values.yaml" "${HELM_DIR}/charts/nginx-ingress" "$SITE_NAME"
+    if [ $DEBUG ]
+    then
+        echo EKS_CLUSTER_NAME=$EKS_CLUSTER_NAME
+        echo AUTOSCALING_GROUP_NAME=$AUTOSCALING_GROUP_NAME
+    fi
 	apply_substitutions_and_copy "${HELM_DIR}/charts/cluster-autoscaler/values.yaml" "${HELM_DIR}/charts/cluster-autoscaler" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/keycloak/values.yaml" "${HELM_DIR}/charts/keycloak" "$SITE_NAME"
 	apply_substitutions_and_copy "${HELM_DIR}/charts/elasticsearch-efs/values.yaml" "${HELM_DIR}/charts/elasticsearch-efs" "$SITE_NAME"
