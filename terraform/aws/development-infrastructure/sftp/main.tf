@@ -1,3 +1,21 @@
+variable "enable_ssh_keys" {
+  description = "Enable SSH public key upload for SFTP users"
+  type        = bool
+  default     = false
+}
+
+locals {
+  sftp_user_keys = var.enable_sftp ? merge([
+    for site, pubs in var.sites : {
+      for pub in pubs :
+      "${site}/${pub}" => {
+        site = site
+        pub  = pub
+      }
+    }
+  ]...) : {}
+}
+
 
 resource "aws_iam_role" "transfer_logging" {
   name = "transfer-logging-role"
@@ -65,21 +83,7 @@ resource "aws_s3_bucket" "hl7" {
 }
 
 resource "aws_s3_object" "site_folders" {
-  for_each = { for site, pubs in var.sites : site => pubs if var.enable_sftp }
-  bucket   = aws_s3_bucket.hl7.id
-  key      = "sites/${each.key}/"
-}
-
-resource "aws_s3_object" "publisher_folders" {
-  for_each = var.enable_sftp ? merge([
-    for site, pubs in var.sites : {
-      for pub in pubs :
-      "${site}/${pub}" => {
-        site = site
-        pub  = pub
-      }
-    }
-  ]...) : {}
+  for_each = local.sftp_user_keys
 
   bucket = aws_s3_bucket.hl7.id
   key    = "sites/${each.value.site}/${each.value.pub}/"
@@ -92,23 +96,27 @@ resource "aws_s3_object" "inbox_folders" {
 }
 
 resource "tls_private_key" "user_keys" {
-  for_each = var.enable_sftp ? toset(flatten([for site, pubs in var.sites : [for pub in pubs : "${site}/${pub}"]])) : []
+  for_each = var.enable_ssh_keys ? local.sftp_user_keys : {}
   algorithm = "RSA"
   rsa_bits  = 2048
 }
 
 resource "random_password" "user_passwords" {
-  for_each = tls_private_key.user_keys
+  for_each = local.sftp_user_keys
   length           = 16
   special          = true
   #override_characters = "!@#%&*"
 }
 
 resource "aws_secretsmanager_secret" "user_secrets" {
-  for_each = tls_private_key.user_keys
+  for_each = local.sftp_user_keys
   #name     = "sftp/${each.key}"
   #name = "AWSTransfer_${aws_transfer_server.sftp.id}_${replace(each.key, \"/\", \"_\")}"
-  name = format("AWSTransfer_%s_%s",
+  #name = format("AWSTransfer_%s_%s",
+  #  aws_transfer_server.sftp.id,
+  #  split("/", each.key)[1]
+  #)
+  name = format("aws/transfer/%s/%s",
     aws_transfer_server.sftp.id,
     split("/", each.key)[1]
   )
@@ -116,25 +124,38 @@ resource "aws_secretsmanager_secret" "user_secrets" {
 
 
 
-resource "aws_secretsmanager_secret_version" "user_secrets_version" {
-  for_each = tls_private_key.user_keys
 
-  secret_id     = aws_secretsmanager_secret.user_secrets[each.key].id
+resource "aws_secretsmanager_secret_version" "user_secrets_version" {
+  for_each = local.sftp_user_keys
+
+  secret_id = aws_secretsmanager_secret.user_secrets[each.key].id
+
   secret_string = jsonencode({
-    Password = random_password.user_passwords[each.key].result
+    Password      = random_password.user_passwords[each.key].result
+    Role          = aws_iam_role.sftp_user[split("/", each.key)[0]].arn
+    HomeDirectory = format("/%s/sites/%s/%s", var.bucket_name, split("/", each.key)[0], split("/", each.key)[1])
+    PublicKey     = var.enable_ssh_keys ? tls_private_key.user_keys[each.key].public_key_openssh : null
   })
 }
 
+#
 #resource "aws_secretsmanager_secret_version" "user_secrets_version" {
-  #for_each      = tls_private_key.user_keys
-  #secret_id     = aws_secretsmanager_secret.user_secrets[each.key].id
-  #secret_string = random_password.user_passwords[each.key].result
+#  for_each = local.sftp_user_keys
+#
+#  secret_id = aws_secretsmanager_secret.user_secrets[each.key].id
+#
+#  secret_string = jsonencode({
+#    Password      = random_password.user_passwords[each.key].result
+#    Role          = aws_iam_role.sftp_user[split("/", each.key)[0]].arn
+#    HomeDirectory = format("/%s/sites/%s/%s", var.bucket_name, split("/", each.key)[0], split("/", each.key)[1])
+#    PublicKey     = var.enable_ssh_keys ? tls_private_key.user_keys[each.key].public_key_openssh : null
+#  })
 #}
 
 
 
 resource "aws_transfer_user" "sftp" {
-  for_each = var.enable_sftp ? tls_private_key.user_keys : {}
+  for_each = local.sftp_user_keys
 
   #server_id           = aws_transfer_server.sftp[0].id
   server_id           = aws_transfer_server.sftp.id
@@ -207,7 +228,7 @@ resource "local_file" "sftp_credentials_csv" {
 username,password,ssh_key
 ${join("\n", [
   for key, val in aws_transfer_user.sftp :
-  "${val.user_name},${random_password.user_passwords[key].result},${tls_private_key.user_keys[key].public_key_openssh}"
+  "${val.user_name},${random_password.user_passwords[key].result},${try(tls_private_key.user_keys[key].public_key_openssh, "")}"
 ])}
 EOT
 
@@ -256,15 +277,13 @@ resource "aws_iam_role_policy" "sftp_user_policy" {
 
 
 resource "aws_secretsmanager_secret" "ssh_private_keys" {
-  for_each = tls_private_key.user_keys
+  for_each = local.sftp_user_keys
 
   name = format("SFTPPrivateKey_%s", replace(each.key, "/", "_"))
 }
 
 resource "aws_secretsmanager_secret_version" "ssh_private_keys_version" {
   for_each = tls_private_key.user_keys
-
   secret_id     = aws_secretsmanager_secret.ssh_private_keys[each.key].id
   secret_string = each.value.private_key_pem
 }
-

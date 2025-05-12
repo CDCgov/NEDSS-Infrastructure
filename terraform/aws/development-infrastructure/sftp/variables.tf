@@ -62,3 +62,10 @@ variable "summary_schedule_expression" {
   type        = string
   default     = "cron(0 0 * * ? *)"
 }
+
+#variable "enable_ssh_keys" {
+#  description = "If true, SFTP users will be provisioned with SSH public keys"
+#  type        = bool
+#  default     = false
+#}
+
