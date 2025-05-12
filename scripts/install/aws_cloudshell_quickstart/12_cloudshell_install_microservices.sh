@@ -56,13 +56,19 @@ DEFAULT_NAMESPACE=default
 #}
 
 # Parsing command-line options
-while getopts "ds" opt; do
+BACKUP=0
+DATE_SUFFIX=$(date +%Y%m%d%H%M%S)
+
+while getopts "dsb" opt; do
   case $opt in
     d)
       DEBUG=1
       ;;
     s)
       STEP=1
+      ;;
+    b)
+      BACKUP=1
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -129,27 +135,30 @@ function helm_safe_install() {
     echo
     echo "Installing or upgrading $name"
 
-    check_for_placeholders_exit ./$path/values-${SITE_NAME}.yaml
-    check_for_examples_exit ./$path/values-${SITE_NAME}.yaml
+    local values_file="./$path/values-${SITE_NAME}.yaml"
+    check_for_placeholders_exit "$values_file"
+    check_for_examples_exit "$values_file"
 
-
-    #if ! helm list --short | grep -q "^${name}$"; then
-    if ! helm list -n ${namespace} --short | grep -q "^${name}$"; then
-        debug_message "Installing $name"
-        helm install $name -n ${namespace} --create-namespace -f ./$path/values-${SITE_NAME}.yaml $path
-        echo "Sleeping for ${SLEEP_TIME} seconds"
-        sleep ${SLEEP_TIME}
-    else
+    if helm list -n ${namespace} --short | grep -q "^${name}$"; then
         debug_message "$name is already installed, checking for updates..."
-        helm upgrade $name -n ${namespace} -f ./$path/values-${SITE_NAME}.yaml $path
-        echo "Sleeping for ${SLEEP_TIME} seconds"
-        sleep ${SLEEP_TIME}
+
+        if [[ "$BACKUP" -eq 1 ]]; then
+            debug_message "Backing up Helm manifests and values for $name"
+            helm get manifest $name -n $namespace > "$path/${name}.manifest.${DATE_SUFFIX}.yaml"
+            helm get values $name -n $namespace --all > "$path/${name}.values.${DATE_SUFFIX}.yaml"
+        fi
+
+        helm upgrade $name -n ${namespace} -f "$values_file" "$path"
+    else
+        debug_message "Installing $name"
+        helm install $name -n ${namespace} --create-namespace -f "$values_file" "$path"
     fi
-    # add a blank line
+
+    echo "Sleeping for ${SLEEP_TIME} seconds"
+    sleep ${SLEEP_TIME}
     echo
 
     pause_step
-
 }
 
 cd ${HELM_DIR}/charts
@@ -185,10 +194,11 @@ echo
 # cluster autoscaler
 
 helm repo add autoscaler https://kubernetes.github.io/autoscaler
-#helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler -f ./cluster-autoscaler/values--${SITE_NAME}.yaml --namespace kube-system
+helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler -f ./cluster-autoscaler/values-${SITE_NAME}.yaml --namespace kube-system
 # not sure autoscaler/cluster-autoscaler makes sense???
 # maybe helm_safe_install cluster-autoscaler cluster-autoscaler kube-system
-helm_safe_install cluster-autoscaler cluster-autoscaler kube-system
+# helm_safe_install cluster-autoscaler cluster-autoscaler kube-system
+#helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler -f ./cluster-autoscaler/values.yaml --namespace kube-system
 
 #####################################################################
 
@@ -237,7 +247,7 @@ fi
 read -p "Ready to run liquibase? (it now needs to run before DI) [y/N] " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     debug_message "loading liquibase pod"
-    helm_safe_install liquibase liquibase-service ${DEFAULT_NAMESPACE}
+    helm_safe_install liquibase liquibase ${DEFAULT_NAMESPACE}
     if [ $? -ne 0 ]; then
         echo "Error: Failed to load"
     fi
