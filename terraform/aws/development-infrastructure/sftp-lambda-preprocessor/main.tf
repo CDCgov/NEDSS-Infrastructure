@@ -65,21 +65,21 @@ resource "aws_s3_bucket_notification" "sftp_upload_notification" {
   lambda_function {
     lambda_function_arn = aws_lambda_function.split_csv_lambda.arn
     events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "usvi-test/usvi-test-testauto/incoming"
+    filter_prefix       = var.filter_prefix
     filter_suffix       = ".csv"
   }
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.split_dat_lambda.arn
     events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "usvi-test/usvi-test-testauto/incoming"
+    filter_prefix       = var.filter_prefix
     filter_suffix       = ".dat"
   }
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.split_obr_lambda.arn
     events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "usvi-test/usvi-test-testauto/incoming"
+    filter_prefix       = var.filter_prefix
     filter_suffix       = ".hl7"
   }
 

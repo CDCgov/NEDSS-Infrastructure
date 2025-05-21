@@ -28,3 +28,7 @@ terraform apply
 
 - HL7 files are stored in `<s3bucket>/<site_name>/<username>/splitcsv, splitdat, splitobr` within the same bucket.
 - One HL7 message per row in the CSV.
+
+## TODO
+
+- add resource prefix 
