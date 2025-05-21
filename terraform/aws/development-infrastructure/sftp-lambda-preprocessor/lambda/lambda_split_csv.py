@@ -80,7 +80,7 @@ def generate_hl7_message_from_csv_row(row: dict, message_id: str) -> str:
     return "\n".join([
         f"MSH|^~\\&|SFTP_APP|{sending_facility}|ELR_RECEIVER|VI_DOH|{msh_timestamp}||ORU^R01|{message_id}|P|2.5.1",
         f"PID|||{patient_id}||{pt_last_name}^{pt_first_name}||{dob}|{sex}",
-        f"ORC|RE||||||||",
+        "ORC|RE||||||||",
         f"OBR|1|{patient_id}|{accession}|{obr4}|||{msh_timestamp}",
         f"OBX|1|TX|{obr4}||{test_result}||||||F"
     ])
