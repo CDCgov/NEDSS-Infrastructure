@@ -7,7 +7,7 @@ LAMBDA_DIR="lambda"
 BUILD_DIR="build"
 
 declare -A LAMBDA_SCRIPTS=(
-  ["lambda_csv_to_hl7.zip"]="lambda_split_csv.py"
+  ["lambda_split_csv.zip"]="lambda_split_csv.py"
   ["lambda_split_dat.zip"]="lambda_split_dat.py"
   ["lambda_split_obr.zip"]="lambda_split_obr.py"
 )
