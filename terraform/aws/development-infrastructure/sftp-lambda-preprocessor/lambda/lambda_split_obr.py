@@ -127,7 +127,6 @@ def lambda_handler(event, context):
                         )
                         report_error(error_message, context)
                         # Continue processing other segments even if one fails
-                        pass
                     obr_related_segments = [] # Reset for the new OBR group
                 obr_related_segments.append(segment) # Add the current OBR segment
             elif any(segment.startswith(prefix) for prefix in HL7_SEGMENT_BREAK_CHARS):
@@ -149,7 +148,6 @@ def lambda_handler(event, context):
                             f"Error: {e}\n{traceback.format_exc()}"
                         )
                         report_error(error_message, context)
-                        pass
                     obr_related_segments = [] # Clear OBR group
                 base_segments.append(segment) # Add to base segments
             else:
@@ -168,7 +166,6 @@ def lambda_handler(event, context):
                     f"Failed to write final HL7 OBR message to {output_s3_key}. "
                     f"Error: {e}\n{traceback.format_exc()}"
                 )
-                report_error(error_message, context)
-                pass # Just log and move on
+                report_error(error_message, context) # Just log and move on
 
     return {"status": "obr processing complete"}
