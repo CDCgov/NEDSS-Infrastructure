@@ -1,7 +1,7 @@
 ## Terraform.tfvars configuration
 
 | Parameter | Template Value | Description |
-| --- | --- |
+| --- | --- | --- |
 | target_account_id | EXAMPLE_ACCOUNT_ID | Account ID for the infrastructure deployment AWS Account ID |
 | resource_prefix | EXAMPLE_RESOURCE_PREFIX | | Prefix for all the resources |
 | modern-cidr | 10.OCTET2a.0.0/16 | A new CIDR range for modern vpc |
@@ -18,7 +18,7 @@
 ## Terraform.tf configuration
 
 | Parameter | Template Value | Description |
-| --- | --- |
+| --- | --- | --- |
 | bucket | cdc-nbs-terraform-<EXAMPLE_ACCOUNT_NUM> | S3 bucket to store infrastructure artifacts |
 | key | cdc-nbs-SITE_NAME-modern/infrastructure-artifacts | Path for the artifacts inside the s3 bucket, the buckets needs to exist before running terraform apply but the path will be created automatically |
 
