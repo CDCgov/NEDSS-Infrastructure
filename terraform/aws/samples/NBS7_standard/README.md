@@ -1,4 +1,4 @@
-## Terraform.tfvars configuration
+## Terraform.tfvars Configuration
 
 | Parameter | Template Value | Description |
 | --- | --- | --- |
@@ -15,16 +15,9 @@
 | fluentbit_bucket_prefix | EXAMPLE-fluentbit-bucket | S3 bucket prefix for FluentBit |
 | fluentbit_bucket_name | EXAMPLE-fluentbit-logs | S3 bucket that will be created to capture consolidated logs via FluentBit |
 
-## Terraform.tf configuration
+## Terraform.tf Configuration
 
 | Parameter | Template Value | Description |
 | --- | --- | --- |
 | bucket | cdc-nbs-terraform-<EXAMPLE_ACCOUNT_NUM> | S3 bucket to store infrastructure artifacts |
 | key | cdc-nbs-SITE_NAME-modern/infrastructure-artifacts | Path for the artifacts inside the s3 bucket, the buckets needs to exist before running terraform apply but the path will be created automatically |
-
-## TEST
-
-| First Header  | Second Header |
-| ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
