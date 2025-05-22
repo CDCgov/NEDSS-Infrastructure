@@ -1,4 +1,4 @@
-## Terraform.tfvars Configuration
+## Terraform.tfvars Dictionary Table
 
 | Parameter | Template Value | Description |
 | --- | --- | --- |
@@ -15,7 +15,7 @@
 | fluentbit_bucket_prefix | EXAMPLE-fluentbit-bucket | S3 bucket prefix for FluentBit |
 | fluentbit_bucket_name | EXAMPLE-fluentbit-logs | S3 bucket that will be created to capture consolidated logs via FluentBit |
 
-## Terraform.tf Configuration
+## Terraform.tf Dictionary Table
 
 | Parameter | Template Value | Description |
 | --- | --- | --- |
