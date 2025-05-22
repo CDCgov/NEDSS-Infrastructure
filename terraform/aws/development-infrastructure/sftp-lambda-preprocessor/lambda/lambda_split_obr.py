@@ -72,8 +72,12 @@ def write_hl7_message_to_s3(
     """
     Constructs an HL7 message from parts and writes it to S3.
     """
-    if not hl7_message_parts:
-        return # Nothing to write
+    # Only write if there are actual message parts to write
+    if not hl7_message_parts or not any('OBR' in part for part in hl7_message_parts):
+        # If the goal is to only write full ELR messages, then skip if no OBR.
+        # This check is crucial for avoiding MSH-only or MSH-SFT-only files.
+        logger.info("Skipping write: No OBR segment found in the current message group.")
+        return 
 
     hl7_message = '\n'.join(hl7_message_parts)
     output_s3_key = output_key_template.format(uuid.uuid4())
@@ -101,7 +105,10 @@ def _process_current_obr_group(
     """
     Writes the current OBR group (base + obr_related) to S3 and clears obr_related_segments.
     """
-    if obr_related_segments:
+    # Important: Only attempt to write if there are actual OBR-related segments.
+    # This prevents writing MSH/SFT only groups if they somehow end up in obr_related_segments
+    # without an OBR.
+    if obr_related_segments: 
         write_hl7_message_to_s3(
             s3_client,
             s3_bucket_name,
@@ -130,8 +137,25 @@ def process_hl7_segments_for_obr(
         if not segment_stripped:
             continue
 
-        if segment_stripped.startswith('OBR'):
-            # When an OBR segment is found, finish the previous OBR group if any
+        segment_prefix = segment_stripped[:3] # Get the segment prefix (e.g., MSH, PID, OBR)
+
+        if segment_prefix == 'MSH':
+            # MSH signals a new message context.
+            # First, process any pending OBR group from the *previous* message context.
+            # This will write out the last OBR group if it exists.
+            obr_related_segments = _process_current_obr_group(
+                s3_client,
+                s3_bucket_name,
+                output_key_template,
+                base_segments,
+                obr_related_segments,
+                context
+            )
+            # Reset base_segments for the new message
+            base_segments = [segment_stripped]
+        elif segment_prefix == 'OBR':
+            # OBR signals a new observation.
+            # Finish the previous OBR group if any.
             obr_related_segments = _process_current_obr_group(
                 s3_client,
                 s3_bucket_name,
@@ -141,22 +165,16 @@ def process_hl7_segments_for_obr(
                 context
             )
             obr_related_segments.append(segment_stripped) # Add the current OBR segment
-        elif any(segment_stripped.startswith(prefix) for prefix in HL7_BASE_SEGMENTS_PREFIXES):
-            # When a new base segment (MSH, PID, ORC) is found, finish current OBR group
-            obr_related_segments = _process_current_obr_group(
-                s3_client,
-                s3_bucket_name,
-                output_key_template,
-                base_segments,
-                obr_related_segments,
-                context
-            )
-            base_segments.append(segment_stripped) # Add to base segments
+        elif segment_prefix in ['PID', 'ORC']:
+            # PID and ORC are base segments but don't reset the message context like MSH
+            base_segments.append(segment_stripped)
         else:
-            # Add any other segments to the current OBR group (e.g., OBX, NTE, etc.)
+            # Add any other segments to the current OBR group (e.g., OBX, NTE, SFT, etc.)
+            # These will only be written IF an OBR is also part of the obr_related_segments
             obr_related_segments.append(segment_stripped)
 
     # After the loop, process any remaining OBR group
+    # This will catch the last OBR group in the file.
     _process_current_obr_group(
         s3_client,
         s3_bucket_name,
