@@ -6,6 +6,8 @@ import time
 import logging
 import json
 import traceback
+import re
+
 from datetime import datetime
 
 # --- Configuration Constants ---
@@ -20,7 +22,8 @@ HL7_COMPONENT_DELIMITER = '^' # HL7 standard component delimiter
 
 # --- Logging Setup ---
 logger = logging.getLogger()
-logger.setLevel(logging.INFO) # Set to INFO for general operations.
+#logger.setLevel(logging.DEBUG)  # Temporarily set to DEBUG for PID-33 tracing
+logger.setLevel(logging.INFO)  # Temporarily set to DEBUG for PID-33 tracing
                                # Temporarily change to DEBUG if you need detailed PID-33 logs.
 
 def report_error(error_msg: str, context) -> None:
@@ -133,15 +136,18 @@ def clean_hl7_segment(segment: str, hl7_message_id: str = "N/A") -> str:
     segment_id = segment[:3]
     fields = segment.split(HL7_FIELD_DELIMITER)
 
+    logger.info(f"Msg ID: {hl7_message_id}: Processing {segment_id} segment.")
+
     # PID segment validation/cleaning
     if segment_id == 'PID':
-        logger.debug(f"Msg ID: {hl7_message_id}: Processing PID segment. Field count: {len(fields)}")
+        logger.info(f"Msg ID: {hl7_message_id}: Processing PID segment. Field count: {len(fields)}")
         # PID-33 (Last Update Date/Time)
         # It's a timestamp field. 'N' or other non-datetime values are invalid.
         pid_33_idx = 33 # PID-33 is at index 33 (0-indexed)
         if len(fields) > pid_33_idx: # Check if field exists
             pid_33_value = fields[pid_33_idx].strip()
-            logger.debug(f"Msg ID: {hl7_message_id}, PID-33 raw value: '{pid_33_value}'")
+            logger.info(f"Checking PID-33: Index={pid_33_idx}, Value='{pid_33_value}'")
+            logger.info(f"Msg ID: {hl7_message_id}, PID-33 raw value: '{pid_33_value}'")
 
             # Check if it's not empty AND it's not a valid HL7 datetime
             if pid_33_value and not is_valid_hl7_datetime(pid_33_value):
@@ -150,11 +156,32 @@ def clean_hl7_segment(segment: str, hl7_message_id: str = "N/A") -> str:
                     f"PID-33 (Last Update Date/Time) contains invalid non-datetime value. "
                     f"Original value: '{pid_33_value}'. Setting to empty."
                 )
-                fields[pid_33_idx] = '' # Set to empty string
+                logger.info(f"PID-33 is invalid, clearing it. Original value: '{pid_33_value}'")
+                fields[pid_33_idx] = ''  # Set to empty string
         else:
-            logger.debug(f"Msg ID: {hl7_message_id}: PID segment does not have PID-33 field.")
+            logger.info(f"Msg ID: {hl7_message_id}: PID segment does not have PID-33 field.")
 
         # PID-7 (Date of Birth) format validation
+
+        # PID-3 (Patient Identifier List)
+        pid_3_idx = 3
+        if len(fields) > pid_3_idx:
+            pid_3_value = fields[pid_3_idx].strip()
+            if not pid_3_value:
+                logger.warning(
+                    f"HL7 Validation Warning (Msg ID: {hl7_message_id}): "
+                    f"PID-3 (Patient Identifier List) is empty. This field is typically required."
+                )
+
+        # PID-5 (Patient Name)
+        pid_5_idx = 5
+        if len(fields) > pid_5_idx:
+            pid_5_value = fields[pid_5_idx].strip()
+            if not pid_5_value or '^' not in pid_5_value:
+                logger.warning(
+                    f"HL7 Validation Warning (Msg ID: {hl7_message_id}): "
+                    f"PID-5 (Patient Name) is missing or malformed. Value: '{pid_5_value}'"
+                )
         pid_7_idx = 7
         if len(fields) > pid_7_idx and fields[pid_7_idx].strip():
             pid_7_value = fields[pid_7_idx].strip()
@@ -205,7 +232,8 @@ def process_dat_content(
         
         # --- Apply Cleaning and Validation ---
         cleaned_segments = []
-        message_segments = hl7_message_str.split('\n')
+        #message_segments = hl7_message_str.split('\n')
+        message_segments = re.split(r'[\r\n]+', hl7_message_str.strip())
         
         # Extract MSH-10 for logging if available, otherwise use index
         message_id_for_log = f"Message {i+1} from DAT"
@@ -215,7 +243,7 @@ def process_dat_content(
             if len(msh_fields) > 9 and msh_fields[9].strip():
                 message_id_for_log = msh_fields[9].strip() # Use MSH-10 as identifier
 
-        logger.debug(f"Processing HL7 message: {message_id_for_log}")
+        logger.info(f"Processing HL7 message: {message_id_for_log}")
         for segment in message_segments:
             if segment.strip():
                 cleaned_segment = clean_hl7_segment(segment.strip(), hl7_message_id=message_id_for_log)
