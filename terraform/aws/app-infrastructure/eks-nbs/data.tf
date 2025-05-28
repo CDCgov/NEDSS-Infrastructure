@@ -20,5 +20,5 @@ data "aws_iam_session_context" "current" {
   # For non-role ARNs, this data source simply passes the ARN through issuer ARN
   # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
   # Ref https://github.com/hashicorp/terraform-provider-aws/issues/28381
-  arn = try(data.aws_caller_identity.current[0].arn, "")
+  arn = try(data.aws_caller_identity.current.arn, "")
 }
