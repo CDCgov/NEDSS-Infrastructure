@@ -11,6 +11,7 @@ This Terraform project:
 - Triggers Lambda on `csv,dat,hl7` uploads to the specified S3 bucket, currently the triggers are based on one users incoming directory, others can be modified/added manually
 - Publishes success/error results to SNS
 - subscribes an email address to SNS topics (confirm before uploading test files)
+- creates and poulate a cloudwatch metric from split_dat (need to add this to older lambdas)
 
 ## How to Use
 

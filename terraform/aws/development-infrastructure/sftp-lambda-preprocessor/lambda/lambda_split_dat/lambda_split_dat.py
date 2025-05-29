@@ -34,9 +34,9 @@ MSH_DATE_TIME_OF_MESSAGE_IDX = 6 # MSH-7
 PID_PATIENT_IDENTIFIER_LIST_IDX = 2 # PID-3
 PID_PATIENT_NAME_IDX = 4 # PID-5
 PID_DATE_OF_BIRTH_IDX = 6 # PID-7
-PID_RACE_IDX = 9 # PID-10
+PID_RACE_IDX = 10 # PID-10
 PID_ETHNIC_GROUP_IDX = 21 # PID-22
-PID_LAST_UPDATE_DATE_TIME_IDX = 32 # PID-33
+PID_LAST_UPDATE_DATE_TIME_IDX = 33 # PID-33
 
 # --- HL7 Validation Sets ---
 VALID_RACE_CODES = {"1002-5", "2028-9", "2054-5", "2076-8", "2106-3", "2131-1", "UNK", "REF"}
@@ -47,6 +47,8 @@ VALID_ETHNIC_SYSTEMS = {"CDCREC", "HL70189"}
 # --- Logging Setup ---
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+# only set debug level on synthetic/test data
+# logger.setLevel(logging.DEBUG)
 
 # --- AWS Boto3 Clients (Initialized globally for reuse) ---
 s3_client = boto3.client('s3')
@@ -157,6 +159,7 @@ def is_valid_hl7_datetime(dt_str: str) -> bool:
     logger.debug(f"is_valid_hl7_datetime: Failed to parse '{dt_str}' with any known HL7 datetime format.")
     return False
 
+
 def validate_and_clean_hl7_coded_field(
     raw_field_value: str,
     valid_codes: set,
@@ -171,16 +174,19 @@ def validate_and_clean_hl7_coded_field(
     if not raw_field_value:
         return ''
 
-    logger.info(f"[{msg_id}] {field_label}: Raw value before \\S\\ replacement: '{raw_field_value}'")
-    cleaned_field_value = raw_field_value.replace("\\S\\", HL7_COMPONENT_DELIMITER)
-    logger.info(f"[{msg_id}] {field_label}: Value after \\S\\ replacement: '{cleaned_field_value}'")
+    logger.info(f"[{msg_id}] {field_label}: checking for \\S\\ replacement")
+    logger.debug(f"[{msg_id}] {field_label}: Raw value before \\S\\ replacement: '{raw_field_value}'")
+    # FIX: Use r"..." + "\\" to avoid SyntaxWarning
+    cleaned_field_value = raw_field_value.replace(r"\S" + "\\", HL7_COMPONENT_DELIMITER)
+    logger.debug(f"[{msg_id}] {field_label}: Value after \\S\\ replacement: '{cleaned_field_value}'")
 
     components = cleaned_field_value.split('~')
     valid_components = []
 
     for comp in components:
         parts = comp.split(HL7_COMPONENT_DELIMITER)
-        logger.info(f"[{msg_id}] {field_label}: Processing component '{comp}', split into parts: {parts}")
+        logger.info(f"[{msg_id}] {field_label}: Processing component , split into parts")
+        logger.debug(f"[{msg_id}] {field_label}: Processing component '{comp}', split into parts: {parts}")
         if len(parts) < 3:
             logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component missing parts: '{comp}'")
             cloudwatch_client.put_metric_data(
@@ -190,13 +196,16 @@ def validate_and_clean_hl7_coded_field(
             continue
 
         code, _, system = parts[0].strip(), parts[1].strip(), parts[2].strip()
-        logger.info(f"[{msg_id}] {field_label}: Component '{comp}' -> Code:'{code}', System:'{system}'")
+        logger.info(f"[{msg_id}] {field_label}: Component -> Code , System")
+        logger.debug(f"[{msg_id}] {field_label}: Component '{comp}' -> Code:'{code}', System:'{system}'")
 
         if code in valid_codes and system in valid_systems:
             valid_components.append(comp)
-            logger.info(f"[{msg_id}] {field_label}: Component '{comp}' is VALID.")
+            logger.info(f"[{msg_id}] {field_label}: Component is VALID.")
+            logger.debug(f"[{msg_id}] {field_label}: Component '{comp}' is VALID.")
         else:
-            logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component invalid: '{comp}'")
+            logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component invalid")
+            logger.debug(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component invalid: '{comp}'")
             cloudwatch_client.put_metric_data(
                 Namespace='HL7Validation',
                 MetricData=[{'MetricName': 'InvalidCodeOrSystem', 'Dimensions': [{'Name': 'Field', 'Value': field_label}], 'Value': 1, 'Unit': 'Count'}]
@@ -204,7 +213,8 @@ def validate_and_clean_hl7_coded_field(
 
     if valid_components:
         final_value = '~'.join(valid_components)
-        logger.info(f"[{msg_id}] {field_label}: Valid components found. Returning: '{final_value}'")
+        logger.info(f"[{msg_id}] {field_label}: Valid components found. Returning")
+        logger.debug(f"[{msg_id}] {field_label}: Valid components found. Returning: '{final_value}'")
         return final_value
     else:
         logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): All components in {field_label} are invalid. Clearing field.")
@@ -248,7 +258,8 @@ def clean_hl7_message(msg: hl7.Message, msg_id: str) -> hl7.Message:
         msh_7_value = get_field_value(msh, MSH_DATE_TIME_OF_MESSAGE_IDX)
         if msh_7_value and not is_valid_hl7_datetime(msh_7_value):
             logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): MSH-7 seems malformed. Value: '{msh_7_value}'.")
-        logger.info(f"[{msg_id}]: MSH-7: '{msh_7_value}'")
+        logger.info(f"[{msg_id}]: MSH-7")
+        logger.debug(f"[{msg_id}]: MSH-7: '{msh_7_value}'")
     except KeyError:
         logger.warning(f"[{msg_id}]: MSH segment not found.")
 
@@ -261,7 +272,8 @@ def clean_hl7_message(msg: hl7.Message, msg_id: str) -> hl7.Message:
         if pid_33_value and not is_valid_hl7_datetime(pid_33_value):
             logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): PID-33 invalid. Original: '{pid_33_value}'. Clearing.")
             set_field_value(pid, PID_LAST_UPDATE_DATE_TIME_IDX, '')
-        logger.info(f"[{msg_id}]: PID-33: '{get_field_value(pid, PID_LAST_UPDATE_DATE_TIME_IDX)}'")
+        logger.info(f"[{msg_id}]: PID-33 procession...")
+        logger.debug(f"[{msg_id}]: PID-33: '{get_field_value(pid, PID_LAST_UPDATE_DATE_TIME_IDX)}'")
 
         # PID-3 & PID-5 & PID-7 (Checks)
         if not get_field_value(pid, PID_PATIENT_IDENTIFIER_LIST_IDX):
@@ -277,14 +289,16 @@ def clean_hl7_message(msg: hl7.Message, msg_id: str) -> hl7.Message:
         if raw_pid_10:
             cleaned_pid_10 = validate_and_clean_hl7_coded_field(raw_pid_10, VALID_RACE_CODES, VALID_RACE_SYSTEMS, "PID-10 (Race)", msg_id)
             set_field_value(pid, PID_RACE_IDX, cleaned_pid_10)
-            logger.info(f"[{msg_id}]: PID-10: Original='{raw_pid_10}', Cleaned='{cleaned_pid_10}'")
+            logger.info(f"[{msg_id}]: PID-10 Cleaned")
+            logger.debug(f"[{msg_id}]: PID-10: Original='{raw_pid_10}', Cleaned='{cleaned_pid_10}'")
 
         # PID-22 (Ethnic Group)
         raw_pid_22 = get_field_value(pid, PID_ETHNIC_GROUP_IDX)
         if raw_pid_22:
             cleaned_pid_22 = validate_and_clean_hl7_coded_field(raw_pid_22, VALID_ETHNIC_CODES, VALID_ETHNIC_SYSTEMS, "PID-22 (Ethnic Group)", msg_id)
             set_field_value(pid, PID_ETHNIC_GROUP_IDX, cleaned_pid_22)
-            logger.info(f"[{msg_id}]: PID-22: Original='{raw_pid_22}', Cleaned='{cleaned_pid_22}'")
+            logger.info(f"[{msg_id}]: PID-22(Ethnic Group) Cleaned")
+            logger.debug(f"[{msg_id}]: PID-22: Original='{raw_pid_22}', Cleaned='{cleaned_pid_22}'")
 
     except KeyError:
         logger.warning(f"[{msg_id}]: PID segment not found.")
@@ -311,7 +325,8 @@ def process_dat_content(
             continue
 
         hl7_message_str = HL7_MESSAGE_SEPARATOR + msg_body_part.strip()
-        logger.info(f"Extracted raw HL7 message part {i+1}. Starting with: '{hl7_message_str[:100]}...'")
+        logger.info(f"Extracted raw HL7 message part {i+1}.")
+        logger.debug(f"Extracted raw HL7 message part {i+1}. Starting with: '{hl7_message_str[:100]}...'")
 
         try:
             # Parse the message using the hl7 library
@@ -331,7 +346,8 @@ def process_dat_content(
             # Serialize the cleaned message back to a string (uses \r by default)
             # Use .replace('\r', '\n') if you strictly need \n separators.
             final_hl7_message = str(cleaned_message)
-            logger.info(f"[{message_id_for_log}]: Final cleaned HL7 message (first 200 chars): '{final_hl7_message[:200]}...'")
+            logger.info(f"[{message_id_for_log}]: Final cleaned HL7 message  XXXXXXX")
+            logger.debug(f"[{message_id_for_log}]: Final cleaned HL7 message (first 200 chars): '{final_hl7_message[:200]}...'")
 
             # Write to S3
             write_hl7_message_to_s3(
