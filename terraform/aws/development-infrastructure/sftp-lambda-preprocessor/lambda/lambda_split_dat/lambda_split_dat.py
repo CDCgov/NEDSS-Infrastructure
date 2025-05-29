@@ -204,7 +204,8 @@ def validate_and_clean_hl7_coded_field(
             logger.info(f"[{msg_id}] {field_label}: Component is VALID.")
             logger.debug(f"[{msg_id}] {field_label}: Component '{comp}' is VALID.")
         else:
-            logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component invalid: '{comp}'")
+            logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component invalid")
+            logger.debug(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component invalid: '{comp}'")
             cloudwatch_client.put_metric_data(
                 Namespace='HL7Validation',
                 MetricData=[{'MetricName': 'InvalidCodeOrSystem', 'Dimensions': [{'Name': 'Field', 'Value': field_label}], 'Value': 1, 'Unit': 'Count'}]
