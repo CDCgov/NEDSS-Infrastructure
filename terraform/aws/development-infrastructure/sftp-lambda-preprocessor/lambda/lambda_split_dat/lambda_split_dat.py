@@ -34,9 +34,9 @@ MSH_DATE_TIME_OF_MESSAGE_IDX = 6 # MSH-7
 PID_PATIENT_IDENTIFIER_LIST_IDX = 2 # PID-3
 PID_PATIENT_NAME_IDX = 4 # PID-5
 PID_DATE_OF_BIRTH_IDX = 6 # PID-7
-PID_RACE_IDX = 9 # PID-10
+PID_RACE_IDX = 10 # PID-10
 PID_ETHNIC_GROUP_IDX = 21 # PID-22
-PID_LAST_UPDATE_DATE_TIME_IDX = 32 # PID-33
+PID_LAST_UPDATE_DATE_TIME_IDX = 33 # PID-33
 
 # --- HL7 Validation Sets ---
 VALID_RACE_CODES = {"1002-5", "2028-9", "2054-5", "2076-8", "2106-3", "2131-1", "UNK", "REF"}
@@ -157,6 +157,7 @@ def is_valid_hl7_datetime(dt_str: str) -> bool:
     logger.debug(f"is_valid_hl7_datetime: Failed to parse '{dt_str}' with any known HL7 datetime format.")
     return False
 
+
 def validate_and_clean_hl7_coded_field(
     raw_field_value: str,
     valid_codes: set,
@@ -172,7 +173,8 @@ def validate_and_clean_hl7_coded_field(
         return ''
 
     logger.info(f"[{msg_id}] {field_label}: Raw value before \\S\\ replacement: '{raw_field_value}'")
-    cleaned_field_value = raw_field_value.replace("\\S\\", HL7_COMPONENT_DELIMITER)
+    # FIX: Use r"..." + "\\" to avoid SyntaxWarning
+    cleaned_field_value = raw_field_value.replace(r"\S" + "\\", HL7_COMPONENT_DELIMITER)
     logger.info(f"[{msg_id}] {field_label}: Value after \\S\\ replacement: '{cleaned_field_value}'")
 
     components = cleaned_field_value.split('~')
