@@ -119,7 +119,19 @@ variable "allow_endpoint_public_access" {
 }
 
 variable "external_cidr_blocks" {
+  description = "A list of IAM ARNs for those who will have full key permissions (kms:*)"
+  type        = list
+  default     = []
+}
+
+variable "kms_key_owners" {
   description = "List of CIDR blocks (ex. 10.0.0.0/32) to allow access to eks cluster API"
+  type        = list
+  default     = []
+}
+
+variable "kms_key_administrators" {
+  description = "A list of IAM ARNs for key administrators. If no value is provided, the current caller identity is used to ensure at least one key admin is available"
   type        = list
   default     = []
 }
