@@ -8,6 +8,7 @@ import json
 import traceback
 import re
 import hl7  # <-- Import the python-hl7 library
+import urllib.parse # Add this import
 
 from datetime import datetime
 from botocore.exceptions import ClientError
@@ -81,7 +82,7 @@ def get_s3_object_content(bucket_name: str, key: str, context) -> str:
     s3_object_content = None
     for attempt_num in range(MAX_S3_RETRIES):
         try:
-            obj = s3_client.get_object(Bucket=bucket_name, Key=key)
+            obj = s3_client.get_object(Bucket=bucket_name, Key=key) # key will be decoded
             s3_object_content = obj['Body'].read().decode('utf-8')
             logger.info(f"Successfully retrieved S3 object {key} on attempt {attempt_num+1}.")
             return s3_object_content # Return immediately on success
@@ -425,20 +426,28 @@ def _process_s3_record(record: dict, context) -> None:
     Processes a single S3 event record. Raises exceptions on failure.
     """
     s3_bucket_name = record['s3']['bucket']['name']
-    s3_object_key = record['s3']['object']['key']
+    s3_object_key_encoded = record['s3']['object']['key'] # Get encoded key
+
+    # Decode the S3 object key
+    s3_object_key = urllib.parse.unquote_plus(s3_object_key_encoded)
+    logger.info(f"Decoded S3 object key: {s3_object_key}")
+
 
     logger.info(f"Attempting to process S3 object: s3://{s3_bucket_name}/{s3_object_key}")
 
+    # Use the decoded key for validation
     if not _is_valid_s3_key_for_processing(s3_object_key):
         return
 
     try:
+        # Use the decoded key for path determination
         _, _, output_key_template = _determine_output_paths(s3_object_key)
         logger.info(f"Determined output key template: {output_key_template}")
     except ValueError as e:
         report_error(f"Failed to determine output paths for {s3_object_key}: {e}", context)
         raise
 
+    # Pass the decoded key for content retrieval
     s3_object_content = get_s3_object_content(s3_bucket_name, s3_object_key, context)
     logger.info(f"Retrieved content for {s3_object_key}. Content length: {len(s3_object_content)} bytes.")
 
@@ -470,8 +479,9 @@ def lambda_handler(event, context):
             _process_s3_record(record, context)
         except Exception as e:
             # Catch any unhandled exception during the processing of a single record.
-            s3_key = record.get('s3', {}).get('object', {}).get('key', 'Unknown Key')
-            error_message = f"CRITICAL FAILURE processing record for {s3_key}: {e}\n{traceback.format_exc()}"
+            # Use the encoded key from the original record for error reporting if decoding failed or s3_object_key isn't available
+            s3_key_for_error = record.get('s3', {}).get('object', {}).get('key', 'Unknown Key')
+            error_message = f"CRITICAL FAILURE processing record for {s3_key_for_error}: {e}\n{traceback.format_exc()}"
             report_error(error_message, context)
             errors.append(error_message)
             # If you want S3/Lambda to retry, you MUST re-raise the exception.

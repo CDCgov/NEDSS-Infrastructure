@@ -8,8 +8,9 @@ import json
 import traceback
 import csv
 import io
-import hashlib 
+import hashlib
 from datetime import datetime
+import urllib.parse # Add this import
 
 # --- Configuration Constants ---
 PROCESSED_SUBDIRS = ["splitcsv", "splitdat", "splitobr"]
@@ -93,6 +94,7 @@ def get_s3_object_content(s3_client: boto3.client, bucket_name: str, key: str, c
     s3_object_content = None
     for attempt_num in range(3):
         try:
+            # The key here is already decoded if the change below is made
             obj = s3_client.get_object(Bucket=bucket_name, Key=key)
             s3_object_content = obj['Body'].read().decode('utf-8')
             break
@@ -159,7 +161,12 @@ def lambda_handler(event, context):
 
     for record in event['Records']:
         s3_bucket_name = record['s3']['bucket']['name']
-        s3_object_key = record['s3']['object']['key']
+        s3_object_key_encoded = record['s3']['object']['key']
+        
+        # Decode the S3 object key
+        s3_object_key = urllib.parse.unquote_plus(s3_object_key_encoded)
+        logger.info(f"Decoded S3 object key: {s3_object_key}")
+
 
         # Pre-checks for key format and file type
         if any(f"/{subdir}/" in s3_object_key for subdir in PROCESSED_SUBDIRS):
@@ -194,6 +201,7 @@ def lambda_handler(event, context):
 
         # --- S3 Object Retrieval ---
         try:
+            # Pass the decoded s3_object_key here
             s3_object_content = get_s3_object_content(s3_client, s3_bucket_name, s3_object_key, context)
         except RuntimeError:
             continue
