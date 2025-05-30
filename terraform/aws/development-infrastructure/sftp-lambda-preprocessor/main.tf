@@ -60,36 +60,36 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
   policy_arn = aws_iam_policy.lambda_policy.arn
 }
 
-resource "aws_s3_bucket_notification" "sftp_upload_notification" {
-  bucket = var.sftp_bucket_name
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.split_csv_lambda.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = var.filter_prefix
-    filter_suffix       = ".csv"
-  }
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.split_dat_lambda.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = var.filter_prefix
-    filter_suffix       = ".dat"
-  }
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.split_obr_lambda.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = var.filter_prefix
-    filter_suffix       = ".hl7"
-  }
-
-  depends_on = [
-    aws_lambda_permission.allow_s3_to_invoke_split_csv,
-    aws_lambda_permission.allow_s3_to_invoke_split_dat,
-    aws_lambda_permission.allow_s3_to_invoke_split_obr
-  ]
-}
+#resource "aws_s3_bucket_notification" "sftp_upload_notification" {
+  #bucket = var.sftp_bucket_name
+#
+  #lambda_function {
+    #lambda_function_arn = aws_lambda_function.split_csv_lambda.arn
+    #events              = ["s3:ObjectCreated:*"]
+    #filter_prefix       = var.filter_prefix
+    #filter_suffix       = ".csv"
+  #}
+#
+  #lambda_function {
+    #lambda_function_arn = aws_lambda_function.split_dat_lambda.arn
+    #events              = ["s3:ObjectCreated:*"]
+    #filter_prefix       = var.filter_prefix
+    #filter_suffix       = ".dat"
+  #}
+#
+  #lambda_function {
+    #lambda_function_arn = aws_lambda_function.split_obr_lambda.arn
+    #events              = ["s3:ObjectCreated:*"]
+    #filter_prefix       = var.filter_prefix
+    #filter_suffix       = ".hl7"
+  #}
+#
+  #depends_on = [
+    #aws_lambda_permission.allow_s3_to_invoke_split_csv,
+    #aws_lambda_permission.allow_s3_to_invoke_split_dat,
+    #aws_lambda_permission.allow_s3_to_invoke_split_obr
+  #]
+#}
 
 resource "aws_sns_topic" "split_csv_topic" {
   name = "split-csv-topic"
