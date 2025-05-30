@@ -6,6 +6,7 @@ import time
 import logging
 import json
 import traceback
+import urllib.parse # Add this import
 
 # --- Configuration Constants ---
 PROCESSED_SUBDIRS = ["splitcsv", "splitdat", "splitobr"]
@@ -44,7 +45,7 @@ def get_s3_object_content(s3_client: boto3.client, bucket_name: str, key: str, c
     s3_object_content = None
     for attempt_num in range(3):
         try:
-            obj = s3_client.get_object(Bucket=bucket_name, Key=key)
+            obj = s3_client.get_object(Bucket=bucket_name, Key=key) # key will be decoded
             s3_object_content = obj['Body'].read().decode('utf-8')
             logger.info(f"Successfully retrieved S3 object {key} on attempt {attempt_num+1}.")
             break
@@ -196,9 +197,14 @@ def lambda_handler(event, context):
 
     for record in event['Records']:
         s3_bucket_name = record['s3']['bucket']['name']
-        s3_object_key = record['s3']['object']['key']
+        s3_object_key_encoded = record['s3']['object']['key'] # Get encoded key
 
-        # Pre-checks for key format and file type
+        # Decode the S3 object key
+        s3_object_key = urllib.parse.unquote_plus(s3_object_key_encoded)
+        logger.info(f"Decoded S3 object key: {s3_object_key}")
+
+
+        # Pre-checks for key format and file type (use decoded key)
         if any(f"/{subdir}/" in s3_object_key for subdir in PROCESSED_SUBDIRS):
             logger.info(f"Skipping already-processed file: {s3_object_key}")
             continue
@@ -217,7 +223,7 @@ def lambda_handler(event, context):
             logger.info(f"Skipping non-{HL7_FILE_EXTENSION} file: {s3_object_key}")
             continue
 
-        # --- Determine Output Paths ---
+        # --- Determine Output Paths --- (use decoded key)
         site_path_components = s3_key_components[:-3]
         extracted_username = s3_key_components[-3]
         base_output_path = '/'.join(site_path_components + [extracted_username])
@@ -226,7 +232,7 @@ def lambda_handler(event, context):
         split_output_prefix = f"{base_output_path}/{PROCESSED_SUBDIRS[2]}/" # Using "splitobr"
         output_key_template = f"{split_output_prefix}{extracted_username}_{original_file_name_without_ext}_{{}}.{OUTPUT_FILE_EXTENSION}"
 
-        # --- S3 Object Retrieval ---
+        # --- S3 Object Retrieval --- (pass decoded key)
         try:
             s3_object_content = get_s3_object_content(s3_client, s3_bucket_name, s3_object_key, context)
         except RuntimeError:
