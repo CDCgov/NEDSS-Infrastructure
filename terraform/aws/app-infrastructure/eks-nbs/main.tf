@@ -1,6 +1,6 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "19.15.3" 
+  version = "20.36.0" 
 
   kms_key_administrators = coalescelist(var.kms_key_administrators, [try(data.aws_iam_session_context.current.issuer_arn, "")])
   kms_key_owners = var.kms_key_owners
@@ -17,7 +17,7 @@ module "eks" {
   # Cluster addons, ebs csi driver
   # cluster_addons = {
   #   aws-ebs-csi-driver = {
-  #     resolve_conflicts = "OVERWRITE"
+  #     resolve_conflicts_on_create = "OVERWRITE"
   #     most_recent       = true
   #   }
   # }
