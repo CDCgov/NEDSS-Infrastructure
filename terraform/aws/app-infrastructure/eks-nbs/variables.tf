@@ -141,3 +141,13 @@ variable "kms_key_administrators" {
   type        = list
   default     = []
 }
+
+variable "kms_key_enable_default_policy" {
+  description = "Specifies whether to enable the default key policy"
+  type        = bool
+  default     = false
+}
+
+
+
+
