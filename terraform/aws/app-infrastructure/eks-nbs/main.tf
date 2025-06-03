@@ -86,7 +86,7 @@ module "eks" {
   }
 
     readonly-role = {
-      principal_arn = var.readonly_role   # "arn:aws:iam::123456789012:role/something"
+      principal_arn = var.readonly_role_arn   # "arn:aws:iam::123456789012:role/something"
 
       policy_associations = {
         readonly-access = {
