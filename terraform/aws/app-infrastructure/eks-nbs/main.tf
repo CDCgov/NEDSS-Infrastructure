@@ -160,4 +160,5 @@ resource "aws_vpc_security_group_ingress_rule" "example" {
   ip_protocol = "tcp"
   to_port     = 443
 }
+}
 
