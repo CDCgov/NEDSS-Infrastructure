@@ -73,7 +73,7 @@ module "eks" {
     access_entries = {
     # One access entry with a policy associated
     admin-role = {
-    principal_arn = var.sso_role_arn   # "arn:aws:iam::66666666666:role/admin"
+    principal_arn = var.admin_role_arn   # "arn:aws:iam::66666666666:role/admin"
 
     policy_associations = {
       admin-access = {
