@@ -56,23 +56,21 @@ module "eks" {
   }
 
   # aws-auth configmap
-#   manage_aws_auth_configmap = true
+  # manage_aws_auth_configmap = true
 
-#   aws_auth_roles = [
-#     {
-#       rolearn  = var.aws_role_arn
-#       username = "role"
-#       groups   = ["system:masters"]
-#     },
-#     {
-#       rolearn  = var.sso_role_arn
-#       username = "adminssorole"
-#       groups   = ["system:masters"]
-#     }
-#   ]
-# }
-
-  access_entries = {
+  # aws_auth_roles = [
+  #   {
+  #     rolearn  = var.aws_role_arn
+  #     username = "role"
+  #     groups   = ["system:masters"]
+  #   },
+  #   {
+  #     rolearn  = var.sso_role_arn
+  #     username = "adminssorole"
+  #     groups   = ["system:masters"]
+  #   }
+  # ]
+    access_entries = {
     # One access entry with a policy associated
     admin-role = {
     principal_arn = var.sso_role_arn   # "arn:aws:iam::66666666666:role/admin"
@@ -99,6 +97,7 @@ module "eks" {
         }
       }
     }
+}
 }
 
 #Additional EKS permissions
@@ -160,5 +159,5 @@ resource "aws_vpc_security_group_ingress_rule" "example" {
   ip_protocol = "tcp"
   to_port     = 443
 }
-}
+
 
