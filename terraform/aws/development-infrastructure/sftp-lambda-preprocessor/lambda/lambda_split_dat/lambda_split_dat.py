@@ -395,9 +395,9 @@ def _is_valid_s3_key_for_processing(s3_object_key: str) -> bool:
             f"before the filename: {s3_object_key}. Skipping."
         )
         return False
-    if not s3_object_key.lower().endswith(DAT_FILE_EXTENSION):
-        logger.info(f"Skipping non-{DAT_FILE_EXTENSION} file: {s3_object_key}")
-        return False
+    #if not s3_object_key.lower().endswith(DAT_FILE_EXTENSION):
+    #    logger.info(f"Skipping non-{DAT_FILE_EXTENSION} file: {s3_object_key}")
+    #    return False
     return True
 
 def _determine_output_paths(s3_object_key: str) -> tuple[str, str, str]:
