@@ -6,19 +6,19 @@ import time
 import logging
 import json
 import traceback
-import urllib.parse # Add this import
+import urllib.parse
 
 # --- Configuration Constants ---
 PROCESSED_SUBDIRS = ["splitcsv", "splitdat", "splitobr"]
 INCOMING_DIR_NAME = "incoming"
 OUTPUT_FILE_EXTENSION = "hl7"
 ERROR_TOPIC_ENV_VAR = 'ERROR_TOPIC_ARN'
-HL7_FILE_EXTENSION = '.hl7'
-HL7_BASE_SEGMENTS_PREFIXES = ['MSH', 'PID', 'ORC'] # Segments that start a new message or apply globally
+HL7_FILE_EXTENSION = '.hl7' # Assuming inputs will be .hl7 files
+HL7_BASE_SEGMENTS_PREFIXES = ['MSH', 'PID', 'ORC']
 
 # --- Logging Setup ---
 logger = logging.getLogger()
-logger.setLevel(logging.INFO) # Set to INFO for production. Use DEBUG only in secure, isolated dev environments.
+logger.setLevel(logging.INFO)
 
 def report_error(error_msg: str, context) -> None:
     """
@@ -43,9 +43,9 @@ def get_s3_object_content(s3_client: boto3.client, bucket_name: str, key: str, c
     Raises RuntimeError if object cannot be retrieved after retries.
     """
     s3_object_content = None
-    for attempt_num in range(3):
+    for attempt_num in range(3): # Max 3 retries
         try:
-            obj = s3_client.get_object(Bucket=bucket_name, Key=key) # key will be decoded
+            obj = s3_client.get_object(Bucket=bucket_name, Key=key)
             s3_object_content = obj['Body'].read().decode('utf-8')
             logger.info(f"Successfully retrieved S3 object {key} on attempt {attempt_num+1}.")
             break
@@ -55,7 +55,9 @@ def get_s3_object_content(s3_client: boto3.client, bucket_name: str, key: str, c
         except Exception as e:
             error_message = f"Error getting S3 object {key} on attempt {attempt_num+1}: {e}\n{traceback.format_exc()}"
             report_error(error_message, context)
-            raise # Re-raise for other types of errors immediately
+            # For critical errors not related to NoSuchKey, re-raise immediately
+            # after reporting to avoid unnecessary retries for non-transient issues.
+            raise
 
     if s3_object_content is None:
         error_message = f"Failed to retrieve S3 object after 3 attempts: {key}"
@@ -75,15 +77,14 @@ def write_hl7_message_to_s3(
     Constructs an HL7 message from parts and writes it to S3.
     Includes a check to ensure an OBR segment is present before writing.
     """
-    # Ensure there is at least one OBR segment in the parts being written
     if not any(part.startswith('OBR') for part in hl7_message_parts):
         logger.info("Skipping write: No OBR segment found in the current message group.")
         return
 
     hl7_message = '\n'.join(hl7_message_parts)
+    # Generate a unique ID for each output file part
     output_s3_key = output_key_template.format(uuid.uuid4())
     
-    # IMPORTANT: Do NOT log hl7_message content here due to PHI.
     logger.info(f"Attempting to write HL7 OBR message to S3. Key: {output_s3_key}, Bucket: {s3_bucket_name}.")
 
     try:
@@ -95,7 +96,7 @@ def write_hl7_message_to_s3(
             f"Error: {e}\n{traceback.format_exc()}"
         )
         report_error(error_message, context)
-        raise # Re-raise the exception to indicate failure
+        raise
 
 def process_hl7_segments_for_obr(
     s3_client: boto3.client,
@@ -110,9 +111,9 @@ def process_hl7_segments_for_obr(
     segments = content.strip().split('\n')
     current_base_segments = []
     current_obr_group_segments = []
-    obr_active_in_group = False # Flag to indicate if an OBR is being accumulated in the current group
+    obr_active_in_group = False
 
-    logger.debug("Starting HL7 segment processing.") # Debug level, won't show by default
+    logger.debug("Starting HL7 segment processing for OBR splitting.")
 
     for i, segment in enumerate(segments):
         segment_stripped = segment.strip()
@@ -121,15 +122,11 @@ def process_hl7_segments_for_obr(
             continue
 
         segment_prefix = segment_stripped[:3]
-        # IMPORTANT: Do NOT log segment_stripped content here due to PHI.
         logger.debug(f"Processing segment {i+1}: {segment_prefix}.")
-        logger.debug(f"Current state: base={len(current_base_segments)}, obr_group={len(current_obr_group_segments)}, obr_active={obr_active_in_group}")
 
         if segment_prefix == 'MSH':
-            # MSH signals a new message context.
-            # If there's an active OBR group from the previous context, write it now.
-            if obr_active_in_group:
-                logger.info(f"MSH encountered. Flushing previous OBR group (if active).")
+            if obr_active_in_group and current_base_segments: # Ensure base segments exist before flushing
+                logger.info("MSH encountered. Flushing previous OBR group (if active and valid).")
                 write_hl7_message_to_s3(
                     s3_client,
                     s3_bucket_name,
@@ -137,17 +134,14 @@ def process_hl7_segments_for_obr(
                     current_base_segments + current_obr_group_segments,
                     context
                 )
-            # Reset for the new message context
             current_base_segments = [segment_stripped]
             current_obr_group_segments = []
-            obr_active_in_group = False # No OBR yet in this new group
-            logger.debug(f"MSH processed. New base count: {len(current_base_segments)}, obr_group reset.")
+            obr_active_in_group = False
+            logger.debug("MSH processed. Base segments reset.")
 
         elif segment_prefix == 'OBR':
-            # A new OBR means the previous OBR group is complete.
-            # If there was an OBR active in the previous group, write it out.
-            if obr_active_in_group:
-                logger.info(f"OBR encountered. Flushing previous OBR group (if active).")
+            if obr_active_in_group and current_base_segments: # Ensure base segments exist
+                logger.info("New OBR encountered. Flushing previous OBR group (if active and valid).")
                 write_hl7_message_to_s3(
                     s3_client,
                     s3_bucket_name,
@@ -155,31 +149,34 @@ def process_hl7_segments_for_obr(
                     current_base_segments + current_obr_group_segments,
                     context
                 )
-            # Start a new OBR group with the current OBR segment
-            current_obr_group_segments = [segment_stripped]
-            obr_active_in_group = True # An OBR is now active in this group
-            logger.debug(f"OBR processed. New obr_group count: {len(current_obr_group_segments)}, obr_active=True.")
+            current_obr_group_segments = [segment_stripped] # Start new OBR group
+            obr_active_in_group = True
+            logger.debug("OBR processed. New OBR group started.")
 
-        elif segment_prefix in ['PID', 'ORC']:
-            # These are base segments for the current message context, add to base.
-            current_base_segments.append(segment_stripped)
-            logger.debug(f"{segment_prefix} added to base_segments. Base count: {len(current_base_segments)}.")
-
-        else: # Any other segment (OBX, NTE, SFT, etc.)
-            # These segments belong to the current OBR group ONLY if an OBR is active.
-            # This prevents segments like SFT from creating "phantom" OBR groups.
-            if obr_active_in_group:
-                current_obr_group_segments.append(segment_stripped)
-                logger.debug(f"Other segment '{segment_prefix}' added to obr_group. OBR group count: {len(current_obr_group_segments)}.")
+        elif segment_prefix in HL7_BASE_SEGMENTS_PREFIXES and segment_prefix != 'MSH': # PID, ORC
+            # Add to base segments only if an MSH has been seen
+            if current_base_segments:
+                current_base_segments.append(segment_stripped)
+                logger.debug(f"{segment_prefix} added to base_segments.")
             else:
-                logger.debug(f"Discarding segment '{segment_prefix}' as no OBR is active in group and it's not a base segment.")
-                # Segments encountered here before an OBR are effectively discarded for this splitting logic.
-                # You could add more specific handling or logging here if these need to be captured.
+                logger.warning(f"Segment '{segment_prefix}' found before MSH. It might be out of order. Storing temporarily.")
+                # Temporarily store if MSH not yet seen, or handle as error
+                # This logic assumes MSH always comes first for a valid message context for splitting.
+                # If current_base_segments is empty, it means we haven't started a valid message context.
+                # For simplicity, we'll only add to base if MSH has initiated it.
 
-    # After the loop, write any remaining OBR group (the last one in the file)
-    logger.debug("End of segments. Checking for final OBR group to flush.")
-    if obr_active_in_group:
-        logger.info("Flushing final OBR group.")
+        else: # OBX, NTE, etc.
+            if obr_active_in_group and current_base_segments: # Add to current OBR group if active and MSH context exists
+                current_obr_group_segments.append(segment_stripped)
+                logger.debug(f"Segment '{segment_prefix}' added to current OBR group.")
+            elif not current_base_segments:
+                 logger.warning(f"Segment '{segment_prefix}' found before MSH. Discarding for current OBR splitting logic.")
+            elif not obr_active_in_group:
+                 logger.warning(f"Segment '{segment_prefix}' found but no OBR is active. Discarding from OBR group.")
+
+
+    if obr_active_in_group and current_base_segments: # Flush the last OBR group if it exists and is valid
+        logger.info("End of segments. Flushing final OBR group (if active and valid).")
         write_hl7_message_to_s3(
             s3_client,
             s3_bucket_name,
@@ -188,56 +185,81 @@ def process_hl7_segments_for_obr(
             context
         )
     else:
-        logger.info("No active OBR group to flush at the end of the file.")
+        logger.info("No active and valid OBR group to flush at the end of the file.")
 
 
 def lambda_handler(event, context):
     logger.info("Received event: %s", json.dumps(event))
     s3_client = boto3.client('s3')
 
+    # Define the set of allowed source parent directories for OBR splitting
+    # PROCESSED_SUBDIRS[1] corresponds to "splitdat"
+    allowed_source_parent_dirs = {INCOMING_DIR_NAME, PROCESSED_SUBDIRS[1]}
+
     for record in event['Records']:
         s3_bucket_name = record['s3']['bucket']['name']
-        s3_object_key_encoded = record['s3']['object']['key'] # Get encoded key
+        s3_object_key_encoded = record['s3']['object']['key']
 
-        # Decode the S3 object key
+        # Decode the S3 object key to handle special characters like '~'
         s3_object_key = urllib.parse.unquote_plus(s3_object_key_encoded)
         logger.info(f"Decoded S3 object key: {s3_object_key}")
 
+        # --- Pre-checks for key format and file type (using decoded key) ---
 
-        # Pre-checks for key format and file type (use decoded key)
-        if any(f"/{subdir}/" in s3_object_key for subdir in PROCESSED_SUBDIRS):
-            logger.info(f"Skipping already-processed file: {s3_object_key}")
+        # 1. Check if it's already in a final processed subdirectory for OBR splitting itself
+        #    (e.g., .../splitobr/...) to prevent recursion if S3 events are misconfigured.
+        #    PROCESSED_SUBDIRS[2] corresponds to "splitobr"
+        final_obr_output_dir_segment = f"/{PROCESSED_SUBDIRS[2]}/"
+        if final_obr_output_dir_segment in s3_object_key:
+            logger.info(f"Skipping file already in the final OBR output directory '{final_obr_output_dir_segment}': {s3_object_key}")
             continue
 
         s3_key_components = s3_object_key.split('/')
-        if len(s3_key_components) < 4:
+        if len(s3_key_components) < 4: # Expecting at least site/user/source_dir/filename.hl7
             logger.warning(f"Unexpected S3 key format (too few components): {s3_object_key}. Skipping.")
             continue
-        if s3_key_components[-2] != INCOMING_DIR_NAME:
+
+        # 2. Check if the parent directory of the file is one of the allowed sources
+        parent_dir_of_file = s3_key_components[-2]
+        if parent_dir_of_file not in allowed_source_parent_dirs:
             logger.warning(
-                f"S3 key does not have '{INCOMING_DIR_NAME}' as the expected parent directory "
-                f"before the filename: {s3_object_key}. Skipping."
+                f"S3 key's parent directory '{parent_dir_of_file}' is not in the allowed set "
+                f"{allowed_source_parent_dirs} for OBR splitting: {s3_object_key}. Skipping."
             )
             continue
-        if not s3_object_key.endswith(HL7_FILE_EXTENSION):
+        
+        # 3. Check file extension
+        if not s3_object_key.lower().endswith(HL7_FILE_EXTENSION): # Use .lower() for case-insensitivity
             logger.info(f"Skipping non-{HL7_FILE_EXTENSION} file: {s3_object_key}")
             continue
 
+        logger.info(f"File {s3_object_key} passed pre-checks for OBR splitting.")
+
         # --- Determine Output Paths --- (use decoded key)
-        site_path_components = s3_key_components[:-3]
-        extracted_username = s3_key_components[-3]
-        base_output_path = '/'.join(site_path_components + [extracted_username])
-        original_file_name = os.path.basename(s3_object_key)
-        original_file_name_without_ext = original_file_name.rsplit('.', 1)[0]
-        split_output_prefix = f"{base_output_path}/{PROCESSED_SUBDIRS[2]}/" # Using "splitobr"
-        output_key_template = f"{split_output_prefix}{extracted_username}_{original_file_name_without_ext}_{{}}.{OUTPUT_FILE_EXTENSION}"
+        # Output will always go to the "splitobr" directory, PROCESSED_SUBDIRS[2]
+        try:
+            site_path_components = s3_key_components[:-3] # Path components before the username
+            extracted_username = s3_key_components[-3] # Username directory
+            base_output_path = '/'.join(site_path_components + [extracted_username])
+            original_file_name = os.path.basename(s3_object_key)
+            original_file_name_without_ext = original_file_name.rsplit('.', 1)[0]
+            
+            # Ensure output is always to the designated 'splitobr' directory
+            split_output_prefix = f"{base_output_path}/{PROCESSED_SUBDIRS[2]}/" 
+            output_key_template = f"{split_output_prefix}{extracted_username}_{original_file_name_without_ext}_obr_{{}}.{OUTPUT_FILE_EXTENSION}"
+            logger.info(f"Output key template for OBR split files: {output_key_template}")
+
+        except IndexError:
+            report_error(f"Could not determine output paths due to unexpected S3 key structure: {s3_object_key}", context)
+            continue
+
 
         # --- S3 Object Retrieval --- (pass decoded key)
         try:
             s3_object_content = get_s3_object_content(s3_client, s3_bucket_name, s3_object_key, context)
         except RuntimeError:
-            # get_s3_object_content already reported the error
-            continue # Move to the next S3 record
+            # get_s3_object_content already reported the error and raised it
+            continue 
 
         # --- Process HL7 Content for OBR splitting ---
         try:
@@ -248,10 +270,12 @@ def lambda_handler(event, context):
                 s3_object_content,
                 context
             )
+            logger.info(f"Successfully processed OBR splitting for {s3_object_key}")
         except Exception as e:
-            error_message = f"Failed to process HL7 content for {s3_object_key}: {e}\n{traceback.format_exc()}"
+            # This catch is for unexpected errors within process_hl7_segments_for_obr
+            # that aren't handled by write_hl7_message_to_s3's try-except.
+            error_message = f"Failed to process HL7 content for OBR splitting in {s3_object_key}: {e}\n{traceback.format_exc()}"
             report_error(error_message, context)
-            # Continue to the next S3 record if processing fails for one
             continue
 
     return {"status": "obr processing complete"}
