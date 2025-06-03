@@ -56,20 +56,49 @@ module "eks" {
   }
 
   # aws-auth configmap
-  manage_aws_auth_configmap = true
+#   manage_aws_auth_configmap = true
 
-  aws_auth_roles = [
-    {
-      rolearn  = var.aws_role_arn
-      username = "role"
-      groups   = ["system:masters"]
-    },
-    {
-      rolearn  = var.sso_role_arn
-      username = "adminssorole"
-      groups   = ["system:masters"]
+#   aws_auth_roles = [
+#     {
+#       rolearn  = var.aws_role_arn
+#       username = "role"
+#       groups   = ["system:masters"]
+#     },
+#     {
+#       rolearn  = var.sso_role_arn
+#       username = "adminssorole"
+#       groups   = ["system:masters"]
+#     }
+#   ]
+# }
+
+  access_entries = {
+    # One access entry with a policy associated
+    admin-role = {
+    principal_arn = var.sso_role_arn   # "arn:aws:iam::66666666666:role/admin"
+
+    policy_associations = {
+      admin-access = {
+        policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSFullAccessPolicy"
+        access_scope = {
+          type = "cluster" # full access to the entire cluster
+        }
+      }
     }
-  ]
+  }
+
+    readonly-role = {
+      principal_arn = var.readonly_role   # "arn:aws:iam::123456789012:role/something"
+
+      policy_associations = {
+        readonly-access = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            type = "cluster" # readonly access to the entire cluster
+          }
+        }
+      }
+    }
 }
 
 #Additional EKS permissions
