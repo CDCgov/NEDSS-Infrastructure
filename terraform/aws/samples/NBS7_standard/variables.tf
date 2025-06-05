@@ -108,9 +108,9 @@ variable "aws_admin_role_name" {
 #-----------------------------------------------------------------
 
 # S3 buckets -----------------------------------------------------
-#variable "fluentbit_bucket_prefix" {
-#  type = string
-#}
+variable "fluentbit_bucket_prefix" {
+  type = string
+}
 #-----------------------------------------------------------------
 
 # MSK/Kafka Variables---------------------------------------------
