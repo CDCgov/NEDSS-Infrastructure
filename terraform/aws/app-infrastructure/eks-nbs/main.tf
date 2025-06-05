@@ -55,25 +55,10 @@ module "eks" {
       
   }
 
-  # aws-auth configmap
-  # manage_aws_auth_configmap = true
-
-  # aws_auth_roles = [
-  #   {
-  #     rolearn  = var.aws_role_arn
-  #     username = "role"
-  #     groups   = ["system:masters"]
-  #   },
-  #   {
-  #     rolearn  = var.sso_role_arn
-  #     username = "adminssorole"
-  #     groups   = ["system:masters"]
-  #   }
-  # ]
     access_entries = {
-    # One access entry with a policy associated
+    # Access entries with a policy associated
     admin-role = {
-    principal_arn = var.admin_role_arn   # "arn:aws:iam::66666666666:role/admin"
+    principal_arn = var.admin_role_arn  
 
     policy_associations = {
       admin-access = {
@@ -86,7 +71,7 @@ module "eks" {
   }
 
     readonly-role = {
-      principal_arn = var.readonly_role_arn   # "arn:aws:iam::123456789012:role/something"
+      principal_arn = var.readonly_role_arn   
 
       policy_associations = {
         readonly-access = {
@@ -99,8 +84,6 @@ module "eks" {
     }
 }
 }
-
-# read-only-role
 
 #Additional EKS permissions
 resource "aws_iam_policy" "eks_permissions" {
