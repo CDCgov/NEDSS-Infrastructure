@@ -2,9 +2,6 @@
 
 module "fluentbit" {
 
-  eks_aws_role_arn = "arn:aws:iam::${var.target_account_id}:role/cdc-terraform-user-cross-account-role"
-
-
   # SAMPLES
   source                             = "../app-infrastructure/fluentbit"
   path_to_fluentbit                  = "../app-infrastructure/fluentbit"
