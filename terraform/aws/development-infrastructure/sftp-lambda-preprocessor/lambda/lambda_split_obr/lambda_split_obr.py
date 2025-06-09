@@ -1,4 +1,5 @@
 
+
 import boto3
 import os
 import time
@@ -6,9 +7,11 @@ import logging
 import json
 import traceback
 import urllib.parse
+import uuid
 
 # --- Configuration Constants ---
-PROCESSED_SUBDIRS = ["splitcsv", "splitdat", "splitobr"]
+#PROCESSED_SUBDIRS = ["splitcsv", "splitdat", "splitobr"]
+PROCESSED_SUBDIRS = ["splitcsv", "splitdat_multi_obr", "splitobr"]
 INCOMING_DIR_NAME = "incoming"
 OUTPUT_FILE_EXTENSION = "hl7"
 ERROR_TOPIC_ENV_VAR = 'ERROR_TOPIC_ARN'
@@ -54,28 +57,55 @@ def get_s3_object_content(s3_client: boto3.client, bucket_name: str, key: str, c
         raise RuntimeError(error_message)
     return s3_object_content
 
+def update_msh10(hl7_message_parts, new_control_id):
+    """
+    Replace the value in MSH-10 (the 10th |-delimited field) with new_control_id.
+    """
+    new_parts = []
+    for segment in hl7_message_parts:
+        if segment.startswith('MSH'):
+            fields = segment.split('|')
+            if len(fields) > 9:
+                fields[9] = new_control_id
+                segment = '|'.join(fields)
+        new_parts.append(segment)
+    return new_parts
+
 def write_hl7_message_to_s3(
     s3_client: boto3.client,
     s3_bucket_name: str,
-    output_s3_key: str,         # Changed: Now takes the full S3 key
+    output_s3_key: str,
     hl7_message_parts: list,
     context,
-    is_obr_missing_file: bool = False # New flag
+    is_obr_missing_file: bool = False,
+    obr_sequence_counter: int = None   # <-- NEW ARG
 ) -> None:
-    """
-    Constructs an HL7 message from parts and writes it to S3 using the provided S3 key.
-    """
     if not hl7_message_parts:
         logger.warning(f"Skipping write to {output_s3_key}: hl7_message_parts is empty.")
         return
-    
-    # Conditionally check for OBR segment
-    if not is_obr_missing_file and not any(part.startswith('OBR') for part in hl7_message_parts):
-        logger.info(f"Skipping write to {output_s3_key}: No OBR segment found in standard OBR group.")
-        return
+
+    # Only update MSH-10 if not missing OBR (OBRMISSING files can keep original)
+    if not is_obr_missing_file:
+        # Find original MSH-10 for reference
+        original_control_id = None
+        for seg in hl7_message_parts:
+            if seg.startswith('MSH'):
+                fields = seg.split('|')
+                if len(fields) > 9:
+                    original_control_id = fields[9]
+                break
+
+        # Create unique control ID
+        if original_control_id:
+            if obr_sequence_counter is not None:
+                new_control_id = f"{original_control_id}_{obr_sequence_counter}"
+            else:
+                # Fallback: short random ID if somehow no counter
+                new_control_id = f"{original_control_id}_{uuid.uuid4().hex[:6]}"
+            hl7_message_parts = update_msh10(hl7_message_parts, new_control_id)
 
     hl7_message = '\n'.join(hl7_message_parts)
-    
+
     logger.info(f"Attempting to write HL7 message to S3. Key: {output_s3_key}, Bucket: {s3_bucket_name}.")
     try:
         s3_client.put_object(Bucket=s3_bucket_name, Key=output_s3_key, Body=hl7_message.encode('utf-8'))
@@ -91,7 +121,7 @@ def write_hl7_message_to_s3(
 def process_hl7_segments_for_obr(
     s3_client: boto3.client,
     s3_bucket_name: str,
-    output_key_template: str, # Original template like "..._obr_{}.hl7"
+    output_key_template: str,
     content: str,
     context
 ) -> None:
@@ -124,7 +154,8 @@ def process_hl7_segments_for_obr(
                 write_hl7_message_to_s3(
                     s3_client, s3_bucket_name, current_output_s3_key,
                     current_base_segments + current_obr_group_segments,
-                    context, is_obr_missing_file=False
+                    context, is_obr_missing_file=False,
+                    obr_sequence_counter=obr_sequence_counter
                 )
             current_base_segments = [segment_stripped]
             current_obr_group_segments = []
@@ -139,7 +170,8 @@ def process_hl7_segments_for_obr(
                 write_hl7_message_to_s3(
                     s3_client, s3_bucket_name, current_output_s3_key,
                     current_base_segments + current_obr_group_segments,
-                    context, is_obr_missing_file=False
+                    context, is_obr_missing_file=False,
+                    obr_sequence_counter=obr_sequence_counter
                 )
             if current_base_segments:
                 current_obr_group_segments = [segment_stripped]
@@ -159,7 +191,7 @@ def process_hl7_segments_for_obr(
             if obr_active_in_group and current_base_segments:
                 current_obr_group_segments.append(segment_stripped)
                 logger.debug(f"Segment '{segment_prefix}' added to current OBR group.")
-            else: # Other conditions for discarding
+            else:
                 if not current_base_segments:
                      logger.warning(f"Segment '{segment_prefix}' found before MSH context. Discarding: {segment_stripped[:50]}...")
                 elif not obr_active_in_group:
@@ -173,7 +205,8 @@ def process_hl7_segments_for_obr(
         write_hl7_message_to_s3(
             s3_client, s3_bucket_name, current_output_s3_key,
             current_base_segments + current_obr_group_segments,
-            context, is_obr_missing_file=False
+            context, is_obr_missing_file=False,
+            obr_sequence_counter=obr_sequence_counter
         )
     elif obr_sequence_counter == 0 and current_base_segments: # No OBRs were processed/written
         original_filename_part = output_key_template.split('_obr_{}')[0] if '_obr_{}' in output_key_template else output_key_template.rsplit('.',1)[0]
@@ -185,11 +218,11 @@ def process_hl7_segments_for_obr(
         write_hl7_message_to_s3(
             s3_client, s3_bucket_name, obr_missing_s3_key,
             current_base_segments, # Write only base segments
-            context, is_obr_missing_file=True # Allow no OBR in this specific file
+            context, is_obr_missing_file=True, # Allow no OBR in this specific file
+            obr_sequence_counter=None
         )
-    else: # Neither an active OBR group nor base segments eligible for OBRMISSING
+    else:
         logger.info(f"No OBR group to flush and no base segments to write as OBRMISSING. OBR sequence counter: {obr_sequence_counter}, Base segments present: {bool(current_base_segments)}")
-
 
 def lambda_handler(event, context):
     logger.info("Received event: %s", json.dumps(event))
@@ -255,3 +288,4 @@ def lambda_handler(event, context):
             continue
 
     return {"status": "obr processing complete"}
+
