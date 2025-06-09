@@ -7,18 +7,20 @@ import logging
 import json
 import traceback
 import re
-import hl7
+import hl7 # Make sure this library is included in your Lambda deployment package
 import urllib.parse
 
 from datetime import datetime
 from botocore.exceptions import ClientError
 
 # --- Configuration Constants ---
-PROCESSED_SUBDIRS = ["splitcsv", "splitdat", "splitobr"]
+DEFAULT_SPLIT_SUBDIR = "splitdat"
+MULTI_OBR_OUTPUT_SUBDIR = "splitdat_multi_obr"
+PROCESSED_SUBDIRS = ["splitcsv", DEFAULT_SPLIT_SUBDIR, "splitobr", MULTI_OBR_OUTPUT_SUBDIR] # Added new subdir
 INCOMING_DIR_NAME = "incoming"
 OUTPUT_FILE_EXTENSION = "hl7"
 ERROR_TOPIC_ENV_VAR = 'ERROR_TOPIC_ARN'
-DAT_FILE_EXTENSION = '.dat' # Or any extension for batch HL7 files
+DAT_FILE_EXTENSION = '.dat'
 HL7_MESSAGE_SEPARATOR = 'MSH'
 HL7_FIELD_DELIMITER = '|'
 HL7_COMPONENT_DELIMITER = '^'
@@ -95,17 +97,13 @@ def write_hl7_message_to_s3(
     s3_bucket_name: str,
     output_key_template: str,
     hl7_message: str,
-    sequence_number: int,  # Added sequence_number parameter
+    sequence_number: int,
     context
 ) -> None:
-    """
-    Writes a single HL7 message to S3, using a sequence number in the filename.
-    """
     if not hl7_message.strip():
         logger.warning("Skipping write: HL7 message content is empty after processing.")
         return
 
-    # Format the output key with the sequence number
     output_s3_key = output_key_template.format(sequence_number)
     logger.info(f"Attempting to write HL7 from DAT to S3. Key: {output_s3_key}, Bucket: {s3_bucket_name}.")
 
@@ -146,19 +144,16 @@ def validate_and_clean_hl7_coded_field(
         parts = comp.split(HL7_COMPONENT_DELIMITER)
         if len(parts) < 3:
             logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component missing parts: '{comp}'")
-            # CloudWatch metric for malformed component
             continue
         code, _, system = parts[0].strip(), parts[1].strip(), parts[2].strip()
         if code in valid_codes and system in valid_systems:
             valid_components.append(comp)
         else:
             logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): {field_label} component invalid: Code='{code}', System='{system}'")
-            # CloudWatch metric for invalid code/system
     if valid_components:
         return '~'.join(valid_components)
     else:
         logger.warning(f"HL7 Validation Warning (Msg ID: {msg_id}): All components in {field_label} are invalid. Clearing field.")
-        # CloudWatch metric for all invalid cleared
         return ''
 
 def get_field_value(segment: hl7.Segment, index: int) -> str:
@@ -211,28 +206,25 @@ def clean_hl7_message(msg: hl7.Message, msg_id: str) -> hl7.Message:
 
 def process_dat_content(
     s3_bucket_name: str,
-    output_key_template: str, # Expects one placeholder for sequence number
+    output_key_template_single_obr: str,
+    output_key_template_multi_obr: str,
     content: str,
     context
 ) -> None:
     logger.info("Starting to process DAT file content with HL7 library.")
-    # Split by MSH. The first part might be empty if file starts with MSH.
     raw_message_parts = content.split(HL7_MESSAGE_SEPARATOR)
-    
-    message_write_sequence = 0 # Counter for successfully written messages
+    message_write_sequence = 0
 
     for i, msg_body_part in enumerate(raw_message_parts):
-        if i == 0 and not msg_body_part.strip(): # Skip potential empty part before the first MSH
+        if i == 0 and not msg_body_part.strip():
             logger.debug("Skipping empty part before first MSH.")
             continue
-        if not msg_body_part.strip(): # Skip any other fully empty parts
+        if not msg_body_part.strip():
             logger.info(f"Skipping empty message part at index {i} (after MSH split).")
             continue
 
         hl7_message_str = HL7_MESSAGE_SEPARATOR + msg_body_part.strip()
-        # Normalize line endings for the hl7 library and for consistent processing
         hl7_message_str = hl7_message_str.replace('\r\n', '\r').replace('\n', '\r')
-
         logger.debug(f"Processing raw HL7 message part starting with: '{hl7_message_str[:100]}...'")
 
         try:
@@ -244,27 +236,32 @@ def process_dat_content(
             logger.info(f"Successfully parsed. Cleaning HL7 message with ID: {message_id_for_log}")
 
             cleaned_message = clean_hl7_message(parsed_message, message_id_for_log)
-            
-            # Serialize back to string. python-hl7 uses \r by default.
-            # For S3 output, we can choose \n for better readability if desired,
-            # but be consistent. write_hl7_message_to_s3 in lambda_split_obr uses \n.
-            # Here, str(cleaned_message) will use \r. Let's stick to \r for now,
-            # or explicitly convert to \n.
-            # To be consistent with other Lambda outputting \n:
             final_hl7_message = str(cleaned_message).replace('\r', '\n')
 
             if not final_hl7_message.strip():
                 logger.warning(f"[{message_id_for_log}]: Message became empty after cleaning. Skipping write.")
                 continue
-            
+
+            # OBR Counting Logic
+            obr_segments = parsed_message.segments('OBR')
+            obr_count = len(obr_segments)
+            logger.info(f"Message ID {message_id_for_log} contains {obr_count} OBR segments.")
+
+            selected_output_key_template = output_key_template_single_obr
+            if obr_count > 1:
+                selected_output_key_template = output_key_template_multi_obr
+                logger.info(f"Using multi-OBR S3 key template (subdir: {MULTI_OBR_OUTPUT_SUBDIR}) for Message ID {message_id_for_log}.")
+            else:
+                logger.info(f"Using single-OBR S3 key template (subdir: {DEFAULT_SPLIT_SUBDIR}) for Message ID {message_id_for_log}.")
+
             logger.debug(f"[{message_id_for_log}]: Final cleaned HL7 message (first 200 chars): '{final_hl7_message[:200]}...'")
             
-            message_write_sequence += 1 # Increment counter for this message
+            message_write_sequence += 1
             write_hl7_message_to_s3(
                 s3_bucket_name,
-                output_key_template,
+                selected_output_key_template,
                 final_hl7_message,
-                message_write_sequence, # Pass the sequence number
+                message_write_sequence,
                 context
             )
 
@@ -285,12 +282,11 @@ def process_dat_content(
             logger.error(f"Skipping message part due to generic error (see details above).")
             continue
 
-
     logger.info(f"Finished processing DAT file content. {message_write_sequence} messages written.")
 
 def _is_valid_s3_key_for_processing(s3_object_key: str) -> bool:
     if any(f"/{subdir}/" in s3_object_key for subdir in PROCESSED_SUBDIRS):
-        logger.info(f"Skipping already-processed file: {s3_object_key}")
+        logger.info(f"Skipping already-processed file (found in PROCESSED_SUBDIRS): {s3_object_key}")
         return False
     s3_key_components = s3_object_key.split('/')
     if len(s3_key_components) < 4:
@@ -302,29 +298,28 @@ def _is_valid_s3_key_for_processing(s3_object_key: str) -> bool:
             f"before the filename: {s3_object_key}. Skipping."
         )
         return False
-    # Allowing any file extension now, as DAT_FILE_EXTENSION check was commented out.
-    # If specific extensions are needed, uncomment and adjust:
-    # if not s3_object_key.lower().endswith(DAT_FILE_EXTENSION) and not s3_object_key.lower().endswith('.hl7'):
-    #    logger.info(f"Skipping file with unhandled extension: {s3_object_key}")
-    #    return False
     return True
 
-def _determine_output_paths(s3_object_key: str) -> tuple[str, str, str]:
+def _determine_output_paths(s3_object_key: str) -> tuple[str, str, str, str]:
     s3_key_components = s3_object_key.split('/')
-    if len(s3_key_components) < 3: # site/user/file - min for -3, -2, -1 access
+    if len(s3_key_components) < 3:
          raise ValueError(f"Cannot determine output paths from key (too few components): {s3_object_key}")
 
     site_path_components = s3_key_components[:-3]
     extracted_username = s3_key_components[-3]
-    base_output_path = '/'.join(site_path_components + [extracted_username])
+    base_user_path = '/'.join(site_path_components + [extracted_username])
     original_file_name = os.path.basename(s3_object_key)
     original_file_name_without_ext = original_file_name.rsplit('.', 1)[0]
     
-    # Output to "splitdat" directory
-    split_output_prefix = f"{base_output_path}/{PROCESSED_SUBDIRS[1]}/"
-    # Template expects one placeholder for the sequence number
-    output_key_template = f"{split_output_prefix}{extracted_username}_{original_file_name_without_ext}_{{}}.{OUTPUT_FILE_EXTENSION}"
-    return base_output_path, extracted_username, output_key_template
+    # Path for standard (single OBR or no OBR) messages
+    split_output_prefix_single_obr = f"{base_user_path}/{DEFAULT_SPLIT_SUBDIR}/"
+    output_key_template_single_obr = f"{split_output_prefix_single_obr}{extracted_username}_{original_file_name_without_ext}_{{}}.{OUTPUT_FILE_EXTENSION}"
+    
+    # Path for multi-OBR messages
+    split_output_prefix_multi_obr = f"{base_user_path}/{MULTI_OBR_OUTPUT_SUBDIR}/"
+    output_key_template_multi_obr = f"{split_output_prefix_multi_obr}{extracted_username}_{original_file_name_without_ext}_multiOBR_{{}}.{OUTPUT_FILE_EXTENSION}"
+    
+    return base_user_path, extracted_username, output_key_template_single_obr, output_key_template_multi_obr
 
 def _process_s3_record(record: dict, context) -> None:
     s3_bucket_name = record['s3']['bucket']['name']
@@ -337,18 +332,20 @@ def _process_s3_record(record: dict, context) -> None:
         return
 
     try:
-        _, _, output_key_template = _determine_output_paths(s3_object_key)
-        logger.info(f"Determined output key template: {output_key_template}")
+        _, _, output_key_template_single_obr, output_key_template_multi_obr = _determine_output_paths(s3_object_key)
+        logger.info(f"Determined single-OBR output key template (prefix): {os.path.dirname(output_key_template_single_obr)}/")
+        logger.info(f"Determined multi-OBR output key template (prefix): {os.path.dirname(output_key_template_multi_obr)}/")
     except ValueError as e:
         report_error(f"Failed to determine output paths for {s3_object_key}: {e}", context)
-        raise # Re-raise to stop processing this record
+        raise
 
     s3_object_content = get_s3_object_content(s3_bucket_name, s3_object_key, context)
     logger.info(f"Retrieved content for {s3_object_key}. Content length: {len(s3_object_content)} bytes.")
 
     process_dat_content(
         s3_bucket_name,
-        output_key_template,
+        output_key_template_single_obr,
+        output_key_template_multi_obr,
         s3_object_content,
         context
     )
@@ -366,22 +363,18 @@ def lambda_handler(event, context):
             _process_s3_record(record, context)
         except Exception as e:
             s3_key_for_error = record.get('s3', {}).get('object', {}).get('key', 'Unknown Key')
-            # If key was decoded, use that, otherwise use original from event
             try:
                 s3_key_for_error = urllib.parse.unquote_plus(s3_key_for_error)
             except Exception:
-                pass # Stick to original if unquoting fails
+                pass
             
             error_message = f"CRITICAL FAILURE processing S3 record for '{s3_key_for_error}': {e}\n{traceback.format_exc()}"
             report_error(error_message, context)
             errors.append(error_message)
-            # To ensure S3 retries for this specific record if desired, re-raise.
-            # Otherwise, it continues to the next record.
             # raise # Uncomment if a single record failure should trigger S3 event retry.
 
     if errors:
         logger.error(f"Processed {len(event['Records'])} records with {len(errors)} failures.")
-        # Depending on retry strategy, you might want a different overall status.
         return {"status": "dat processing completed with errors"}
     else:
         logger.info(f"All {len(event['Records'])} S3 records processed successfully.")
