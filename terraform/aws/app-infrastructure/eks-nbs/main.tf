@@ -56,35 +56,38 @@ module "eks" {
   }
 
 
-access_entries = {
-    # Access entries with a policy associated
-    admin-role = {
-    principal_arn = var.aws_role_arn  
+access_entries = merge(
+    {
+      admin-role = {
+        principal_arn = var.aws_role_arn
 
-    policy_associations = {
-      admin-access = {
-        policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-        access_scope = {
-          type = "cluster" # full access to the entire cluster
-        }
-      }
-    }
-  }
-
-    readonly-role = {
-      principal_arn = var.readonly_role_arn   
-
-      policy_associations = {
-        readonly-access = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-          access_scope = {
-            type = "cluster" # readonly access to the entire cluster
+        policy_associations = {
+          admin-access = {
+            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+            access_scope = {
+              type = "cluster"
+            }
           }
         }
       }
-    }
+    },
+    var.readonly_role_arn ? {
+      readonly-role = {
+        principal_arn = var.readonly_role_arn
+
+        policy_associations = {
+          readonly-access = {
+            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+            access_scope = {
+              type = "cluster"
+            }
+          }
+        }
+      }
+    } : {}
+  )
 }
-}
+
 
 #Additional EKS permissions
 resource "aws_iam_policy" "eks_permissions" {
