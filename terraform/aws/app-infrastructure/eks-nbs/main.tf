@@ -71,7 +71,7 @@ access_entries = merge(
         }
       }
     },
-    var.readonly_role_arn ? {
+    try(length(var.readonly_role_arn) > 0, false) ? {
       readonly-role = {
         principal_arn = var.readonly_role_arn
 
