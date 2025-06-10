@@ -39,7 +39,7 @@ variable "sso_role_arn" {
 variable "readonly_role_arn" {
   description = "Optional AWS IAM Role arn used to authenticate into the EKS cluster for ReadOnly"
   type        = string
-  default     = "null"
+  default     = null
 }
 
 variable "cluster_version" {
