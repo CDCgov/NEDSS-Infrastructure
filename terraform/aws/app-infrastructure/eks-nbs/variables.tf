@@ -36,6 +36,12 @@ variable "sso_role_arn" {
   type        = string
 }
 
+variable "readonly_role_arn" {
+  description = "Optional AWS IAM Role arn used to authenticate into the EKS cluster for ReadOnly"
+  type        = string
+  default     = null
+}
+
 variable "cluster_version" {
   description = "Version of the AWS EKS cluster to provision"
   default = "1.32"
@@ -135,3 +141,13 @@ variable "kms_key_administrators" {
   type        = list
   default     = []
 }
+
+variable "kms_key_enable_default_policy" {
+  description = "Specifies whether to enable the default key policy"
+  type        = bool
+  default     = false
+}
+
+
+
+
