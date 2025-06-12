@@ -56,23 +56,56 @@ module "eks" {
   }
 
 
-access_entries = merge(
-    {
-      admin-role = {
-        principal_arn = var.aws_role_arn
+# access_entries = merge(
+#     {
+#       admin-role = {
+#         principal_arn = var.aws_role_arn
 
-        policy_associations = {
-          admin-access = {
-            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-            access_scope = {
-              type = "cluster"
-            }
-          }
+#         policy_associations = {
+#           admin-access = {
+#             policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+#             access_scope = {
+#               type = "cluster"
+#             }
+#           }
+#         }
+#       }
+#     },
+#     try(length(var.readonly_role_arn) > 0, false) ? {
+#       readonly-role = {
+#         principal_arn = var.readonly_role_arn
+
+#         policy_associations = {
+#           readonly-access = {
+#             policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+#             access_scope = {
+#               type = "cluster"
+#             }
+#           }
+#         }
+#       }
+#     } : {}
+#   )
+
+  access_entries = {
+  admin-role = {
+    principal_arn = var.aws_role_arn
+
+    policy_associations = {
+      admin-access = {
+        policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+        access_scope = {
+          type = "cluster"
         }
       }
-    },
-    try(length(var.readonly_role_arn) > 0, false) ? {
-      readonly-role = {
+    }
+  }
+
+  # Conditionally include readonly-role
+  # If readonly_role_arn is null or empty, it returns null and the module will skip it
+  readonly-role = (
+    var.readonly_role_arn != null && length(var.readonly_role_arn) > 0
+    ? {
         principal_arn = var.readonly_role_arn
 
         policy_associations = {
@@ -84,8 +117,10 @@ access_entries = merge(
           }
         }
       }
-    } : {}
+    : null
   )
+}
+
 }
 
 
