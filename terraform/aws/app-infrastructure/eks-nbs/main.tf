@@ -1,7 +1,7 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "19.15.3" 
-
+  version = "20.36.0" 
+  kms_key_enable_default_policy = var.kms_key_enable_default_policy
   kms_key_administrators = coalescelist(var.kms_key_administrators, [try(data.aws_iam_session_context.current.issuer_arn, "")])
   kms_key_owners = var.kms_key_owners
 
@@ -17,7 +17,7 @@ module "eks" {
   # Cluster addons, ebs csi driver
   # cluster_addons = {
   #   aws-ebs-csi-driver = {
-  #     resolve_conflicts = "OVERWRITE"
+  #     resolve_conflicts_on_create = "OVERWRITE"
   #     most_recent       = true
   #   }
   # }
@@ -55,22 +55,39 @@ module "eks" {
       
   }
 
-  # aws-auth configmap
-  manage_aws_auth_configmap = true
 
-  aws_auth_roles = [
+access_entries = merge(
     {
-      rolearn  = var.aws_role_arn
-      username = "role"
-      groups   = ["system:masters"]
+      admin-role = {
+        principal_arn = var.aws_role_arn
+
+        policy_associations = {
+          admin-access = {
+            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+            access_scope = {
+              type = "cluster"
+            }
+          }
+        }
+      }
     },
-    {
-      rolearn  = var.sso_role_arn
-      username = "adminssorole"
-      groups   = ["system:masters"]
-    }
-  ]
+    try(length(var.readonly_role_arn) > 0, false) ? {
+      readonly-role = {
+        principal_arn = var.readonly_role_arn
+
+        policy_associations = {
+          readonly-access = {
+            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+            access_scope = {
+              type = "cluster"
+            }
+          }
+        }
+      }
+    } : {}
+  )
 }
+
 
 #Additional EKS permissions
 resource "aws_iam_policy" "eks_permissions" {
@@ -131,4 +148,5 @@ resource "aws_vpc_security_group_ingress_rule" "example" {
   ip_protocol = "tcp"
   to_port     = 443
 }
+
 
