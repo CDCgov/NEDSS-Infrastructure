@@ -12,6 +12,11 @@
 
 set -euo pipefail
 
+cd $(dirname $0)
+echo 
+echo "running ${0} at `date`"
+echo 
+
 CONFIG_FILE="./.sftp_transfer.rc"
 STAGING_DIR="./sftp_staging"
 LOG_FILE="./downloaded.log"
@@ -177,11 +182,12 @@ FILE_LIST=$(
     echo "$RAW_FILE_LIST" | grep '^[-]' | awk '{$1=$2=$3=$4=$5=$6=$7=$8=""; print $0}' | sed 's/^[ ]*//'
 )
 
-# You can test if this worked by adding a debug line right here:
-echo "--- DEBUG START ---"
-echo "$FILE_LIST"
-echo "--- DEBUG END ---"
-# exit 1
+# test if this worked by adding a debug line right here:
+if [[ "$DEBUG" -eq 1 ]]; then
+	echo "--- DEBUG START ---"
+	echo "$FILE_LIST"
+	echo "--- DEBUG END ---"
+fi
 
 ########################################################
 
@@ -200,7 +206,11 @@ for FILE in $FILE_LIST; do
 
   # Check the log using only the filename for more robust duplicate detection
   if grep -Fxq "$local_filename" "$LOG_FILE"; then
-    echo "Skipping already downloaded file: $local_filename"
+    # maybe change this to use a verbose flag
+    if [[ "$DEBUG" -eq 1 ]]; then
+        echo "Skipping already downloaded file: $local_filename"
+    fi
+
     continue
   fi
 
