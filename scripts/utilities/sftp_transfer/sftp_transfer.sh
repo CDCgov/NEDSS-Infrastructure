@@ -12,6 +12,11 @@
 
 set -euo pipefail
 
+cd $(dirname $0)
+echo 
+echo "running ${0} at `date`"
+echo 
+
 CONFIG_FILE="./.sftp_transfer.rc"
 STAGING_DIR="./sftp_staging"
 LOG_FILE="./downloaded.log"
