@@ -1,0 +1,1 @@
+12,42 * * * * /home/sftp_transfer/work/sftp_transfer/sftp_transfer.sh >> /home/sftp_transfer/work/sftp_transfer/sftp.out 2>&1
