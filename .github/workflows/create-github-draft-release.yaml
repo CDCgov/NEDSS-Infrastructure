@@ -20,20 +20,21 @@ on:
       artifact_base_name:
         description: "artifact_base_name - Base name of the created artifact. The release version is appended to this name."
         type: string
+        default: "nbs-infrastructure"
         required: true
       artifact_release_version:
-        description: "artifact_release_version - The artifact release version (no 'v', this is added only to the final)."
+        description: "artifact_release_version - The artifact release version (no 'v', this is added only to the final). [View previous release assets versions](https://github.com/CDCgov/NEDSS-Infrastructure/releases)"
         type: string
         required: true
       paths:
         description: "paths - A CSV string detailing which files and directories should be included in the artifact. If not provided only the standard artifacts will be created."
         type: string
-        default: "terraform/aws/app-infrastructure, terraform/aws/samples, scripts"
+        default: "terraform/aws/app-infrastructure, terraform/aws/samples, scripts, README.md"
         required: true
       excluded_paths:
         description: "excluded_paths - A CSV list detailing specific files and directories to exclude from the provided paths (this variable serves only to limit scope of the paths variable)."
         type: string
-        default: ""
+        default: "terraform/aws/development-infrastructure"
         required: false
     secrets:
       GIT_USER_EMAIL:
