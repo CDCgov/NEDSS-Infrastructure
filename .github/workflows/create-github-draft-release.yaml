@@ -34,7 +34,7 @@ on:
       excluded_paths:
         description: "excluded_paths - A CSV list detailing specific files and directories to exclude from the provided paths (this variable serves only to limit scope of the paths variable)."
         type: string
-        default: "terraform/aws/development-infrastructure"
+        default: ""
         required: false
     secrets:
       GIT_USER_EMAIL:
