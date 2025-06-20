@@ -12,12 +12,12 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
-#https://registry.terraform.io/providers/grafana/grafana/1.30.0
-terraform {
-  required_providers {
-    grafana = {
-      source  = "grafana/grafana"
-      version = "2.1.0"
-    }
-  }
-}
+# #https://registry.terraform.io/providers/grafana/grafana/1.30.0
+# terraform {
+#   required_providers {
+#     grafana = {
+#       source  = "grafana/grafana"
+#       version = "~> 3.25"
+#     }
+#   }
+# }
