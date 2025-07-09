@@ -180,3 +180,59 @@ variable "ecs_memory" {
 # End Legacy variables
 #########################################################################################
 
+# NBS 6 VM
+# RDS (considered existing in DB)
+# Database credentials to be encrypted and stored as SecureStrings in parameter store
+variable "odse_user" {
+  description = "User for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "odse_pass" {
+  description = "Password for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "rdb_user" {
+  description = "User for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "rdb_pass" {
+  description = "Password for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "srte_user" {
+  description = "User for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "srte_pass" {
+  description = "Password for odse database"
+  type        = string
+  sensitive = true
+}
+
+variable "windows_scheduled_tasks" {
+  description = "Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename,scriptPathFromWorkDir,startTime,frequencyDays,frequencyHours,frequencyMinutes;"
+  type = string
+  default = "ELRImporter.bat,, 6am, 0, 0, 1; MsgOutProcessor.bat,, 6am, 0, 0 , 1; UserProfileUpdateProcess.bat, retired\\, 12am, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7pm, 1, 0 , 0; covid19ETL.bat,, 5am, 1, 0 , 0; PHCRImporter.bat,, 6am, 0, 1 , 0;"
+}
+
+variable "java_memory" {
+  description = "Memory for Wildfly server to run Java (NOTE should not exceed 70% of VM memory)"
+  type = string
+  default = "10g"
+}
+variable "phcrimporter_user" {
+  description = "User needed to run phcrimporter batch job (leave_default=preserve Wildfly default)"
+  type        = string
+  default = "nedss_elr_load"
+  sensitive = true
+}
