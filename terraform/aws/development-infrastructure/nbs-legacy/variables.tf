@@ -276,7 +276,7 @@ variable "phcrimporter_user" {
 # frequencyHours = frequency in hours to repeat Windows Scheduled Task
 # frequencyMinutes = frequency in minutes to repeat Windows Scheduled Task
 variable "windows_scheduled_tasks" {
-  description = "Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename,scriptPathFromWorkDir,startTime,frequencyDays,frequencyHours,frequencyMinutes;"
+  description = "Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename, scriptPathFromWorkDir, dailyStartTime, dailyStopTime, frequencyDays, frequencyHours, frequencyMinutes;"
   type = string
   default = "ELRImporter.bat,, 6:00:00am, 6:00:00pm, 0, 0, 2; MsgOutProcessor.bat,, 6:00:00am, 7:00:00pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12:00:00am,, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7:00:00pm,, 1, 0 , 0; covid19ETL.bat,, 5:00:00am,, 1, 0 , 0; PHCRImporter.bat,, 6:00:00am, 7:00:00pm, 0, 1 , 0;"
 }
