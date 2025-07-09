@@ -61,6 +61,19 @@ module "nbs-legacy" {
   ec2_key_name  = var.ec2_key_name
   #enable_user_data = var.ec2_enable_user_data
 
+   # DB 
+  odse_user = var.odse_user
+  odse_pass = var.odse_pass
+  rdb_user = var.rdb_user
+  rdb_pass = var.rdb_pass
+  srte_user = var.srte_user
+  srte_pass = var.srte_pass
+
+  # JVM and scheduled tasks
+  java_memory = var.java_memory
+  windows_scheduled_tasks = var.windows_scheduled_tasks
+  phcrimporter_user = var.phcrimporter_user
+
   # delete these from future version if not used
   # public_subnet_ids      = module.legacy-vpc.public_subnets
   # legacy_vpc_id          = module.legacy-vpc.vpc_id
