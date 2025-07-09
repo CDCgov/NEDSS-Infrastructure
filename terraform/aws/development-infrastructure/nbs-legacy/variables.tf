@@ -266,18 +266,19 @@ variable "phcrimporter_user" {
 
 # Variable which creates a Windows Scheduled Task for BatchFiles
 # Batch include .bat scripts located in the nbs6 subdirectory "BatchFiles" or anything within that subdirectory
-# Each Windows Scheduled Task must follow the format -- filename,scriptPathFromWorkDir,startTime,frequencyDays,frequencyHours,frequencyMinutes;
+# Each Windows Scheduled Task must follow the format -- filename, scriptPathFromWorkDir, dailyStartTime, dailyStopTime, frequencyDays, frequencyHours, frequencyMinutes;
 # Where:
 # filename = exact name of Batch File (.bat) to be run
 # scriptPathFromWorkDir = subdirectory from BatchFiles directory containing your Batch File (typically retired\ or left empty)
-# startTime = standard time to start scheduled Windows Scheduled Task
+# dailyStartTime = standard time to start scheduled Windows Scheduled Task each (e.g. 8:00:00am)
+# dailyStopTime = standard time to stop scheduled Windows Scheduled Task each day (e.g. 8:00:00pm)
 # frequencyDays = frequency in days to repeat Windows Scheduled Task
 # frequencyHours = frequency in hours to repeat Windows Scheduled Task
 # frequencyMinutes = frequency in minutes to repeat Windows Scheduled Task
 variable "windows_scheduled_tasks" {
-  description = "Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename,scriptPathFromWorkDir,startTime,frequencyDays,frequencyHours,frequencyMinutes;"
+  description = "Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename, scriptPathFromWorkDir, dailyStartTime, dailyStopTime, frequencyDays, frequencyHours, frequencyMinutes;"
   type = string
-  default = "ELRImporter.bat,, 6am, 0, 0, 2; MsgOutProcessor.bat,, 8pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12am, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7pm, 1, 0 , 0; covid19ETL.bat,, 5am, 1, 0 , 0; PHCRImporter.bat,, 6am, 0, 1 , 0;"
+  default = "ELRImporter.bat,, 6:00:00am, 6:00:00pm, 0, 0, 2; MsgOutProcessor.bat,, 6:00:00am, 7:00:00pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12:00:00am,, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7:00:00pm,, 1, 0 , 0; covid19ETL.bat,, 5:00:00am,, 1, 0 , 0; PHCRImporter.bat,, 6:00:00am, 7:00:00pm, 0, 1 , 0;"
 }
 
 variable "java_memory" {
