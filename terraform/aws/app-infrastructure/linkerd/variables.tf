@@ -1,6 +1,6 @@
 
 variable "linkerd_repository" {
-    default = "https://helm.linkerd.io/stable"
+    default = "https://helm.linkerd.io/edge"
 }
 variable "linkerd_chart" {
     default = "linkerd-crds"

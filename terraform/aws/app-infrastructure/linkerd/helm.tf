@@ -7,16 +7,6 @@ resource "helm_release" "linkerd_crds" {
   chart           =  var.linkerd_chart # "linkerd-crds"
   namespace       = var.linkerd_namespace_name #"linkerd"
   create_namespace = true
-  # version    = "1.5.0"  # Matches Linkerd 2.18.0
-    values = [
-    yamlencode({
-      global = {
-        image = {
-          version = "stable-2.18.0"
-        }
-      }
-    })
-  ]
 }
 
 # linkerd self-signed certs
@@ -70,17 +60,6 @@ resource "helm_release" "linkerd_control_plane" {
   repository      =  var.linkerd_repository # "https://helm.linkerd.io/stable"
   namespace = var.linkerd_namespace_name 
   chart     = var.linkerd_controlplane_chart  #"linkerd-control-plane"
-  # version    = "1.16.11" # Keep this if you prefer
-
-  values = [
-    yamlencode({
-      global = {
-        image = {
-          version = "stable-2.18.0"
-        }
-      }
-    })
-  ]
 
   set {
     name  = "identityTrustAnchorsPEM"
@@ -109,15 +88,4 @@ resource "helm_release" "linkerd_viz" {
   namespace       = var.linkerd_viz_namespace_name 
   create_namespace = true
   depends_on = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
-    # version    = "30.12.11"
-
-  values = [
-    yamlencode({
-      global = {
-        image = {
-          version = "stable-2.18.0"  # 👈 match core version
-        }
-      }
-    })
-  ]
 }
