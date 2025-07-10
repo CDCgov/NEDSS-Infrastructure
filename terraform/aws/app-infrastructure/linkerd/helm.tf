@@ -7,7 +7,6 @@ resource "helm_release" "linkerd_crds" {
   chart           =  var.linkerd_chart # "linkerd-crds"
   namespace       = var.linkerd_namespace_name #"linkerd"
   create_namespace = true
-  version    = "1.5.0"  # Matches Linkerd 2.18.0
     values = [
     yamlencode({
       global = {
