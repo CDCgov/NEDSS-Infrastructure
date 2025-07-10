@@ -69,7 +69,6 @@ resource "helm_release" "linkerd_control_plane" {
   repository      =  var.linkerd_repository # "https://helm.linkerd.io/stable"
   namespace = var.linkerd_namespace_name 
   chart     = var.linkerd_controlplane_chart  #"linkerd-control-plane"
-  version    = "1.16.11" # Keep this if you prefer
 
   values = [
     yamlencode({
@@ -108,7 +107,6 @@ resource "helm_release" "linkerd_viz" {
   namespace       = var.linkerd_viz_namespace_name 
   create_namespace = true
   depends_on = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
-    version    = "30.12.11"
 
   values = [
     yamlencode({
