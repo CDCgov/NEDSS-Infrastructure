@@ -72,15 +72,24 @@ resource "helm_release" "linkerd_control_plane" {
   chart     = var.linkerd_controlplane_chart  #"linkerd-control-plane"
   version    = "1.16.11" # Keep this if you prefer
 
-  values = [
-    yamlencode({
-      global = {
+values = [
+  yamlencode({
+    global = {
+      image = {
+        version = "stable-2.18.0"
+        registry = "ghcr.io"
+        name = "linkerd/controller"
+      }
+      proxy = {
         image = {
-          version = "stable-2.18.0"  # 👈 This is the key
+          version = "stable-2.18.0"
+          registry = "ghcr.io"
+          name = "linkerd/proxy"
         }
       }
-    })
-  ]
+    }
+  })
+]
 
   set {
     name  = "identityTrustAnchorsPEM"
