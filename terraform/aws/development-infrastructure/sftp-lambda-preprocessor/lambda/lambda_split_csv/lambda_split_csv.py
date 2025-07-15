@@ -1,3 +1,4 @@
+
 import boto3
 import os
 import time
@@ -153,7 +154,14 @@ def generate_msh(sending_application, sending_facility, message_datetime, messag
     # Append remaining fields with empty delimiters up to MSH-20 if needed, then MSH-21
     # Standard MSH has up to 20 fields before the optional MSH-21
     # Count fields already added: 12. Need to add 8 empty fields to reach MSH-20.
-    msh_segment += FIELD_DELIMITER * (20 - 12) 
+    msh_segment += FIELD_DELIMITER * (20 - 12)
+    # MSH-13: Sending Facility telecom
+    sending_facility_phone = os.environ.get('ORDERING_FACILITY_PHONE', '')
+    msh_segment += FIELD_DELIMITER + escape_hl7(sending_facility_phone)  # MSH-13
+    # Blank MSH-14 to MSH-20
+    msh_segment += FIELD_DELIMITER * (20 - 13)
+    # MSH-21: Message Profile ID
+    msh_segment += FIELD_DELIMITER + message_profile_id 
     msh_segment += f"{FIELD_DELIMITER}{message_profile_id}" # MSH-21
 
     return msh_segment
@@ -188,15 +196,22 @@ def generate_pid(patient_id, mrn, pt_last_name, pt_first_name, pt_mi, dob, sex, 
 def generate_orc(accession_number, ordering_provider_last, ordering_provider_first,
                   ordering_facility_name, ordering_facility_address, ordering_facility_city,
                   ordering_facility_state, ordering_facility_zip, ordering_facility_phone):
-    orc_segment = f"ORC{FIELD_DELIMITER}RE" # ORC-1 Order Control (RE for release/perform)
-    orc_segment += f"{FIELD_DELIMITER}{escape_hl7(accession_number)}" # ORC-2 Placer Order Number
-    orc_segment += f"{FIELD_DELIMITER}{escape_hl7(accession_number)}" # ORC-3 Filler Order Number (using accession as filler for simplicity)
-    orc_segment += f"{FIELD_DELIMITER}" * 9 # ORC-4 to ORC-11 (Placer Group Number to Verified By) - empty
-    orc_segment += f"{escape_hl7(ordering_provider_last)}{COMPONENT_DELIMITER}{escape_hl7(ordering_provider_first)}"  # ORC-12 Ordering Provider
-    orc_segment += f"{FIELD_DELIMITER}" * 4 # ORC-13 to ORC-16 - empty
-    orc_segment += (f"{escape_hl7(ordering_facility_name)}{COMPONENT_DELIMITER}{escape_hl7(ordering_facility_address)}{COMPONENT_DELIMITER}"
-                    f"{escape_hl7(ordering_facility_city)}{COMPONENT_DELIMITER}{escape_hl7(ordering_facility_state)}{COMPONENT_DELIMITER}"
-                    f"{escape_hl7(ordering_facility_zip)}{COMPONENT_DELIMITER}{COMPONENT_DELIMITER}{escape_hl7(ordering_facility_phone)}")  # ORC-17 Ordering Facility
+    orc_segment = f"ORC{FIELD_DELIMITER}RE"  # ORC-1
+    orc_segment += f"{FIELD_DELIMITER}{escape_hl7(accession_number)}"  # ORC-2 Placer Order #
+    orc_segment += f"{FIELD_DELIMITER}{escape_hl7(accession_number)}"  # ORC-3 Filler Order #
+    # Blank ORC-4 to ORC-11
+    orc_segment += FIELD_DELIMITER * 8
+    # ORC-12 Ordering Provider (Last^First)
+    orc_segment += f"{FIELD_DELIMITER}{escape_hl7(ordering_provider_last)}{COMPONENT_DELIMITER}{escape_hl7(ordering_provider_first)}"
+    # Blank ORC-13 to ORC-16
+    orc_segment += FIELD_DELIMITER * 4
+    # ORC-17 Ordering Facility details
+    orc_segment += (f"{FIELD_DELIMITER}{escape_hl7(ordering_facility_name)}{COMPONENT_DELIMITER}"
+                    f"{escape_hl7(ordering_facility_address)}{COMPONENT_DELIMITER}"
+                    f"{escape_hl7(ordering_facility_city)}{COMPONENT_DELIMITER}"
+                    f"{escape_hl7(ordering_facility_state)}{COMPONENT_DELIMITER}"
+                    f"{escape_hl7(ordering_facility_zip)}{COMPONENT_DELIMITER}{COMPONENT_DELIMITER}"
+                    f"{escape_hl7(ordering_facility_phone)}")
     return orc_segment
 
 def generate_obr(accession_number, ordered_test_id, ordered_test_name, specimen_collection_date, specimen_site):
@@ -210,12 +225,40 @@ def generate_obr(accession_number, ordered_test_id, ordered_test_name, specimen_
     obr_segment += f"{FIELD_DELIMITER}{obr4_cwe}"
 
     obr_segment += f"{FIELD_DELIMITER}" * 2 # OBR-5 Priority to OBR-6 Requested Date/Time - empty
-    obr_segment += f"{specimen_collection_date}" # OBR-7 Observation Date/Time
+    #obr_segment += f"{specimen_collection_date}" # OBR-7 Observation Date/Time
+    obr_segment += f"{FIELD_DELIMITER}{specimen_collection_date}"
     obr_segment += f"{FIELD_DELIMITER}" * 6 # OBR-8 to OBR-13 - empty
-    obr_segment += f"{specimen_collection_date}" # OBR-14 Specimen Received Date/Time
+    #obr_segment += f"{specimen_collection_date}" # OBR-14 Specimen Received Date/Time
+    obr_segment += f"{FIELD_DELIMITER}{specimen_collection_date}"
     obr_segment += f"{FIELD_DELIMITER}{escape_hl7(specimen_site)}" # OBR-15 Specimen Source
-    obr_segment += FIELD_DELIMITER * (48 - 15) # Fill remaining empty fields up to OBR-48
+
+    # obr_segment += FIELD_DELIMITER * (48 - 15) # Fill remaining empty fields up to OBR-48
+
+    # Blank OBR-16 to OBR-24 (9 empty fields)
+    obr_segment += FIELD_DELIMITER * 9
+    # OBR-25 Result Status = Final
+    obr_segment += f"{FIELD_DELIMITER}F"
+    # Blank OBR-26 to OBR-48
+    obr_segment += FIELD_DELIMITER * (48 - 25)
+
     return obr_segment
+
+def generate_spm(specimen_id, specimen_site, collection_datetime):
+    """
+    SPM segment for specimen details:
+      SPM-1 Set ID = 1
+      SPM-2 Specimen ID = specimen_id
+      SPM-4 Specimen Type = specimen_site
+      SPM-7 Collection Date/Time = collection_datetime
+    """
+    spm = f"SPM{FIELD_DELIMITER}1"
+    spm += f"{FIELD_DELIMITER}{escape_hl7(specimen_id)}"    # SPM-2 Specimen ID
+    spm += f"{FIELD_DELIMITER}"                            # SPM-3 Specimen Parent IDs
+    spm += f"{FIELD_DELIMITER}{escape_hl7(specimen_site)}" # SPM-4 Specimen Type
+    spm += FIELD_DELIMITER * 2                              # SPM-5,6 blank
+    spm += f"{FIELD_DELIMITER}{collection_datetime}"       # SPM-7 Collection Date/Time
+    spm += FIELD_DELIMITER * (10 - 7)                      # SPM-8 to SPM-10 blank
+    return spm
 
 def generate_obx(result_test_id, resulted_test_name, test_result, test_date, performing_lab, notes):
     obx_segment = f"OBX{FIELD_DELIMITER}1"
@@ -317,6 +360,26 @@ def generate_obx(result_test_id, resulted_test_name, test_result, test_date, per
         obx_segment += f"{FIELD_DELIMITER}" # Keep empty if no notes
 
     return obx_segment
+
+def generate_pv1(patient_class="O", assigned_location="", ordering_provider_last="", ordering_provider_first="", collection_datetime=""):
+    """Generate PV1 segment for performer routing"""
+    pv1 = f"PV1{FIELD_DELIMITER}1"
+    pv1 += f"{FIELD_DELIMITER}{escape_hl7(patient_class)}"  # PV1-2 Patient Class
+    pv1 += f"{FIELD_DELIMITER}{escape_hl7(assigned_location)}"  # PV1-3 Assigned Patient Location
+    pv1 += FIELD_DELIMITER * 3  # PV1-4..6 blank
+    pv1 += f"{FIELD_DELIMITER}{escape_hl7(ordering_provider_last)}{COMPONENT_DELIMITER}{escape_hl7(ordering_provider_first)}"  # PV1-7 Attending Doctor
+    pv1 += FIELD_DELIMITER * 36  # PV1-8..43 blank
+    pv1 += f"{FIELD_DELIMITER}{collection_datetime}"  # PV1-44 Admit Date/Time
+    return pv1
+
+def generate_prd(provider_role="RP", provider_name="", provider_address="", provider_telecom=""):
+    """Generate PRD segment for provider details"""
+    prd = f"PRD{FIELD_DELIMITER}1"
+    prd += f"{FIELD_DELIMITER}{escape_hl7(provider_role)}"  # PRD-2 Provider Role
+    prd += f"{FIELD_DELIMITER}{escape_hl7(provider_name)}"  # PRD-3 Provider Name
+    prd += f"{FIELD_DELIMITER}{escape_hl7(provider_address)}"  # PRD-4 Provider Address
+    prd += f"{FIELD_DELIMITER}{escape_hl7(provider_telecom)}"  # PRD-5 Provider Telecom
+    return prd
 
 # --- Sanity Check Function ---
 def perform_basic_sanity_checks(field_name: str, field_value: str, debug_mode: int) -> bool:
@@ -467,15 +530,24 @@ def generate_hl7_message_from_csv_row(row: dict, message_id_for_msh: str, sendin
 
     # --- Generate HL7 Message Segments ---
     hl7_message_parts = [
-        generate_msh(sending_application, sending_facility, msh_timestamp, message_id_for_msh),
-        generate_pid(patient_id, mrn, pt_last_name, pt_first_name, pt_mi, formatted_date_of_birth, sex, race, ethnicity,
-                     patient_street, patient_street2, patient_city, patient_state, patient_zipcode, patient_phone_number),
-        generate_orc(accession_number, ordering_provider_last_name, ordering_provider_first_name,
-                     ordering_facility_name, ordering_facility_address, ordering_facility_city,
-                     ordering_facility_state, ordering_facility_zip, ordering_facility_phone),
-        generate_obr(accession_number, ordered_test_id, ordered_test_name, formatted_specimen_collection_date, specimen_site),
-        generate_obx(resulted_test_id, resulted_test_name, test_result, formatted_test_date, performing_lab, notes)
-    ]
+    generate_msh(sending_application, sending_facility, msh_timestamp, message_id_for_msh),
+    # Insert SFT segment
+    f"SFT{FIELD_DELIMITER}1{FIELD_DELIMITER}{os.getenv('SOFTWARE_VENDOR','')}{FIELD_DELIMITER}{os.getenv('SOFTWARE_PRODUCT','')}{FIELD_DELIMITER}{os.getenv('SOFTWARE_VERSION','')}{FIELD_DELIMITER}{os.getenv('SOFTWARE_RELEASE','')}",
+    generate_pid(patient_id, mrn, pt_last_name, pt_first_name, pt_mi, formatted_date_of_birth,
+                 sex, race, ethnicity, patient_street, patient_street2, patient_city,
+                 patient_state, patient_zipcode, patient_phone_number),
+    generate_pv1(patient_class="O", assigned_location="", ordering_provider_last=ordering_provider_last_name, ordering_provider_first=ordering_provider_first_name, collection_datetime=formatted_specimen_collection_date),
+    generate_orc(accession_number, ordering_provider_last_name, ordering_provider_first_name,
+                 ordering_facility_name, ordering_facility_address, ordering_facility_city,
+                 ordering_facility_state, ordering_facility_zip, ordering_facility_phone),
+    generate_obr(accession_number, ordered_test_id, ordered_test_name, formatted_specimen_collection_date, specimen_site),
+    generate_spm(accession_number, specimen_site, formatted_specimen_collection_date),
+    generate_obx(resulted_test_id, resulted_test_name, test_result, formatted_test_date, performing_lab, notes),
+    # Add NTE segment for free-text notes linked to OBX
+    f"NTE{FIELD_DELIMITER}1{FIELD_DELIMITER}L{FIELD_DELIMITER}{escape_hl7(notes)}",
+    generate_prd(provider_role="RP", provider_name=f"{ordering_provider_last_name}^{ordering_provider_first_name}", provider_address=ordering_facility_address, provider_telecom=ordering_facility_phone),
+]
+
     
     return "\r".join(hl7_message_parts) # Changed segment terminator to \r
 
