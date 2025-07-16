@@ -137,6 +137,10 @@ resource "aws_lambda_function" "split_csv_lambda" {
     variables = {
       ERROR_TOPIC_ARN = aws_sns_topic.split_csv_errors.arn
       BUCKET          = var.sftp_bucket_name
+      SOFTWARE_VENDOR   = "CDW"
+      SOFTWARE_PRODUCT  = "CSV2HL7"
+      SOFTWARE_VERSION  = "7.10.3"
+      SOFTWARE_RELEASE  = "20250715"
     }
   }
 }
