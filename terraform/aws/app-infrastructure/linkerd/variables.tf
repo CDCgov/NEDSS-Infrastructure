@@ -32,7 +32,7 @@ variable "cluster_certificate_authority_data" {
   description = "TBase64 encoded certificate data required to communicate with the cluster"
 }
 
-variable "version" {
+variable "linkerd_helm_version" {
   type = string
   default = "2025.7.3"
   description = "linkerd edge helm version"  
