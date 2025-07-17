@@ -7,6 +7,7 @@ resource "helm_release" "linkerd_crds" {
   chart           =  var.linkerd_chart # "linkerd-crds"
   namespace       = var.linkerd_namespace_name #"linkerd"
   create_namespace = true
+  version = "2025.7.3"
 }
 
 # linkerd self-signed certs
@@ -60,6 +61,7 @@ resource "helm_release" "linkerd_control_plane" {
   repository      =  var.linkerd_repository # "https://helm.linkerd.io/stable"
   namespace = var.linkerd_namespace_name 
   chart     = var.linkerd_controlplane_chart  #"linkerd-control-plane"
+  version = "2025.7.3"
 
   set {
     name  = "identityTrustAnchorsPEM"
@@ -87,5 +89,6 @@ resource "helm_release" "linkerd_viz" {
   chart           = var.linkerd_viz_chart 
   namespace       = var.linkerd_viz_namespace_name 
   create_namespace = true
+  version = "2025.7.3"
   depends_on = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
 }
