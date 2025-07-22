@@ -9,7 +9,7 @@ data "aws_region" "current" {}
 
 module "nbs-legacy" {
 
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=v1.2.14"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=release-7.11.0-rc1"
 
   #source  = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/nbs-legacy"
 

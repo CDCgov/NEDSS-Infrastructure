@@ -177,10 +177,38 @@ variable "ecs_memory" {
 }
 # end NBS container on ECS
 
-# End Legacy variables
-#########################################################################################
+# SAS on EC2 settings
+#### SAS9 vars
+variable "sas_ami" {
+  description = "sas9 rhel ami"
+  type        = string
+  default = "ami-09260f644dc4ea3fd"   # from FTS1 for now, FIXME
+}
 
-# NBS 6 VM
+variable "sas_keypair_name" {
+    description = "sas9 ami from shared services account"
+}
+
+variable "sas_instance_type" {
+    description = "sas9 instance type"
+    default = "t3.medium"
+}
+
+variable "sas_kms_key_id" {
+    description = "kms key arn to be used to encrypt root volume"
+}
+
+variable "sas_root_volume_size" {
+    description = "root volume size for sas server"
+    default = "200"
+}
+
+# variable "sas_subnet_id" {
+#     description = "private subnet for sas server"
+# }
+
+# end SAS on EC2 settings
+
 # RDS (considered existing in DB)
 # Database credentials to be encrypted and stored as SecureStrings in parameter store
 variable "odse_user" {
