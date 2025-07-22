@@ -36,7 +36,11 @@ tags = {
 # EKS cluster Variables
 eks_instance_type = "m5.large"
 # grab from login screen
-aws_admin_role_name = "AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE"
+aws_admin_role_name = "aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE"
+
+# optional role to authenticate into the EKS cluster for ReadOnly, leave empty if not needed
+readonly_role_name = "aws-reserved/sso.amazonaws.com/AWSReservedSSO_ReadOnlyAccess_EXAMPLE_ROLE" 
+
 
 # S3 buckets
 fluentbit_bucket_prefix = "EXAMPLE-fluentbit-bucket"
