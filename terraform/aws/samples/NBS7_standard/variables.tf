@@ -105,6 +105,12 @@ variable "eks_min_nodes_count" {
 variable "aws_admin_role_name" {
   type = string
 }
+
+variable "readonly_role_name" {
+  description = "Optional AWS IAM Role arn used to authenticate into the EKS cluster for ReadOnly"
+  type        = string
+  default     = "" # leave empty if not needed
+}
 #-----------------------------------------------------------------
 
 # S3 buckets -----------------------------------------------------
