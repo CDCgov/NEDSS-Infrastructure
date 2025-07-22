@@ -1,4 +1,4 @@
-# Serial: 2024081301
+# Serial: 2025071001
 
 locals {
   zone_id    = try(module.dns.zone_id["${module.dns.registered_domain_name}"], var.zone_id)
@@ -9,7 +9,7 @@ data "aws_region" "current" {}
 
 module "nbs-legacy" {
 
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=v1.2.14"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/development-infrastructure/nbs-legacy?ref=release-7.11.0-rc1"
 
   #source  = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/nbs-legacy"
 
@@ -56,7 +56,7 @@ module "nbs-legacy" {
   internal                 = var.load_balancer_internal
 
   ### Only for EC2
-  instance_type = var.instance_type
+  instance_type = var.ec2_instance_type
   ami           = var.ami
   ec2_key_name  = var.ec2_key_name
   #enable_user_data = var.ec2_enable_user_data

@@ -177,10 +177,39 @@ variable "ecs_memory" {
 }
 # end NBS container on ECS
 
-# End Legacy variables
-#########################################################################################
+# SAS on EC2 settings
+#### SAS9 vars
+variable "sas_ami" {
+  description = "sas9 rhel ami from shared services account"
+  type        = string
+  # default = "ami-09260f644dc4ea3fd"   # from FTS1 for now, FIXME
+  default = "ami-07a25505d7a157e9d" # from shared-services
+}
 
-# NBS 6 VM
+variable "sas_keypair_name" {
+    description = "sas key pair"
+}
+
+variable "sas_instance_type" {
+    description = "sas9 instance type"
+    default = "t3.large"
+}
+
+variable "sas_kms_key_id" {
+    description = "kms key arn to be used to encrypt root volume"
+}
+
+variable "sas_root_volume_size" {
+    description = "root volume size for sas server"
+    default = "200"
+}
+
+# variable "sas_subnet_id" {
+#     description = "private subnet for sas server"
+# }
+
+# end SAS on EC2 settings
+
 # RDS (considered existing in DB)
 # Database credentials to be encrypted and stored as SecureStrings in parameter store
 variable "odse_user" {
@@ -228,7 +257,7 @@ variable "windows_scheduled_tasks" {
 variable "java_memory" {
   description = "Memory for Wildfly server to run Java (NOTE should not exceed 70% of VM memory)"
   type = string
-  default = "10g"
+  default = "4g" ### this should be 4g for m5.large
 }
 variable "phcrimporter_user" {
   description = "User needed to run phcrimporter batch job (leave_default=preserve Wildfly default)"
