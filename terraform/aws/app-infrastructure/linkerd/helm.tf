@@ -58,7 +58,7 @@ resource "tls_locally_signed_cert" "issuer" {
 # linkerd control plane
 resource "helm_release" "linkerd_control_plane" {
   name       = "linkerd-control-plane"
-  repository      =  var.linkerd_repository # "https://helm.linkerd.io/stable"
+  repository      =  var.linkerd_repository 
   namespace = var.linkerd_namespace_name 
   chart     = var.linkerd_controlplane_chart  #"linkerd-control-plane"
   version = var.linkerd_helm_version 
@@ -85,7 +85,7 @@ resource "helm_release" "linkerd_control_plane" {
 # deploy linkerd-viz
 resource "helm_release" "linkerd_viz" {
   name            = "linkerd-viz"
-  repository      = var.linkerd_repository # "https://helm.linkerd.io/stable"
+  repository      = var.linkerd_repository 
   chart           = var.linkerd_viz_chart 
   namespace       = var.linkerd_viz_namespace_name 
   create_namespace = true
