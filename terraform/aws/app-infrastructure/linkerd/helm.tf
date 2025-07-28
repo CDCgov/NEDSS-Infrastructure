@@ -3,9 +3,9 @@
 # linkerd helm release
 resource "helm_release" "linkerd_crds" {
   name            = "linkerd-crds"
-  repository      =  var.linkerd_repository # "https://helm.linkerd.io/stable"
-  chart           =  var.linkerd_chart # "linkerd-crds"
-  namespace       = var.linkerd_namespace_name #"linkerd"
+  repository      =  var.linkerd_repository 
+  chart           =  var.linkerd_chart 
+  namespace       = var.linkerd_namespace_name 
   create_namespace = true
   version = var.linkerd_helm_version 
 }
