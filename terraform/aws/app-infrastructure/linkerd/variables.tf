@@ -1,6 +1,6 @@
 
 variable "linkerd_repository" {
-    default = "https://helm.linkerd.io/stable"
+    default = "https://helm.linkerd.io/edge"
 }
 variable "linkerd_chart" {
     default = "linkerd-crds"
@@ -30,4 +30,10 @@ variable "eks_cluster_endpoint" {
 variable "cluster_certificate_authority_data" {
   type = string
   description = "TBase64 encoded certificate data required to communicate with the cluster"
+}
+
+variable "linkerd_helm_version" {
+  type = string
+  default = "2025.7.3"
+  description = "linkerd edge helm version"  
 }
