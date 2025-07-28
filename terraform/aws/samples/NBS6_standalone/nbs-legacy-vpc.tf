@@ -1,9 +1,9 @@
-# Serial: 2024081301
+# Serial: 2025071001
 
 # VPC for legacy application components
 module "legacy-vpc" {
 
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/vpc?ref=v1.2.14"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/aws/app-infrastructure/vpc?ref=release-7.11.0-rc1"
 
   #source      = "../../../../NEDSS-Infrastructure/terraform/aws/app-infrastructure/vpc"
   # SAMPLES
