@@ -180,7 +180,7 @@ Set-Location -Path "D:\wildfly-10.0.0.Final\bin\service"
 sc.exe config Wildfly start= delayed-auto
 
 ############# WIN TASK SCHEDULES #################################################################
-######## Upload script to D drive 
+######## Upload check service running script to D drive 
 # PowerShell script content
 $scriptContent = @'
 $serviceName = "Wildfly"
@@ -210,6 +210,35 @@ $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval $re
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
 #Create Scheduled Task
 Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+
+######## Upload stop service script to D drive 
+# PowerShell stop service script content
+$scriptContent = @'
+$serviceName = "Wildfly"
+# Check if the service is running
+$serviceStatus = Get-Service -Name $serviceName
+# Stop the NBS Service
+Stop-Service -Name $serviceName
+
+'@
+$filePath = "D:\wildfly-10.0.0.Final\nedssdomain\log\auto-stop.ps1"
+$scriptContent | Out-File -FilePath $filePath -Force
+
+########### Windows Task Scheduler NBS Stop service
+$jobname = "NBS Stop Service"
+$scriptPath = "D:\wildfly-10.0.0.Final\nedssdomain\log\auto-stop.ps1"
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType S4U
+#Configure Task Action
+$action = New-ScheduledTaskAction –Execute "Powershell.exe" -Argument "$scriptPath; quit"
+#Configure Task Trigger
+$trigger = New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At "${var.daily_stop_nbs6.nbs_stop_time}"
+#Configure Task Settings
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RunOnlyIfNetworkAvailable -DontStopOnIdleEnd
+#Create Scheduled Task
+Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+
+# Enabled by default, disabled if desired
+
 
 ########### NBS Specific Windows Scheduled Tasks
 

@@ -292,3 +292,12 @@ variable "max_meta_space_size" {
   type = string
   default = "512M"
 }
+
+variable "daily_stop_nbs6" {
+  description = "Map(string) of detailing whether to stop nbs6 daily and at what server time."
+  type = map(string)
+  default = {
+    enabled = "true",
+    nbs_stop_time = "00:00:00am"
+  }
+}
