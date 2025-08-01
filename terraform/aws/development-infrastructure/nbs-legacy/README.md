@@ -30,6 +30,7 @@ Below are the available Variables contained within this NBS Legacy module.
 | route53_url_name | string |  | URL name for Classic App as an A record in route53 (ex. `app-dev.my-domain.com`) |
 | shared_vpc_cidr_block | string |  | VPC CIDR block in shared services account |
 | tags | map(string) |  | map(string) of tags to add to created hosted zone |
+| daily_stop_nbs6 | map(string) |  default = {<br>&nbsp; enabled = "false" <br>&nbsp; nbs_stop_time = "00:00:00am"<br>} | Map(string) of detailing whether to stop nbs6 daily and at what server time. |
 | windows_scheduled_tasks | string | "ELRImporter.bat,, 6am, 0, 0, 2; MsgOutProcessor.bat,, 8pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12am, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7pm, 1, 0 , 0; covid19ETL.bat,, 5am, 1, 0 , 0;" | Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename,scriptPathFromWorkDir,startTime,frequencyDays,frequencyHours,frequencyMinutes; |
 | zone_id | string |  | Route53 Hosted Zone ID |
 
