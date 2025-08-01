@@ -238,7 +238,9 @@ $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoi
 Register-ScheduledTask -TaskName $jobName -Action $action -Trigger $trigger -Principal $principal -Settings $settings
 
 # Enabled by default, disabled if desired
-
+if ("${var.daily_stop_nbs6.enabled}" -eq "false") {
+  Disable-ScheduledTask $jobname
+}
 
 ########### NBS Specific Windows Scheduled Tasks
 
