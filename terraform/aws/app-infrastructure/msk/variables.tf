@@ -43,3 +43,9 @@ variable "vpc_id" {
 variable "cidr_blocks" {
   type = list
 }
+
+variable "kafka_version" {
+  description = "Version of Kafka to be deployed in cluster"
+  type = string
+  default = "3.6.0"
+}
