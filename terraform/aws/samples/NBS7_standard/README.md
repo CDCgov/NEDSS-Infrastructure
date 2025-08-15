@@ -11,7 +11,9 @@
 | legacy-vpc-id | vpc-LEGACY-EXAMPLE | Existing NBS Classic application VPC ID | Y |
 | legacy_vpc_private_route_table_id | rtb-PRIVATE-EXAMPLE | Route table used by the subnets to which the database is attached | Y |
 | legacy_vpc_public_route_table_id | rtb-PUBLIC-EXAMPLE | route table used by the subnets the application server(s) and/or the application load balancer are attached to | Y |
-| aws_admin_role_name | AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE | Role IAM/SSO user assumes when logged in. Run: aws sts get-caller-identity to get the unique portion of the role | Y |
+| tags.Environment | EXAMPLE_ENVIRONMENT | Environment where the infrastructure will be deployed | Y |
+| aws_admin_role_name | aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSAdministratorAccess_EXAMPLE_ROLE | Role IAM/SSO user assumes when logged in. Run: aws sts get-caller-identity to get the unique portion of the role | Y |
+| readonly_role_name | aws-reserved/sso.amazonaws.com/AWSReservedSSO_ReadOnlyAccess_EXAMPLE_ROLE | optional role to authenticate into the EKS cluster for ReadOnly, leave empty "" if not needed | Y |
 | fluentbit_bucket_prefix | EXAMPLE-fluentbit-bucket | S3 bucket prefix for FluentBit | Y |
 | fluentbit_bucket_name | EXAMPLE-fluentbit-logs | S3 bucket that will be created to capture consolidated logs via FluentBit | Y |
 
