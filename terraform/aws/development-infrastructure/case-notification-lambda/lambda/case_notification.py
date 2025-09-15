@@ -1,4 +1,5 @@
 import boto3
+from botocore.config import Config
 import pyodbc #NEEDS LAMBDA LAYER for library and ODBC driver
 import os
 import logging
@@ -31,9 +32,10 @@ logging.basicConfig(level=logging.INFO)
 # GLOBAL_DEBUG_MODE = int(os.environ.get('DEBUG_MODE', '0')) # Default to 0 (off).
 
 # --- AWS Boto3 Clients ---
-rds_client = boto3.client('rds')
-lambda_client = boto3.client("lambda")
-secrets_client = boto3.client("secretsmanager")
+rds_config = Config(connect_timeout=10, read_timeout=60)
+secrets_config = Config(connect_timeout=10, read_timeout=60)
+rds_client = boto3.client('rds', config=rds_config)
+secrets_client = boto3.client("secretsmanager", config=secrets_config)
 
 # Create a connection to sql server
 def _create_sql_connection(db_secret_dict):
@@ -148,7 +150,7 @@ def _send_msg_payload_transportq_out(db_secret_dict, transportq_out_row_to_proce
                     """.format(transportq_out_row_to_process.destinationFilename)               
                     cursor.execute(sql_query)
                 else:
-                    logger.info(f"Dry run enabled, database not updated! Continuing as if update occured...")
+                    logger.info("Dry run enabled, database not updated! Continuing as if update occured...")
                 db_success_status = True        
 
         if db_success_status and success_status:            
@@ -157,7 +159,7 @@ def _send_msg_payload_transportq_out(db_secret_dict, transportq_out_row_to_proce
             logger.info(f"Unable to update database TransportQ_out with processingStatus='done'. Successfully sent notification for message with messageId {transportq_out_row_to_process.messageId} and destinationFilename {transportq_out_row_to_process.destinationFilename}")
    
         if filename is None:
-            raise Exception(f"Unable to create file for messageId {transportq_out_row_to_process.messageId} and destinationFilename {transportq_out_row_to_process.destinationFilename}")
+            raise BaseException(f"Unable to create file for messageId {transportq_out_row_to_process.messageId} and destinationFilename {transportq_out_row_to_process.destinationFilename}")
         
     except Exception as e:
         logger.error(f"An error occurred getting processing message from TransportQ_out: {e}")
@@ -168,7 +170,7 @@ def _send_msg_payload_transportq_out(db_secret_dict, transportq_out_row_to_proce
 def _strip_ns(elem):
     # Remove namespace from tag
     elem.tag = elem.tag.split('}', 1)[-1]
-    for child in list(elem):
+    for child in elem:
         _strip_ns(child)
 
 def _indent_xml(elem, level=0):
@@ -209,7 +211,7 @@ def _write_to_sftp(file, sftp_put_filepath, sftp_hostname, sftp_username, sftp_p
                 logger.info(f"Dry run enabled, files {local_file_path} → {remote_file_path} not sent!")            
         success_status = True
     except Exception as e:
-        logger.error(f"Unable to upload {local_file_path} → {remote_file_path}")
+        logger.error(f"Unable to upload {local_file_path} → {remote_file_path}: {e}")
     finally:
         transport.close()    
 
@@ -237,7 +239,11 @@ def _restart_lambda_check(context, total_time):
         restart_lambda = True
     return restart_lambda
 
-def _reinvoke_lambda(context):        
+def _reinvoke_lambda(context,total_time):
+        read_timeout = total_time - 20000 #total time - 20 sec (20000ms)
+        lambda_config = Config(connect_timeout=10, read_timeout=read_timeout) # needs to be slightly less than the 5 minute timeout
+        lambda_client = boto3.client("lambda", config=lambda_config)
+
         lambda_client.invoke(
             FunctionName=context.function_name,
             InvocationType="Event",  # async
@@ -286,11 +292,11 @@ def lambda_handler(event, context):
         restart_lambda = _restart_lambda_check(context=context, total_time=total_time)
         # if we have to restart lambda check and exit lambda
         if restart_lambda:
-            _reinvoke_lambda(context)
+            _reinvoke_lambda(context, total_time=total_time)
             logger.info(f"Lambda timeout imminent, restarting Lambda! Sucessfully Sent {messages_sent} message(s)!")
             return
 
     if messages_sent == 0:
-        logger.info(f"No messages found to send!")
+        logger.info("No messages found to send!")
     else:
         logger.info(f"Sucessfully Sent {messages_sent} message(s)!")

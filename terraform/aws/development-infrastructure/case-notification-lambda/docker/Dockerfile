@@ -15,7 +15,7 @@ RUN dnf install -y \
     && dnf clean all
 
 # Install msodbcsql18
-RUN curl -sSL https://packages.microsoft.com/config/rhel/9/prod.repo -o /etc/yum.repos.d/msprod.repo 
+ADD https://packages.microsoft.com/config/rhel/9/prod.repo /etc/yum.repos.d/msprod.repo 
 RUN ACCEPT_EULA=Y dnf install -y msodbcsql18 && dnf clean all 
 
 # Create Lambda layer directory
@@ -27,7 +27,7 @@ RUN pip3.12 install --no-cache-dir pyodbc paramiko -t /opt/python
 # Copy msodbcsql18 library files into /opt/lib and add ODBC configuration
 
 RUN export filename=$(ls /opt/microsoft/msodbcsql18/lib64/) && \
-    cp /opt/microsoft/msodbcsql18/lib64/$filename /opt/lib/ && \
+    cp /opt/microsoft/msodbcsql18/lib64/"$filename" /opt/lib/ && \
     echo "[ODBC Driver 18 for SQL Server]" > /opt/etc/odbcinst.ini && \
     echo "Description=Microsoft ODBC Driver 18 for SQL Server" >> /opt/etc/odbcinst.ini && \
     echo "Driver=/opt/lib/$filename" >> /opt/etc/odbcinst.ini && \

@@ -102,6 +102,13 @@ variable "sftp_password" {
   sensitive = true
 }
 
+# AWS KMS to use, empty equals use default account key
+variable "kms_key_id" {
+  description = "KMS Key Id to encrypt values. Defaults to AWS managed key for Secrets Manager if not set. Must allow lambda function to decrypt."
+  type = string  
+  default = ""
+}
+
 # Lambda Environment variables
 variable "lambda_env_dry_run" {
   description = "DRY_RUN lambda environment variable. Accepted values = True/False"

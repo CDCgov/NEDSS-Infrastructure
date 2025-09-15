@@ -5,7 +5,7 @@ locals {
 # Secrets Manager Secret for SFTP access
 resource "aws_secretsmanager_secret" "case_notification_sftp" {
   name = "${var.resource_prefix}-case-notification-sftp"
-  # TODO: ADD KMS 
+  kms_key_id = var.kms_key_id != "" ? var.kms_key_id : null 
 }
 
 resource "aws_secretsmanager_secret_version" "case_notification_sftp" {
@@ -21,8 +21,7 @@ resource "aws_secretsmanager_secret_version" "case_notification_sftp" {
 # Secrets Manager Secret for DB access
 resource "aws_secretsmanager_secret" "case_notification_db" {
   name = "${var.resource_prefix}-case-notification-db"
-
-  # TODO: ADD KMS 
+  kms_key_id = var.kms_key_id != "" ? var.kms_key_id : null
 }
 
 resource "aws_secretsmanager_secret_version" "case_notification_db" {
