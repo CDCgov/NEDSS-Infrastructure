@@ -159,7 +159,7 @@ def _send_msg_payload_transportq_out(db_secret_dict, transportq_out_row_to_proce
             logger.info(f"Unable to update database TransportQ_out with processingStatus='done'. Successfully sent notification for message with messageId {transportq_out_row_to_process.messageId} and destinationFilename {transportq_out_row_to_process.destinationFilename}")
    
         if filename is None:
-            raise BaseException(f"Unable to create file for messageId {transportq_out_row_to_process.messageId} and destinationFilename {transportq_out_row_to_process.destinationFilename}")
+            raise Exception(f"Unable to create file for messageId {transportq_out_row_to_process.messageId} and destinationFilename {transportq_out_row_to_process.destinationFilename}")
         
     except Exception as e:
         logger.error(f"An error occurred getting processing message from TransportQ_out: {e}")
