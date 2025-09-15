@@ -141,7 +141,7 @@ def _send_msg_payload_transportq_out(db_secret_dict, transportq_out_row_to_proce
         db_success_status = False
         if success_status:
             with conn.cursor() as cursor:            
-                logger.info(f"Updating Database with processingStatus=done")
+                logger.info("Updating Database with processingStatus=done")
                 if dry_run == "false": 
                     sql_query = """
                         UPDATE TransportQ_out
