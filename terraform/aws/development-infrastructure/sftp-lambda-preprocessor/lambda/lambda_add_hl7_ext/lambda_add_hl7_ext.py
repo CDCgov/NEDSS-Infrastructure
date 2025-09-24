@@ -297,7 +297,8 @@ def validate_and_clean_hl7(message_text: str) -> str:
             if current_msg:
                 output_lines.extend(_process_single_message(current_msg))
                 current_msg = []
-        if current_msg or ln.startswith("MSH|"):
+            current_msg.append(ln)
+        elif current_msg:
             current_msg.append(ln)
         else:
             # pass through lines before first MSH
