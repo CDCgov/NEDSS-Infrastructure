@@ -7,6 +7,7 @@ import re
 import urllib.parse
 from datetime import datetime
 from botocore.exceptions import ClientError
+from botocore.config import Config
 
 # Optional: if you package the 'hl7' library with your Lambda, you can set USE_HL7_LIB=True to
 # rely on it for parsing. This script uses string parsing so it can run without that dependency.
@@ -47,8 +48,15 @@ ALLOWED_ETHNICITY_CODES = {"2135-2", "2186-5"}
 # ------------------------------
 # Clients & Logger
 # ------------------------------
-s3_client = boto3.client("s3")
-sns_client = boto3.client("sns")
+BOTO_CONFIG = Config(
+    connect_timeout=5,
+    read_timeout=30,
+    retries={'max_attempts': 3, 'mode': 'standard'}
+)
+
+s3_client = boto3.client("s3", config=BOTO_CONFIG)
+sns_client = boto3.client("sns", config=BOTO_CONFIG)
+cloudwatch_client = boto3.client('cloudwatch', config=BOTO_CONFIG)
 
 logger = logging.getLogger()
 if not logger.handlers:
