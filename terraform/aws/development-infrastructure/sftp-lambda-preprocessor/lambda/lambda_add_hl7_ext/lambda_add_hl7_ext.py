@@ -34,9 +34,6 @@ PROCESSED_SUBDIRS = [OUTPUT_SUBDIR]
 MAX_S3_RETRIES = 3
 RETRYABLE_S3_ERRORS = {"NoSuchKey", "SlowDown", "InternalError", "RequestTimeout", "ThrottlingException"}
 
-# Validation config for HL7 elements
-# Accept a broad HL7 TS pattern (YYYY[MM[DD[HH[MM[SS[.S{1,4}]]]]]][+/-ZZZZ])
-HL7_TS_REGEX = re.compile(r'^\d{4}(\d{2}(\d{2}(\d{2}(\d{2}(\d{2}(\.\d{1,4})?)?)?)?)?)?([+\-]\d{4})?$')
 
 # CDC/HL7 common code systems for race/ethnicity
 ALLOWED_CODE_SYSTEMS = {"CDCREC", "HL70005"}
@@ -56,7 +53,7 @@ BOTO_CONFIG = Config(
 
 s3_client = boto3.client("s3", config=BOTO_CONFIG)
 sns_client = boto3.client("sns", config=BOTO_CONFIG)
-cloudwatch_client = boto3.client('cloudwatch', config=BOTO_CONFIG)
+
 
 logger = logging.getLogger()
 if not logger.handlers:
@@ -126,11 +123,27 @@ def normalize_hl7_line_endings(text: str) -> str:
 
 def valid_ts(value: str) -> bool:
     """
-    Rough validation for HL7 TS (timestamp) datatype.
+    Validate an HL7 TS (timestamp) value.
+    Accepts YYYY, YYYYMM, YYYYMMDD, YYYYMMDDHH, YYYYMMDDHHMM, YYYYMMDDHHMMSS
+    with optional fractional seconds and timezone offset (+/-ZZZZ).
     """
     if not value:
-        return False
-    return bool(HL7_TS_REGEX.match(value))
+        return True
+
+    # Strip timezone offset if present
+    dt_str_clean = re.sub(r'[+-]\d{4}$', '', value)
+
+    # Strip fractional seconds if present
+    dt_str_clean = dt_str_clean.split('.')[0]
+
+    formats = ["%Y%m%d%H%M%S", "%Y%m%d%H%M", "%Y%m%d%H", "%Y%m%d"]
+    for fmt in formats:
+        try:
+            datetime.strptime(dt_str_clean, fmt)
+            return True
+        except ValueError:
+            continue
+    return False
 
 
 def _split_fields(segment_line: str) -> list:
@@ -168,156 +181,134 @@ def scrub_repeat_field(field_val: str, allowed_codes: set) -> str:
             kept.append(rep)
     return "~".join(kept)
 
+def _is_batch_wrapper(line: str) -> bool:
+    """Return True if line is a batch wrapper segment (FHS, BHS, FTS, BTS)."""
+    return line.startswith(("FHS|", "BHS|", "FTS|", "BTS|"))
+
+
+def _process_single_message(lines: list[str]) -> list[str]:
+    """Apply validation rules to a single HL7 message."""
+    if not lines or not any(ln.startswith("MSH|") for ln in lines):
+        logger.warning("Skipping message without MSH.")
+        return lines[:]
+
+    lines = lines[:]  # copy
+    _validate_msh(lines)
+    _validate_pid(lines)
+    return _process_orc(lines)
+
+
+def _validate_msh(lines: list[str]) -> None:
+    msh_idx = next((i for i, ln in enumerate(lines) if ln.startswith("MSH|")), None)
+    if msh_idx is None:
+        logger.warning("MSH segment not found.")
+        return
+
+    msh_fields = _split_fields(lines[msh_idx])
+    if len(msh_fields) > 6 and not valid_ts(msh_fields[6]):
+        logger.warning("MSH-7 appears malformed: '%s'", msh_fields[6])
+
+
+def _validate_pid(lines: list[str]) -> None:
+    pid_idx = next((i for i, ln in enumerate(lines) if ln.startswith("PID|")), None)
+    if pid_idx is None:
+        logger.warning("PID segment not found.")
+        return
+
+    pid_fields = _split_fields(lines[pid_idx])
+
+    # PID-3 Identifier
+    if len(pid_fields) > 3 and not pid_fields[3]:
+        logger.warning("PID-3 (Patient Identifier List) is empty or missing.")
+
+    # PID-5 Name
+    if len(pid_fields) > 5 and not pid_fields[5]:
+        logger.warning("PID-5 (Patient Name) is empty or missing.")
+
+    # PID-7 DOB
+    if len(pid_fields) > 7 and pid_fields[7] and not valid_ts(pid_fields[7]):
+        logger.warning("PID-7 (DOB) appears malformed: '%s'", pid_fields[7])
+
+    # PID-33 Last Update
+    if len(pid_fields) > 33 and pid_fields[33] and not valid_ts(pid_fields[33]):
+        logger.warning("PID-33 invalid. Clearing value: '%s'", pid_fields[33])
+        pid_fields[33] = ""
+        lines[pid_idx] = _join_fields(pid_fields)
+
+    # PID-10 Race
+    if len(pid_fields) > 10:
+        cleaned = scrub_repeat_field(pid_fields[10], ALLOWED_RACE_CODES)
+        if cleaned != pid_fields[10]:
+            logger.info("Cleaned PID-10 (Race) from '%s' to '%s'", pid_fields[10], cleaned)
+            pid_fields[10] = cleaned
+            lines[pid_idx] = _join_fields(pid_fields)
+
+    # PID-22 Ethnicity
+    if len(pid_fields) > 22:
+        cleaned = scrub_repeat_field(pid_fields[22], ALLOWED_ETHNICITY_CODES)
+        if cleaned != pid_fields[22]:
+            logger.info("Cleaned PID-22 (Ethnic Group) from '%s' to '%s'", pid_fields[22], cleaned)
+            pid_fields[22] = cleaned
+            lines[pid_idx] = _join_fields(pid_fields)
+
+
+def _process_orc(lines: list[str]) -> list[str]:
+    """Extract ORC-23.9 notes and append them as NTE segments."""
+    new_lines, orc_note = [], None
+
+    for ln in lines:
+        new_lines.append(ln)
+        if ln.startswith("ORC|"):
+            fields = _split_fields(ln)
+            if len(fields) > 23 and fields[23]:
+                comps = fields[23].split("^")
+                if len(comps) >= 9 and comps[8].strip():
+                    orc_note = comps[8].strip()
+                    comps[8] = ""
+                    fields[23] = "^".join(comps)
+                    new_lines[-1] = _join_fields(fields)
+
+    if orc_note:
+        logger.info("Appending NTE at end of message from ORC-23.9.")
+        new_lines.append(f"NTE|1|L|{orc_note}")
+
+    return new_lines
 
 def validate_and_clean_hl7(message_text: str) -> str:
     """
-    Perform lightweight validation similar to the splitter function:
-      - check MSH-7 TS
-      - warn on missing PID-3 (Identifier List) and PID-5 (Name)
-      - validate PID-7 (DOB) and PID-33 (Last Update D/T); clear PID-33 if invalid
-      - scrub PID-10 (Race) and PID-22 (Ethnic Group) to allowed code sets
-      - append NTE|1|L|{collected_notes} after ORC if ORC-23.9 is populated
-    Handles both single-message and batch files (multiple MSH segments)
-    Returns the cleaned message text (line endings normalized).
+    Clean and validate HL7 messages:
+      - normalize line endings
+      - validate MSH-7, PID fields, and scrub race/ethnicity
+      - move ORC-23.9 notes to NTE segments
+      - handle batch wrappers (FHS, BHS, FTS, BTS)
+    Returns cleaned HL7 content.
     """
     text = normalize_hl7_line_endings(message_text)
+    all_lines = [ln for ln in text.split("\r") if ln]
 
-    all_lines = [ln for ln in text.split("\r") if ln]  # drop the final empty after trailing \r
+    output_lines, current_msg = [], []
 
-    # Group lines into batch wrappers and MSH-started messages
-    output_lines = []
-    current_msg = []
-
-    def flush_non_message_line(ln: str):
-        # pass batch lines through untouched to final cleaned message
-        if ln.startswith(("FHS|", "BHS|", "FTS|", "BTS|")):
-            output_lines.append(ln)
-            return True
-        return False
-
-    def process_single_message(msg_lines: list[str]) -> list[str]:
-        # apply validation scheme to single message
-        if not msg_lines:
-            return []
-
-        if not any(ln.startswith("MSH|") for ln in msg_lines):
-            logger.warning("No MSH segment found, skipping validation.")
-            return msg_lines[:]
-
-        lines = msg_lines[:]
-
-        # Validate MSH-7
-        msh_idx = next((i for i, ln in enumerate(lines) if ln.startswith("MSH|")), None)
-        if msh_idx is not None:
-            msh_fields = _split_fields(lines[msh_idx])
-            if len(msh_fields) > 6:
-                msh7 = msh_fields[6]
-                if not valid_ts(msh7):
-                    logger.warning("MSH-7 appears malformed: '%s'", msh7)
-            else:
-                logger.warning("MSH segment does not have field 7 (TS).")
-        else:
-            logger.warning("No MSH segment found in message.")
-
-        # Find PID
-        pid_idx = next((i for i, ln in enumerate(lines) if ln.startswith("PID|")), None)
-        if pid_idx is not None:
-            pid_fields = _split_fields(lines[pid_idx])
-
-            # PID-3
-            pid3 = pid_fields[3] if len(pid_fields) > 3 else ""
-            if not pid3:
-                logger.warning("PID-3 (Patient Identifier List) is empty or missing.")
-
-            # PID-5
-            pid5 = pid_fields[5] if len(pid_fields) > 5 else ""
-            if not pid5:
-                logger.warning("PID-5 (Patient Name) is empty or missing.")
-
-            # PID-7
-            if len(pid_fields) > 7:
-                pid7 = pid_fields[7]
-                if pid7 and not valid_ts(pid7):
-                    logger.warning("PID-7 (DOB) appears malformed: '%s'", pid7)
-
-            # PID-33
-            if len(pid_fields) > 33:
-                pid33 = pid_fields[33]
-                if pid33 and not valid_ts(pid33):
-                    logger.warning("PID-33 invalid. Clearing value: '%s'", pid33)
-                    pid_fields[33] = ""
-                    lines[pid_idx] = _join_fields(pid_fields)
-
-            # PID-10 Race
-            if len(pid_fields) > 10:
-                original = pid_fields[10]
-                cleaned = scrub_repeat_field(original, ALLOWED_RACE_CODES)
-                if cleaned != original:
-                    logger.info("Cleaned PID-10 (Race) from '%s' to '%s'", original, cleaned)
-                    pid_fields[10] = cleaned
-                    lines[pid_idx] = _join_fields(pid_fields)
-
-            # PID-22 Ethnicity
-            if len(pid_fields) > 22:
-                original = pid_fields[22]
-                cleaned = scrub_repeat_field(original, ALLOWED_ETHNICITY_CODES)
-                if cleaned != original:
-                    logger.info("Cleaned PID-22 (Ethnic Group) from '%s' to '%s'", original, cleaned)
-                    pid_fields[22] = cleaned
-                    lines[pid_idx] = _join_fields(pid_fields)
-        else:
-            logger.warning("No PID segment found; skipping PID validations.")
-
-    # Move ORC-23.9 to NTE
-        new_lines = []
-        orc_note = None
-
-        for ln in lines:
-            new_lines.append(ln)
-            if ln.startswith("ORC|"):
-                fields = _split_fields(ln)
-                if len(fields) > 23 and fields[23]:
-                    comps = fields[23].split("^")  # assume default separators
-                    if len(comps) >= 9:
-                        collected_notes = comps[8].strip()
-                        if collected_notes:
-                            logger.info("Collected ORC-23.9 note: '%s'", collected_notes)
-                            orc_note = collected_notes
-                            comps[8] = ""                       #clear ORC-23.9 to alleviate truncation error
-                            fields[23] = "^".join(comps)        #rebuild field with cleaned value
-                            new_lines[-1]= _join_fields(fields) #replace ORC line
-
-        if orc_note:
-            logger.info("Appending NTE at end of message from ORC-23.9.")
-            new_lines.append(f"NTE|1|L|{orc_note}")
-
-        return new_lines
-
-    # Walk the file and group messages by MSH
     for ln in all_lines:
-        if flush_non_message_line(ln):
+        if _is_batch_wrapper(ln):
+            output_lines.append(ln)
             continue
 
         if ln.startswith("MSH|"):
             if current_msg:
-                output_lines.extend(process_single_message(current_msg))
+                output_lines.extend(_process_single_message(current_msg))
                 current_msg = []
+        if current_msg or ln.startswith("MSH|"):
             current_msg.append(ln)
         else:
-            if current_msg:
-                current_msg.append(ln)
-            else:
-                # pass through lines before first MSH
-                output_lines.append(ln)
+            # pass through lines before first MSH
+            output_lines.append(ln)
 
-    # Flush last message
     if current_msg:
-        output_lines.extend(process_single_message(current_msg))
+        output_lines.extend(_process_single_message(current_msg))
 
     cleaned = "\r".join(output_lines)
-    if not cleaned.endswith("\r"):
-        cleaned += "\r"
-    return cleaned
+    return cleaned if cleaned.endswith("\r") else cleaned + "\r"
+
 
 def derive_paths_and_filename(s3_key: str) -> tuple:
     """
@@ -381,7 +372,7 @@ def _process_record(record: dict, context) -> None:
 
     # Ensure '/incoming/' is part of the path and derive output key
     try:
-        base_user_prefix, output_key = derive_paths_and_filename(decoded_key)
+        _, output_key = derive_paths_and_filename(decoded_key)
         logger.info("Output will be: s3://%s/%s", bucket, output_key)
     except Exception as e:
         logger.warning("Key path check failed for %s: %s", decoded_key, str(e))
