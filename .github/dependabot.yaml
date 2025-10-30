@@ -16,7 +16,7 @@ updates:
       interval: "weekly"
       day: "sunday"
 
-  # Azure Infrastructure (if applicable)
+  # Azure Infrastructure
   - package-ecosystem: "terraform"
     directory: "/terraform/azure"
     open-pull-requests-limit: 1
