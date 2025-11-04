@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # AWS App Infrastructure (eks-nbs, vpc, efs, kms, etc.)
+  - package-ecosystem: "terraform"
+    directory: "/terraform/aws/app-infrastructure"
+    open-pull-requests-limit: 4
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+
+  # AWS Development Infrastructure
+  - package-ecosystem: "terraform"
+    directory: "/terraform/aws/development-infrastructure"
+    open-pull-requests-limit: 3
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+
+  # Azure Infrastructure
+  - package-ecosystem: "terraform"
+    directory: "/terraform/azure"
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+      day: "sunday"
