@@ -1,24 +1,56 @@
 version: 2
 updates:
-  # AWS App Infrastructure (eks-nbs, vpc, efs, kms, etc.)
+  # EKS NBS Infrastructure
   - package-ecosystem: "terraform"
-    directory: "/terraform/aws/app-infrastructure"
-    open-pull-requests-limit: 4
+    directory: "/terraform/aws/app-infrastructure/eks-nbs"
+    open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
       day: "sunday"
 
-  # AWS Development Infrastructure
+  # VPC Infrastructure
   - package-ecosystem: "terraform"
-    directory: "/terraform/aws/development-infrastructure"
-    open-pull-requests-limit: 3
+    directory: "/terraform/aws/app-infrastructure/vpc"
+    open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
       day: "sunday"
 
-  # Azure Infrastructure
+  # EFS Storage
   - package-ecosystem: "terraform"
-    directory: "/terraform/azure"
+    directory: "/terraform/aws/app-infrastructure/efs"
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+
+  # KMS
+  - package-ecosystem: "terraform"
+    directory: "/terraform/aws/app-infrastructure/kms"
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+
+  # Linkerd
+  - package-ecosystem: "terraform"
+    directory: "/terraform/aws/app-infrastructure/linkerd"
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+
+  # MSK
+  - package-ecosystem: "terraform"
+    directory: "/terraform/aws/app-infrastructure/msk"
+    open-pull-requests-limit: 1
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+
+  # S3 Bucket
+  - package-ecosystem: "terraform"
+    directory: "/terraform/aws/app-infrastructure/s3-bucket"
     open-pull-requests-limit: 1
     schedule:
       interval: "weekly"
@@ -27,7 +59,7 @@ updates:
   # GitHub Actions workflows
   - package-ecosystem: "github-actions"
     directory: "/"
-    open-pull-requests-limit: 2
+    open-pull-requests-limit: 1
     schedule:
       interval: "weekly"
       day: "sunday"
