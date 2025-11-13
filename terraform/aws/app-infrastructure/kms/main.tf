@@ -1,6 +1,6 @@
 module "kms" {
   source              = "terraform-aws-modules/kms/aws"
-  version             = "1.4.0"
+  version             = "4.1.1"
   description         = var.description
   key_usage           = var.key_usage
   enable_key_rotation = var.enable_key_rotation
