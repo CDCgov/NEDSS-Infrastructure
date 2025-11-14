@@ -98,3 +98,14 @@ variable "eks_aws_role_arn" {
   type = string
   description = "IAM role ARN of the EKS cluster"
 }
+
+variable "grafana_api_key_expiration_days" {
+  description = "Number of days until the Grafana API key expires"
+  type = number
+  default = 30
+
+validation {
+    condition     = var.grafana_api_key_expiration_days >= 30 && var.grafana_api_key_expiration_days <= 365
+    error_message = "The Grafana API key expiration days must be between 30 and 365."
+  }
+}
