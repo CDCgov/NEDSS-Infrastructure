@@ -49,7 +49,8 @@ module "grafana-workspace" {
   endpoint_url           = module.prometheus-workspace.amp_workspace_endpoint
   amp_workspace_id       = module.prometheus-workspace.amp_workspace_id
   region                 = data.aws_region.current
-  resource_prefix   = var.resource_prefix
+  resource_prefix        = var.resource_prefix
+  grafana_api_key_expiration_days = var.grafana_api_key_expiration_days
 }
 
 module "grafana-dashboard" {
