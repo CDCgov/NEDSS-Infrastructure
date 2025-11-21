@@ -6,9 +6,9 @@ module "eks" {
   kms_key_owners                = var.kms_key_owners
 
   # Set cluster info
-  cluster_name                   = local.eks_name
-  cluster_version                = var.cluster_version
-  cluster_endpoint_public_access = var.allow_endpoint_public_access
+  name    = local.eks_name  
+  kubernetes_version = var.cluster_version
+  endpoint_public_access  = var.allow_endpoint_public_access
 
   # Set VPC/Subnets
   vpc_id     = var.vpc_id
@@ -22,22 +22,31 @@ module "eks" {
   #   }
   # }
 
-  # Set node group instance types
-  eks_managed_node_group_defaults = {
-    instance_types = [var.instance_type]
-
-  }
 
   # Create node groups with config
   eks_managed_node_groups = {
-    main = {
-      name                     = local.eks_node_group_name
-      iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
-      iam_role_name            = local.eks_iam_role_name
-      iam_role_additional_policies = {
-        AmazonElasticContainerRegistryPublicFullAccess = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
-        PullThroughCacheRule                           = "${aws_iam_policy.eks_permissions.arn}"
-
+      main = {
+        name         = local.eks_node_group_name
+        iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
+        iam_role_name = local.eks_iam_role_name
+        iam_role_additional_policies = {
+          AmazonElasticContainerRegistryPublicFullAccess  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
+          PullThroughCacheRule = "${aws_iam_policy.eks_permissions.arn}"
+          
+        }
+        instance_types = [var.instance_type]
+        min_size     = var.min_nodes_count
+        max_size     = var.max_nodes_count
+        desired_size = var.desired_nodes_count
+        block_device_mappings = {
+            xvda = {
+              device_name = "/dev/xvda"
+              ebs = {
+                volume_size           = var.ebs_volume_size
+                volume_type           = "gp3"                
+                }
+              }
+          }   
       }
       min_size     = var.min_nodes_count
       max_size     = var.max_nodes_count
