@@ -24,36 +24,33 @@ resource "helm_release" "efs" {
   create_namespace = false
 
   # set image repo reference
-  set {
-    name  = "image.repository"
-    value = local.efs_main_image_repo
-  }
+  set = [
+    {
+      name  = "image.repository"
+      value = local.efs_main_image_repo
+    },
+    {
+      name  = "sidecars.livenessProbe.image.repository"
+      value = local.efs_side_liveness_image_repo
+    },
+    {
+      name  = "sidecars.nodeDriverRegistrar.image.repository"
+      value = local.efs_side_nodedriverregistrar_image_repo
+    },
+    {
+      name  = "sidecars.csiProvisioner.image.repository"
+      value = local.efs_side_csiprovisioner_image_repo
+    },
 
-  set {
-    name  = "sidecars.livenessProbe.image.repository"
-    value = local.efs_side_liveness_image_repo
-  }
-
-  set {
-    name  = "sidecars.nodeDriverRegistrar.image.repository"
-    value = local.efs_side_nodedriverregistrar_image_repo
-  }
-
-  set {
-    name  = "sidecars.csiProvisioner.image.repository"
-    value = local.efs_side_csiprovisioner_image_repo
-  }
-
-  # set irsa roles
-  set {
-    name  = "node.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.efs_cni_irsa_role.iam_role_arn
-  }
-
-  set {
-    name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.efs_cni_irsa_role.iam_role_arn
-  }
+    # set irsa roles
+    {
+      name  = "node.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.efs_cni_irsa_role.iam_role_arn
+    },
+    {
+      name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.efs_cni_irsa_role.iam_role_arn
+  }]
 
   depends_on = [module.eks]
 }
@@ -77,31 +74,28 @@ resource "helm_release" "argocd" {
   create_namespace = true
 
   # set image repo reference
-  set {
-    name  = "global.image.repository"
-    value = local.argocd_global_image_repo
-  }
-
-  set {
-    name  = "redis.image.repository"
-    value = local.argocd_redis_main_image_repo
-  }
-
-  set {
-    name  = "redis.exporter.image.repository"
-    value = local.argocd_redis_main_image_repo
-  }
-
-  set {
-    name  = "redis-ha.image.repository"
-    value = local.argocd_redis_main_image_repo
-  }
-
-  set {
-    name  = "redis-ha.exporter.image.repository"
-    value = local.argocd_redis_main_image_repo
-  }
-
+  set = [
+    {
+      name  = "global.image.repository"
+      value = local.argocd_global_image_repo
+    },
+    {
+      name  = "redis.image.repository"
+      value = local.argocd_redis_main_image_repo
+    },
+    {
+      name  = "redis.exporter.image.repository"
+      value = local.argocd_redis_main_image_repo
+    },
+    {
+      name  = "redis-ha.image.repository"
+      value = local.argocd_redis_main_image_repo
+    },
+    {
+      name  = "redis-ha.exporter.image.repository"
+      value = local.argocd_redis_main_image_repo
+    }
+  ]
   depends_on = [module.eks]
 }
 
@@ -116,21 +110,21 @@ resource "helm_release" "cert_manager" {
   wait             = true
   create_namespace = true
 
-  set {
-    name  = "installCRDs"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "installCRDs"
+      value = "true"
+    },
 
-  # Set values for OIDC
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.cert_manager_cni_irsa_role.iam_role_arn
-  }
-
-  set {
-    name  = "securityContext.fsGroup"
-    value = 1001
-  }
-
+    # Set values for OIDC
+    {
+      name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+      value = module.cert_manager_cni_irsa_role.iam_role_arn
+    },
+    {
+      name  = "securityContext.fsGroup"
+      value = 1001
+    }
+  ]
   depends_on = [module.eks]
 }

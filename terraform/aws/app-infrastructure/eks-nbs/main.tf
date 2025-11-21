@@ -1,14 +1,14 @@
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "21.9.0" 
+  source                        = "terraform-aws-modules/eks/aws"
+  version                       = "21.9.0"
   kms_key_enable_default_policy = var.kms_key_enable_default_policy
   kms_key_administrators        = coalescelist(var.kms_key_administrators, [try(data.aws_iam_session_context.current.issuer_arn, "")])
   kms_key_owners                = var.kms_key_owners
 
   # Set cluster info
-  name    = local.eks_name  
-  kubernetes_version = var.cluster_version
-  endpoint_public_access  = var.allow_endpoint_public_access
+  name                   = local.eks_name
+  kubernetes_version     = var.cluster_version
+  endpoint_public_access = var.allow_endpoint_public_access
 
   # Set VPC/Subnets
   vpc_id     = var.vpc_id
@@ -25,32 +25,19 @@ module "eks" {
 
   # Create node groups with config
   eks_managed_node_groups = {
-      main = {
-        name         = local.eks_node_group_name
-        iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
-        iam_role_name = local.eks_iam_role_name
-        iam_role_additional_policies = {
-          AmazonElasticContainerRegistryPublicFullAccess  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
-          PullThroughCacheRule = "${aws_iam_policy.eks_permissions.arn}"
-          
-        }
-        instance_types = [var.instance_type]
-        min_size     = var.min_nodes_count
-        max_size     = var.max_nodes_count
-        desired_size = var.desired_nodes_count
-        block_device_mappings = {
-            xvda = {
-              device_name = "/dev/xvda"
-              ebs = {
-                volume_size           = var.ebs_volume_size
-                volume_type           = "gp3"                
-                }
-              }
-          }   
+    main = {
+      name                     = local.eks_node_group_name
+      iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
+      iam_role_name            = local.eks_iam_role_name
+      iam_role_additional_policies = {
+        AmazonElasticContainerRegistryPublicFullAccess = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
+        PullThroughCacheRule                           = "${aws_iam_policy.eks_permissions.arn}"
+
       }
-      min_size     = var.min_nodes_count
-      max_size     = var.max_nodes_count
-      desired_size = var.desired_nodes_count
+      instance_types = [var.instance_type]
+      min_size       = var.min_nodes_count
+      max_size       = var.max_nodes_count
+      desired_size   = var.desired_nodes_count
       block_device_mappings = {
         xvda = {
           device_name = "/dev/xvda"
