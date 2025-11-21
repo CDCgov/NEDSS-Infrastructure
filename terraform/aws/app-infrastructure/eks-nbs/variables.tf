@@ -44,7 +44,7 @@ variable "readonly_role_arn" {
 
 variable "cluster_version" {
   description = "Version of the AWS EKS cluster to provision"
-  default = "1.32"
+  default     = "1.32"
 }
 
 variable "desired_nodes_count" {
@@ -126,19 +126,19 @@ variable "allow_endpoint_public_access" {
 
 variable "external_cidr_blocks" {
   description = "A list of IAM ARNs for those who will have full key permissions (kms:*)"
-  type        = list
+  type        = list(any)
   default     = []
 }
 
 variable "kms_key_owners" {
   description = "List of CIDR blocks (ex. 10.0.0.0/32) to allow access to eks cluster API"
-  type        = list
+  type        = list(any)
   default     = []
 }
 
 variable "kms_key_administrators" {
   description = "A list of IAM ARNs for key administrators. If no value is provided, the current caller identity is used to ensure at least one key admin is available"
-  type        = list
+  type        = list(any)
   default     = []
 }
 

@@ -11,11 +11,11 @@ output "public_subnets" {
 }
 
 output "private_route_table_id" {
-  value = module.vpc.private_route_table_ids[0] 
+  value = module.vpc.private_route_table_ids[0]
 }
 
 output "public_route_table_id" {
-  value = module.vpc.public_route_table_ids[0] 
+  value = module.vpc.public_route_table_ids[0]
 }
 
 output "private_subnets_cidr_blocks" {

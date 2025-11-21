@@ -1,16 +1,16 @@
 
 resource "aws_cloudwatch_log_group" "amp_log_group" {
-  name = "${var.resource_prefix}-amp-workspace-log-group"
+  name              = "${var.resource_prefix}-amp-workspace-log-group"
   retention_in_days = var.retention_in_days
-  skip_destroy = false
+  skip_destroy      = false
 }
 
 resource "aws_prometheus_workspace" "amp_workspace" {
-  alias                  = var.alias
+  alias = var.alias
   logging_configuration {
-  log_group_arn = "${aws_cloudwatch_log_group.amp_log_group.arn}:*"
+    log_group_arn = "${aws_cloudwatch_log_group.amp_log_group.arn}:*"
   }
-  tags = merge(tomap({"Name"=var.alias}),var.tags)
+  tags = merge(tomap({ "Name" = var.alias }), var.tags)
 }
 
 
@@ -59,12 +59,12 @@ EOF
 
 resource "aws_sns_topic" "prometheus-alerts" {
   name = "${var.resource_prefix}-amp-workspace-metrics-alerts"
-  tags = merge(tomap({"Name"="${var.resource_prefix}-amp-workspace-metrics-alerts"}),var.tags)
+  tags = merge(tomap({ "Name" = "${var.resource_prefix}-amp-workspace-metrics-alerts" }), var.tags)
 }
 
 
 resource "aws_iam_policy" "sns-policy" {
-  name        = "${var.resource_prefix}-amp-workspace-sns-policy"
+  name = "${var.resource_prefix}-amp-workspace-sns-policy"
   lifecycle {
     create_before_destroy = true
   }
@@ -73,14 +73,14 @@ resource "aws_iam_policy" "sns-policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      { 
-  "Effect": "Allow", 
-  "Action": [ 
-    "sns:Publish", 
-    "sns:GetTopicAttributes" 
-  ], 
-  "Resource": aws_sns_topic.prometheus-alerts.arn 
-},
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "sns:Publish",
+          "sns:GetTopicAttributes"
+        ],
+        "Resource" : aws_sns_topic.prometheus-alerts.arn
+      },
     ]
   })
 }
@@ -108,7 +108,7 @@ resource "aws_iam_role" "amp_prometheus_role" {
 }
 EOF
 
-  tags = merge(tomap({"Name"="${var.resource_prefix}-amp-workspace-role"}),var.tags)
+  tags = merge(tomap({ "Name" = "${var.resource_prefix}-amp-workspace-role" }), var.tags)
 }
 
 

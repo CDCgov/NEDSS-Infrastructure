@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_iam_policy" "policy" {
-  name        = "${var.resource_prefix}-amp-policy"
+  name = "${var.resource_prefix}-amp-policy"
   lifecycle {
     create_before_destroy = true
   }
@@ -14,10 +14,10 @@ resource "aws_iam_policy" "policy" {
     Statement = [
       {
         Action = [
-            "aps:RemoteWrite",
-            "aps:GetSeries",
-            "aps:GetLabels",
-            "aps:GetMetricMetadata"
+          "aps:RemoteWrite",
+          "aps:GetSeries",
+          "aps:GetLabels",
+          "aps:GetMetricMetadata"
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -53,13 +53,13 @@ resource "aws_iam_role" "prometheus_role" {
 }
 EOF
 
-  tags = merge(tomap({"Name"="${local.prometheus_role_name}"}),var.tags)
+  tags = merge(tomap({ "Name" = "${local.prometheus_role_name}" }), var.tags)
 }
 
 
 
 resource "aws_iam_policy_attachment" "prometheus-attach" {
-  name       = "${var.resource_prefix}-amp-policy-att"
+  name = "${var.resource_prefix}-amp-policy-att"
   lifecycle {
     create_before_destroy = true
   }

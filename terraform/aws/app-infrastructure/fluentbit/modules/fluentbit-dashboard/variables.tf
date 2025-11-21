@@ -1,4 +1,4 @@
-variable "log_group_name" { default = "fluent-bit-cloudwatch"}
+variable "log_group_name" { default = "fluent-bit-cloudwatch" }
 
 variable "app_name" {
   type    = list(string)
