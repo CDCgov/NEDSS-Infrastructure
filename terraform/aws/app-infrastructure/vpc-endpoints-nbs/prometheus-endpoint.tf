@@ -30,7 +30,7 @@ resource "aws_vpc_endpoint" "prometheus_endpoint" {
   count               = var.create_prometheus_vpc_endpoint ? 1 : 0
   tags                = merge(tomap({ "Name" = local.prometheus_endpoint }), var.tags)
   vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.aps"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.aps"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
 
