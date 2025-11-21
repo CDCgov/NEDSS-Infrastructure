@@ -6,9 +6,9 @@ module "eks" {
   kms_key_owners = var.kms_key_owners
 
   # Set cluster info
-  cluster_name    = local.eks_name  
-  cluster_version = var.cluster_version
-  cluster_endpoint_public_access  = var.allow_endpoint_public_access
+  name    = local.eks_name  
+  kubernetes_version = var.cluster_version
+  endpoint_public_access  = var.allow_endpoint_public_access
 
   # Set VPC/Subnets
   vpc_id                   = var.vpc_id
@@ -22,11 +22,6 @@ module "eks" {
   #   }
   # }
 
-  # Set node group instance types
-  eks_managed_node_group_defaults = {
-    instance_types = [var.instance_type]
-    
-  }
 
   # Create node groups with config
   eks_managed_node_groups = {
@@ -39,6 +34,7 @@ module "eks" {
           PullThroughCacheRule = "${aws_iam_policy.eks_permissions.arn}"
           
         }
+        instance_types = [var.instance_type]
         min_size     = var.min_nodes_count
         max_size     = var.max_nodes_count
         desired_size = var.desired_nodes_count
