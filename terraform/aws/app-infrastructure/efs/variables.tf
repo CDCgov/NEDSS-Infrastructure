@@ -26,6 +26,14 @@ variable "vpc_cidrs" {
   description = "list of VPC CIDRs"
   type        = list(string)
   default     = ["0.0.0.0/0"]
+
+  validation {
+    condition = alltrue([
+      for cidr in var.vpc_cidrs : can(cidrnetmask(cidr))
+    ])
+
+    error_message = "The 'vpc_cidrs' variable must be a list of valid CIDR blocks. One or more items in the list are invalid."
+  }
 }
 
 variable "mount_targets" {
