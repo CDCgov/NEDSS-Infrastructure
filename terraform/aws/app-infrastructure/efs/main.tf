@@ -43,10 +43,11 @@ module "efs" {
   security_group_description = "EFS Security Group for ${var.resource_prefix}-efs"
   security_group_vpc_id      = var.vpc_id
 
-  security_group_rules = {
-    vpc = {
-      description = "NFS ingress from VPC subnets"
-      cidr_blocks = var.vpc_cidrs
+  security_group_ingress_rules = {
+    for index, cidr in var.vpc_cidrs :
+    "vpc_${index}" => {
+      description = "NFS ingress from VPC: ${cidr}"
+      cidr_ipv4   = cidr
     }
   }
 }
