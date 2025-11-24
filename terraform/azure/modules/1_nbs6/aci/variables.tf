@@ -31,7 +31,7 @@ variable "aci_memory" {
 variable "aci_github_release_tag" {
   description = "Create URL and download Release Package from Release Artifacts. Default is always latest even if empty"
   type        = string
-  default      = "latest"
+  default     = "latest"
 }
 
 variable "aci_nbs6_repository" {

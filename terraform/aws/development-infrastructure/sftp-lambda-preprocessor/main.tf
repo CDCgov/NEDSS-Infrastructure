@@ -7,8 +7,8 @@ resource "aws_iam_role" "lambda_exec" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Action    = "sts:AssumeRole",
-      Effect    = "Allow",
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
       Principal = {
         Service = "lambda.amazonaws.com"
       }
@@ -47,8 +47,8 @@ resource "aws_iam_policy" "lambda_policy" {
         Resource = "arn:aws:s3:::${var.sftp_bucket_name}"
       },
       {
-        Effect = "Allow",
-        Action = "sns:Publish",
+        Effect   = "Allow",
+        Action   = "sns:Publish",
         Resource = "*"
       }
     ]
@@ -61,34 +61,34 @@ resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
 }
 
 #resource "aws_s3_bucket_notification" "sftp_upload_notification" {
-  #bucket = var.sftp_bucket_name
+#bucket = var.sftp_bucket_name
 #
-  #lambda_function {
-    #lambda_function_arn = aws_lambda_function.split_csv_lambda.arn
-    #events              = ["s3:ObjectCreated:*"]
-    #filter_prefix       = var.filter_prefix
-    #filter_suffix       = ".csv"
-  #}
+#lambda_function {
+#lambda_function_arn = aws_lambda_function.split_csv_lambda.arn
+#events              = ["s3:ObjectCreated:*"]
+#filter_prefix       = var.filter_prefix
+#filter_suffix       = ".csv"
+#}
 #
-  #lambda_function {
-    #lambda_function_arn = aws_lambda_function.split_dat_lambda.arn
-    #events              = ["s3:ObjectCreated:*"]
-    #filter_prefix       = var.filter_prefix
-    #filter_suffix       = ".dat"
-  #}
+#lambda_function {
+#lambda_function_arn = aws_lambda_function.split_dat_lambda.arn
+#events              = ["s3:ObjectCreated:*"]
+#filter_prefix       = var.filter_prefix
+#filter_suffix       = ".dat"
+#}
 #
-  #lambda_function {
-    #lambda_function_arn = aws_lambda_function.split_obr_lambda.arn
-    #events              = ["s3:ObjectCreated:*"]
-    #filter_prefix       = var.filter_prefix
-    #filter_suffix       = ".hl7"
-  #}
+#lambda_function {
+#lambda_function_arn = aws_lambda_function.split_obr_lambda.arn
+#events              = ["s3:ObjectCreated:*"]
+#filter_prefix       = var.filter_prefix
+#filter_suffix       = ".hl7"
+#}
 #
-  #depends_on = [
-    #aws_lambda_permission.allow_s3_to_invoke_split_csv,
-    #aws_lambda_permission.allow_s3_to_invoke_split_dat,
-    #aws_lambda_permission.allow_s3_to_invoke_split_obr
-  #]
+#depends_on = [
+#aws_lambda_permission.allow_s3_to_invoke_split_csv,
+#aws_lambda_permission.allow_s3_to_invoke_split_dat,
+#aws_lambda_permission.allow_s3_to_invoke_split_obr
+#]
 #}
 
 resource "aws_sns_topic" "split_csv_topic" {
@@ -135,12 +135,12 @@ resource "aws_lambda_function" "split_csv_lambda" {
 
   environment {
     variables = {
-      ERROR_TOPIC_ARN = aws_sns_topic.split_csv_errors.arn
-      BUCKET          = var.sftp_bucket_name
-      SOFTWARE_VENDOR   = "CDW"
-      SOFTWARE_PRODUCT  = "CSV2HL7"
-      SOFTWARE_VERSION  = "7.10.3"
-      SOFTWARE_RELEASE  = "20250715"
+      ERROR_TOPIC_ARN  = aws_sns_topic.split_csv_errors.arn
+      BUCKET           = var.sftp_bucket_name
+      SOFTWARE_VENDOR  = "CDW"
+      SOFTWARE_PRODUCT = "CSV2HL7"
+      SOFTWARE_VERSION = "7.10.3"
+      SOFTWARE_RELEASE = "20250715"
     }
   }
 }

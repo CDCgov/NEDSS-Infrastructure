@@ -38,7 +38,7 @@ variable "aci_sql_database_endpoint" {
 variable "aci_github_release_tag" {
   description = "Create URL and download Release Package from Release Artifacts. Default is always latest even if empty"
   type        = string
-  default      = "latest"
+  default     = "latest"
 }
 
 variable "aci_quay_nbs6_repository" {
@@ -68,7 +68,7 @@ variable "agw_subnet_name" {
 variable "agw_key_vault_name" {
   description = "Key Vault Name"
 
-  type        = string
+  type = string
 }
 
 variable "agw_key_vault_cert_name" {
@@ -83,7 +83,7 @@ variable "agw_backend_host" {
 
 variable "agw_aci_ip" {
   description = "ACI 3 IPs"
-  type        = list
+  type        = list(any)
 }
 
 variable "agw_private_ip" {
@@ -113,7 +113,7 @@ variable "sqlmi_subnet_name" {
 variable "sqlmi_key_vault" {
   description = "Key Vault Name to Store SQLMI Credentials"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "sqlmi_vcore" {
@@ -138,7 +138,7 @@ variable "sqlmi_restoring_from_database_name" {
 
 variable "sqlmi_restoring_from_database_rg" {
   description = "SQL Managed Database to Restore From Resource Group"
-  type        = string  
+  type        = string
 }
 
 variable "sqlmi_restore_point_in_time" {

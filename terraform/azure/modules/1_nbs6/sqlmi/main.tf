@@ -8,8 +8,8 @@
 
 # Create Random Username and Password
 resource "random_string" "sqlmi_username" {
-  length           = 16
-  special          = false
+  length  = 16
+  special = false
 }
 
 resource "random_password" "sqlmi_password" {
@@ -47,7 +47,7 @@ resource "azurerm_mssql_managed_instance" "sqlmi" {
   administrator_login          = random_string.sqlmi_username.result
   administrator_login_password = random_password.sqlmi_password.result
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -61,8 +61,8 @@ resource "azurerm_mssql_managed_instance" "sqlmi" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
-    }
+    ]
+  }
 }
 
 
@@ -88,7 +88,7 @@ resource "azurerm_mssql_managed_instance" "sqlmi" {
 # resource "azurerm_mssql_managed_database" "nbs_msgoute_db" {
 #   name                = "NBS_MSGOUTE"
 #   managed_instance_id = azurerm_mssql_managed_instance.sqlmi.id
- 
+
 
 #   lifecycle {
 #     prevent_destroy = false

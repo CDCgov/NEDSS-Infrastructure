@@ -3,9 +3,9 @@
 module "fluentbit" {
 
   # SAMPLES
-  source                             = "../app-infrastructure/fluentbit"
-  path_to_fluentbit                  = "../app-infrastructure/fluentbit"
-  eks_aws_role_arn                   = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
+  source            = "../app-infrastructure/fluentbit"
+  path_to_fluentbit = "../app-infrastructure/fluentbit"
+  eks_aws_role_arn  = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
 
 
   oidc_provider_arn                  = module.eks_nbs.oidc_provider_arn

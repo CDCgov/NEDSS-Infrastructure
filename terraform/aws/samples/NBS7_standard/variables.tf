@@ -133,7 +133,7 @@ variable "msk_ebs_volume_size" {
 variable "fluentbit_force_destroy_log_bucket" {
   description = "If true, the log bucket will be deleted on terraform destroy with all contents. Defaults to `false`"
   type        = bool
-  default = false
+  default     = false
 }
 
 variable "use_ecr_pull_through_cache" {

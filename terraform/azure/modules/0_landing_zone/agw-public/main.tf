@@ -26,7 +26,7 @@ resource "azurerm_public_ip" "agw_public_ip" {
   allocation_method   = "Static"
   sku                 = "Standard"
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -40,10 +40,10 @@ resource "azurerm_public_ip" "agw_public_ip" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
+    ]
     create_before_destroy = true
     prevent_destroy       = true
-    }
+  }
 }
 
 # Create Managed Identity to allow AGW to read Certificate from KeyVault
@@ -52,7 +52,7 @@ resource "azurerm_user_assigned_identity" "agw_mi" {
   location            = data.azurerm_resource_group.rg.location
   name                = "${var.resource_prefix}-agw-public-mi"
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -66,9 +66,9 @@ resource "azurerm_user_assigned_identity" "agw_mi" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
+    ]
     create_before_destroy = true
-    }
+  }
 }
 
 # Create Managed Identity to allow AGW to read Certificate from KeyVault
@@ -77,7 +77,7 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
   key_vault_id       = data.azurerm_key_vault.key_vault.id
   tenant_id          = data.azurerm_client_config.current.tenant_id
   object_id          = azurerm_user_assigned_identity.agw_mi.principal_id
-  secret_permissions = ["Get","List"]
+  secret_permissions = ["Get", "List"]
 }
 
 
@@ -121,7 +121,7 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
 
 #     action = "Allow"
 #   }
-  
+
 #   lifecycle {
 #     ignore_changes = [ 
 #       tags["business_steward"],
@@ -145,12 +145,12 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
 # Configure Public App Gateway
 resource "azurerm_application_gateway" "agw_public" {
   name                = "${var.resource_prefix}-agw-public"
-  depends_on          = [azurerm_public_ip.agw_public_ip,azurerm_key_vault_access_policy.agw_mi_policy,azurerm_user_assigned_identity.agw_mi]
+  depends_on          = [azurerm_public_ip.agw_public_ip, azurerm_key_vault_access_policy.agw_mi_policy, azurerm_user_assigned_identity.agw_mi]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   # Uncomment if WAF Policy is Required
   # firewall_policy_id  = azurerm_web_application_firewall_policy.agw_waf_policy.id
-  
+
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.agw_mi.id]
@@ -169,10 +169,10 @@ resource "azurerm_application_gateway" "agw_public" {
   }
 
 
-# Password is not required
+  # Password is not required
   ssl_certificate {
-    name                    = local.cert_name
-    key_vault_secret_id     = data.azurerm_key_vault_secret.agw_key_vault_cert.id
+    name                = local.cert_name
+    key_vault_secret_id = data.azurerm_key_vault_secret.agw_key_vault_cert.id
   }
 
   frontend_port {
@@ -240,7 +240,7 @@ resource "azurerm_application_gateway" "agw_public" {
     http_listener_name         = local.listener_name_https
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.https_setting_name
-    rewrite_rule_set_name       = local.rewrite_rule_set_name
+    rewrite_rule_set_name      = local.rewrite_rule_set_name
   }
 
   redirect_configuration {
@@ -266,20 +266,20 @@ resource "azurerm_application_gateway" "agw_public" {
   }
 
   rewrite_rule_set {
-      name = local.rewrite_rule_set_name
+    name = local.rewrite_rule_set_name
 
-      rewrite_rule {
-        name          = local.rewrite_rule_set_name
-        rule_sequence = 100
+    rewrite_rule {
+      name          = local.rewrite_rule_set_name
+      rule_sequence = 100
 
-        response_header_configuration {
-          header_name = "Strict-Transport-Security"
-          header_value = "max-age=31536000"
-        }
-
+      response_header_configuration {
+        header_name  = "Strict-Transport-Security"
+        header_value = "max-age=31536000"
       }
 
     }
+
+  }
 
 
   # This should be set if no WAF Policy and only default OWASP rules are required
@@ -292,7 +292,7 @@ resource "azurerm_application_gateway" "agw_public" {
   # }
 
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -306,6 +306,6 @@ resource "azurerm_application_gateway" "agw_public" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
-    }
+    ]
+  }
 }

@@ -73,9 +73,9 @@ resource "aws_sns_topic" "summary" {
 
 resource "aws_transfer_server" "sftp" {
   identity_provider_type = "SERVICE_MANAGED"
-  protocols               = ["SFTP"]
-  endpoint_type           = "PUBLIC"
-  logging_role            = aws_iam_role.transfer_logging.arn
+  protocols              = ["SFTP"]
+  endpoint_type          = "PUBLIC"
+  logging_role           = aws_iam_role.transfer_logging.arn
 }
 
 resource "aws_s3_bucket" "hl7" {
@@ -96,15 +96,15 @@ resource "aws_s3_object" "inbox_folders" {
 }
 
 resource "tls_private_key" "user_keys" {
-  for_each = var.enable_ssh_keys ? local.sftp_user_keys : {}
+  for_each  = var.enable_ssh_keys ? local.sftp_user_keys : {}
   algorithm = "RSA"
   rsa_bits  = 2048
 }
 
 resource "random_password" "user_passwords" {
   for_each = local.sftp_user_keys
-  length           = 16
-  special          = true
+  length   = 16
+  special  = true
   #override_characters = "!@#%&*"
 }
 
@@ -158,7 +158,7 @@ resource "aws_transfer_user" "sftp" {
   for_each = local.sftp_user_keys
 
   #server_id           = aws_transfer_server.sftp[0].id
-  server_id           = aws_transfer_server.sftp.id
+  server_id = aws_transfer_server.sftp.id
   #user_name           = replace(each.key, "/", "_")
   user_name           = split("/", each.key)[1]
   role                = aws_iam_role.sftp_user[split("/", each.key)[0]].arn
@@ -169,22 +169,22 @@ resource "aws_transfer_user" "sftp" {
     target = format("/sites/%s/%s", split("/", each.key)[0], split("/", each.key)[1])
   }
 
- # home_directory_mappings = [
- #   {
- #     entry  = "/"
- #     #target = "/sites/${split(\"/\", each.key)[0]}/${split(\"/\", each.key)[1]}"
- #     target = format("/sites/%s/%s", split("/", each.key)[0], split("/", each.key)[1])
-#
-#    }
-#  ]
+  # home_directory_mappings = [
+  #   {
+  #     entry  = "/"
+  #     #target = "/sites/${split(\"/\", each.key)[0]}/${split(\"/\", each.key)[1]}"
+  #     target = format("/sites/%s/%s", split("/", each.key)[0], split("/", each.key)[1])
+  #
+  #    }
+  #  ]
   #ssh_public_key_body = each.value.public_key_openssh
   #password            = random_password.user_passwords[each.key].result
 }
 
 resource "random_password" "admin_passwords" {
   for_each = var.enable_sftp ? var.sites : {}
-  length           = 20
-  special          = true
+  length   = 20
+  special  = true
   #override_characters = "!@#%&*"
 }
 
@@ -209,7 +209,7 @@ resource "aws_transfer_user" "site_admin" {
   home_directory_type = "LOGICAL"
 
   home_directory_mappings {
-    entry  = "/"
+    entry = "/"
     #target = format("/sites/%s/%s", split("/", each.key)[0], split("/", each.key)[1])
     target = "/${var.bucket_name}/sites/${each.key}"
   }
@@ -232,7 +232,7 @@ ${join("\n", [
 ])}
 EOT
 
-  filename = "${path.module}/sftp_credentials.csv"
+filename = "${path.module}/sftp_credentials.csv"
 }
 
 resource "aws_iam_role" "sftp_user" {
@@ -283,7 +283,7 @@ resource "aws_secretsmanager_secret" "ssh_private_keys" {
 }
 
 resource "aws_secretsmanager_secret_version" "ssh_private_keys_version" {
-  for_each = tls_private_key.user_keys
+  for_each      = tls_private_key.user_keys
   secret_id     = aws_secretsmanager_secret.ssh_private_keys[each.key].id
   secret_string = each.value.private_key_pem
 }

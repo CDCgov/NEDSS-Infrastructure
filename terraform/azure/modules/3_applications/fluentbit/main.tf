@@ -1,27 +1,27 @@
-locals {  
+locals {
   service_account_name = "${var.resource_prefix}-fluentbit-svc-acc"
 }
 
-resource "helm_release" "fluentbit" {  
-  name       = "fluentbit"
-  repository = "https://fluent.github.io/helm-charts"
-  chart      = "fluent-bit"
+resource "helm_release" "fluentbit" {
+  name             = "fluentbit"
+  repository       = "https://fluent.github.io/helm-charts"
+  chart            = "fluent-bit"
   version          = var.helm_version
-  namespace  = var.namespace
+  namespace        = var.namespace
   create_namespace = true
-  wait = true
+  wait             = true
 
   set {
-    name = "serviceAccount.create"
+    name  = "serviceAccount.create"
     value = true
   }
 
   set {
-    name = "serviceAccount.name"
+    name  = "serviceAccount.name"
     value = local.service_account_name
   }
 
-  values         = [
+  values = [
     <<-EOF
     ## https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/configuration-file
     config:

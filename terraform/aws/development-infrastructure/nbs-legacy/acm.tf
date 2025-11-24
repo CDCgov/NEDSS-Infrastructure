@@ -1,5 +1,5 @@
 module "acm" {
-  count   =  var.create_cert ? 1 : 0  
+  count   = var.create_cert ? 1 : 0
   source  = "terraform-aws-modules/acm/aws"
   version = "~> 4.0"
 

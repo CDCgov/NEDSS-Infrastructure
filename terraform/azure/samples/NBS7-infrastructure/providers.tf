@@ -22,26 +22,26 @@ terraform {
 
 
   backend "azurerm" {
-    resource_group_name   = "terraform-storage-rg"
-    storage_account_name  = "terraformstatezxcv"
-    container_name        = "tfstatefiles"
-    key                   = "terraform.tfstate"
-  }  
+    resource_group_name  = "terraform-storage-rg"
+    storage_account_name = "terraformstatezxcv"
+    container_name       = "tfstatefiles"
+    key                  = "terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
   features {
-    resource_group{
-        prevent_deletion_if_contains_resources = false
+    resource_group {
+      prevent_deletion_if_contains_resources = false
     }
   }
 
-  subscription_id   = var.subscription_id 
-  tenant_id         = var.tenant_id 
-  client_id         = var.client_id 
-  client_secret     = var.client_secret 
+  subscription_id = var.subscription_id
+  tenant_id       = var.tenant_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
 }
 
 
-provider"azuread"{}
+provider "azuread" {}
 

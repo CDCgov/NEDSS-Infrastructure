@@ -3,7 +3,7 @@ data "azurerm_client_config" "current" {}
 
 # Get Resource Group Data
 data "azurerm_resource_group" "rg" {
-  name     = var.acr_resource_group_name
+  name = var.acr_resource_group_name
 }
 
 # Get vNet Data

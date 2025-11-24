@@ -107,7 +107,7 @@ variable "db_snapshot_identifier" {
   description = "Database snapshot to use for RDS instance, must match application version"
   type        = string
   #default     = "cdc-nbs-6-0-16-test"
-  default     = "cdc-nbs-legacy-rds-mssql-60161-2024-10-22-nokc"
+  default = "cdc-nbs-legacy-rds-mssql-60161-2024-10-22-nokc"
 }
 variable "manage_master_user_password" {
   description = "Set to true to allow RDS to manage the master user password in Secrets Manager"
@@ -127,7 +127,7 @@ variable "ami" {
   description = "AMI for EC2 instance, this is stock windows 2019 server base, default AWS us-east1 as of Jan 2025"
   type        = string
   # server base
-  default     = "ami-049dd04cca2dc5594"
+  default = "ami-049dd04cca2dc5594"
 }
 
 variable "ec2_instance_type" {

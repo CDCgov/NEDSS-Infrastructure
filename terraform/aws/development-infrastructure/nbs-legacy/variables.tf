@@ -1,19 +1,19 @@
 variable "subnet_ids" {
   description = "Subnet Id to be used when creating EC2 instance"
   type        = list(any)
-  default = []
+  default     = []
 }
 
 variable "domain_name" {
   description = "Domain name for hosted zone (ex. dev-app.my-domain.com). Required if create_cert == true"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "load_balancer_subnet_ids" {
   description = "Subnet Id to be used when creating load balancer. Conflicts with subnet_mapping (which take precedence if set)."
   type        = list(any)
-  default = null
+  default     = null
 }
 
 variable "subnet_mapping" {
@@ -37,7 +37,7 @@ variable "subnet_mapping" {
 variable "instance_type" {
   description = "Instance type for EC2 instance. Required if deploy_on_ecs == false."
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "deploy_on_ecs" {
@@ -48,8 +48,8 @@ variable "deploy_on_ecs" {
 
 variable "local_bucket" {
   description = "Bucket exists in same account where infrastructure is being deployed"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "deploy_alb_dns_record" {
@@ -61,13 +61,13 @@ variable "deploy_alb_dns_record" {
 variable "ecs_subnets" {
   description = "Classic NBS ECS Subnets Configuration"
   type        = list(any)
-  default = []
+  default     = []
 }
 
 variable "docker_image" {
   description = "Docker Image for Classic NBS"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "ecs_cpu" {
@@ -85,7 +85,7 @@ variable "ecs_memory" {
 variable "ami" {
   description = "AMI for EC2 instance. (Defaul) Null will use latest Windows 2022 Core Base ami. Required if deploy_on_ecs == false."
   type        = string
-  default = null
+  default     = null
 }
 
 # variable "legacy_vpc_id" {
@@ -106,13 +106,13 @@ variable "vpc_id" {
 variable "nbs6_ingress_vpc_cidr_blocks" {
   description = "List of CIDR blocks which will have access to nbs6 instance"
   type        = list(any)
-  default = []
+  default     = []
 }
 
 variable "nbs6_rdp_cidr_block" {
   description = "CIDR block in for RDP access"
   type        = list(any)
-  default = []
+  default     = []
 }
 
 variable "resource_prefix" {
@@ -133,7 +133,7 @@ variable "resource_prefix" {
 variable "ec2_key_name" {
   description = "EC2 key pair to manage instance. Required if deploy_on_ecs == false."
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "tags" {
@@ -144,13 +144,13 @@ variable "tags" {
 variable "route53_url_name" {
   description = "URL name for Classic App as an A record in route53 (ex. app-dev.my-domain.com). Requires zone_id to be set."
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "zone_id" {
   description = "Route53 Hosted Zone Id. Requires route53_url_name to be set."
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "update_route53_a_record" {
@@ -174,14 +174,14 @@ variable "certificate_arn" {
 variable "artifacts_bucket_name" {
   description = "S3 bucket name used to store build artifacts. Required if deploy_on_ecs == false."
   type        = string
-  default = ""
+  default     = ""
 
 }
 
 variable "deployment_package_key" {
   description = "Deployment package S3 key for NBS application. Required if deploy_on_ecs == false."
   type        = string
-  default = ""
+  default     = ""
 
 }
 
@@ -199,7 +199,7 @@ variable "nbs_github_release_tag" {
 variable "kms_arn_shared_services_bucket" {
   description = "KMS key arn used to encrypt shared services s3 bucket"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "load_balancer_type" {
@@ -217,51 +217,51 @@ variable "internal" {
 variable "param_store_key_id" {
   description = "(optional) KMS key id used to encrypt parameter store SecureString to be read by EC2 instance"
   type        = string
-  default = null
+  default     = null
 }
 
 # Database credentials to be encrypted and stored as SecureStrings in parameter store
 variable "odse_user" {
   description = "User for odse database"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "odse_pass" {
   description = "Password for odse database"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "rdb_user" {
   description = "User for odse database"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "rdb_pass" {
   description = "Password for odse database"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "srte_user" {
   description = "User for odse database"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "srte_pass" {
   description = "Password for odse database"
   type        = string
-  sensitive = true
+  sensitive   = true
 }
 
 variable "phcrimporter_user" {
   description = "User needed to run phcrimporter batch job (leave_default=preserve Wildfly default)"
   type        = string
-  default = "leave_default"
-  sensitive = true
+  default     = "leave_default"
+  sensitive   = true
 }
 
 # Variable which creates a Windows Scheduled Task for BatchFiles
@@ -277,27 +277,27 @@ variable "phcrimporter_user" {
 # frequencyMinutes = frequency in minutes to repeat Windows Scheduled Task
 variable "windows_scheduled_tasks" {
   description = "Scheduled tasks in semicolon-separated list providing, note the trailing ';' - filename, scriptPathFromWorkDir, dailyStartTime, dailyStopTime, frequencyDays, frequencyHours, frequencyMinutes;"
-  type = string
-  default = "ELRImporter.bat,, 6:00:00am, 6:00:00pm, 0, 0, 2; MsgOutProcessor.bat,, 6:00:00am, 7:00:00pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12:00:00am,, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7:00:00pm,, 1, 0 , 0; covid19ETL.bat,, 5:00:00am,, 1, 0 , 0; PHCRImporter.bat,, 6:00:00am, 7:00:00pm, 0, 1 , 0;"
+  type        = string
+  default     = "ELRImporter.bat,, 6:00:00am, 6:00:00pm, 0, 0, 2; MsgOutProcessor.bat,, 6:00:00am, 7:00:00pm, 0, 0 , 2; UserProfileUpdateProcess.bat, retired\\, 12:00:00am,, 1, 0, 0; DeDuplicationSimilarBatchProcess.bat, retired\\, 7:00:00pm,, 1, 0 , 0; covid19ETL.bat,, 5:00:00am,, 1, 0 , 0; PHCRImporter.bat,, 6:00:00am, 7:00:00pm, 0, 1 , 0;"
 }
 
 variable "java_memory" {
   description = "Memory for Wildfly server to run Java (NOTE should not exceed 70% of VM memory)"
-  type = string
-  default = "4g"
+  type        = string
+  default     = "4g"
 }
 
 variable "max_meta_space_size" {
   description = "Max non-heap memory area used to store metadata such as class definitions, method data, and field data."
-  type = string
-  default = "512M"
+  type        = string
+  default     = "512M"
 }
 
 variable "daily_stop_nbs6" {
   description = "Map(string) of detailing whether to stop nbs6 daily and at what server time."
-  type = map(string)
+  type        = map(string)
   default = {
-    enabled = "false"
+    enabled       = "false"
     nbs_stop_time = "00:00:00am"
   }
 }

@@ -13,7 +13,7 @@ module "sas9" {
   sas_instance_type    = var.sas_instance_type
   sas_subnet_id        = module.legacy-vpc.private_subnets[0]
   sas_vpc_id           = module.legacy-vpc.vpc_id
-  resource_prefix = var.resource_prefix
+  resource_prefix      = var.resource_prefix
 }
 
 

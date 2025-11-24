@@ -1,6 +1,6 @@
 # Get Resource Group Data
 data "azurerm_resource_group" "rg" {
-  name     = var.lbi_resource_group_name
+  name = var.lbi_resource_group_name
 }
 
 # Get vNet Data

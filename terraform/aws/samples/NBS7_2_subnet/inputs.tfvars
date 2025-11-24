@@ -26,12 +26,12 @@ resource_prefix   = "" # highly recommend using snake case for naming (e.g. this
 # legacy_vpc_public_route_table_id  = "rtb-PUBLIC-EXAMPLE"
 
 # NBS6
-docker_image = "quay.io/us-cdcgov/cdc-nbs-modernization/nbs6:6.0.15.1"
+docker_image                 = "quay.io/us-cdcgov/cdc-nbs-modernization/nbs6:6.0.15.1"
 nbs6_ingress_vpc_cidr_blocks = []
-nbs6_rdp_cidr_block = []
-ingress_vpc_cidr_blocks = ""
-ecs_private_ipv4_address = "" #Ensure this is within data call to ecs_subnet
-certificate_id = ""
+nbs6_rdp_cidr_block          = []
+ingress_vpc_cidr_blocks      = ""
+ecs_private_ipv4_address     = "" #Ensure this is within data call to ecs_subnet
+certificate_id               = ""
 
 # Tags
 tags = {
@@ -44,15 +44,15 @@ tags = {
 # EKS cluster Variables
 eks_instance_type = "m5.large"
 # grab from login screen
-aws_admin_role_name = ""
-sso_admin_role_name = ""
+aws_admin_role_name        = ""
+sso_admin_role_name        = ""
 use_ecr_pull_through_cache = true
-external_cidr_blocks = []
+external_cidr_blocks       = []
 
 # S3 buckets
 fluentbit_bucket_prefix = "EXAMPLE-fluentbit-bucket"
 
 # RDS
-db_instance_type = "db.m6i.xlarge"
+db_instance_type       = "db.m6i.xlarge"
 db_snapshot_identifier = ""
 

@@ -5,11 +5,11 @@ module "db" {
 
   identifier = "${var.resource_prefix}-rds-mssql"
 
-  engine               = "sqlserver-se"
-  engine_version       = "15.00"
-  family               = "sqlserver-se-15.0" # DB parameter group
-  major_engine_version = "15.00"             # DB option group
-  instance_class       = var.db_instance_type
+  engine                      = "sqlserver-se"
+  engine_version              = "15.00"
+  family                      = "sqlserver-se-15.0" # DB parameter group
+  major_engine_version        = "15.00"             # DB option group
+  instance_class              = var.db_instance_type
   manage_master_user_password = var.manage_master_user_password
 
   //allocated_storage     = 20
@@ -46,17 +46,17 @@ module "db" {
   create_monitoring_role                = true
   monitoring_interval                   = 60
 */
-  options                   = []
-  license_model             = "license-included"
-  character_set_name        = "SQL_Latin1_General_CP1_CI_AS"
-  snapshot_identifier       = var.db_snapshot_identifier
-  apply_immediately = var.apply_immediately
+  options             = []
+  license_model       = "license-included"
+  character_set_name  = "SQL_Latin1_General_CP1_CI_AS"
+  snapshot_identifier = var.db_snapshot_identifier
+  apply_immediately   = var.apply_immediately
 
-# Enabling Custom DB parameter group and its parameter
-  create_db_parameter_group       = true
-  parameter_group_name            = var.parameter_group_name
-  parameter_group_description     = var.parameter_group_description
-  parameters                      = var.parameters
+  # Enabling Custom DB parameter group and its parameter
+  create_db_parameter_group   = true
+  parameter_group_name        = var.parameter_group_name
+  parameter_group_description = var.parameter_group_description
+  parameters                  = var.parameters
   #parameter_group_use_name_prefix = false
   parameter_group_use_name_prefix = true
 }

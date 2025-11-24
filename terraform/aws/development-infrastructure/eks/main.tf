@@ -251,14 +251,14 @@ resource "aws_iam_policy" "eks_efs_iam_policy" {
         }
       },
       {
-        "Effect": "Allow",
-        "Action": [
+        "Effect" : "Allow",
+        "Action" : [
           "elasticfilesystem:TagResource"
         ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "aws:ResourceTag/efs.csi.aws.com/cluster": "true"
+        "Resource" : "*",
+        "Condition" : {
+          "StringLike" : {
+            "aws:ResourceTag/efs.csi.aws.com/cluster" : "true"
           }
         }
       },

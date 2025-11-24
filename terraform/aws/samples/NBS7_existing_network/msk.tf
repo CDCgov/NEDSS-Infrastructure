@@ -1,14 +1,14 @@
 # Serial: 2024010201
 
 module "msk" {
-  source              = "../app-infrastructure/msk"
+  source = "../app-infrastructure/msk"
   #msk_subnet_ids      = module.modernization-vpc.private_subnets
-  msk_subnet_ids      = [
+  msk_subnet_ids = [
     local.list_subnet_ids[0],
     local.list_subnet_ids[1]
   ]
   #vpc_id              = module.modernization-vpc.vpc_id
-  vpc_id                     = data.aws_vpc.vpc_1.id
+  vpc_id = data.aws_vpc.vpc_1.id
   #subnets                    = var.modernization-vpc-private-subnets
   #vpc_id                      = var.modernization-vpc-id
   #vpc_cidrs       = var.modernization-vpc-private-subnets-cidr-blocks
