@@ -1,6 +1,6 @@
 module "eks" {
   source                        = "terraform-aws-modules/eks/aws"
-  version                       = "20.36.0"
+  version                       = "21.9.0"
   kms_key_enable_default_policy = var.kms_key_enable_default_policy
   kms_key_administrators        = coalescelist(var.kms_key_administrators, [try(data.aws_iam_session_context.current.issuer_arn, "")])
   kms_key_owners                = var.kms_key_owners
