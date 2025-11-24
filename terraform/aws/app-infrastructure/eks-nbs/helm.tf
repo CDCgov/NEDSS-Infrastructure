@@ -45,11 +45,11 @@ resource "helm_release" "efs" {
     # set irsa roles
     {
       name  = "node.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = module.efs_cni_irsa_role.iam_role_arn
+      value = module.efs_cni_irsa_role.arn
     },
     {
       name  = "controller.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = module.efs_cni_irsa_role.iam_role_arn
+      value = module.efs_cni_irsa_role.arn
   }]
 
   depends_on = [module.eks]
@@ -119,7 +119,7 @@ resource "helm_release" "cert_manager" {
     # Set values for OIDC
     {
       name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = module.cert_manager_cni_irsa_role.iam_role_arn
+      value = module.cert_manager_cni_irsa_role.arn
     },
     {
       name  = "securityContext.fsGroup"
