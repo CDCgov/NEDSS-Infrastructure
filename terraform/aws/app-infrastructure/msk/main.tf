@@ -1,8 +1,8 @@
 locals {
-  module_name = "msk"
+  module_name          = "msk"
   module_serial_number = "2023071301" # update with each commit?  Date plus two digit increment
-  instance_type  = var.environment == "development" ? "kafka.t3.small" : "kafka.m5.large"
-  instance_count = var.environment == "development" ? 2 : 3
+  instance_type        = var.environment == "development" ? "kafka.t3.small" : "kafka.m5.large"
+  instance_count       = var.environment == "development" ? 2 : 3
 }
 
 # Create an IAM role for MSK
@@ -31,9 +31,9 @@ resource "aws_iam_role" "msk" {
 # Create an IAM policy for MSK
 resource "aws_iam_policy" "msk" {
   count = var.create_msk ? 1 : 0
-  name   = "${var.resource_prefix}-${var.environment}-msk-policy"
+  name  = "${var.resource_prefix}-${var.environment}-msk-policy"
   policy = jsonencode({
-    Version: "2012-10-17"
+    Version : "2012-10-17"
     Statement = [
       {
         Effect = "Allow",
@@ -61,14 +61,14 @@ resource "aws_iam_policy" "msk" {
 
 # Attach the IAM policy to the MSK role
 resource "aws_iam_role_policy_attachment" "msk" {
-  count = var.create_msk ? 1 : 0
+  count      = var.create_msk ? 1 : 0
   policy_arn = aws_iam_policy.msk[0].arn
   role       = aws_iam_role.msk[0].name
 }
 
 resource "aws_cloudwatch_log_group" "test" {
   count = var.create_msk ? 1 : 0
-  name = "${var.resource_prefix}-msk-broker-logs"
+  name  = "${var.resource_prefix}-msk-broker-logs"
   tags = {
     ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
@@ -76,67 +76,67 @@ resource "aws_cloudwatch_log_group" "test" {
 
 # MSK Cluster Security Group
 resource "aws_security_group" "msk_cluster_sg" {
-  count = var.create_msk ? 1 : 0
+  count       = var.create_msk ? 1 : 0
   name        = "${var.resource_prefix}-msk-cluster-sg"
   description = "Cluster communication with worker nodes"
   vpc_id      = var.vpc_id
 
   tags = {
-    Name = "msk-cluster-sg"
+    Name          = "msk-cluster-sg"
     ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
 }
 
 resource "aws_security_group_rule" "msk_cluster_plaintext" {
-  count = var.create_msk ? 1 : 0
-  description              = "Allow world to communicate with the cluster"
-  from_port                = 9092
+  count       = var.create_msk ? 1 : 0
+  description = "Allow world to communicate with the cluster"
+  from_port   = 9092
   # allow connection from modern vpc and VPN
-  cidr_blocks               = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.msk_cluster_sg[0].id
-  to_port                  = 9092
-  type                     = "ingress"
+  cidr_blocks       = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
+  protocol          = "tcp"
+  security_group_id = aws_security_group.msk_cluster_sg[0].id
+  to_port           = 9092
+  type              = "ingress"
 }
 
 resource "aws_security_group_rule" "msk_cluster_tls" {
-  count = var.create_msk ? 1 : 0
-  description              = "Allow world to communicate with the cluster"
-  from_port                = 9094
-  cidr_blocks               = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.msk_cluster_sg[0].id
-  to_port                  = 9094
-  type                     = "ingress"
+  count             = var.create_msk ? 1 : 0
+  description       = "Allow world to communicate with the cluster"
+  from_port         = 9094
+  cidr_blocks       = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
+  protocol          = "tcp"
+  security_group_id = aws_security_group.msk_cluster_sg[0].id
+  to_port           = 9094
+  type              = "ingress"
 }
 
 resource "aws_security_group_rule" "cluster_outbound" {
-  count = var.create_msk ? 1 : 0
-  description              = "Allow cluster to communicate to vpc"
-  from_port                = 1024
-  cidr_blocks               = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.msk_cluster_sg[0].id
-  to_port                  = 65535
-  type                     = "egress"
+  count             = var.create_msk ? 1 : 0
+  description       = "Allow cluster to communicate to vpc"
+  from_port         = 1024
+  cidr_blocks       = var.cidr_blocks # [var.modern-cidr, var.vpn-cidr]
+  protocol          = "tcp"
+  security_group_id = aws_security_group.msk_cluster_sg[0].id
+  to_port           = 65535
+  type              = "egress"
 }
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/msk_cluster
 resource "aws_msk_cluster" "this" {
-  count = var.create_msk ? 1 : 0
-  cluster_name  = "${var.resource_prefix}-${var.environment}-msk-cluster"
-  kafka_version = var.kafka_version
+  count                  = var.create_msk ? 1 : 0
+  cluster_name           = "${var.resource_prefix}-${var.environment}-msk-cluster"
+  kafka_version          = var.kafka_version
   number_of_broker_nodes = local.instance_count
   #iam_instance_profile = aws_iam_role.msk.arn
 
   configuration_info {
-    arn = aws_msk_configuration.msk_configuration_environment[0].arn
-    revision = 1 
+    arn      = aws_msk_configuration.msk_configuration_environment[0].arn
+    revision = 1
   }
 
   broker_node_group_info {
-    instance_type   = local.instance_type
-    client_subnets  = var.msk_subnet_ids
+    instance_type  = local.instance_type
+    client_subnets = var.msk_subnet_ids
     #security_groups = var.msk_security_groups
     security_groups = [aws_security_group.msk_cluster_sg[0].id]
     storage_info {
@@ -147,10 +147,10 @@ resource "aws_msk_cluster" "this" {
   }
 
   encryption_info {
-        encryption_in_transit {
-            client_broker = "TLS_PLAINTEXT"
-            in_cluster = true
-        }
+    encryption_in_transit {
+      client_broker = "TLS_PLAINTEXT"
+      in_cluster    = true
+    }
   }
 
   open_monitoring {
@@ -175,13 +175,13 @@ resource "aws_msk_cluster" "this" {
 
 
   tags = {
-    Environment = var.environment
+    Environment   = var.environment
     ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
 }
 
 resource "aws_msk_configuration" "msk_configuration_environment" {
-  count = var.create_msk ? 1 : 0
+  count          = var.create_msk ? 1 : 0
   kafka_versions = ["2.8.1"]
   name           = "${var.resource_prefix}-${var.environment}-msk-cluster-config"
 

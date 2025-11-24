@@ -25,9 +25,9 @@ output "sftp_usernames_and_dirs" {
   value = {
     for key, user in aws_transfer_user.sftp :
     key => {
-      user_name   = user.user_name
+      user_name = user.user_name
       #home_dir    = user.home_directory_mappings[0].target
-      home_dir = try(user.home_directory_mappings[0].target, null)
+      home_dir    = try(user.home_directory_mappings[0].target, null)
       public_key  = try(tls_private_key.user_keys[key].public_key_openssh, null)
       private_key = try(tls_private_key.user_keys[key].private_key_pem, null)
       password    = random_password.user_passwords[key].result
@@ -43,7 +43,7 @@ output "site_admins" {
       user_name = user.user_name
       #home_dir  = user.home_directory_mappings[0].target
       home_dir = try(user.home_directory_mappings[0].target, null)
-      password  = random_password.admin_passwords[key].result
+      password = random_password.admin_passwords[key].result
     }
   }
   sensitive = true

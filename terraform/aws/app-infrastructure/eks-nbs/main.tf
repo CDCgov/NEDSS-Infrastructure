@@ -1,18 +1,18 @@
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "20.36.0" 
+  source                        = "terraform-aws-modules/eks/aws"
+  version                       = "20.36.0"
   kms_key_enable_default_policy = var.kms_key_enable_default_policy
-  kms_key_administrators = coalescelist(var.kms_key_administrators, [try(data.aws_iam_session_context.current.issuer_arn, "")])
-  kms_key_owners = var.kms_key_owners
+  kms_key_administrators        = coalescelist(var.kms_key_administrators, [try(data.aws_iam_session_context.current.issuer_arn, "")])
+  kms_key_owners                = var.kms_key_owners
 
   # Set cluster info
-  cluster_name    = local.eks_name  
-  cluster_version = var.cluster_version
-  cluster_endpoint_public_access  = var.allow_endpoint_public_access
+  cluster_name                   = local.eks_name
+  cluster_version                = var.cluster_version
+  cluster_endpoint_public_access = var.allow_endpoint_public_access
 
   # Set VPC/Subnets
-  vpc_id                   = var.vpc_id
-  subnet_ids               = var.subnets 
+  vpc_id     = var.vpc_id
+  subnet_ids = var.subnets
 
   # Cluster addons, ebs csi driver
   # cluster_addons = {
@@ -25,38 +25,38 @@ module "eks" {
   # Set node group instance types
   eks_managed_node_group_defaults = {
     instance_types = [var.instance_type]
-    
+
   }
 
   # Create node groups with config
   eks_managed_node_groups = {
-      main = {
-        name         = local.eks_node_group_name
-        iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
-        iam_role_name = local.eks_iam_role_name
-        iam_role_additional_policies = {
-          AmazonElasticContainerRegistryPublicFullAccess  = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
-          PullThroughCacheRule = "${aws_iam_policy.eks_permissions.arn}"
-          
-        }
-        min_size     = var.min_nodes_count
-        max_size     = var.max_nodes_count
-        desired_size = var.desired_nodes_count
-        block_device_mappings = {
-            xvda = {
-              device_name = "/dev/xvda"
-              ebs = {
-                volume_size           = var.ebs_volume_size
-                volume_type           = "gp3"                
-                }
-              }
-          }   
+    main = {
+      name                     = local.eks_node_group_name
+      iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
+      iam_role_name            = local.eks_iam_role_name
+      iam_role_additional_policies = {
+        AmazonElasticContainerRegistryPublicFullAccess = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
+        PullThroughCacheRule                           = "${aws_iam_policy.eks_permissions.arn}"
+
       }
-      
+      min_size     = var.min_nodes_count
+      max_size     = var.max_nodes_count
+      desired_size = var.desired_nodes_count
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size = var.ebs_volume_size
+            volume_type = "gp3"
+          }
+        }
+      }
+    }
+
   }
 
 
-access_entries = merge(
+  access_entries = merge(
     {
       admin-role = {
         principal_arn = var.aws_role_arn
@@ -91,10 +91,10 @@ access_entries = merge(
 
 #Additional EKS permissions
 resource "aws_iam_policy" "eks_permissions" {
-  name = "${local.eks_name}-additional-policy"
+  name        = "${local.eks_name}-additional-policy"
   path        = "/"
   description = "Additional Permissions required for EKS cluster ${local.eks_name}"
-  
+
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
   policy = jsonencode({
@@ -110,29 +110,29 @@ resource "aws_iam_policy" "eks_permissions" {
         Effect   = "Allow"
         Resource = "*"
       },
-          {
-      "Effect": "Allow",
-      "Action": [
-        "autoscaling:DescribeAutoScalingGroups",
-        "autoscaling:DescribeAutoScalingInstances",
-        "autoscaling:DescribeLaunchConfigurations",
-        "autoscaling:DescribeScalingActivities",
-        "ec2:DescribeImages",
-        "ec2:DescribeInstanceTypes",
-        "ec2:DescribeLaunchTemplateVersions",
-        "ec2:GetInstanceTypesFromInstanceRequirements",
-        "eks:DescribeNodegroup"
-      ],
-      "Resource": ["*"]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "autoscaling:SetDesiredCapacity",
-        "autoscaling:TerminateInstanceInAutoScalingGroup"
-      ],
-      "Resource": ["*"]
-    }
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeScalingActivities",
+          "ec2:DescribeImages",
+          "ec2:DescribeInstanceTypes",
+          "ec2:DescribeLaunchTemplateVersions",
+          "ec2:GetInstanceTypesFromInstanceRequirements",
+          "eks:DescribeNodegroup"
+        ],
+        "Resource" : ["*"]
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup"
+        ],
+        "Resource" : ["*"]
+      }
 
     ]
   })
@@ -140,7 +140,7 @@ resource "aws_iam_policy" "eks_permissions" {
 
 # Additional ingress for cluster api access
 resource "aws_vpc_security_group_ingress_rule" "example" {
-  for_each = toset(var.external_cidr_blocks)
+  for_each          = toset(var.external_cidr_blocks)
   security_group_id = module.eks.cluster_security_group_id
 
   cidr_ipv4   = each.key

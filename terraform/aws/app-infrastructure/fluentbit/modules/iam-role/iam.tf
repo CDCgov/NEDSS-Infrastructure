@@ -56,7 +56,7 @@ resource "aws_iam_role" "fluentbit-role" {
   ]
 }
 EOF
-  tags = merge(tomap({ "Name" = "${local.fluentbit_role_name}" }), var.tags)
+  tags               = merge(tomap({ "Name" = "${local.fluentbit_role_name}" }), var.tags)
 }
 
 resource "aws_iam_policy_attachment" "test-attach" {

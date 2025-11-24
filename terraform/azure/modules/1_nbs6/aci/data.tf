@@ -1,11 +1,11 @@
 # Get Resource Group Data
 data "azurerm_resource_group" "rg" {
-  name     = var.aci_resource_group_name
+  name = var.aci_resource_group_name
 }
 
 # Get Resource Group Data
 data "azurerm_resource_group" "private_acr_rg" {
-  name     = var.aci_private_acr_resource_group_name
+  name = var.aci_private_acr_resource_group_name
 }
 
 # Get vNet Data

@@ -1,8 +1,8 @@
 # Serial: 2025011501
 
 locals {
-# CHANGE for SAMPLES for some reason this try is not working, mv dns.tf to
-# dns.tf.disabled and use variable
+  # CHANGE for SAMPLES for some reason this try is not working, mv dns.tf to
+  # dns.tf.disabled and use variable
   #zone_id    = try(module.dns.zone_id["${module.dns.registered_domain_name}"], var.zone_id)
   zone_id    = var.zone_id
   lb_subnets = var.load_balancer_internal ? module.legacy-vpc.private_subnets : module.legacy-vpc.public_subnets
@@ -16,14 +16,14 @@ module "nbs-legacy" {
 
   #source  = "../../../../NEDSS-Infrastructure/terraform/aws/development-infrastructure/nbs-legacy"
 
-##############################################################################
-# CHANGE for SAMPLES
+  ##############################################################################
+  # CHANGE for SAMPLES
   #docker_image           = "${var.shared_services_accountid}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${var.docker_image}"
   docker_image = var.docker_image
   # this needs to be a variable if DNS zones not managed by terraform
   #nbs_db_dns                     = module.dns.nbs_db_dns
-  nbs_db_dns                     = var.nbs_db_dns
-##############################################################################
+  nbs_db_dns = var.nbs_db_dns
+  ##############################################################################
   deploy_on_ecs          = var.deploy_on_ecs
   deploy_alb_dns_record  = var.deploy_alb_dns_record
   nbs_github_release_tag = var.nbs_github_release_tag
@@ -36,7 +36,7 @@ module "nbs-legacy" {
   # nbs6_ingress_vpc_cidr_blocks = [var.modern-cidr, var.legacy-cidr, var.shared_vpc_cidr_block]
   nbs6_ingress_vpc_cidr_blocks = [var.legacy-cidr, var.shared_vpc_cidr_block]
 
-  nbs6_rdp_cidr_block          = [var.shared_vpc_cidr_block]
+  nbs6_rdp_cidr_block = [var.shared_vpc_cidr_block]
 
   # was using fixed naming for legacy 
   # resource_prefix              = "cdc-nbs-legacy"
@@ -52,9 +52,9 @@ module "nbs-legacy" {
   domain_name      = var.domain_name
   create_cert      = var.create_cert
 
-  artifacts_bucket_name          = var.artifacts_bucket_name
-  local_bucket                   = var.nbs_local_bucket
-  deployment_package_key         = var.deployment_package_key
+  artifacts_bucket_name  = var.artifacts_bucket_name
+  local_bucket           = var.nbs_local_bucket
+  deployment_package_key = var.deployment_package_key
 
   kms_arn_shared_services_bucket = var.kms_arn_shared_services_bucket
 

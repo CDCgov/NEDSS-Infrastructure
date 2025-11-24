@@ -48,7 +48,7 @@ variable "retention_in_days" {
 variable "values_file_path" {
   type        = string
   description = "path to the values.yaml file"
-  default     = "./.terraform/modules/prometheus/terraform/aws/app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml" 
+  default     = "./.terraform/modules/prometheus/terraform/aws/app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
 }
 
 variable "data_sources" {
@@ -80,21 +80,21 @@ variable "force_update" {
 }
 
 variable "cluster_certificate_authority_data" {
-  type = string
+  type        = string
   description = "TBase64 encoded certificate data required to communicate with the cluster"
 }
 
 variable "eks_cluster_endpoint" {
-  type = string
+  type        = string
   description = "The endpoint of the EKS cluster"
-} 
+}
 
 variable "eks_cluster_name" {
-  type = string
+  type        = string
   description = "Name of the EKS cluster"
-} 
+}
 
 variable "eks_aws_role_arn" {
-  type = string
+  type        = string
   description = "IAM role ARN of the EKS cluster"
 }

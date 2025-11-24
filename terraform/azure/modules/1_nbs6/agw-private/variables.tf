@@ -40,9 +40,9 @@ variable "agw_backend_host" {
 
 variable "agw_aci_ip" {
   description = "ACI IP(s) List"
-  type        = list
+  type        = list(any)
 }
- 
+
 variable "agw_private_ip" {
   description = "AGW Private IP Address"
   type        = string

@@ -20,7 +20,7 @@ resource "azurerm_user_assigned_identity" "agw_mi" {
   location            = data.azurerm_resource_group.rg.location
   name                = "${var.resource_prefix}-agw-private-mi"
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -34,9 +34,9 @@ resource "azurerm_user_assigned_identity" "agw_mi" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
+    ]
     create_before_destroy = true
-    }
+  }
 }
 
 # Create Managed Identity to allow AGW to read Certificate from KeyVault
@@ -45,7 +45,7 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
   key_vault_id       = data.azurerm_key_vault.key_vault.id
   tenant_id          = data.azurerm_client_config.current.tenant_id
   object_id          = azurerm_user_assigned_identity.agw_mi.principal_id
-  secret_permissions = ["Get","List"]
+  secret_permissions = ["Get", "List"]
 }
 
 
@@ -54,7 +54,7 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
 #   name                = "${var.resource_prefix}-waf-policy"
 #   resource_group_name = data.azurerm_resource_group.rg.name
 #   location            = data.azurerm_resource_group.rg.location
- 
+
 #   managed_rules {
 #     managed_rule_set {
 #       type    = "OWASP"
@@ -119,7 +119,7 @@ resource "azurerm_public_ip" "agw_public_ip" {
   allocation_method   = "Static"
   sku                 = "Standard"
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -133,21 +133,21 @@ resource "azurerm_public_ip" "agw_public_ip" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
+    ]
     create_before_destroy = true
-    }
+  }
 }
 
 
 # Configure Private App Gateway
 resource "azurerm_application_gateway" "agw_private" {
   name                = "${var.resource_prefix}-agw-private"
-  depends_on          = [azurerm_public_ip.agw_public_ip,azurerm_key_vault_access_policy.agw_mi_policy,azurerm_user_assigned_identity.agw_mi]
+  depends_on          = [azurerm_public_ip.agw_public_ip, azurerm_key_vault_access_policy.agw_mi_policy, azurerm_user_assigned_identity.agw_mi]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   # Uncomment if WAF Policy is Required
   # firewall_policy_id  = azurerm_web_application_firewall_policy.agw_waf_policy.id
-  
+
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.agw_mi.id]
@@ -166,10 +166,10 @@ resource "azurerm_application_gateway" "agw_private" {
   }
 
 
-# Password is not required
+  # Password is not required
   ssl_certificate {
-    name                    = local.cert_name
-    key_vault_secret_id     = data.azurerm_key_vault_secret.agw_key_vault_cert.id
+    name                = local.cert_name
+    key_vault_secret_id = data.azurerm_key_vault_secret.agw_key_vault_cert.id
   }
 
   frontend_port {
@@ -264,7 +264,7 @@ resource "azurerm_application_gateway" "agw_private" {
   }
 
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -278,6 +278,6 @@ resource "azurerm_application_gateway" "agw_private" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
-    }
+    ]
+  }
 }

@@ -21,7 +21,7 @@ module "zones" {
         {
           vpc_id = var.modern_vpc_id
         }
-      ] : [
+        ] : [
         {
           vpc_id = var.legacy_vpc_id
         }

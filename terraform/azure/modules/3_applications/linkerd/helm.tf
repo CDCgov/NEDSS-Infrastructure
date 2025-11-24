@@ -3,10 +3,10 @@
 
 # linkerd helm release
 resource "helm_release" "linkerd_crds" {
-  name            = "linkerd-crds"
-  repository      =  var.linkerd_repository # "https://helm.linkerd.io/stable"
-  chart           =  var.linkerd_chart # "linkerd-crds"
-  namespace       = var.linkerd_namespace_name 
+  name             = "linkerd-crds"
+  repository       = var.linkerd_repository # "https://helm.linkerd.io/stable"
+  chart            = var.linkerd_chart      # "linkerd-crds"
+  namespace        = var.linkerd_namespace_name
   create_namespace = true
 }
 
@@ -55,10 +55,10 @@ resource "tls_locally_signed_cert" "issuer" {
 }
 
 resource "helm_release" "linkerd_control_plane" {
-  name      = "linkerd-control-plane"
+  name       = "linkerd-control-plane"
   repository = var.linkerd_repository
-  namespace = var.linkerd_namespace_name
-  chart = var.linkerd_controlplane_chart #"linkerd-control-plane"
+  namespace  = var.linkerd_namespace_name
+  chart      = var.linkerd_controlplane_chart #"linkerd-control-plane"
 
   set {
     name  = "identityTrustAnchorsPEM"
@@ -82,11 +82,11 @@ resource "helm_release" "linkerd_control_plane" {
 
 # deploy linkerd-viz
 resource "helm_release" "linkerd_viz" {
-  count = var.create_linkerd_viz ? 1 : 0
-  name            = "linkerd-viz"
-  repository      = var.linkerd_repository # "https://helm.linkerd.io/stable"
-  chart           = var.linkerd_viz_chart # "linkerd-viz"
-  namespace       = var.linkerd_viz_namespace_name # "linkerd-viz"
+  count            = var.create_linkerd_viz ? 1 : 0
+  name             = "linkerd-viz"
+  repository       = var.linkerd_repository         # "https://helm.linkerd.io/stable"
+  chart            = var.linkerd_viz_chart          # "linkerd-viz"
+  namespace        = var.linkerd_viz_namespace_name # "linkerd-viz"
   create_namespace = true
-  depends_on = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
+  depends_on       = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
 }

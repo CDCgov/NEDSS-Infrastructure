@@ -17,7 +17,7 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -31,8 +31,8 @@ resource "azurerm_network_security_group" "nsg" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
-    }
+    ]
+  }
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsg_subnet_association" {

@@ -50,7 +50,7 @@ variable "notification_emails" {
 
 variable "sites" {
   description = "Map of sites and their publishers/providers"
-  type = map(list(string))
+  type        = map(list(string))
   default = {
     siteA = ["lab1", "lab2"]
     siteB = ["lab3"]

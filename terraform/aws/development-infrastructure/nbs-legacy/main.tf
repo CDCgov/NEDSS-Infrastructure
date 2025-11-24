@@ -3,11 +3,11 @@
 
 # NBS application server
 module "app_server" {
-  count = var.deploy_on_ecs ? 0 : 1
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~> 5.7"
-  depends_on = [ aws_ssm_parameter.odse_user, aws_ssm_parameter.odse_pass, aws_ssm_parameter.rdb_user, aws_ssm_parameter.rdb_pass, aws_ssm_parameter.srte_user, aws_ssm_parameter.srte_pass]
-  
+  count      = var.deploy_on_ecs ? 0 : 1
+  source     = "terraform-aws-modules/ec2-instance/aws"
+  version    = "~> 5.7"
+  depends_on = [aws_ssm_parameter.odse_user, aws_ssm_parameter.odse_pass, aws_ssm_parameter.rdb_user, aws_ssm_parameter.rdb_pass, aws_ssm_parameter.srte_user, aws_ssm_parameter.srte_pass]
+
 
   user_data_replace_on_change = true
 
@@ -24,7 +24,7 @@ module "app_server" {
   iam_role_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     AmazonS3FullAccess           = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-    AmazonSSMReadOnlyAccess      =  "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+    AmazonSSMReadOnlyAccess      = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
   }
 
   tags = var.tags
@@ -324,8 +324,8 @@ EOT
 # Add in-line IAM role for EC2 access to shared services bucket
 resource "aws_iam_role_policy" "shared_s3_access" {
   count = var.deploy_on_ecs || var.local_bucket ? 0 : 1
-  name = "${var.resource_prefix}-cross-account-s3-access-policy"
-  role = module.app_server[0].iam_role_name
+  name  = "${var.resource_prefix}-cross-account-s3-access-policy"
+  role  = module.app_server[0].iam_role_name
 
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.

@@ -4,33 +4,33 @@ locals {
 
 # Secrets Manager Secret for SFTP access
 resource "aws_secretsmanager_secret" "case_notification_sftp" {
-  name = "${var.resource_prefix}-case-notification-sftp"
-  kms_key_id = var.kms_key_id != "" ? var.kms_key_id : null 
+  name       = "${var.resource_prefix}-case-notification-sftp"
+  kms_key_id = var.kms_key_id != "" ? var.kms_key_id : null
 }
 
 resource "aws_secretsmanager_secret_version" "case_notification_sftp" {
-  secret_id     = aws_secretsmanager_secret.case_notification_sftp.id
+  secret_id = aws_secretsmanager_secret.case_notification_sftp.id
 
   secret_string = jsonencode({
     sftp_hostname = "${var.sftp_hostname}"
     sftp_username = "${var.sftp_username}"
-    sftp_password  = "${var.sftp_password}"
+    sftp_password = "${var.sftp_password}"
   })
 }
 
 # Secrets Manager Secret for DB access
 resource "aws_secretsmanager_secret" "case_notification_db" {
-  name = "${var.resource_prefix}-case-notification-db"
+  name       = "${var.resource_prefix}-case-notification-db"
   kms_key_id = var.kms_key_id != "" ? var.kms_key_id : null
 }
 
 resource "aws_secretsmanager_secret_version" "case_notification_db" {
-  secret_id     = aws_secretsmanager_secret.case_notification_db.id
+  secret_id = aws_secretsmanager_secret.case_notification_db.id
 
   secret_string = jsonencode({
     server_name = "${var.rds_server_name}"
-    username = "${var.database_user_name}"
-    password  = "${var.database_user_password}"
+    username    = "${var.database_user_name}"
+    password    = "${var.database_user_password}"
   })
 }
 
@@ -40,13 +40,13 @@ resource "aws_iam_role" "lambda_exec" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Action    = "sts:AssumeRole",
-      Effect    = "Allow",
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
       Principal = {
         Service = "lambda.amazonaws.com"
       }
     }]
-  }) 
+  })
 }
 
 # lambda IAM resource policy
@@ -68,20 +68,20 @@ resource "aws_iam_policy" "lambda_policy" {
       {
         Effect = "Allow",
         Action = [
-          "rds:DescribeDBInstances"          
+          "rds:DescribeDBInstances"
         ],
         Resource = "arn:aws:rds:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:db:${var.rds_server_name}"
       },
       {
         Effect = "Allow",
-        Action = [          
-          "lambda:InvokeFunction"          
+        Action = [
+          "lambda:InvokeFunction"
         ],
         Resource = "arn:aws:lambda:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:function:${local.lambda_function_name}"
       },
       {
         Effect = "Allow",
-        Action = [          
+        Action = [
           "secretsmanager:GetSecretValue"
         ],
         Resource = ["${aws_secretsmanager_secret.case_notification_sftp.arn}", "${aws_secretsmanager_secret.case_notification_db.arn}"]
@@ -129,34 +129,34 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
 
 # Lambda function
 resource "aws_lambda_function" "this" {
-  tags = var.tags
+  tags             = var.tags
   filename         = data.archive_file.this.output_path
   function_name    = local.lambda_function_name
   role             = aws_iam_role.lambda_exec.arn
   handler          = "case_notification.lambda_handler"
   source_code_hash = data.archive_file.this.output_base64sha256
-  timeout       = var.timeout
-  runtime = var.python_runtime
-  
+  timeout          = var.timeout
+  runtime          = var.python_runtime
+
   # Add local lambda layer
-  layers = [ aws_lambda_layer_version.case-notification-layer.id ]
+  layers = [aws_lambda_layer_version.case-notification-layer.id]
 
   environment {
     variables = {
-      DRY_RUN = "${var.lambda_env_dry_run}"      
-      MAX_BATCH_SIZE = "${var.lambda_env_max_batch_size}"
-      REPORTED_SERVICE_TYPES = "${var.lambda_env_reported_service_types}"    
-      SFTP_PUT_FILEPATH = "${var.lambda_env_sftp_put_filepath}"
-      LOG_LEVEL   = "${var.lambda_env_log_level}"
+      DRY_RUN                    = "${var.lambda_env_dry_run}"
+      MAX_BATCH_SIZE             = "${var.lambda_env_max_batch_size}"
+      REPORTED_SERVICE_TYPES     = "${var.lambda_env_reported_service_types}"
+      SFTP_PUT_FILEPATH          = "${var.lambda_env_sftp_put_filepath}"
+      LOG_LEVEL                  = "${var.lambda_env_log_level}"
       SECRET_MANAGER_SFTP_SECRET = "${aws_secretsmanager_secret.case_notification_sftp.name}"
-      SECRET_MANAGER_DB_SECRET = "${aws_secretsmanager_secret.case_notification_db.name}"
+      SECRET_MANAGER_DB_SECRET   = "${aws_secretsmanager_secret.case_notification_db.name}"
     }
   }
 
   # Config to attach lambda to VPC
   vpc_config {
-    subnet_ids                  = var.subnet_ids
-    security_group_ids          = [aws_security_group.this.id]     
+    subnet_ids         = var.subnet_ids
+    security_group_ids = [aws_security_group.this.id]
   }
 
   # Increase /tmp storage to 5GB
@@ -172,11 +172,11 @@ resource "aws_lambda_function" "this" {
 
 # Lambda layer
 resource "aws_lambda_layer_version" "case-notification-layer" {
-  filename   = "${path.module}/layers/case-notification-layer.zip"
+  filename            = "${path.module}/layers/case-notification-layer.zip"
   source_code_hash    = filebase64sha256("${path.module}/layers/case-notification-layer.zip") # automated update if .zip changes
-  layer_name = "${var.resource_prefix}-case-notification-layer"
+  layer_name          = "${var.resource_prefix}-case-notification-layer"
   compatible_runtimes = [var.python_runtime]
-  description = "Lambda layer with pyobdc library including odbc driver, and paramiko library"
+  description         = "Lambda layer with pyobdc library including odbc driver, and paramiko library"
 }
 
 # lambda async config
@@ -186,6 +186,6 @@ resource "aws_lambda_function_event_invoke_config" "example" {
   # max age of event in case of slowness
   maximum_event_age_in_seconds = var.maximum_event_age_in_seconds
   # max retry attempts, since db is involved
-  maximum_retry_attempts       = var.maximum_retry_attempts
-  
+  maximum_retry_attempts = var.maximum_retry_attempts
+
 }

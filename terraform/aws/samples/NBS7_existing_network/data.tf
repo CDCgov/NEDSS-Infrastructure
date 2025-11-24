@@ -27,8 +27,8 @@ data "aws_subnet" "db_subnet_b" {
 }
 
 locals {
-  list_azs = [data.aws_subnet.subnet_c.availability_zone,data.aws_subnet.subnet_d.availability_zone]
-  list_subnet_cidr = [data.aws_subnet.subnet_c.cidr_block,data.aws_subnet.subnet_d.cidr_block]
-  list_subnet_ids = [data.aws_subnet.subnet_c.id,data.aws_subnet.subnet_d.id]
-  list_db_subnet_ids = [data.aws_subnet.db_subnet_b.id,data.aws_subnet.db_subnet_c.id]
+  list_azs           = [data.aws_subnet.subnet_c.availability_zone, data.aws_subnet.subnet_d.availability_zone]
+  list_subnet_cidr   = [data.aws_subnet.subnet_c.cidr_block, data.aws_subnet.subnet_d.cidr_block]
+  list_subnet_ids    = [data.aws_subnet.subnet_c.id, data.aws_subnet.subnet_d.id]
+  list_db_subnet_ids = [data.aws_subnet.db_subnet_b.id, data.aws_subnet.db_subnet_c.id]
 }

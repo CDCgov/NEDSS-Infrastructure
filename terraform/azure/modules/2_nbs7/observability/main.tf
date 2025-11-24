@@ -63,7 +63,7 @@ resource "azurerm_monitor_alert_prometheus_rule_group" "node_recording_rules_rul
   description         = "Node Recording Rules Rule Group"
   rule_group_enabled  = true
   interval            = "PT1M"
-  scopes              = [azurerm_monitor_workspace.amw.id,data.azurerm_kubernetes_cluster.main.id]
+  scopes              = [azurerm_monitor_workspace.amw.id, data.azurerm_kubernetes_cluster.main.id]
 
   rule {
     enabled    = true
@@ -153,7 +153,7 @@ resource "azurerm_monitor_alert_prometheus_rule_group" "kubernetes_recording_rul
   description         = "Kubernetes Recording Rules Rule Group"
   rule_group_enabled  = true
   interval            = "PT1M"
-  scopes              = [azurerm_monitor_workspace.amw.id,data.azurerm_kubernetes_cluster.main.id]
+  scopes              = [azurerm_monitor_workspace.amw.id, data.azurerm_kubernetes_cluster.main.id]
 
   rule {
     enabled    = true
@@ -303,14 +303,14 @@ EOF
 }
 
 resource "azurerm_monitor_alert_prometheus_rule_group" "amp_rule_group_namespace" {
-  name         = "${var.resource_prefix}-prom-${var.cluster_name}-nbs-rule_group"
+  name                = "${var.resource_prefix}-prom-${var.cluster_name}-nbs-rule_group"
   location            = data.azurerm_kubernetes_cluster.main.location
   resource_group_name = var.resource_group_name
   cluster_name        = var.cluster_name
   description         = "NBS Recording Rules Rule Group"
   rule_group_enabled  = true
   interval            = "PT1M"
-  scopes              = [azurerm_monitor_workspace.amw.id,data.azurerm_kubernetes_cluster.main.id]
+  scopes              = [azurerm_monitor_workspace.amw.id, data.azurerm_kubernetes_cluster.main.id]
 
   rule {
     enabled    = true

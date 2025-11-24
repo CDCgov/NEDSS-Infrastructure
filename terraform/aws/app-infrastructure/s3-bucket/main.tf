@@ -1,6 +1,6 @@
 #create s3 bucket
 resource "aws_s3_bucket" "this" {
-  bucket_prefix = "${var.bucket_prefix}"
+  bucket_prefix = var.bucket_prefix
   # tags   = merge(tomap({ "Name" = "${aws_s3_bucket.this.id}" }), var.tags)
   force_destroy = var.force_destroy_bucket
 }
@@ -28,11 +28,11 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
 resource "aws_s3_bucket_lifecycle_configuration" "lifecyle_rules" {
   # Must have bucket versioning enabled first
   depends_on = [aws_s3_bucket_versioning.versioning]
-  bucket = aws_s3_bucket.this.id
+  bucket     = aws_s3_bucket.this.id
 
   rule {
     id = "default-lifecycle-policy"
-    
+
     expiration {
       days = var.mark_object_for_delete_days
     }
@@ -41,5 +41,5 @@ resource "aws_s3_bucket_lifecycle_configuration" "lifecyle_rules" {
       noncurrent_days = var.delete_noncurrent_objects
     }
     status = var.enable_default_bucket_lifecycle_policy
-  }  
+  }
 }

@@ -8,7 +8,7 @@
 #       description = "wildfly web server"
 #       cidr_blocks = "${var.ingress_vpc_cidr_blocks}"
 #     }]
-  
+
 #   rdp_ingress = var.rdp_cidr_block != "" ? [{
 #       from_port   = 3389
 #       to_port     = 3389
@@ -27,8 +27,8 @@ module "app_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
 
-  name         = "${var.resource_prefix}-app-sg"
-  description  = "Security group for NBS application server"
+  name        = "${var.resource_prefix}-app-sg"
+  description = "Security group for NBS application server"
   # vpc_id       = var.legacy_vpc_id
   vpc_id       = var.vpc_id
   egress_rules = ["all-all"]
@@ -51,7 +51,7 @@ module "app_sg" {
 
 # Additional ingress for cluster api access
 resource "aws_vpc_security_group_ingress_rule" "app" {
-  for_each = toset(var.nbs6_ingress_vpc_cidr_blocks)
+  for_each          = toset(var.nbs6_ingress_vpc_cidr_blocks)
   security_group_id = module.app_sg.security_group_id
 
   cidr_ipv4   = each.key
@@ -63,7 +63,7 @@ resource "aws_vpc_security_group_ingress_rule" "app" {
 
 # Additional ingress for cluster api access
 resource "aws_vpc_security_group_ingress_rule" "rdp" {
-  for_each = toset(var.nbs6_rdp_cidr_block)
+  for_each          = toset(var.nbs6_rdp_cidr_block)
   security_group_id = module.app_sg.security_group_id
 
   cidr_ipv4   = each.key

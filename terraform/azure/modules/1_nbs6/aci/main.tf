@@ -8,7 +8,7 @@ resource "azurerm_log_analytics_workspace" "aci_log" {
   sku                 = "PerGB2018"
   retention_in_days   = 60
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -22,13 +22,13 @@ resource "azurerm_log_analytics_workspace" "aci_log" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
-    }
+    ]
+  }
 }
 
 # Create Container Group
 resource "azurerm_container_group" "aci" {
-  depends_on          = [ azurerm_log_analytics_workspace.aci_log ]
+  depends_on          = [azurerm_log_analytics_workspace.aci_log]
   name                = "${var.resource_prefix}-aci"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -36,19 +36,19 @@ resource "azurerm_container_group" "aci" {
   ip_address_type     = "Private"
   subnet_ids          = toset([data.azurerm_subnet.aci_subnet.id])
 
- dynamic identity {
+  dynamic "identity" {
     for_each = var.aci_use_private_acr ? [1] : []
     content {
-      type = "UserAssigned"
+      type         = "UserAssigned"
       identity_ids = [data.azurerm_user_assigned_identity.user_assigned_identity.id]
     }
   }
 
-  dynamic image_registry_credential {
+  dynamic "image_registry_credential" {
     for_each = var.aci_use_private_acr ? [1] : []
     content {
       user_assigned_identity_id = data.azurerm_user_assigned_identity.user_assigned_identity.id
-      server = var.aci_private_acr_server_url
+      server                    = var.aci_private_acr_server_url
     }
   }
 
@@ -63,7 +63,7 @@ resource "azurerm_container_group" "aci" {
     }
 
     environment_variables = {
-      DATABASE_ENDPOINT = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
+      DATABASE_ENDPOINT  = data.azurerm_mssql_managed_instance.sqlmi_endpoint.fqdn
       GITHUB_RELEASE_TAG = var.aci_github_release_tag
     }
 
@@ -72,13 +72,13 @@ resource "azurerm_container_group" "aci" {
 
   diagnostics {
     log_analytics {
-      workspace_id = azurerm_log_analytics_workspace.aci_log.workspace_id
+      workspace_id  = azurerm_log_analytics_workspace.aci_log.workspace_id
       workspace_key = azurerm_log_analytics_workspace.aci_log.primary_shared_key
     }
   }
 
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -92,6 +92,6 @@ resource "azurerm_container_group" "aci" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
-    }
+    ]
+  }
 }

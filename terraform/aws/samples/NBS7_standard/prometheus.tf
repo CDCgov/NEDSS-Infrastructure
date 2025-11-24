@@ -2,9 +2,9 @@
 
 module "prometheus" {
 
-  source                             = "../app-infrastructure/aws-prometheus-grafana"
-  values_file_path                   = "../app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
-  eks_aws_role_arn                   = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
+  source           = "../app-infrastructure/aws-prometheus-grafana"
+  values_file_path = "../app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
+  eks_aws_role_arn = "arn:aws:iam::${var.target_account_id}:role/${var.aws_admin_role_name}"
 
   oidc_provider_arn                  = module.eks_nbs.oidc_provider_arn
   oidc_provider_url                  = module.eks_nbs.cluster_oidc_issuer_url ##### replace(module.eks_nbs.cluster_oidc_issuer_url, "https://", "") #####
@@ -18,7 +18,7 @@ module "prometheus" {
   # private_subnet_ids = module.modernization-vpc.private_subnets
   # vpc_cidr_block     = module.modernization-vpc.vpc_cidr_block
 
-  namespace_name                     = var.observability_namespace_name
+  namespace_name = var.observability_namespace_name
 
   resource_prefix = var.resource_prefix
 }

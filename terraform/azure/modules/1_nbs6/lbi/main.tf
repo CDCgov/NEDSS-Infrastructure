@@ -5,13 +5,13 @@ resource "azurerm_lb" "lbi" {
   location            = data.azurerm_resource_group.rg.location
   sku                 = "Standard"
   frontend_ip_configuration {
-    name                 = "${var.resource_prefix}-lbi-frontend-ip-configuration"
-    private_ip_address   = "${var.lbi_private_ip}"
+    name                       = "${var.resource_prefix}-lbi-frontend-ip-configuration"
+    private_ip_address         = var.lbi_private_ip
     private_ip_address_version = "IPv4"
-    subnet_id            = data.azurerm_subnet.lbi_subnet.id
+    subnet_id                  = data.azurerm_subnet.lbi_subnet.id
   }
   lifecycle {
-    ignore_changes = [ 
+    ignore_changes = [
       tags["business_steward"],
       tags["center"],
       tags["environment"],
@@ -25,56 +25,56 @@ resource "azurerm_lb" "lbi" {
       tags["technical_poc"],
       tags["technical_steward"],
       tags["zone"]
-      ]
-    }
+    ]
+  }
 }
 
 # Create Backend Pool
 resource "azurerm_lb_backend_address_pool" "lbi-pool" {
-  depends_on = [ azurerm_lb.lbi ]
+  depends_on      = [azurerm_lb.lbi]
   name            = "${var.resource_prefix}-lbi-backend-pool"
   loadbalancer_id = azurerm_lb.lbi.id
 }
 
 # Add 1st Static IP for ACI
 resource "azurerm_lb_backend_address_pool_address" "lbi-pool-address-0" {
-  depends_on = [ azurerm_lb_backend_address_pool.lbi-pool ]
+  depends_on              = [azurerm_lb_backend_address_pool.lbi-pool]
   name                    = "${var.resource_prefix}-lbi-address-0"
   backend_address_pool_id = azurerm_lb_backend_address_pool.lbi-pool.id
   virtual_network_id      = data.azurerm_virtual_network.vnet.id
-  ip_address              = "${var.lbi_aci_ip_list[0]}"
+  ip_address              = var.lbi_aci_ip_list[0]
 }
 
 # Add 2nd Static IP for ACI
 resource "azurerm_lb_backend_address_pool_address" "lbi-pool-address-1" {
-  depends_on = [ azurerm_lb_backend_address_pool.lbi-pool ]
+  depends_on              = [azurerm_lb_backend_address_pool.lbi-pool]
   name                    = "${var.resource_prefix}-lbi-address-1"
   backend_address_pool_id = azurerm_lb_backend_address_pool.lbi-pool.id
   virtual_network_id      = data.azurerm_virtual_network.vnet.id
-  ip_address              = "${var.lbi_aci_ip_list[1]}"
+  ip_address              = var.lbi_aci_ip_list[1]
 }
 
 # Add 3rd Static IP for ACI
 resource "azurerm_lb_backend_address_pool_address" "lbi-pool-address-2" {
-  depends_on = [ azurerm_lb_backend_address_pool.lbi-pool ]
+  depends_on              = [azurerm_lb_backend_address_pool.lbi-pool]
   name                    = "${var.resource_prefix}-lbi-address-2"
   backend_address_pool_id = azurerm_lb_backend_address_pool.lbi-pool.id
   virtual_network_id      = data.azurerm_virtual_network.vnet.id
-  ip_address              = "${var.lbi_aci_ip_list[2]}"
+  ip_address              = var.lbi_aci_ip_list[2]
 }
 
 # Configure Health Check
 resource "azurerm_lb_probe" "lbi-probe" {
-  depends_on = [ azurerm_lb.lbi ]
-  loadbalancer_id     = azurerm_lb.lbi.id
-  name                = "${var.resource_prefix}-lbi-probe"
-  port                = 7001
-  protocol            = "Tcp"
+  depends_on      = [azurerm_lb.lbi]
+  loadbalancer_id = azurerm_lb.lbi.id
+  name            = "${var.resource_prefix}-lbi-probe"
+  port            = 7001
+  protocol        = "Tcp"
 }
 
 # Configure Load Balancer Rule
 resource "azurerm_lb_rule" "lbi-rule" {
-  depends_on = [ azurerm_lb.lbi ]
+  depends_on                     = [azurerm_lb.lbi]
   loadbalancer_id                = azurerm_lb.lbi.id
   name                           = "${var.resource_prefix}-lbi-rule"
   protocol                       = "Tcp"

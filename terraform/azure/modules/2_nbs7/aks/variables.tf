@@ -40,24 +40,24 @@ variable "azuread_service_principal_display_name" {
 
 #K8 cluster variables
 variable "modern_resource_group_name" {
-  type = string
+  type        = string
   description = "This defines the modern resource group name"
 }
 
 variable "k8_cluster_name" {
-  type = string
+  type        = string
   description = "This defines the name for the k8 cluster"
 }
 
 variable "k8_cluster_version" {
-  type = string
+  type        = string
   description = "This defines the version of the k8 cluster"
 }
 
 variable "k8_cluster_location" {
-  type = string
+  type        = string
   description = "This defines the default location for the k8 cluster"
-  default = "East US"
+  default     = "East US"
 }
 
 /*
@@ -71,83 +71,83 @@ variable "k8_dns_prefix" {
 #k8 node pool variables
 
 variable "default_node_pool_name" {
-  type = string
+  type        = string
   description = "This defines the default node pool names"
-  default = "systempool"
+  default     = "systempool"
 }
 
 variable "node_pool_vm_size" {
-  type = string
+  type        = string
   description = "This defines the node pool size"
-  default = "Standard_DS2_v2"
+  default     = "Standard_DS2_v2"
 }
 
 variable "node_pool_zones" {
-  type = list(any)
+  type        = list(any)
   description = "AZs for the default node pool nodes"
-  default= [1,2,3]
+  default     = [1, 2, 3]
 }
 
 
 variable "node_pool_max_count" {
-  type = number
+  type        = number
   description = "This defines the default node pool max count"
-  default = 5
+  default     = 5
 }
 
 
 variable "node_pool_min_count" {
-  type = number
+  type        = number
   description = "This defines the default node pool min count"
-  default = 2
+  default     = 2
 }
 
 variable "node_pool_disk_size_gb" {
-  type = number
+  type        = number
   description = "This defines the default node disk size"
-  default = 30
+  default     = 30
 }
 
 variable "node_pool_type" {
-  type = string
+  type        = string
   description = "This defines the default node pool type"
-  default = "VirtualMachineScaleSets"
+  default     = "VirtualMachineScaleSets"
 }
 
 
 variable "node_pool_network_plugin" {
-  type = string
+  type        = string
   description = "This defines the k8 network plugin"
-  default = "kubenet"
+  default     = "kubenet"
 }
 
 
 variable "node_pool_load_balancer_sku" {
-  type = string
+  type        = string
   description = "This defines load balancer sku"
-  default = "standard"
+  default     = "standard"
 }
 
 variable "network_profile_pod_cidr" {
-  type = string
+  type        = string
   description = "This defines the default value for pod CIDR"
-  default = "10.1.0.0/16"
+  default     = "10.1.0.0/16"
 }
 
 variable "temporary_name_for_rotation" {
-  type= string
+  type        = string
   description = "This defines the default value for temp name for node rotation"
-  default = "tempnode"
+  default     = "tempnode"
 
 }
 
 variable "identity_type" {
-  type= string
+  type        = string
   description = "This defines the default value for identity type"
-  default = "UserAssigned"
+  default     = "UserAssigned"
 
 }
- 
+
 /*
 variable "service_principal_client_secret" {
   type = string
@@ -156,16 +156,16 @@ variable "service_principal_client_secret" {
 */
 
 variable "user_node_pool_name" {
-  type = string
+  type        = string
   description = "This defines the default node pool names"
-  default = "userlnxpool"
+  default     = "userlnxpool"
 }
 
-variable "modern_subnet"{
-  type= list(any)
+variable "modern_subnet" {
+  type = list(any)
 }
 
-variable "resource_prefix"{
-  type = string
+variable "resource_prefix" {
+  type        = string
   description = "Name to be used on all the resources as identifier. e.g. Project name, Application name"
 }

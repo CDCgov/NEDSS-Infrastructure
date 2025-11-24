@@ -2,13 +2,13 @@
 
 # attempt to rebuild canary zip file if lambda code changes
 locals {
-  module_name = "synthetics-canary"
+  module_name          = "synthetics-canary"
   module_serial_number = "2023072001" # update with each commit?  Date plus two digit increment
   rendered_file_content = templatefile("${path.module}/canary.js.tpl", {
-  name            = "zipfile"
-  take_screenshot = "true"
-  synthetics_canary_url        = var.synthetics_canary_url
-  region          = "us-east-1"
+    name                  = "zipfile"
+    take_screenshot       = "true"
+    synthetics_canary_url = var.synthetics_canary_url
+    region                = "us-east-1"
   })
   #zip = "${path.module}/lambda_canary-${sha256(local.rendered_file_content)}.zip"
   zip = "${path.module}/lambda_canary.zip"
@@ -25,8 +25,8 @@ data "archive_file" "lambda_canary_zip" {
 }
 
 resource "aws_s3_bucket" "canary-output-bucket" {
-  count = var.synthetics_canary_create ? 1 : 0
-  bucket  = var.synthetics_canary_bucket_name
+  count         = var.synthetics_canary_create ? 1 : 0
+  bucket        = var.synthetics_canary_bucket_name
   force_destroy = true
   lifecycle {
     prevent_destroy = false
@@ -47,21 +47,21 @@ data "aws_iam_policy_document" "canary-assume-role-policy" {
 
 data "aws_iam_policy_document" "canary-policy" {
   statement {
-    sid     = "CanaryS3Permission1"
-    effect  = "Allow"
+    sid    = "CanaryS3Permission1"
+    effect = "Allow"
     actions = [
       "s3:PutObject",
       "s3:GetBucketLocation",
       "s3:ListAllMyBuckets"
     ]
     resources = [
-                "${aws_s3_bucket.canary-output-bucket.arn}/*"
+      "${aws_s3_bucket.canary-output-bucket.arn}/*"
     ]
   }
 
   statement {
-    sid     = "CanaryS3Permission2"
-    effect  = "Allow"
+    sid    = "CanaryS3Permission2"
+    effect = "Allow"
     actions = [
       "s3:ListAllMyBuckets"
     ]
@@ -71,8 +71,8 @@ data "aws_iam_policy_document" "canary-policy" {
   }
 
   statement {
-    sid     = "CanaryCloudWatchLogs"
-    effect  = "Allow"
+    sid    = "CanaryCloudWatchLogs"
+    effect = "Allow"
     actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
@@ -86,8 +86,8 @@ data "aws_iam_policy_document" "canary-policy" {
   }
 
   statement {
-    sid     = "CanaryCloudWatchAlarm"
-    effect  = "Allow"
+    sid    = "CanaryCloudWatchAlarm"
+    effect = "Allow"
     actions = [
       "cloudwatch:PutMetricData"
     ]
@@ -104,29 +104,29 @@ data "aws_iam_policy_document" "canary-policy" {
 }
 
 resource "aws_iam_role" "canary-role" {
-  count = var.synthetics_canary_create ? 1 : 0
+  count              = var.synthetics_canary_create ? 1 : 0
   name               = "canary-role"
   assume_role_policy = data.aws_iam_policy_document.canary-assume-role-policy.json
   description        = "IAM role for AWS Synthetic Monitoring Canaries"
 
   tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}" 
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
 }
 
 resource "aws_iam_policy" "canary-policy" {
-  count = var.synthetics_canary_create ? 1 : 0
+  count       = var.synthetics_canary_create ? 1 : 0
   name        = "canary-policy"
   policy      = data.aws_iam_policy_document.canary-policy.json
   description = "IAM role for AWS Synthetic Monitoring Canaries"
 
   tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}" 
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
 }
 
 resource "aws_iam_role_policy_attachment" "canary-policy-attachment" {
-  count = var.synthetics_canary_create ? 1 : 0
+  count      = var.synthetics_canary_create ? 1 : 0
   role       = aws_iam_role.canary-role.name
   policy_arn = aws_iam_policy.canary-policy.arn
 }
@@ -137,9 +137,9 @@ resource "aws_iam_role_policy_attachment" "canary-policy-attachment" {
 
 resource "aws_sns_topic" "topic" {
   count = var.synthetics_canary_create ? 1 : 0
-  name = "url_monitoring_topic"
+  name  = "url_monitoring_topic"
   tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}" 
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
 }
 
@@ -151,24 +151,24 @@ resource "aws_sns_topic" "topic" {
 # }
 
 resource "aws_synthetics_canary" "synthetics_canary_url_monitoring" {
-  count = var.synthetics_canary_create ? 1 : 0
-  name                       = "canary_monitoring"
+  count                = var.synthetics_canary_create ? 1 : 0
+  name                 = "canary_monitoring"
   artifact_s3_location = "s3://${aws_s3_bucket.canary-output-bucket.bucket}/"
-  execution_role_arn         = aws_iam_role.canary-role.arn
-  handler                    = "pageLoadBlueprint.handler"
-  zip_file                    = "${path.module}/lambda_canary.zip"
-  runtime_version            = "syn-nodejs-puppeteer-4.0"
+  execution_role_arn   = aws_iam_role.canary-role.arn
+  handler              = "pageLoadBlueprint.handler"
+  zip_file             = "${path.module}/lambda_canary.zip"
+  runtime_version      = "syn-nodejs-puppeteer-4.0"
   start_canary         = true
   schedule {
     expression = "rate(10 minutes)"
   }
   tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}" 
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
 }
 
 resource "aws_cloudwatch_metric_alarm" "canary_alarm" {
-  count = var.synthetics_canary_create ? 1 : 0
+  count               = var.synthetics_canary_create ? 1 : 0
   alarm_name          = "synthetics_canary_url_monitoring_alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1"
@@ -179,12 +179,12 @@ resource "aws_cloudwatch_metric_alarm" "canary_alarm" {
   threshold           = "1"
   alarm_description   = "Alarm when URL does not return 200"
   alarm_actions       = [aws_sns_topic.topic.arn]
-  dimensions          = {
+  dimensions = {
     #CanaryName = aws_synthetics_canary.synthetics_canary_url_monitoring.name
     CanaryName = "synthetics_canary_url_monitoring"
   }
   tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}" 
+    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
   }
 }
 

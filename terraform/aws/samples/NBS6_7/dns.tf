@@ -23,7 +23,7 @@ module "dns" {
   # FIXME: fix this later
   # toggle these for SAMPLES in one VPC 
   #modern_vpc_id   = module.modernization-vpc.vpc_id
-  modern_vpc_id   = module.legacy-vpc.vpc_id
+  modern_vpc_id = module.legacy-vpc.vpc_id
 
   # comment this for SAMPLES in one account
   # XXX generates an error

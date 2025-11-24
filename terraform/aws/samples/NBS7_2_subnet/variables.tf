@@ -111,19 +111,19 @@ variable "sso_admin_role_name" {
   type = string
 }
 
-variable "use_ecr_pull_through_cache" {  
-  type        = bool
-  default     = false
+variable "use_ecr_pull_through_cache" {
+  type    = bool
+  default = false
 }
 
-variable "external_cidr_blocks" {  
-  type        = list
-  default     = []
+variable "external_cidr_blocks" {
+  type    = list(any)
+  default = []
 }
 
 variable "cluster_version" {
   description = "Version of the AWS EKS cluster to provision"
-  default = "1.28"
+  default     = "1.28"
 }
 #-----------------------------------------------------------------
 
@@ -169,8 +169,8 @@ variable "db_snapshot_identifier" {
 
 variable "manage_master_user_password" {
   description = "Set to true to allow RDS to manage the master user password in Secrets Manager"
-  type = bool
-  default = true
+  type        = bool
+  default     = true
 }
 
 # variable "vpc_id" {
@@ -178,31 +178,31 @@ variable "manage_master_user_password" {
 #   type        = string
 # }
 
-variable "ingress_vpc_cidr_blocks" {  
-  type        = string
-  default     = ""
+variable "ingress_vpc_cidr_blocks" {
+  type    = string
+  default = ""
 }
-variable "nbs6_ingress_vpc_cidr_blocks" {  
-  type        = list(any)
-  default     = []
+variable "nbs6_ingress_vpc_cidr_blocks" {
+  type    = list(any)
+  default = []
 }
 
 variable "nbs6_rdp_cidr_block" {
   description = "CIDR block in for RDP access"
   type        = list(any)
-  default = []
+  default     = []
 }
 #-----------------------------------------------------------------
 
 # NBS6 Variables --------------------------------------------------
-variable ecs_private_ipv4_address {
-  type        = string
-  
+variable "ecs_private_ipv4_address" {
+  type = string
+
 }
 
 variable "docker_image" {
   description = "Docker Image for Classic NBS"
-  type        = string  
+  type        = string
 }
 
 variable "ecs_cpu" {
@@ -219,7 +219,7 @@ variable "ecs_memory" {
 
 variable "certificate_id" {
   description = "Existing AWS ACM certificate id."
-  type        = string 
+  type        = string
 }
 
 variable "load_balancer_type" {
@@ -237,6 +237,6 @@ variable "internal" {
 variable "nbs_github_release_tag" {
   description = "Create URL and download Release Package. Default is always latest or Null"
   type        = string
-  default = "6.0.15.1"
+  default     = "6.0.15.1"
 }
 #-----------------------------------------------------------------

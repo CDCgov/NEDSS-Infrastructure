@@ -20,26 +20,26 @@ variable "private_subnet_ids" {
 
 variable "apply_immediately" {
   description = "Apply db changes immediately by default"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "manage_master_user_password" {
   description = "Set to true to allow RDS to manage the master user password in Secrets Manager"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "app_security_group_id" {
   description = "Security group id of NBS6 instance to allow traffic into RDS"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 
 variable "ingress_vpc_cidr_blocks" {
   description = "CSV of CIDR blocks which will have access to RDS instance"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "vpc_id" {
@@ -61,11 +61,11 @@ variable "parameter_group_description" {
 
 variable "parameters" {
   description = "List of parameter settings for the parameter group"
-  type        = list(object({
+  type = list(object({
     name  = string
     value = string
   }))
-  default     = [
+  default = [
     { name = "ad hoc distributed queries", value = "1" }
   ]
 }

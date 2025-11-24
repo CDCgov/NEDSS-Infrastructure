@@ -20,7 +20,7 @@ variable "lbi_subnet_name" {
 
 variable "lbi_aci_ip_list" {
   description = "ACI Subnet IP list"
-  type        = list
+  type        = list(any)
 }
 
 variable "lbi_private_ip" {

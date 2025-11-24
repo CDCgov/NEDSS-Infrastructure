@@ -70,7 +70,7 @@ variable "modern-enable_dns_support" {
 variable "msk_ebs_volume_size" {
   description = "EBS volume size for the MSK broker nodes in GB"
   type        = number
-  default = 20
+  default     = 20
 }
 variable "environment" {
   description = "The environment, either 'development' or 'production'"
