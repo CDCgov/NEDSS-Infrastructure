@@ -2,23 +2,23 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 6.21.0"
+      version = ">= 6.21.0, < 7.0.0"
     }
     grafana = {
       source  = "grafana/grafana"
-      version = ">= 2.1.0"
+      version = ">= 2.1.0, < 3.0.0"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 3.1.1"
+      version = ">= 3.1.1, < 4.0.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = ">= 2.38.0"
+      version = ">= 2.38.0, < 3.0.0"
     }
     time = {
       source  = "hashicorp/time"
-      version = ">= 0.13.1"
+      version = ">= 0.13.1, < 1.0.0"
     }
   }
 

@@ -1,6 +1,6 @@
 module "efs_cni_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
-  version = "6.2.3"
+  version = ">=6.2.3, <7.0.0"
 
   name                  = "${local.eks_name}-efs-cni" #defined in main.tf
   create                = true
@@ -19,7 +19,7 @@ module "efs_cni_irsa_role" {
 
 module "cert_manager_cni_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
-  version = "6.2.3"
+  version = ">=6.2.3, <7.0.0"
 
   name                       = "${local.eks_name}-cert-manager-cni" #defined in main.tf
   create                     = true
