@@ -13,8 +13,8 @@ module "efs" {
   # File system policy
   attach_policy                      = true
   bypass_policy_lockout_safety_check = false
-  policy_statements = [
-    {
+  policy_statements = {
+    "AllowViaMountTarget" = {
       sid    = "AllowViaMountTarget"
       effect = "Allow"
       actions = [
@@ -36,7 +36,7 @@ module "efs" {
         }
       ]
     }
-  ]
+  }
 
   # Mount targets / security group
   mount_targets              = var.mount_targets
