@@ -78,7 +78,7 @@ def _get_msg_count_transportq_out(db_secret_dict,reported_service_types):
             cursor.execute(sql_query)
             count = cursor.fetchone()[0]            
     except Exception as e:
-        logger.error(f"An error occurred getting counts from TransportQ_out: {e}")
+        logger.error(f"An error occurred getting counts from TransportQ_out in function _get_msg_count_transportq_out: {e}")
     finally:
         conn.close()
 
@@ -99,7 +99,7 @@ def _get_msg_payload_transportq_out(db_secret_dict, max_batch_size, reported_ser
             cursor.execute(sql_query)
             transportq_out_rows_to_process = cursor.fetchall()        
     except Exception as e:
-        logger.error(f"An error occurred getting payload from TransportQ_out: {e}")
+        logger.error(f"An error occurred getting payload from TransportQ_out in function _get_msg_payload_transportq_out: {e}")
     finally:
         conn.close()
     return transportq_out_rows_to_process
