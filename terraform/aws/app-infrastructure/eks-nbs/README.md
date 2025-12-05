@@ -53,5 +53,5 @@ Below are the referenceable outputs from this module.
 Dependencies are external modules that this module references. A module is considered external if it isn't within the same repository.
 
 - eks_nbs (19.15.3): `terraform-aws-modules/eks/aws`
-- efs_cni_irsa_role: `terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks`
+- efs_cni_irsa_role: `terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts`
 

@@ -1,14 +1,14 @@
 module "eks" {
   source                        = "terraform-aws-modules/eks/aws"
-  version                       = "20.36.0"
+  version                       = ">=21.9.0, <22.0.0"
   kms_key_enable_default_policy = var.kms_key_enable_default_policy
   kms_key_administrators        = coalescelist(var.kms_key_administrators, [try(data.aws_iam_session_context.current.issuer_arn, "")])
   kms_key_owners                = var.kms_key_owners
 
   # Set cluster info
-  cluster_name                   = local.eks_name
-  cluster_version                = var.cluster_version
-  cluster_endpoint_public_access = var.allow_endpoint_public_access
+  name                   = local.eks_name
+  kubernetes_version     = var.cluster_version
+  endpoint_public_access = var.allow_endpoint_public_access
 
   # Set VPC/Subnets
   vpc_id     = var.vpc_id
@@ -22,11 +22,6 @@ module "eks" {
   #   }
   # }
 
-  # Set node group instance types
-  eks_managed_node_group_defaults = {
-    instance_types = [var.instance_type]
-
-  }
 
   # Create node groups with config
   eks_managed_node_groups = {
@@ -39,9 +34,10 @@ module "eks" {
         PullThroughCacheRule                           = "${aws_iam_policy.eks_permissions.arn}"
 
       }
-      min_size     = var.min_nodes_count
-      max_size     = var.max_nodes_count
-      desired_size = var.desired_nodes_count
+      instance_types = [var.instance_type]
+      min_size       = var.min_nodes_count
+      max_size       = var.max_nodes_count
+      desired_size   = var.desired_nodes_count
       block_device_mappings = {
         xvda = {
           device_name = "/dev/xvda"

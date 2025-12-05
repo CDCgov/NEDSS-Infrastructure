@@ -29,7 +29,7 @@ resource "aws_security_group" "grafana_vpc_endpoint_sg" {
 resource "aws_vpc_endpoint" "grafana_vpc_endpoint" {
   count               = var.create_grafana_vpc_endpoint ? 1 : 0
   vpc_id              = var.vpc_id
-  service_name        = "com.amazonaws.${data.aws_region.current.name}.grafana"
+  service_name        = "com.amazonaws.${data.aws_region.current.region}.grafana"
   vpc_endpoint_type   = "Interface"
   tags                = merge(tomap({ "Name" = local.grafana_endpoint }), var.tags)
   private_dns_enabled = true
