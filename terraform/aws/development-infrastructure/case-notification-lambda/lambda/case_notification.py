@@ -73,12 +73,12 @@ def _get_msg_count_transportq_out(db_secret_dict,reported_service_types):
             sql_query = """
                     SELECT COUNT(*) 
                         FROM TransportQ_out 
-                        WHERE processingStatus<>'done' AND messageId<>'' AND service IN {};                    
+                        WHERE processingStatus='queued' AND action='send' AND messageId<>'' AND service IN {};                    
                 """.format(reported_service_types)
             cursor.execute(sql_query)
             count = cursor.fetchone()[0]            
     except Exception as e:
-        logger.error(f"An error occurred getting counts from TransportQ_out: {e}")
+        logger.error(f"An error occurred getting counts from TransportQ_out in function _get_msg_count_transportq_out: {e}")
     finally:
         conn.close()
 
@@ -92,14 +92,14 @@ def _get_msg_payload_transportq_out(db_secret_dict, max_batch_size, reported_ser
             sql_query = """
                 SELECT TOP ({}) cast(cast(payloadContent as varbinary(max)) as varchar(max)) AS {}, * 
                     FROM TransportQ_out 
-                    WHERE processingStatus<>'done' AND messageId<>'' AND service IN {}
+                    WHERE processingStatus='queued' AND action='send' AND messageId<>'' AND service IN {}
                     ORDER BY priority asc, messageCreationTime asc;
             """.format(max_batch_size,custom_database_header,reported_service_types)
             
             cursor.execute(sql_query)
             transportq_out_rows_to_process = cursor.fetchall()        
     except Exception as e:
-        logger.error(f"An error occurred getting payload from TransportQ_out: {e}")
+        logger.error(f"An error occurred getting payload from TransportQ_out in function _get_msg_payload_transportq_out: {e}")
     finally:
         conn.close()
     return transportq_out_rows_to_process
@@ -273,19 +273,18 @@ def lambda_handler(event, context):
         logger.info(f"Processing batch {i+1}/{total_batches}. Max Batch Size = {max_batch_size}")
         transportq_out_rows_to_process = _get_msg_payload_transportq_out(db_secret_dict=db_secret_dict, max_batch_size=max_batch_size, reported_service_types=reported_service_types)
         return_report_number = len(transportq_out_rows_to_process)               
-        for j in range(return_report_number):                    
-            if transportq_out_rows_to_process[j].processingStatus == 'queued' and  transportq_out_rows_to_process[j].action == "send":                          
-                success_status = _send_msg_payload_transportq_out(
-                    db_secret_dict=db_secret_dict, 
-                    transportq_out_row_to_process=transportq_out_rows_to_process[j],
-                    sftp_put_filepath = sftp_put_filepath, 
-                    sftp_hostname=sftp_hostname, 
-                    sftp_username=sftp_username, 
-                    sftp_password=sftp_password, 
-                    dry_run=dry_run
-                    )
-                if success_status:
-                    messages_sent+=1
+        for j in range(return_report_number):
+            success_status = _send_msg_payload_transportq_out(
+                db_secret_dict=db_secret_dict, 
+                transportq_out_row_to_process=transportq_out_rows_to_process[j],
+                sftp_put_filepath = sftp_put_filepath, 
+                sftp_hostname=sftp_hostname, 
+                sftp_username=sftp_username, 
+                sftp_password=sftp_password, 
+                dry_run=dry_run
+                )
+            if success_status:
+                messages_sent+=1
 
         # after each batch check if there is enough time to proceed to next batch, if not reinvoke lambda until finished. Assuming at most 30 seconds required for a single batch.
         # reduce MAX_BATCH_SIZE environment variable if taking longer than 30 seconds for each batch
