@@ -4,7 +4,7 @@ locals {
 
 module "efs" {
   source  = "terraform-aws-modules/efs/aws"
-  version = "1.5.0"
+  version = ">=2.0.0, <3.0.0"
 
   name        = local.efs_name
   encrypted   = true
@@ -13,8 +13,8 @@ module "efs" {
   # File system policy
   attach_policy                      = true
   bypass_policy_lockout_safety_check = false
-  policy_statements = [
-    {
+  policy_statements = {
+    "AllowViaMountTarget" = {
       sid    = "AllowViaMountTarget"
       effect = "Allow"
       actions = [
@@ -36,17 +36,18 @@ module "efs" {
         }
       ]
     }
-  ]
+  }
 
   # Mount targets / security group
   mount_targets              = var.mount_targets
   security_group_description = "EFS Security Group for ${var.resource_prefix}-efs"
   security_group_vpc_id      = var.vpc_id
 
-  security_group_rules = {
-    vpc = {
-      description = "NFS ingress from VPC subnets"
-      cidr_blocks = var.vpc_cidrs
+  security_group_ingress_rules = {
+    for index, cidr in var.vpc_cidrs :
+    "vpc_${index}" => {
+      description = "NFS ingress from VPC: ${cidr}"
+      cidr_ipv4   = cidr
     }
   }
 }

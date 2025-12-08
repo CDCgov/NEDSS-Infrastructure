@@ -54,6 +54,6 @@ variable "multi_region" {
 # Values to modify for custom policies
 variable "key_statements" {
   description = "A map of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) for custom permission usage"
-  type        = any
-  default     = {}
+  type        = list(any)
+  default     = []
 }

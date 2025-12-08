@@ -14,7 +14,7 @@ module "prometheus-workspace" {
   alias             = "${var.resource_prefix}-amp-metrics"
   retention_in_days = var.retention_in_days
   tags              = var.tags
-  region            = data.aws_region.current.name
+  region            = data.aws_region.current.region
   resource_prefix   = var.resource_prefix
 }
 
@@ -28,7 +28,7 @@ module "prometheus-helm" {
   source                          = "./modules/prometheus-helm"
   depends_on                      = [module.prometheus-workspace, module.iam-role]
   namespace_name                  = var.namespace_name
-  region                          = data.aws_region.current.name
+  region                          = data.aws_region.current.region
   repository                      = var.repository
   chart                           = var.chart
   workspace_id                    = module.prometheus-workspace.amp_workspace_id
@@ -61,5 +61,5 @@ module "grafana-dashboard" {
   grafana_workspace_url = "https://${module.grafana-workspace.amg-workspace_endpoint}"
   amg_api_token         = module.grafana-workspace.amg-workspace-api-key
   amp_url               = module.prometheus-workspace.amp_workspace_endpoint
-  region                = data.aws_region.current.name
+  region                = data.aws_region.current.region
 }
