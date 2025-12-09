@@ -22,6 +22,7 @@ resource "helm_release" "efs" {
   chart            = "aws-efs-csi-driver"
   wait             = true
   create_namespace = false
+  version          = "3.2.0"
 
   # set image repo reference
   set = [
