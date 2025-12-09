@@ -31,4 +31,6 @@ module "cert_manager_cni_irsa_role" {
       namespace_service_accounts = ["cert-manager:cert-manager"]
     }
   }
+
+  cert_manager_hosted_zone_arns = var.cert_manager_hosted_zone_arns
 }
