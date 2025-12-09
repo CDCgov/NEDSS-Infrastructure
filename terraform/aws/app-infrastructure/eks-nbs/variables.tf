@@ -148,6 +148,9 @@ variable "kms_key_enable_default_policy" {
   default     = false
 }
 
-
+variable "cert_manager_hosted_zone_arns" {
+  description = "ARNs for Route 53 hosted zones that Cert Manager can access"
+  type = list(string)
+}
 
 
