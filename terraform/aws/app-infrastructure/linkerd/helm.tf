@@ -75,11 +75,37 @@ resource "helm_release" "linkerd_control_plane" {
     {
       name  = "identity.issuer.tls.keyPEM"
       value = tls_private_key.issuer.private_key_pem
+    },
+
+    # Scheduling and High Availability Configuration
+    # Ensures Linkerd components start before application pods
+    {
+      name  = "priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+    },
+    {
+      name  = "enablePodDisruptionBudget"
+      value = "true"
+    },
+    {
+      name  = "proxyInjector.priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+    },
+    {
+      name  = "destination.priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+    },
+    {
+      name  = "identity.priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
     }
+
   ]
 
+
   depends_on = [
-    helm_release.linkerd_crds
+    helm_release.linkerd_crds,
+    kubernetes_priority_class.linkerd_critical
   ]
 }
 
@@ -92,5 +118,18 @@ resource "helm_release" "linkerd_viz" {
   namespace        = var.linkerd_viz_namespace_name
   create_namespace = true
   version          = var.linkerd_helm_version
-  depends_on       = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
+
+  # Use same priority class for consistency
+  set = {
+    name  = "priorityClassName"
+    value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+  }
+
+  depends_on = [
+    helm_release.linkerd_crds,
+    helm_release.linkerd_control_plane,
+    kubernetes_priority_class.linkerd_critical
+  ]
+
+
 }
