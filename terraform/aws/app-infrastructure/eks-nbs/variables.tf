@@ -153,4 +153,34 @@ variable "cert_manager_hosted_zone_arns" {
   type = list(string)
 }
 
-
+variable "addons" {
+  description = "Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name`"
+  type = map(object({
+    name                 = optional(string) # will fall back to map key
+    before_compute       = optional(bool, false)
+    most_recent          = optional(bool, true)
+    addon_version        = optional(string)
+    configuration_values = optional(string)
+    pod_identity_association = optional(list(object({
+      role_arn        = string
+      service_account = string
+    })))
+    preserve                    = optional(bool, true)
+    resolve_conflicts_on_create = optional(string, "OVERWRITE")
+    resolve_conflicts_on_update = optional(string, "OVERWRITE")
+    service_account_role_arn    = optional(string)
+    timeouts = optional(object({
+      create = optional(string)
+      update = optional(string)
+      delete = optional(string)
+    }), {})
+    tags = optional(map(string), {})
+  }))
+  default =   {
+    coredns = {}
+    kube-proxy = {}
+    vpc-cni = {
+      before_compute = true
+    }  
+  }
+}

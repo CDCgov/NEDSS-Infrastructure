@@ -15,13 +15,7 @@ module "eks" {
   subnet_ids = var.subnets
 
   # Cluster addons, ebs csi driver
-  # cluster_addons = {
-  #   aws-ebs-csi-driver = {
-  #     resolve_conflicts_on_create = "OVERWRITE"
-  #     most_recent       = true
-  #   }
-  # }
-
+  addons = var.addons
 
   # Create node groups with config
   eks_managed_node_groups = {
