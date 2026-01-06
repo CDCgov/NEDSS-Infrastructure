@@ -63,45 +63,47 @@ resource "helm_release" "linkerd_control_plane" {
   chart      = var.linkerd_controlplane_chart #"linkerd-control-plane"
   version    = var.linkerd_helm_version
 
-  set = [
-    {
-      name  = "identityTrustAnchorsPEM"
-      value = tls_locally_signed_cert.issuer.ca_cert_pem
-    },
-    {
-      name  = "identity.issuer.tls.crtPEM"
-      value = tls_locally_signed_cert.issuer.cert_pem
-    },
-    {
-      name  = "identity.issuer.tls.keyPEM"
-      value = tls_private_key.issuer.private_key_pem
-    },
+   # Certificate configuration
+  set {
+    name  = "identityTrustAnchorsPEM"
+    value = tls_self_signed_cert.ca.cert_pem
+  }
 
-    # Scheduling and High Availability Configuration
-    # Ensures Linkerd components start before application pods
-    {
-      name  = "priorityClassName"
-      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
-    },
-    {
-      name  = "enablePodDisruptionBudget"
-      value = "true"
-    },
-    {
-      name  = "proxyInjector.priorityClassName"
-      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
-    },
-    {
-      name  = "destination.priorityClassName"
-      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
-    },
-    {
-      name  = "identity.priorityClassName"
-      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
-    }
+  set {
+    name  = "identity.issuer.tls.crtPEM"
+    value = tls_locally_signed_cert.issuer.cert_pem
+  }
 
-  ]
+  set {
+    name  = "identity.issuer.tls.keyPEM"
+    value = tls_private_key.issuer.private_key_pem
+  }
 
+  # NEW: Scheduling and High Availability Configuration
+  set {
+    name  = "priorityClassName"
+    value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+  }
+
+  set {
+    name  = "enablePodDisruptionBudget"
+    value = "true"
+  }
+
+  set {
+    name  = "proxyInjector.priorityClassName"
+    value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+  }
+
+  set {
+    name  = "destination.priorityClassName"
+    value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+  }
+
+  set {
+    name  = "identity.priorityClassName"
+    value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+  }
 
   depends_on = [
     helm_release.linkerd_crds,
@@ -120,7 +122,7 @@ resource "helm_release" "linkerd_viz" {
   version          = var.linkerd_helm_version
 
   # Use same priority class for consistency
-  set = {
+  set {
     name  = "priorityClassName"
     value = kubernetes_priority_class.linkerd_critical.metadata[0].name
   }
