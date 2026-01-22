@@ -52,14 +52,63 @@ module "grafana-workspace" {
   resource_prefix        = var.resource_prefix
 }
 
+######################################
+# NEW MODULE: Grafana Token Rotation
+######################################
+
+module "grafana-token-rotation" {
+  source     = "./modules/grafana-token-rotation"
+  depends_on = [module.grafana-workspace]
+
+  resource_prefix        = var.resource_prefix
+  grafana_workspace_id   = module.grafana-workspace.amg-workspace-id
+  service_account_id     = module.grafana-workspace.amg-workspace-service-account-id
+  token_expiration_days  = 30  # Token valid for 30 days
+  rotation_schedule_days = 25  # Rotate every 25 days (5-day buffer)
+  region                 = data.aws_region.current.region
+  tags                   = var.tags
+}
+
+######################################
+# Bootstrap: Invoke Lambda to create first token
+######################################
+
+resource "null_resource" "initial_token_rotation" {
+  depends_on = [module.grafana-token-rotation]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws lambda invoke \
+        --function-name ${module.grafana-token-rotation.lambda_function_name} \
+        --payload '{}' \
+        --region ${data.aws_region.current.region} \
+        /tmp/grafana_token_rotation_response.json
+    EOT
+  }
+
+  # Only run once when the module is first created
+  triggers = {
+    lambda_arn = module.grafana-token-rotation.lambda_function_arn
+  }
+}
+
+######################################
+# Grafana Dashboard Module
+# NOTE: Now reads token from Secrets Manager
+######################################
+
 module "grafana-dashboard" {
-  source     = "./modules/grafana-dashboard"
-  depends_on = [module.grafana-workspace.aws_grafana_workspace_api_key]
+  source = "./modules/grafana-dashboard"
+  depends_on = [
+    module.grafana-workspace,
+    module.grafana-token-rotation,
+    null_resource.initial_token_rotation  # Wait for first token to be created
+  ]
   providers = {
     grafana = grafana.cloud
   }
   grafana_workspace_url = "https://${module.grafana-workspace.amg-workspace_endpoint}"
-  amg_api_token         = module.grafana-workspace.amg-workspace-api-key
+  amg_api_token         = local.grafana_token  # Now reads from Secrets Manager
   amp_url               = module.prometheus-workspace.amp_workspace_endpoint
   region                = data.aws_region.current.region
 }
