@@ -10,10 +10,14 @@ output "amg-workspace_version" {
   value = aws_grafana_workspace.amg.grafana_version
 }
 
+# IMPORTANT: Use .service_account_id not .id
+# .id returns composite format "workspace_id,service_account_id" (e.g., "g-7e6e6566c7,2")
+# .service_account_id returns just the numeric ID (e.g., "2") which the Grafana API expects
 output "amg-workspace-service-account-id" {
-  description = "The ID of the Grafana service account"
-  value       = aws_grafana_workspace_service_account.terraform_sa.id
+  description = "The ID of the Grafana service account for Terraform (numeric ID only)"
+  value       = aws_grafana_workspace_service_account.terraform_sa.service_account_id
 }
+
 
 output "amg-workspace-id" {
   description = "The ID of the Grafana workspace"

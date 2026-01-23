@@ -33,7 +33,7 @@ resource "aws_iam_policy" "grafana_policy" {
           "grafana:DeleteWorkspaceServiceAccountToken",
           "grafana:ListWorkspaceServiceAccountTokens"
         ]
-        Resource = "arn:aws:grafana:${var.region}:*:/workspaces/${var.grafana_workspace_id}/*"
+        Resource = "*"
       }
     ]
   })
