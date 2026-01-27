@@ -46,35 +46,10 @@ module "eks" {
   }
 
 
+  # Merge admin and readonly access entries from locals
   access_entries = merge(
-    {
-      admin-role = {
-        principal_arn = var.aws_role_arn
-
-        policy_associations = {
-          admin-access = {
-            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-            access_scope = {
-              type = "cluster"
-            }
-          }
-        }
-      }
-    },
-    try(length(var.readonly_role_arn) > 0, false) ? {
-      readonly-role = {
-        principal_arn = var.readonly_role_arn
-
-        policy_associations = {
-          readonly-access = {
-            policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-            access_scope = {
-              type = "cluster"
-            }
-          }
-        }
-      }
-    } : {}
+    local.admin_access_entries,
+    local.readonly_access_entries
   )
 }
 
@@ -138,5 +113,3 @@ resource "aws_vpc_security_group_ingress_rule" "example" {
   ip_protocol = "tcp"
   to_port     = 443
 }
-
-

@@ -31,15 +31,22 @@ variable "aws_role_arn" {
   type        = string
 }
 
-variable "sso_role_arn" {
-  description = "AWS SSO IAM Role arn used to authenticate into the EKS cluster"
-  type        = string
-}
-
 variable "readonly_role_arn" {
   description = "Optional AWS IAM Role arn used to authenticate into the EKS cluster for ReadOnly"
   type        = string
   default     = null
+}
+
+variable "admin_role_arns" {
+  description = "List of AWS IAM Role ARNs for admin access to the EKS cluster. If not provided, aws_role_arn will be used."
+  type        = list(string)
+  default     = []
+}
+
+variable "readonly_role_arns" {
+  description = "List of AWS IAM Role ARNs for readonly access to the EKS cluster. If not provided, readonly_role_arn will be used if set."
+  type        = list(string)
+  default     = []
 }
 
 variable "cluster_version" {
@@ -95,23 +102,6 @@ variable "istio_version" {
   default     = "1.17.2"
 }
 
-# variable "observability_namespace" {
-#   description = "Name for the observability namespace with the EKS cluster to be created"
-#   type        = string
-#   default     = "observability"
-# }
-
-# variable "observability_labels" {
-#   description = "Labels to add to observability namespace"
-#   type        = map(string)
-#   default     = null
-
-#   # sample label
-#   # default     = {
-#   #   my_label_key = "my_label_value"
-#   # }
-# }
-
 variable "use_ecr_pull_through_cache" {
   description = "Create and use ECR pull through caching for bootstrapped helm charts"
   type        = bool
@@ -150,7 +140,7 @@ variable "kms_key_enable_default_policy" {
 
 variable "cert_manager_hosted_zone_arns" {
   description = "ARNs for Route 53 hosted zones that Cert Manager can access"
-  type = list(string)
+  type        = list(string)
 }
 
 variable "addons" {
@@ -176,11 +166,11 @@ variable "addons" {
     }), {})
     tags = optional(map(string), {})
   }))
-  default =   {
-    coredns = {}
+  default = {
+    coredns    = {}
     kube-proxy = {}
     vpc-cni = {
       before_compute = true
-    }  
+    }
   }
 }
