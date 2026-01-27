@@ -18,6 +18,10 @@ from datetime import datetime, timezone
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+# Initialize AWS clients outside handler (best practice - reused across invocations)
+grafana_client = boto3.client('grafana')
+secrets_client = boto3.client('secretsmanager')
+
 
 def handler(event, context):
     """
@@ -33,10 +37,6 @@ def handler(event, context):
     
     # Calculate token expiration in seconds
     token_expiration_seconds = token_expiration_days * 24 * 60 * 60
-    
-    # Initialize AWS clients
-    grafana_client = boto3.client('grafana')
-    secrets_client = boto3.client('secretsmanager')
     
     try:
         # Generate a unique token name with timestamp
