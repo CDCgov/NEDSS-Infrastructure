@@ -16,12 +16,16 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = ">= 2.38.0, < 3.0.0"
     }
-    time = {
-      source  = "hashicorp/time"
-      version = ">= 0.13.1, < 1.0.0"
+    archive = {
+      source  = "hashicorp/archive"
+      version = ">= 2.0.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.0.0"
+    }
+    # NOTE: 'time' provider removed - no longer needed
   }
-
   required_version = ">= 1.13.3"
 }
 
@@ -38,9 +42,27 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(var.cluster_certificate_authority_data)
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
+######################################
+# Read Grafana token from Secrets Manager
+######################################
+
+data "aws_secretsmanager_secret_version" "grafana_token" {
+  depends_on = [module.grafana-token-rotation]
+  secret_id  = module.grafana-token-rotation.secret_id
+}
+
+locals {
+  # Parse the JSON secret and extract the token
+  grafana_secret = jsondecode(data.aws_secretsmanager_secret_version.grafana_token.secret_string)
+  grafana_token  = local.grafana_secret["token"]
+}
+
+######################################
+# Grafana provider - now uses token from Secrets Manager
+######################################
 
 provider "grafana" {
   alias = "cloud"
   url   = "https://${module.grafana-workspace.amg-workspace_endpoint}"
-  auth  = module.grafana-workspace.amg-workspace-api-key #grafana_service_account_token.admin-sa-token.key #
+  auth  = local.grafana_token
 }

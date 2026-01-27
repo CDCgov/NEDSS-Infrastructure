@@ -58,29 +58,20 @@ resource "aws_iam_policy_attachment" "grafana-attach" {
 }
 
 ######################################
-# rotating the api key
-locals {
-  expiration_days    = 30
-  expiration_seconds = 60 * 60 * 24 * local.expiration_days
+# Service Account (replaces deprecated API key)
+# Token rotation is handled by Lambda + Secrets Manager
+######################################
+
+resource "aws_grafana_workspace_service_account" "terraform_sa" {
+  name         = "${var.resource_prefix}-terraform-sa"
+  grafana_role = "ADMIN"
+  workspace_id = aws_grafana_workspace.amg.id
 }
 
-resource "time_rotating" "rotate" {
-  rotation_days = local.expiration_days
-}
-
-resource "time_static" "rotate" {
-  rfc3339 = time_rotating.rotate.rfc3339
-}
-#########################################
-
-resource "aws_grafana_workspace_api_key" "api_key" {
-  key_name        = "amg_api_key"
-  key_role        = "ADMIN"
-  seconds_to_live = local.expiration_seconds
-  workspace_id    = aws_grafana_workspace.amg.id
-  lifecycle {
-    replace_triggered_by = [
-      time_static.rotate
-    ]
-  }
-}
+# NOTE: The following resources have been REMOVED:
+# - locals { expiration_days, expiration_seconds }
+# - resource "time_rotating" "rotate"
+# - resource "time_static" "rotate"  
+# - resource "aws_grafana_workspace_api_key" "api_key"
+#
+# Token creation and rotation is now handled by the grafana-token-rotation Lambda module
