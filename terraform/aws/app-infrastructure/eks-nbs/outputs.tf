@@ -30,7 +30,12 @@ output "eks_aws_role_arn" {
   value       = module.eks.cluster_iam_role_arn
 }
 
-# output "precreated_observability_namespace_name" {
-#   description = "Name of the observability namespace"
-#   value       = var.observability_namespace
-# }
+output "admin_role_arns" {
+  description = "List of IAM role ARNs with admin access to the cluster"
+  value       = local.admin_roles
+}
+
+output "readonly_role_arns" {
+  description = "List of IAM role ARNs with readonly access to the cluster"
+  value       = local.readonly_roles
+}
