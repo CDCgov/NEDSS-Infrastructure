@@ -13,7 +13,7 @@ dry_run = os.environ['DRY_RUN'].lower()
 max_batch_size = int(os.environ["MAX_BATCH_SIZE"]) # max integer number of reports to pull at once
 reported_service_types = os.environ['REPORTED_SERVICE_TYPES'] # example, requires parenthesis, "('NNDM_1.1.3', 'NND_Case_Note', 'NBS_1.1.3_LDF', 'MVPS')"
 sftp_secret_name = os.environ["SECRET_MANAGER_SFTP_SECRET"]
-sftp_put_filepath = os.environ["SFTP_PUT_FILEPATH"] # no trailing '/'
+sftp_put_filepath = os.environ.get("SFTP_PUT_FILEPATH",'') # requires a trailing '/'
 db_secret_name = os.environ["SECRET_MANAGER_DB_SECRET"]
 
 # Global Variables
