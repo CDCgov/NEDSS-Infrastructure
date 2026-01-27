@@ -13,7 +13,7 @@ dry_run = os.environ['DRY_RUN'].lower()
 max_batch_size = int(os.environ["MAX_BATCH_SIZE"]) # max integer number of reports to pull at once
 reported_service_types = os.environ['REPORTED_SERVICE_TYPES'] # example, requires parenthesis, "('NNDM_1.1.3', 'NND_Case_Note', 'NBS_1.1.3_LDF', 'MVPS')"
 sftp_secret_name = os.environ["SECRET_MANAGER_SFTP_SECRET"]
-sftp_put_filepath = os.environ["SFTP_PUT_FILEPATH"] # no trailing '/'
+sftp_put_filepath = os.environ.get("SFTP_PUT_FILEPATH",'')
 db_secret_name = os.environ["SECRET_MANAGER_DB_SECRET"]
 
 # Global Variables
@@ -194,8 +194,11 @@ def _write_to_sftp(file, sftp_put_filepath, sftp_hostname, sftp_username, sftp_p
     # dry_run = True/False
 
     success_status = False 
-    # File paths    
-    remote_file_path = f"{sftp_put_filepath}/{file}"
+    # File paths, check trailing '/' and add if missing
+    if not sftp_put_filepath.endswith("/") and sftp_put_filepath != '':
+        sftp_put_filepath += "/"   
+        
+    remote_file_path = f"{sftp_put_filepath}{file}"
     local_file_path = f"/tmp/{file}"  # Lambda allows writes only to /tmp    
     
     # Connect with username + password
