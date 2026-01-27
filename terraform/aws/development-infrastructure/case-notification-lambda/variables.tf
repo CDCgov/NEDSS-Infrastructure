@@ -129,9 +129,9 @@ variable "lambda_env_reported_service_types" {
 }
 
 variable "lambda_env_sftp_put_filepath" {
-  description = "SFTP_PUT_FILEPATH lambda environment variable. Accepted values = filepath with terminating '/'"
+  description = "SFTP_PUT_FILEPATH lambda environment variable. Accepted values = filepath with or without terminating '/'"
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "lambda_env_log_level" {

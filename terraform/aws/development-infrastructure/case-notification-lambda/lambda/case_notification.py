@@ -194,8 +194,11 @@ def _write_to_sftp(file, sftp_put_filepath, sftp_hostname, sftp_username, sftp_p
     # dry_run = True/False
 
     success_status = False 
-    # File paths    
-    remote_file_path = f"{sftp_put_filepath}/{file}"
+    # File paths, check trailing '/' and add if missing
+    if not sftp_put_filepath.endswith("/") and sftp_put_filepath != '':
+        sftp_put_filepath += "/"   
+        
+    remote_file_path = f"{sftp_put_filepath}{file}"
     local_file_path = f"/tmp/{file}"  # Lambda allows writes only to /tmp    
     
     # Connect with username + password
