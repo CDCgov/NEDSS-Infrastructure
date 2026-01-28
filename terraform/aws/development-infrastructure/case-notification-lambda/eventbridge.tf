@@ -1,6 +1,6 @@
 # Scheduled EventBridge rule - runs every Monday at 01:00 UTC
 resource "aws_cloudwatch_event_rule" "weekly_lambda" {
-  name                = "weekly-lambda-trigger"
+  name                = "${var.resource_prefix}-weekly-lambda-trigger"
   description         = "Trigger Lambda  week"
   schedule_expression = var.schedule_cron_expression
 }
