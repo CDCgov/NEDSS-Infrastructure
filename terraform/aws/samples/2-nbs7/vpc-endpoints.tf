@@ -4,8 +4,8 @@ module "vpc-endpoints" {
   create_prometheus_vpc_endpoint = var.create_prometheus_vpc_endpoint
   create_grafana_vpc_endpoint    = var.create_grafana_vpc_endpoint
   tags                           = var.tags
-  private_subnet_ids             = module.modernization-vpc.private_subnets
-  vpc_id                         = module.modernization-vpc.vpc_id
-  vpc_cidr_block                 = module.modernization-vpc.vpc_cidr_block
+  private_subnet_ids             = data.aws_subnets.nbs7.ids
+  vpc_id                         = data.aws_vpc.nbs7.id
+  vpc_cidr_block                 = data.aws_vpc.nbs7.cidr_block
   resource_prefix                = var.resource_prefix
 }
