@@ -9,12 +9,12 @@
 # Non-module specific variables-----------------------------------
 variable "resource_prefix" {
   description = "Prefix for resource names"
-  type = string
+  type        = string
 }
 
 variable "aws_eks_cluster_name" {
   description = "Name of EKS cluster. Usually naming follows convention 'var.resource_prefix-eks'. Leave as null to interpret from resource_prefix variables"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
 

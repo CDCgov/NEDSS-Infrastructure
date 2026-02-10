@@ -8,7 +8,7 @@
 
 variable "resource_prefix" {
   description = "Prefix for resource names"
-  type = string
+  type        = string
 }
 
 variable "vpc_id" {
@@ -18,7 +18,7 @@ variable "vpc_id" {
 
 variable "database_subnets" {
   description = "Subnet Ids to be used when creating RDS"
-  type        = list(any) 
+  type        = list(any)
 }
 
 variable "db_instance_type" {

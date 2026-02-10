@@ -8,7 +8,7 @@
 
 variable "resource_prefix" {
   description = "Prefix for resource names"
-  type = string
+  type        = string
 }
 
 # VPC variables
@@ -35,36 +35,36 @@ variable "public_subnets" {
 variable "create_igw" {
   description = "Create an internet gateway(requires public subnet)?"
   type        = bool
-  default = true
+  default     = true
 }
 
 variable "enable_nat_gateway" {
   description = "Create NAT Gateway?"
   type        = bool
-  default = true
+  default     = true
 }
 
 variable "single_nat_gateway" {
   description = "Use a single NAT Gateway (low availability)?"
   type        = bool
-  default = true
+  default     = true
 }
 
 variable "one_nat_gateway_per_az" {
   description = "Use a single NAT Gateway for each availability zone?"
   type        = bool
-  default = false
+  default     = false
 }
 
 variable "enable_dns_hostnames" {
   description = "Should be true to enable DNS hostnames in the VPC"
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
 }
 
 variable "enable_dns_support" {
   description = "Should be true to enable DNS support in the VPC"
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
 }
 #-----------------------------------------------------------------

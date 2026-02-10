@@ -5,7 +5,7 @@
 # search for all other EXAMPLE
 #
 
-resource_prefix   = "EXAMPLE_RESOURCE_PREFIX" # highly recommend using snake case for naming (e.g. this-is-snake-case)
+resource_prefix = "EXAMPLE_RESOURCE_PREFIX" # highly recommend using snake case for naming (e.g. this-is-snake-case)
 
 # Modernization Infrastructure
 # VPC Variables

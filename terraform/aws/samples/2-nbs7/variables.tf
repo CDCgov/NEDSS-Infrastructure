@@ -9,12 +9,12 @@
 # Non-module specific variables-----------------------------------
 variable "resource_prefix" {
   description = "Prefix for resource names"
-  type = string
+  type        = string
 }
 
 variable "tags" {
   description = "Map(string) of tags to add to created resources"
-  type = map(string)
+  type        = map(string)
 }
 
 variable "domain_name" {
@@ -31,7 +31,7 @@ variable "vpc_id" {
 #EKS Variables----------------------------------------------------
 variable "aws_role_arn" {
   description = "AWS IAM Role/USEr arn used to authenticate into the EKS cluster"
-  type        = string    
+  type        = string
 }
 
 variable "readonly_role_arn" {
@@ -111,7 +111,7 @@ variable "deploy_argocd_helm" {
 
 variable "eks_allow_endpoint_public_access" {
   description = "Allow both public and private access to EKS api endpoint. If False, terraform must have access to AWS network containing EKS API."
-  type        = bool  
+  type        = bool
 }
 
 variable "kms_key_administrators" {
@@ -134,12 +134,12 @@ variable "msk_ebs_volume_size" {
 
 variable "msk_environment" {
   description = "The environment, either 'development' which provisions 2 brokers in 2 different subnets or 'production' which provisions 3 brokers in 3 different subnets."
-  type = string
+  type        = string
 
   validation {
     condition = (
-      (var.msk_environment == "development" && length(data.aws_subnets.nbs7.ids)>= 2) ||
-      (var.msk_environment == "production" && length(data.aws_subnets.nbs7.ids)>= 3)
+      (var.msk_environment == "development" && length(data.aws_subnets.nbs7.ids) >= 2) ||
+      (var.msk_environment == "production" && length(data.aws_subnets.nbs7.ids) >= 3)
     )
     error_message = "There is an insufficient number of subnets for the given MSK environment '${var.msk_environment}'. 'development' requires 2 subnets, 'production' requires 3 subnets."
   }
