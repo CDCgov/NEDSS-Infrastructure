@@ -18,15 +18,7 @@ variable "vpc_id" {
 
 variable "database_subnets" {
   description = "Subnet Ids to be used when creating RDS"
-  type        = list(any)
-
-  validation {
-    condition = alltrue([
-      for s in data.aws_subnet.selected :
-      s.vpc_id == var.vpc_id
-    ])
-    error_message = "All subnet_ids must exist and belong to the specified vpc_id."
-  }
+  type        = list(any) 
 }
 
 variable "db_instance_type" {
