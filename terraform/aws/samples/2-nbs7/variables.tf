@@ -134,15 +134,7 @@ variable "msk_ebs_volume_size" {
 
 variable "msk_environment" {
   description = "The environment, either 'development' which provisions 2 brokers in 2 different subnets or 'production' which provisions 3 brokers in 3 different subnets."
-  type        = string
-
-  validation {
-    condition = (
-      (var.msk_environment == "development" && length(data.aws_subnets.nbs7.ids) >= 2) ||
-      (var.msk_environment == "production" && length(data.aws_subnets.nbs7.ids) >= 3)
-    )
-    error_message = "There is an insufficient number of subnets for the given MSK environment '${var.msk_environment}'. 'development' requires 2 subnets, 'production' requires 3 subnets."
-  }
+  type        = string  
 }
 #-----------------------------------------------------------------
 
