@@ -51,7 +51,7 @@ variable "readonly_role_arns" {
 
 variable "cluster_version" {
   description = "Version of the AWS EKS cluster to provision"
-  default     = "1.32"
+  default     = "1.35"
 }
 
 variable "desired_nodes_count" {
