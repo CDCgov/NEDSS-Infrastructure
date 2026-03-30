@@ -36,13 +36,6 @@ on:
         type: string
         default: ""
         required: false
-    secrets:
-      GIT_USER_EMAIL:
-        description: "Secret named GIT_USER_EMAIL for the CI user email."
-        required: true
-      GIT_USER_NAME:
-        description: "Secret named ECR_REPO_BASE_NAME for the CI user name."
-        required: true
 
  #token permissions
 permissions:
@@ -52,7 +45,7 @@ permissions:
 
 jobs:
   create-draft-release:   
-    uses: CDCgov/NEDSS-Workflows/.github/workflows/Create-github-draft-release.yaml@v1.0.0
+    uses: CDCgov/NEDSS-Workflows/.github/workflows/Create-github-draft-release.yaml@main
     with:
       update_zip_only: ${{inputs.update_zip_only}}
       release_version: ${{inputs.release_version}}
@@ -62,5 +55,5 @@ jobs:
       paths: ${{inputs.paths}}
       excluded_paths: ${{inputs.excluded_paths}}
     secrets:
-      GIT_USER_EMAIL: ${{secrets.GIT_USER_EMAIL}}
-      GIT_USER_NAME: ${{secrets.GIT_USER_NAME}}
+      GIT_APP_ID: ${{secrets.GIT_APP_ID}}
+      GIT_APP_PRIVATE_KEY: ${{secrets.GIT_APP_PRIVATE_KEY}}
