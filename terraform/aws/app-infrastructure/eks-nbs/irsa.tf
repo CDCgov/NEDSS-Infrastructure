@@ -48,7 +48,9 @@ module "datacompare_irsa_role" {
       namespace_service_accounts = var.datacompare_namespace_and_service
     }
   }
-  policies = aws_iam_policy.datacompare_irsa_policy.arn
+  policies ={
+   policy = aws_iam_policy.datacompare_irsa_policy.arn
+  } 
 }
 
 resource "aws_iam_policy" "datacompare_irsa_policy" {
