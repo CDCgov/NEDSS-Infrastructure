@@ -177,7 +177,7 @@ variable "addons" {
 
 # Datacompare optional service
 variable "create_datacompare_irsa" {
-  description = "Create an IRSA role for the datacompare service?"
+  description = "Create an IAM roles for service accounts (IRSA) and IAM policy for the datacompare service?"
   type        = bool
   default     = false
 }
