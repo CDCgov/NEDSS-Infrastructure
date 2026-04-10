@@ -194,8 +194,15 @@ variable "datacompare_s3_bucket_name" {
   default     = ""
 }
 variable "datacompare_s3_bucket_keyname_prefix" {
-  description = "KeyName (folder structure) for s3 bucket to be used for datacompare IRSA role including prefix '/' (ex. /myFolder)."
+  description = "KeyName (folder structure) for s3 bucket to be used for datacompare IRSA role including trailing '/' (ex. myFolder/)."
   type        = string
-  default     = "/"
+  default     = ""
+
+  validation {
+    # Check if the string is empty OR matches the regex for ending in /
+    condition     = var.datacompare_s3_bucket_keyname_prefix == "" || can(regex("/$", var.datacompare_s3_bucket_keyname_prefix))
+    error_message = "The datacompare_s3_bucket_keyname_prefix variable must be an empty string or end with a forward slash (/). Example: 'myFolder/' or \"\"."
+  }
+  
 }
 
