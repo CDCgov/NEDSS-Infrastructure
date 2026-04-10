@@ -151,3 +151,11 @@ variable "create_grafana_vpc_endpoint" {
   default     = true
 }
 #-----------------------------------------------------------------
+
+# DataCompare Variables ------------------------------------------
+variable "create_datacompare_resources" {
+  description = "Create resources for DataCompare service"
+  type        = bool
+  default     = false
+}
+#-----------------------------------------------------------------
