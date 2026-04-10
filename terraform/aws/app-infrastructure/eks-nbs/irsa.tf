@@ -54,6 +54,7 @@ module "datacompare_irsa_role" {
 }
 
 resource "aws_iam_policy" "datacompare_irsa_policy" {
+  count = var.create_datacompare_irsa ? 1 : 0
   name        = "${local.eks_name}-datacompare-policy"
   description = "DataCompare S3 access policy"
 
