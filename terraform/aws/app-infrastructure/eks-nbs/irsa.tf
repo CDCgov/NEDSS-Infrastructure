@@ -78,7 +78,7 @@ resource "aws_iam_policy" "datacompare_irsa_policy" {
           "s3:AbortMultipartUpload"
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:s3:::${var.datacompare_s3_bucket_name}/*"
+        Resource = "arn:aws:s3:::${var.datacompare_s3_bucket_name}/${var.datacompare_s3_bucket_keyname_prefix}/*"
       }
     ]
   })  

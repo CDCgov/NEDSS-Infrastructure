@@ -196,6 +196,6 @@ variable "datacompare_s3_bucket_name" {
 variable "datacompare_s3_bucket_keyname_prefix" {
   description = "KeyName (folder structure) for s3 bucket to be used for datacompare IRSA role."
   type        = string
-  default     = ""
+  default     = null
 }
 
