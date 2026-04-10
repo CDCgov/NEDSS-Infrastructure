@@ -174,3 +174,28 @@ variable "addons" {
     }
   }
 }
+
+# Datacompare optional service
+variable "create_datacompare_irsa" {
+  description = "Create an IRSA role for the datacompare service?"
+  type        = bool
+  default     = false
+}
+
+variable "datacompare_namespace_and_service" {
+  description = "List of Kubernetes namespace and services to be included in the datacompare IRSA trust policy (format= [namespace:serviceName])."
+  type        = list(string)
+  default     = ["default:data-compare-api-service", "default:data-compare-processor-service"]
+}
+
+variable "datacompare_s3_bucket_name" {
+  description = "Name of s3 bucket to be used for datacompare IRSA role."
+  type        = string
+  default     = ""
+}
+variable "datacompare_s3_bucket_keyname_prefix" {
+  description = "KeyName (folder structure) for s3 bucket to be used for datacompare IRSA role."
+  type        = string
+  default     = ""
+}
+
