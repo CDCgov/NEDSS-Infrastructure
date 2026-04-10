@@ -49,7 +49,7 @@ module "datacompare_irsa_role" {
     }
   }
   policies ={
-   policy = aws_iam_policy.datacompare_irsa_policy.arn
+   policy = aws_iam_policy.datacompare_irsa_policy[0].arn
   } 
 }
 
