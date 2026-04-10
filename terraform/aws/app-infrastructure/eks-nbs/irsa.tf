@@ -48,7 +48,7 @@ module "datacompare_irsa_role" {
       namespace_service_accounts = var.datacompare_namespace_and_service
     }
   }
-  policies = { "${local.eks_name}-datacompare-policy" = "${aws_iam_policy.datacompare_irsa_policy}" }
+  policies = "${aws_iam_policy.datacompare_irsa_policy}" 
 }
 
 resource "aws_iam_policy" "datacompare_irsa_policy" {
