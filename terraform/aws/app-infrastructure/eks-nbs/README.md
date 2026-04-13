@@ -37,6 +37,9 @@ Below are the input parameter variables for the eks-nbs:
 | subnets                       | list(string) |            | List of the AWS private subnets ids associated with the supplied vpc_id to deploy in which to deploy the cluster                                      |
 | use_ecr_pull_through_cache    | bool         | false      | Create and use ECR pull through caching for bootstrapped helm charts                                                                                  |
 | vpc_id                        | string       |            | The AWS VPC ID to deploy in which to deploy the cluster                                                                                               |
+| create_otel_collector_irsa    | bool         | `false`    | Create IRSA role and IAM policy for the OTEL Collector S3 log export? |
+| otel_collector_namespace_and_service         | list(string) | `["observability:splunk-otel-collector"]` | List of Kubernetes namespace and service for the OTEL Collector IRSA trust policy (format= ["namespace:serviceName"]). |
+| otel_collector_s3_bucket_name | string        | `""`      | Name of S3 bucket for OTEL Collector log storage. |
 
 ## Outputs
 
@@ -52,6 +55,7 @@ Below are the referenceable outputs from this module.
 | eks_cluster_name                   | The name provided to the EKS cluster                                      |
 | oidc_provider_arn                  | The ARN of the OIDC Provider if enable_irsa = true                        |
 | readonly_role_arns                 | List of IAM role ARNs with readonly access to the cluster                 |
+| otel_collector_role_arn            | OTEL Collector IRSA role ARN for helm chart deployment |
 
 ## Module Dependencies
 
@@ -59,3 +63,4 @@ Dependencies are external modules that this module references. A module is consi
 
 - eks_nbs (19.15.3): `terraform-aws-modules/eks/aws`
 - efs_cni_irsa_role: `terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts`
+- otel_collector_irsa_role: `terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts`
