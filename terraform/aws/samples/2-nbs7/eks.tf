@@ -21,6 +21,6 @@ module "eks_nbs" {
     "arn:aws:route53:::hostedzone/${data.aws_route53_zone.root.zone_id}"
   ]
 
-  create_datacompare_irsa = var.create_datacompare_resources
+  create_datacompare_irsa    = var.create_datacompare_resources
   datacompare_s3_bucket_name = var.create_datacompare_resources ? module.s3_datacompare[0].bucket_name : ""
 }
