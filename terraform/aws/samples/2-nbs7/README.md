@@ -102,6 +102,7 @@ this include modifying security groups to allow operations involving the databas
 | msk_environment | The environment, either 'development' which provisions 2 brokers in 2 different subnets or 'production' which provisions 3 brokers in 3 different subnets. |  |
 | create_prometheus_vpc_endpoint | Create Prometheus VPC endpoint and security group? | `true` |
 | create_grafana_vpc_endpoint | Create Grafana VPC endpoint and security group? | `true` |
+| create_datacompare_resources | Create resources for DataCompare service? | `false` |
 </details>
 
 <details>

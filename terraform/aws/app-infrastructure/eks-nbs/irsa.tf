@@ -77,3 +77,63 @@ resource "aws_iam_policy" "otel_collector_irsa_policy" {
     ]
   })
 }
+
+module "datacompare_irsa_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = ">=6.2.3, <7.0.0"
+
+  name   = "${local.eks_name}-datacompare-role"
+  create = var.create_datacompare_irsa
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = var.otel_collector_namespace_and_service
+    }
+  }
+  
+  policies = {
+    policy = aws_iam_policy.datacompare_irsa_policy[0].arn
+  }
+}
+
+resource "aws_iam_policy" "datacompare_irsa_policy" {
+  count       = var.create_datacompare_irsa ? 1 : 0
+  name        = "${local.eks_name}-datacompare-policy"
+  description = "DataCompare S3 access policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "OtelLogsS3Write"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetBucketLocation"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.otel_collector_s3_bucket_name}",
+          "arn:aws:s3:::${var.otel_collector_s3_bucket_name}/*"
+        ]
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${var.datacompare_s3_bucket_name}"
+      },
+      {
+        Action = [
+          "s3:GetObjectAttributes",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListMultipartUploadParts",
+          "s3:AbortMultipartUpload"
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${var.datacompare_s3_bucket_name}/${var.datacompare_s3_bucket_keyname_prefix}*"
+      }
+    ]
+  })
+}
