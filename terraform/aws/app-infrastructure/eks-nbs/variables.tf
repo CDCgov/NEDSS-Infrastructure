@@ -204,4 +204,3 @@ variable "datacompare_s3_bucket_keyname_prefix" {
     error_message = "The datacompare_s3_bucket_keyname_prefix variable must be an empty string or end with a forward slash (/). Example: 'myFolder/' or \"\"."
   }
 }
-
