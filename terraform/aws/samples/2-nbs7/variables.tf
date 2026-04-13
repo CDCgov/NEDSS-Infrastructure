@@ -134,7 +134,7 @@ variable "msk_ebs_volume_size" {
 
 variable "msk_environment" {
   description = "The environment, either 'development' which provisions 2 brokers in 2 different subnets or 'production' which provisions 3 brokers in 3 different subnets."
-  type        = string  
+  type        = string
 }
 #-----------------------------------------------------------------
 
@@ -149,5 +149,13 @@ variable "create_grafana_vpc_endpoint" {
   description = "Create Grafana VPC endpoint and security group?"
   type        = bool
   default     = true
+}
+#-----------------------------------------------------------------
+
+# DataCompare Variables ------------------------------------------
+variable "create_datacompare_resources" {
+  description = "Create resources for DataCompare service?"
+  type        = bool
+  default     = false
 }
 #-----------------------------------------------------------------

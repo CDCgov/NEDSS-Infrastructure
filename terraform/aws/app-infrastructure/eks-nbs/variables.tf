@@ -174,3 +174,33 @@ variable "addons" {
     }
   }
 }
+
+# Datacompare optional service
+variable "create_datacompare_irsa" {
+  description = "Create an IAM roles for service accounts (IRSA) and IAM policy for the datacompare service?"
+  type        = bool
+  default     = false
+}
+
+variable "datacompare_namespace_and_service" {
+  description = "List of Kubernetes namespace and services to be included in the datacompare IRSA trust policy (format= [namespace:serviceName])."
+  type        = list(string)
+  default     = ["default:data-compare-api-service", "default:data-compare-processor-service"]
+}
+
+variable "datacompare_s3_bucket_name" {
+  description = "Name of s3 bucket to be used for datacompare IRSA role."
+  type        = string
+  default     = ""
+}
+variable "datacompare_s3_bucket_keyname_prefix" {
+  description = "KeyName (folder structure) for s3 bucket to be used for datacompare IRSA role including trailing '/' (ex. myFolder/)."
+  type        = string
+  default     = ""
+
+  validation {
+    # Check if the string is empty OR matches the regex for ending in /
+    condition     = var.datacompare_s3_bucket_keyname_prefix == "" || can(regex("/$", var.datacompare_s3_bucket_keyname_prefix))
+    error_message = "The datacompare_s3_bucket_keyname_prefix variable must be an empty string or end with a forward slash (/). Example: 'myFolder/' or \"\"."
+  }
+}
