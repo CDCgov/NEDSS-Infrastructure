@@ -88,10 +88,10 @@ module "datacompare_irsa_role" {
   oidc_providers = {
     main = {
       provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = var.otel_collector_namespace_and_service
+      namespace_service_accounts = var.datacompare_namespace_and_service
     }
   }
-  
+
   policies = {
     policy = aws_iam_policy.datacompare_irsa_policy[0].arn
   }
