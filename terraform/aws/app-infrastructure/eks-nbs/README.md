@@ -19,6 +19,7 @@ Below are the input parameter variables for the eks-nbs:
 | cert_manager_hosted_zone_arns | list(string) |            | ARNs for Route 53 hosted zones that Cert Manager can access                                                                                           |
 | create_datacompare_irsa | bool | `false`           | Create an IAM roles for service accounts (IRSA) and IAM policy for the datacompare service?                                                                                           |
 | cluster_version               | string       | `1.35`     | Version of the AWS EKS cluster to provision                                                                                                           |
+| create_otel_collector_irsa    | bool         | `false`    | Create IRSA role and IAM policy for the OTEL Collector S3 log export? |
 | datacompare_namespace_and_service            | list(string)       | `["default:data-compare-api-service", "default:data-compare-processor-service"]`    | List of Kubernetes namespace and services to be included in the datacompare IRSA trust policy (format= ["namespace:serviceName"]).                                                                                      |
 | datacompare_s3_bucket_name            | string      | `""`    | Name of s3 bucket to be used for datacompare IRSA role.                                                                                      |
 | datacompare_s3_bucket_keyname_prefix            | string      | `""`    | KeyName (folder structure) for s3 bucket to be used for datacompare IRSA role including prefix '/' (ex. /myFolder).                                                                                      |
@@ -35,15 +36,14 @@ Below are the input parameter variables for the eks-nbs:
 | max_nodes_count               | number       | `5`        | Maximum number of EKS nodes allowed by the autoscaling group                                                                                          |
 | min_nodes_count               | number       | `3`        | Minimum number of EKS nodes allowed by the autoscaling group                                                                                          |
 | name                          | string       | ``         | Name of the EKS cluster (an overwrite option to use a custom name)                                                                                    |
+| otel_collector_namespace_and_service         | list(string) | `["observability:splunk-otel-collector"]` | List of Kubernetes namespace and service for the OTEL Collector IRSA trust policy (format= ["namespace:serviceName"]). |
+| otel_collector_s3_bucket_name | string        | `""`      | Name of S3 bucket for OTEL Collector log storage. |
 | readonly_role_arn             | string       | `null`     | Optional AWS IAM Role arn for readonly access to the EKS cluster (legacy - use readonly_role_arns for multiple roles)                                 |
 | readonly_role_arns            | list(string) | []         | List of AWS IAM Role ARNs for readonly access to the EKS cluster. If not provided, readonly_role_arn will be used if set.                             |
 | resource_prefix               | string       | `cdc-nbs`  | Prefix for resource names                                                                                                                             |
 | subnets                       | list(string) |            | List of the AWS private subnets ids associated with the supplied vpc_id to deploy in which to deploy the cluster                                      |
 | use_ecr_pull_through_cache    | bool         | false      | Create and use ECR pull through caching for bootstrapped helm charts                                                                                  |
 | vpc_id                        | string       |            | The AWS VPC ID to deploy in which to deploy the cluster                                                                                               |
-| create_otel_collector_irsa    | bool         | `false`    | Create IRSA role and IAM policy for the OTEL Collector S3 log export? |
-| otel_collector_namespace_and_service         | list(string) | `["observability:splunk-otel-collector"]` | List of Kubernetes namespace and service for the OTEL Collector IRSA trust policy (format= ["namespace:serviceName"]). |
-| otel_collector_s3_bucket_name | string        | `""`      | Name of S3 bucket for OTEL Collector log storage. |
 
 ## Outputs
 
