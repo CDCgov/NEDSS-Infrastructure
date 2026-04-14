@@ -103,6 +103,7 @@ this include modifying security groups to allow operations involving the databas
 | create_prometheus_vpc_endpoint | Create Prometheus VPC endpoint and security group? | `true` |
 | create_grafana_vpc_endpoint | Create Grafana VPC endpoint and security group? | `true` |
 | create_datacompare_resources | Create resources for DataCompare service? | `false` |
+| create_otel_collector_resources | Create resources for OTEL Collector log export? | `false` |
 </details>
 
 <details>

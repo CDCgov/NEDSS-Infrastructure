@@ -63,16 +63,19 @@ resource "aws_iam_policy" "otel_collector_irsa_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "OtelLogsS3Write"
-        Effect = "Allow"
         Action = [
-          "s3:PutObject",
+          "s3:ListBucket",
           "s3:GetBucketLocation"
         ]
-        Resource = [
-          "arn:aws:s3:::${var.otel_collector_s3_bucket_name}",
-          "arn:aws:s3:::${var.otel_collector_s3_bucket_name}/*"
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${var.otel_collector_s3_bucket_name}"
+      },
+      {
+        Action = [
+          "s3:PutObject"
         ]
+        Effect   = "Allow"
+        Resource = "arn:aws:s3:::${var.otel_collector_s3_bucket_name}/*"
       }
     ]
   })
@@ -106,16 +109,6 @@ resource "aws_iam_policy" "datacompare_irsa_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "OtelLogsS3Write"
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject",
-          "s3:GetBucketLocation"
-        ]
-        Resource = [
-          "arn:aws:s3:::${var.otel_collector_s3_bucket_name}",
-          "arn:aws:s3:::${var.otel_collector_s3_bucket_name}/*"
-        ]
         Action = [
           "s3:ListBucket",
           "s3:GetBucketLocation"
