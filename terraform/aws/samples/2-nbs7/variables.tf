@@ -158,4 +158,10 @@ variable "create_datacompare_resources" {
   type        = bool
   default     = false
 }
-#-----------------------------------------------------------------
+
+# OTEL Logging Variables -----------------------------------------------------------------
+variable "create_otel_collector_resources" {
+  description = "Create resources for OTEL Collector log export?"
+  type        = bool
+  default     = false
+}

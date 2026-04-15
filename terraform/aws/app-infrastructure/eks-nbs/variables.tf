@@ -175,6 +175,25 @@ variable "addons" {
   }
 }
 
+# OTEL Collector optional service
+variable "create_otel_collector_irsa" {
+  description = "Create IRSA role and IAM policy for the OTEL Collector S3 log export?"
+  type        = bool
+  default     = false
+}
+
+  variable "otel_collector_s3_bucket_name" {
+  description = "Name of S3 bucket for OTEL Collector log storage."
+  type        = string
+  default     = ""
+}
+
+variable "otel_collector_namespace_and_service" {
+  description = "List of Kubernetes namespace and service for the OTEL Collector IRSA trust policy (format= [namespace:serviceName])."
+  type        = list(string)
+  default     = ["observability:splunk-otel-collector"]
+}
+
 # Datacompare optional service
 variable "create_datacompare_irsa" {
   description = "Create an IAM roles for service accounts (IRSA) and IAM policy for the datacompare service?"

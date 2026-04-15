@@ -39,3 +39,8 @@ output "readonly_role_arns" {
   description = "List of IAM role ARNs with readonly access to the cluster"
   value       = local.readonly_roles
 }
+
+output "otel_collector_role_arn" {
+  description = "OTEL Collector IRSA role ARN — pass to helm install via --set serviceAccount.annotations"
+  value       = var.create_otel_collector_irsa ? module.otel_collector_irsa_role.iam_role_arn : null
+}
