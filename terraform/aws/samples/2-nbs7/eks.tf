@@ -23,5 +23,8 @@ module "eks_nbs" {
 
   create_datacompare_irsa    = var.create_datacompare_resources
   datacompare_s3_bucket_name = var.create_datacompare_resources ? module.s3_datacompare[0].bucket_name : ""
+
+  create_otel_collector_irsa    = var.create_otel_collector_resources
+  otel_collector_s3_bucket_name = var.create_otel_collector_resources ? module.s3_otel_logs[0].bucket_name : ""
 }
 
