@@ -63,10 +63,10 @@ resource "helm_release" "linkerd_control_plane" {
   chart      = var.linkerd_controlplane_chart #"linkerd-control-plane"
   version    = var.linkerd_helm_version
 
-  set = [
+   set = [
     {
       name  = "identityTrustAnchorsPEM"
-      value = tls_locally_signed_cert.issuer.ca_cert_pem
+      value = tls_self_signed_cert.ca.cert_pem
     },
     {
       name  = "identity.issuer.tls.crtPEM"
@@ -75,13 +75,35 @@ resource "helm_release" "linkerd_control_plane" {
     {
       name  = "identity.issuer.tls.keyPEM"
       value = tls_private_key.issuer.private_key_pem
+    },
+    {
+      name  = "priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+    },
+    {
+      name  = "enablePodDisruptionBudget"
+      value = "true"
+    },
+    {
+      name  = "proxyInjector.priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+    },
+    {
+      name  = "destination.priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+    },
+    {
+      name  = "identity.priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
     }
   ]
 
   depends_on = [
-    helm_release.linkerd_crds
+    helm_release.linkerd_crds,
+    kubernetes_priority_class.linkerd_critical
   ]
 }
+
 
 
 # deploy linkerd-viz
@@ -92,5 +114,18 @@ resource "helm_release" "linkerd_viz" {
   namespace        = var.linkerd_viz_namespace_name
   create_namespace = true
   version          = var.linkerd_helm_version
-  depends_on       = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
+
+   set = [
+    {
+      name  = "priorityClassName"
+      value = kubernetes_priority_class.linkerd_critical.metadata[0].name
+    }
+  ]
+  depends_on = [
+    helm_release.linkerd_crds,
+    helm_release.linkerd_control_plane,
+    kubernetes_priority_class.linkerd_critical
+  ]
+
+
 }
