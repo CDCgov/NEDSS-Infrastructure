@@ -1,5 +1,5 @@
 module "eks_nbs" {
-  source                       = ".../.../modules/2-nbs7/eks-nbs"
+  source                       = "../../modules/2-nbs7/eks-nbs"
   subnets                      = data.aws_subnets.nbs7.ids
   vpc_id                       = data.aws_vpc.nbs7.id
   aws_role_arn                 = var.aws_role_arn

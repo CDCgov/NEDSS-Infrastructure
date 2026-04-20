@@ -1,6 +1,6 @@
 # VPC for modernization application components
 module "modernization-vpc" {
-  source          = ".../.../modules/0-landing-zone/vpc"
+  source          = "../../modules/0-landing-zone/vpc"
   resource_prefix = var.resource_prefix
   cidr            = var.cidr
   azs             = var.azs

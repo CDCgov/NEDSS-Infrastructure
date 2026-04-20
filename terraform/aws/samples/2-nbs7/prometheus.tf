@@ -1,5 +1,5 @@
 module "prometheus_grafana" {
-  source = ".../.../modules/2-nbs7/aws-prometheus-grafana"
+  source = "../../modules/2-nbs7/aws-prometheus-grafana"
 
   cluster_certificate_authority_data = module.eks_nbs.cluster_certificate_authority_data
   eks_cluster_endpoint               = module.eks_nbs.eks_cluster_endpoint
