@@ -35,52 +35,6 @@ module "cert_manager_cni_irsa_role" {
   cert_manager_hosted_zone_arns = var.cert_manager_hosted_zone_arns
 }
 
-module "otel_collector_irsa_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
-  version = ">=6.2.3, <7.0.0"
-
-  name   = "${local.eks_name}-otel-collector-role"
-  create = var.create_otel_collector_irsa
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = var.otel_collector_namespace_and_service
-    }
-  }
-
-  policies = {
-    policy = aws_iam_policy.otel_collector_irsa_policy[0].arn
-  }
-}
-
-resource "aws_iam_policy" "otel_collector_irsa_policy" {
-  count       = var.create_otel_collector_irsa ? 1 : 0
-  name        = "${local.eks_name}-otel-collector-s3-policy"
-  description = "OTEL Collector S3 write access for container log archival"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "s3:ListBucket",
-          "s3:GetBucketLocation"
-        ]
-        Effect   = "Allow"
-        Resource = "arn:aws:s3:::${var.otel_collector_s3_bucket_name}"
-      },
-      {
-        Action = [
-          "s3:PutObject"
-        ]
-        Effect   = "Allow"
-        Resource = "arn:aws:s3:::${var.otel_collector_s3_bucket_name}/*"
-      }
-    ]
-  })
-}
-
 module "datacompare_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
   version = ">=6.2.3, <7.0.0"
@@ -94,7 +48,6 @@ module "datacompare_irsa_role" {
       namespace_service_accounts = var.datacompare_namespace_and_service
     }
   }
-
   policies = {
     policy = aws_iam_policy.datacompare_irsa_policy[0].arn
   }
