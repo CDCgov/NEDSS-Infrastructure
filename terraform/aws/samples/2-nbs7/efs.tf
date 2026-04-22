@@ -1,5 +1,5 @@
 module "efs" {
-  source          = "../../app-infrastructure/efs"
+  source          = "../../modules/2-nbs7/efs"
   resource_prefix = var.resource_prefix
   vpc_id          = data.aws_vpc.nbs7.id
   vpc_cidrs = [
