@@ -1,5 +1,5 @@
 module "eks_nbs" {
-  source                       = "../../app-infrastructure/eks-nbs"
+  source                       = "../../modules/2-nbs7/eks-nbs"
   subnets                      = data.aws_subnets.nbs7.ids
   vpc_id                       = data.aws_vpc.nbs7.id
   aws_role_arn                 = var.aws_role_arn
@@ -27,3 +27,4 @@ module "eks_nbs" {
   create_otel_collector_irsa    = var.create_otel_collector_resources
   otel_collector_s3_bucket_name = var.create_otel_collector_resources ? module.s3_otel_logs[0].bucket_name : ""
 }
+

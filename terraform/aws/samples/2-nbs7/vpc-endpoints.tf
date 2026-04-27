@@ -1,5 +1,5 @@
 module "vpc-endpoints" {
-  source = "../../app-infrastructure/vpc-endpoints-nbs"
+  source = "../../modules/2-nbs7/vpc-endpoints-nbs"
 
   create_prometheus_vpc_endpoint = var.create_prometheus_vpc_endpoint
   create_grafana_vpc_endpoint    = var.create_grafana_vpc_endpoint

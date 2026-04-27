@@ -1,6 +1,6 @@
 module "rds" {
 
-  source = "../../development-infrastructure/rds"
+  source = "../../modules/1-nbs6/rds"
 
   db_instance_type            = var.db_instance_type
   db_snapshot_identifier      = var.db_snapshot_identifier
