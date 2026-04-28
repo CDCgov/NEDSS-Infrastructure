@@ -18,29 +18,25 @@ resource "helm_release" "argocd" {
   create_namespace = true
 
   # set image repo reference
-  set {
+  set = [{
     name  = "global.image.repository"
     value = local.argocd_global_image_repo
-  }
-
-  set {
+  },
+  {
     name  = "redis.image.repository"
     value = local.argocd_redis_main_image_repo
-  }
-
-  set {
+  },
+  {
     name  = "redis.exporter.image.repository"
     value = local.argocd_redis_main_image_repo
-  }
-
-  set {
+  },
+  {
     name  = "redis-ha.image.repository"
     value = local.argocd_redis_main_image_repo
-  }
-
-  set {
+  },
+  {
     name  = "redis-ha.exporter.image.repository"
     value = local.argocd_redis_main_image_repo
-  }
+  }]
 }
 
