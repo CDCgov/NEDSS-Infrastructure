@@ -12,7 +12,6 @@ data "azurerm_resource_group" "key_vault_cert_rg" {
   name = var.agw_key_vault_cert_rg
 }
 
-
 # Get vNet Data
 data "azurerm_virtual_network" "vnet" {
   name                = var.agw_vnet_name
