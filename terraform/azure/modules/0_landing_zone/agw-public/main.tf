@@ -80,6 +80,12 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
   secret_permissions = ["Get", "List"]
 }
 
+resource "azurerm_role_assignment" "agw" {
+  count                = var.role_based_kv ? 1 : 0
+  scope                = data.azurerm_key_vault.key_vault.id
+  role_definition_name = var.agw_role_definition_name
+  principal_id         = azurerm_user_assigned_identity.agw_mi.principal_id
+}
 
 
 
@@ -144,8 +150,12 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
 
 # Configure Public App Gateway
 resource "azurerm_application_gateway" "agw_public" {
-  name                = "${var.resource_prefix}-agw-public"
-  depends_on          = [azurerm_public_ip.agw_public_ip, azurerm_key_vault_access_policy.agw_mi_policy, azurerm_user_assigned_identity.agw_mi]
+  name = "${var.resource_prefix}-agw-public"
+  depends_on = [
+    azurerm_public_ip.agw_public_ip,
+    azurerm_key_vault_access_policy.agw_mi_policy,
+    azurerm_user_assigned_identity.agw_mi
+  ]
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   # Uncomment if WAF Policy is Required
