@@ -2,6 +2,18 @@ output "kubernetes_cluster_name" {
   value = module.aks.aks_name
 }
 
+output "subnet_name" {
+  value = azurerm_subnet.new.name
+}
+
+output "principal_id" {
+  value = azurerm_user_assigned_identity.test.principal_id
+}
+
+output "key_data" {
+  value = azapi_resource_action.ssh_public_key_gen.output.publicKey
+}
+
 /*
 output "resource_group_name" {
   value = data.azurerm_resource_group.rg.name
