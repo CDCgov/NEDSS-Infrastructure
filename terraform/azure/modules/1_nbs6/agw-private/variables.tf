@@ -47,3 +47,20 @@ variable "agw_private_ip" {
   description = "AGW Private IP Address"
   type        = string
 }
+
+variable "role_based_kv" {
+  type        = bool
+  description = "Keyvault uses roles"
+  default     = false
+}
+
+variable "agw_role_definition_name" {
+  type        = string
+  description = "Name of the role to use with agw"
+  default     = ""
+  
+  validation {
+    condition     = !var.role_based_kv || var.agw_role_definition_name != ""
+    error_message = "Variable 'agw_role_definition_name' must not be empty when 'role_based_kv' is true."
+  }
+}
