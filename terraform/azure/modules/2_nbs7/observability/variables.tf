@@ -21,3 +21,9 @@ variable "update_admin_role_assignment" {
   description = "Allow observability to give deployment role admin permissions to the grafana dashboard"
   default     = true
 }
+
+variable "grafana_major_version" {
+  type        = string
+  description = "Major version number for Grafana"
+  default     = "12"
+}

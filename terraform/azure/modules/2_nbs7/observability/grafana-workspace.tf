@@ -1,9 +1,10 @@
 
 resource "azurerm_dashboard_grafana" "grafana" {
-  name                = "${var.resource_prefix}-dashboard"
-  resource_group_name = var.resource_group_name
-  location            = data.azurerm_kubernetes_cluster.main.location
-  api_key_enabled     = true
+  name                  = "${var.resource_prefix}-dashboard"
+  resource_group_name   = var.resource_group_name
+  location              = data.azurerm_kubernetes_cluster.main.location
+  api_key_enabled       = true
+  grafana_major_version = var.grafana_major_version
 
   identity {
     type = "SystemAssigned"
