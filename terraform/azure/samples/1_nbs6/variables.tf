@@ -76,6 +76,11 @@ variable "agw_key_vault_cert_name" {
   type        = string
 }
 
+variable "agw_key_vault_cert_rg" {
+  description = "Key Vault Certificate Resource Group"
+  type        = string
+}
+
 variable "agw_backend_host" {
   description = "URL Expected by NGINX Ingress"
   type        = string
@@ -143,5 +148,10 @@ variable "sqlmi_restoring_from_database_rg" {
 
 variable "sqlmi_restore_point_in_time" {
   description = "Restore Point in Time"
+  type        = string
+}
+
+variable "sqlmi_timezone_id" {
+  description = "The TimeZone ID that the SQL Managed Instance will be operating in"
   type        = string
 }
