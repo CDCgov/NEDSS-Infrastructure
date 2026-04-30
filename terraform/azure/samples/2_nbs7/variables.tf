@@ -1,5 +1,5 @@
 ## AGW Public
-variable "resource_prefix" {
+variable "agw_resource_prefix" {
   description = "Prefix used for naming all resources"
   type        = string
 }
@@ -44,54 +44,54 @@ variable "agw_aks_ip" {
   type        = string
 }
 
-variable "nsg_akamai_ips" {
+variable "agw_nsg_akamai_ips" {
   description = "List of Akamai IPs to allow inbound traffic on port 443"
   type        = list(string)
 }
 
 ## AKS
 
-variable "modern_resource_group_name" {
+variable "aks_modern_resource_group_name" {
   type        = string
   description = "This defines the modern resource group name"
 }
 
-variable "k8_cluster_name" {
+variable "aks_k8_cluster_name" {
   type        = string
   description = "This defines the name for the k8 cluster"
 }
 
-variable "k8_cluster_version" {
+variable "aks_k8_cluster_version" {
   type        = string
   description = "This defines the version of the k8 cluster"
 }
 
-variable "modern_subnet" {
+variable "aks_modern_subnet" {
   type = list(any)
 }
 
-variable "resource_prefix" {
+variable "aks_resource_prefix" {
   type        = string
   description = "Name to be used on all the resources as identifier. e.g. Project name, Application name"
 }
 
-variable "rbac_aad_admin_group_object_ids" {
+variable "aks_rbac_aad_admin_group_object_ids" {
   type        = list(string)
   description = "List of group ids with access to the AKS cluster control plane"
 }
 
 ## Kafka
 
-variable "location" {
+variable "kafka_location" {
   description = "Location for Azure resources"
   type        = string
 }
 
-variable "storage_account_name" {
+variable "kafka_storage_account_name" {
   type = string
 }
 
-variable "sg_name" {
+variable "kafka_sg_name" {
   type = string
 }
 
@@ -99,29 +99,29 @@ variable "kafka_cluster_name" {
   type = string
 }
 
-variable "gtwy_username" {
+variable "kafka_gtwy_username" {
   type = string
 }
 
-variable "gtwy_password" {
+variable "kafka_gtwy_password" {
   type      = string
   sensitive = true
 }
 
-variable "username" {
+variable "kafka_username" {
   type = string
 }
 
-variable "password" {
+variable "kafka_password" {
   type      = string
   sensitive = true
 }
 
-variable "vnet_name" {
+variable "kafka_vnet_name" {
   type = string
 }
 
-variable "vnet_rg" {
+variable "kafka_vnet_rg" {
   type = string
 }
 
@@ -129,7 +129,7 @@ variable "kafka_subnet_name" {
   type = string
 }
 
-variable "infrastructure_encryption_enabled" {
+variable "kafka_infrastructure_encryption_enabled" {
   type    = bool
   default = true
 }
@@ -137,13 +137,13 @@ variable "infrastructure_encryption_enabled" {
 
 ## Observability
 
-variable "resource_group_name" {
+variable "observability_resource_group_name" {
   type        = string
   description = "Resource group name for existing and to be deployed azure resources"
 
 }
 
-variable "cluster_name" {
+variable "observability_cluster_name" {
   type        = string
   description = "Name of AKS cluster for which monitoring will be set up"
 
@@ -152,12 +152,12 @@ variable "cluster_name" {
 
 ## Private DNS Zone
 
-variable "resource_group_name" {
+variable "private_dns_resource_group_name" {
   type        = string
   description = "Resource group name for existing and to be deployed azure resources"
 }
 
-variable "virtual_network_name" {
+variable "private_dns_virtual_network_name" {
   type        = list(string)
   description = "StringList of virtual network names to be associated as a virtual network link for the private dns zone."
 }
@@ -165,18 +165,18 @@ variable "virtual_network_name" {
 
 ## Storage Account
 
-variable "resource_group_name" {
+variable "storage_account_resource_group_name" {
   type        = string
   description = "Resource group name for existing and to be deployed azure resources"
 
 }
 
-variable "subnet_name" {
+variable "storage_account_subnet_name" {
   type        = string
   description = "Name of subnet within virtual_network_name to be associated with storage account private endpoints."
 }
 
-variable "virtual_network_name" {
+variable "storage_account_virtual_network_name" {
   type        = string
   description = "Name of virtual network to be associated with storage account private endpoints."
 }
