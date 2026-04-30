@@ -1,4 +1,3 @@
-
 ## VNET
 
 variable "vnet_resource_prefix" {
@@ -23,7 +22,6 @@ variable "vnet_resource_group_name" {
 
 
 ## ACR
-
 variable "acr_resource_prefix" {
   description = "Prefix used for naming all resources"
   type        = string
