@@ -131,8 +131,21 @@ variable "node_pool_load_balancer_sku" {
 variable "network_profile_pod_cidr" {
   type        = string
   description = "This defines the default value for pod CIDR"
-  default     = "10.1.0.0/16"
+  default     = "10.244.0.0/16"
 }
+
+variable "net_profile_service_cidr" {
+  type        = string
+  description = "This defines the default value for the service CIDR"
+  default     = "10.96.0.0/16"
+}
+
+variable "net_profile_dns_service_ip" {
+  type        = string
+  description = "This defines the default value for the dns service IP address"
+  default     = "10.96.0.10"
+}
+
 
 variable "temporary_name_for_rotation" {
   type        = string
@@ -168,4 +181,21 @@ variable "modern_subnet" {
 variable "resource_prefix" {
   type        = string
   description = "Name to be used on all the resources as identifier. e.g. Project name, Application name"
+}
+
+variable "vnet_name" {
+  type        = string
+  description = "Name of the existing vnet"
+  default     = "csels-nbs-dev-low-modern-vnet"
+}
+
+variable "subnet_name_new" {
+  type        = string
+  description = "Name of the new subnet"
+  default     = "csels-nbs-dev-low-modern-vnet-sn"
+}
+
+variable "rbac_aad_admin_group_object_ids" {
+  type = list(string)
+  description = "List of group ids with access to the AKS cluster control plane"
 }
