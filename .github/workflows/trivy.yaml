@@ -1,0 +1,60 @@
+name: Trivy Security Scan
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/trivy.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/trivy.yaml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  trivy-scan:
+    name: Trivy IaC Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Table output for readable PR logs
+      - name: Run Trivy scanner (table output)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          scan-type: 'fs'
+          scan-ref: 'terraform/'
+          scanners: 'vuln,secret,misconfig'
+          ignore-unfixed: false
+          exit-code: '0'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
+      # SARIF output for GitHub Security tab
+      - name: Run Trivy scanner (SARIF output)
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          scan-type: 'fs'
+          scan-ref: 'terraform/'
+          scanners: 'vuln,secret,misconfig'
+          ignore-unfixed: false
+          exit-code: '0'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: 'trivy-iac'
