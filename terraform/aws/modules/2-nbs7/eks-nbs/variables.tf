@@ -182,7 +182,7 @@ variable "create_otel_collector_irsa" {
   default     = false
 }
 
-  variable "otel_collector_s3_bucket_name" {
+variable "otel_collector_s3_bucket_name" {
   description = "Name of S3 bucket for OTEL Collector log storage."
   type        = string
   default     = ""

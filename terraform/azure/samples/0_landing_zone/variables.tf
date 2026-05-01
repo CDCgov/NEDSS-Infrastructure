@@ -1,42 +1,43 @@
-variable "resource_prefix" {
+## VNET
+
+variable "vnet_resource_prefix" {
   description = "Prefix used for naming all resources"
   type        = string
 }
 
+variable "vnet_location" {
+  type        = string
+  description = "Azure region where the vnet will be placed"
+}
 
-#### AGW ####
+variable "vnet_parent_id" {
+  type        = string
+  description = "Resource group parent id"
+}
 
-variable "agw_resource_group_name" {
+variable "vnet_resource_group_name" {
   description = "The name of the resource group"
   type        = string
 }
 
-variable "agw_vnet_name" {
+
+## ACR
+variable "acr_resource_prefix" {
+  description = "Prefix used for naming all resources"
+  type        = string
+}
+
+variable "acr_subnet_name" {
+  description = "The subnet name the ACR is associated with"
+  type        = string
+}
+
+variable "acr_resource_group_name" {
+  description = "The name of the resource group"
+  type        = string
+}
+
+variable "acr_vnet_name" {
   description = "Name of vNet"
-  type        = string
-}
-
-variable "agw_subnet_name" {
-  description = "App Gateway Subnet"
-  type        = string
-}
-
-variable "agw_key_vault_name" {
-  description = "Existing Key Vault Name."
-  type        = string
-}
-
-variable "agw_key_vault_cert_name" {
-  description = "Key Vault Certificate Name"
-  type        = string
-}
-
-variable "agw_backend_host" {
-  description = "URL Expected by NGINX Ingress"
-  type        = string
-}
-
-variable "agw_aks_ip" {
-  description = "AKS Internal Loadbalancer IP"
   type        = string
 }
