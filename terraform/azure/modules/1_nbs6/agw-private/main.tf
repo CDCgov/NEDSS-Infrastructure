@@ -48,6 +48,13 @@ resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
   secret_permissions = ["Get", "List"]
 }
 
+resource "azurerm_role_assignment" "agw" {
+  count                = var.role_based_kv ? 1 : 0
+  scope                = data.azurerm_key_vault.key_vault.id
+  role_definition_name = var.agw_role_definition_name
+  principal_id         = azurerm_user_assigned_identity.agw_mi.principal_id
+}
+
 
 # Create if WAF Policy to only allow vNET Traffic only. By default should be blocked on NSG
 # resource "azurerm_web_application_firewall_policy" "agw_waf_policy" {
@@ -155,8 +162,8 @@ resource "azurerm_application_gateway" "agw_private" {
 
   sku {
     # Update name and tier to WAF_v2 if setting WAF Policy
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
+    name     = "Basic"
+    tier     = "Basic"
     capacity = 2
   }
 
