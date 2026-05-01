@@ -47,3 +47,20 @@ variable "nsg_akamai_ips" {
   description = "List of Akamai IPs to allow inbound traffic on port 443"
   type        = list(string)
 }
+
+variable "role_based_kv" {
+  type        = bool
+  description = "Keyvault uses roles"
+  default     = false
+}
+
+variable "agw_role_definition_name" {
+  type        = string
+  description = "Name of the role to use with agw"
+  default     = ""
+  
+  validation {
+    condition     = !var.role_based_kv || var.agw_role_definition_name != ""
+    error_message = "Variable 'agw_role_definition_name' must not be empty when 'role_based_kv' is true."
+  }
+}
