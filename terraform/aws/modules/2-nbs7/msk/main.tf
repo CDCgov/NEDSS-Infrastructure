@@ -2,7 +2,7 @@ locals {
   module_name          = "msk"
   module_serial_number = "2026-04-30_01" # Update with each commit? Date plus two digit increment.
   instance_type        = var.environment == "development" ? "kafka.t3.small" : "kafka.m5.large"
-  instance_count       = var.environment == "development" ? 2 : 3
+  number_of_brokers    = var.environment == "development" ? 2 : 3
 }
 
 # Create an IAM role for MSK
@@ -126,7 +126,7 @@ resource "aws_msk_cluster" "this" {
   count                  = var.create_msk ? 1 : 0
   cluster_name           = "${var.resource_prefix}-${var.environment}-msk-cluster"
   kafka_version          = var.kafka_version
-  number_of_broker_nodes = local.instance_count
+  number_of_broker_nodes = local.number_of_brokers
   #iam_instance_profile = aws_iam_role.msk.arn
 
   configuration_info {
@@ -179,12 +179,7 @@ resource "aws_msk_cluster" "this" {
   }
 }
 
-# Reference info: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/msk_configuration
-resource "aws_msk_configuration" "msk_configuration_environment" {
-  count          = var.create_msk ? 1 : 0
-  kafka_versions = ["2.8.1"]
-  name           = "${var.resource_prefix}-${var.environment}-msk-cluster-config"
-
+locals {
   # Reference info: https://docs.confluent.io/platform/current/installation/configuration/index.html
   #
   # For production, as noted on https://docs.aws.amazon.com/msk/latest/developerguide/bestpractices.html it's a best practice to set RF (Replication Factor) to 3, and set MinISR (min.insync.replicas) to at most RF - 1.
@@ -197,7 +192,7 @@ resource "aws_msk_configuration" "msk_configuration_environment" {
   server_properties = <<PROPERTIES
 auto.create.topics.enable = true
 delete.topic.enable = true
-default.replication.factor=2
+default.replication.factor=${local.number_of_brokers}
 min.insync.replicas=1
 num.io.threads=8
 num.network.threads=5
@@ -209,7 +204,16 @@ socket.request.max.bytes=104857600
 socket.send.buffer.bytes=102400
 unclean.leader.election.enable=true
 zookeeper.session.timeout.ms=18000
-offsets.topic.replication.factor=2
-transaction.state.log.replication.factor=2
+offsets.topic.replication.factor=${local.number_of_brokers}
+transaction.state.log.replication.factor=${local.number_of_brokers}
 PROPERTIES
+}
+
+# Reference info: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/msk_configuration
+resource "aws_msk_configuration" "msk_configuration_environment" {
+  count          = var.create_msk ? 1 : 0
+  kafka_versions = ["2.8.1"]
+  name           = "${var.resource_prefix}-${var.environment}-msk-cluster-config"
+
+  server_properties = local.server_properties
 }
