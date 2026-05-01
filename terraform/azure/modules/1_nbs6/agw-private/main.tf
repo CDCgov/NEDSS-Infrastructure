@@ -162,8 +162,8 @@ resource "azurerm_application_gateway" "agw_private" {
 
   sku {
     # Update name and tier to WAF_v2 if setting WAF Policy
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
+    name     = "Basic"
+    tier     = "Basic"
     capacity = 2
   }
 
