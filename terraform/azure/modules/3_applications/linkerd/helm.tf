@@ -60,18 +60,18 @@ resource "helm_release" "linkerd_control_plane" {
   namespace  = var.linkerd_namespace_name
   chart      = var.linkerd_controlplane_chart #"linkerd-control-plane"
 
-  set {
+  set = [{
     name  = "identityTrustAnchorsPEM"
     value = tls_locally_signed_cert.issuer.ca_cert_pem
-  }
-  set {
-    name  = "identity.issuer.tls.crtPEM"
-    value = tls_locally_signed_cert.issuer.cert_pem
-  }
-  set {
-    name  = "identity.issuer.tls.keyPEM"
-    value = tls_private_key.issuer.private_key_pem
-  }
+    },
+    {
+      name  = "identity.issuer.tls.crtPEM"
+      value = tls_locally_signed_cert.issuer.cert_pem
+    },
+    {
+      name  = "identity.issuer.tls.keyPEM"
+      value = tls_private_key.issuer.private_key_pem
+  }]
 
   depends_on = [
     helm_release.linkerd_crds,
