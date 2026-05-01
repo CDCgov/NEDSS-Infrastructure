@@ -50,7 +50,7 @@ module "otel_collector_irsa_role" {
   }
 
   policies = {
-    policy = aws_iam_policy.otel_collector_irsa_policy[0].arn
+    policy = try(aws_iam_policy.otel_collector_irsa_policy[0].arn, null)
   }
 }
 
@@ -96,7 +96,7 @@ module "datacompare_irsa_role" {
   }
 
   policies = {
-    policy = aws_iam_policy.datacompare_irsa_policy[0].arn
+    policy = try(aws_iam_policy.datacompare_irsa_policy[0].arn, null)
   }
 }
 
