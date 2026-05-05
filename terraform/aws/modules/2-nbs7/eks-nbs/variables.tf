@@ -72,6 +72,31 @@ variable "min_nodes_count" {
   default     = 3
 }
 
+variable "ami_release_version" { # e.g. value "1.35.4-20260423"
+  description = "The AMI release version for the Node Group of the EKS cluster"
+  type        = string
+  default     = null
+
+  # This variable allows the user of this module to pin an "AMI release version" to be specified for the Node Group of their EKS cluster. If this variable is null, then every few weeks whenever AWS releases a new version of the AMI then for the user's Terraform code a `terraform plan` will report a change to their Node Group to the new AMI version.
+
+  # Per https://docs.aws.amazon.com/eks/latest/userguide/eks-linux-ami-versions.html the format of these AMIs is:
+  #  * k8s_major_version.k8s_minor_version.k8s_patch_version-release_date
+
+  # (Note that https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/modules/eks-managed-node-group/variables.tf specifies a default value of "AL2023_x86_64_STANDARD" for the ami_type variable.)
+  # Here are a couple example values of ami_release_version, and to the right of "->" is info about the corresponding AMI:
+  #  * 1.35.2-20260318 -> ami-009f1fe7d56695348 amazon-eks-node-al2023-x86_64-standard-1.35-v20260318 , Creation date 2026-03-19 , Deprecation 2028-03-19.
+  #  * 1.35.4-20260423 -> ami-04ab87c8cf3840590 amazon-eks-node-al2023-x86_64-standard-1.35-v20260423 , Creation date 2026-04-24 , Deprecation 2028-04-24.
+
+  # The following command (from the https://docs.aws.amazon.com/eks/latest/userguide/retrieve-ami-id.html page) on 5/4/2026 printed the following:
+  #   ❯ aws ssm get-parameter --name /aws/service/eks/optimized-ami/1.35/amazon-linux-2023/x86_64/standard/recommended/image_id --region us-east-2 --query "Parameter.Value" --output text
+  #   ami-04ab87c8cf3840590
+  # Another way to get the latest recommended AMI is to look at: https://github.com/awslabs/amazon-eks-ami/blob/main/CHANGELOG.md
+
+  # To summarize, for simplicity and ease of use (e.g. so users can have predictable and controlled output for their `terraform plan` commands) it is recommended:
+  # * that when you are writing new code to use this module, that you get the Release version of the latest recommended AMI for the version of Kubernetes you're using (i.e. the kubernetes_version variable above) and specify that Release version as the value you provide for this ami_release_version variable,
+  # * and then going forward from there that you occasionally step-up to new AMI versions at least frequently enough to avoid using a version that has become deprecated.
+}
+
 variable "ebs_volume_size" {
   description = "EBS volume size backing each EKS node on creation"
   type        = number
@@ -167,9 +192,9 @@ variable "addons" {
     tags = optional(map(string), {})
   }))
   default = {
-    coredns    = {}
-    kube-proxy = {}
-    vpc-cni = {
+    coredns    = {} # https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html
+    kube-proxy = {} # https://docs.aws.amazon.com/eks/latest/userguide/managing-kube-proxy.html
+    vpc-cni = {     # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
       before_compute = true
     }
   }
@@ -182,7 +207,7 @@ variable "create_otel_collector_irsa" {
   default     = false
 }
 
-  variable "otel_collector_s3_bucket_name" {
+variable "otel_collector_s3_bucket_name" {
   description = "Name of S3 bucket for OTEL Collector log storage."
   type        = string
   default     = ""
