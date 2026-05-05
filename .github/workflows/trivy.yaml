@@ -15,14 +15,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-  security-events: write
-
 jobs:
   trivy-aws:
     name: Trivy IaC Scan (AWS)
     runs-on: ubuntu-latest
+    permissions:
+       contents: read
+       security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -60,6 +59,9 @@ jobs:
   trivy-azure:
     name: Trivy IaC Scan (Azure)
     runs-on: ubuntu-latest
+    permissions:
+       contents: read
+       security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
