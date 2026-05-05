@@ -38,5 +38,4 @@ terraform.rc
 __MACOSX
 
 # Configs to Ignore
-provider.tf
 inputs.tfvars
