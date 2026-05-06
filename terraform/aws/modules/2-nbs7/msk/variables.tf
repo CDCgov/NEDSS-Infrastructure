@@ -11,13 +11,24 @@ variable "create_msk" {
 }
 
 variable "environment" {
-  description = "The environment, either 'development' or 'production'"
+  type        = string
+  description = "The environment, either 'development' or 'production'. This module creates 2 kafka.t3.small brokers for 'development', otherwise 3 kafka.m5.large brokers are created."
   default     = "development"
+  validation { # Note that `terraform validate` can only perform some checks, but all validation rules will be evaluated by `terraform plan`.
+    condition     = contains(["development", "production"], var.environment)
+    error_message = "This variable must be development or production."
+  }
 }
 
 variable "msk_subnet_ids" {
-  description = "A list of subnets to use for the MSK cluster"
+  description = "The list of subnets to use for the MSK cluster. There must be 2+ subnets for a 'development' environment, otherwise 3+ subnets."
   type        = list(string)
+  validation {
+    # The number of subnets determines how many AZs (Availability Zones) the cluster uses. AWS requires at least one broker per AZ. Thus checking the number of subnets here ensures the implementation of this module will create enough brokers.
+    # Note that there is no advantage to providing more than the minimum required number of subnets, because this module only creates 2 or 3 brokers.
+    condition     = (var.environment == "development" && length(var.msk_subnet_ids) >= 2) || (length(var.msk_subnet_ids) >= 3)
+    error_message = "There must be 2+ subnets for a 'development' environment, otherwise 3+ subnets."
+  }
 }
 
 variable "msk_ebs_volume_size" {
