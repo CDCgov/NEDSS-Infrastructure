@@ -20,18 +20,25 @@ module "eks" {
   # Create node groups with config
   eks_managed_node_groups = {
     main = {
-      name                     = local.eks_node_group_name
+      name = local.eks_node_group_name
+
       iam_role_use_name_prefix = false # Set to false to allow custom name, helping prevent character limit
       iam_role_name            = local.eks_iam_role_name
       iam_role_additional_policies = {
         AmazonElasticContainerRegistryPublicFullAccess = "arn:aws:iam::aws:policy/AmazonElasticContainerRegistryPublicFullAccess",
         PullThroughCacheRule                           = "${aws_iam_policy.eks_permissions.arn}"
-
       }
+
       instance_types = [var.instance_type]
       min_size       = var.min_nodes_count
       max_size       = var.max_nodes_count
       desired_size   = var.desired_nodes_count
+
+      # The following two variables need to be set as such in order for the ami_release_version variable below to be recognized for the Node Group.
+      ami_id                         = null
+      use_latest_ami_release_version = false
+      ami_release_version            = var.ami_release_version
+
       block_device_mappings = {
         xvda = {
           device_name = "/dev/xvda"
@@ -41,20 +48,17 @@ module "eks" {
           }
         }
       }
-    }
-
-  }
-
+    } # end main
+  }   # end eks_managed_node_groups
 
   # Merge admin and readonly access entries from locals
   access_entries = merge(
     local.admin_access_entries,
     local.readonly_access_entries
   )
-}
+} # end module eks
 
-
-#Additional EKS permissions
+# Additional EKS permissions
 resource "aws_iam_policy" "eks_permissions" {
   name        = "${local.eks_name}-additional-policy"
   path        = "/"

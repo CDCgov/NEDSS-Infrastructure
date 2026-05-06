@@ -35,6 +35,7 @@ Below are the input parameter variables for the eks-nbs:
 | kms_key_owners                | list(any)    | []         | A list of IAM ARNs for those who will have full key permissions (kms:\*)                                                                              |
 | max_nodes_count               | number       | `5`        | Maximum number of EKS nodes allowed by the autoscaling group                                                                                          |
 | min_nodes_count               | number       | `3`        | Minimum number of EKS nodes allowed by the autoscaling group                                                                                          |
+| ami_release_version           | string       | `1.35.4-20260423` | The AMI release version for the Node Group of the EKS cluster                                                                                  |
 | name                          | string       | ``         | Name of the EKS cluster (an overwrite option to use a custom name)                                                                                    |
 | otel_collector_namespace_and_service         | list(string) | `["observability:splunk-otel-collector"]` | List of Kubernetes namespace and service for the OTEL Collector IRSA trust policy (format= ["namespace:serviceName"]). |
 | otel_collector_s3_bucket_name | string        | `""`      | Name of S3 bucket for OTEL Collector log storage. |
