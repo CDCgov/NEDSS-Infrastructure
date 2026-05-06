@@ -11,7 +11,8 @@ Below are the input parameter variables for the MSK:
 | Key            | Type           | Default        | Description    |
 | -------------- | -------------- | -------------- | -------------- |
 | create_msk | bool | true | Create msk cluser and required resources? |
-| environment | string | `development` | The environment, either 'development' or 'production'. This module creates 2 kafka.t3.small brokers for 'development', otherwise 3 kafka.m5.large brokers are created. |
+| environment | string | `development` | The environment, either 'development' or 'production'. This module creates kafka.t3.small brokers for 'development', otherwise kafka.m5.large brokers are created. |
+| additional_brokers_to_create | number | `0` | How many additional brokers to create - beyond two for 'development' or otherwise three. |
 | msk_ebs_volume_size | number |  | EBS volume size for the MSK broker nodes in GB |
 | msk_security_groups | list(string) |  | A list of security groups to use for the MSK cluster  |
 | msk_subnet_ids | list(string) |  | The list of subnets to use for the MSK cluster. There must be 2+ subnets for a 'development' environment, otherwise 3+ subnets. |

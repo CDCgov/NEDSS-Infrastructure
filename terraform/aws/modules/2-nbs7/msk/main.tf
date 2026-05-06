@@ -12,7 +12,7 @@ locals {
   # For production: typically at minimum use kafka.m5.large, and for high-throughput environments consider using kafka.m5.2xlarge or higher.
   broker_instance_type = var.environment == "development" ? "kafka.t3.small" : "kafka.m5.large"
 
-  number_of_brokers = var.environment == "development" ? 2 : 3
+  number_of_brokers = var.environment == "development" ? (2 + var.additional_brokers_to_create) : (3 + var.additional_brokers_to_create)
 }
 
 # Create an IAM role for MSK
@@ -203,7 +203,7 @@ locals {
   #    ** If you set MinISR >= RF then you'll receive a notification in AWS User Notifications stating your cluster does not have high availability and advising you to change your MSK cluster configuration so that MinISR is at most RF - 1.
   # Guidance for choosing values for configuration settings in the server.properties file:
   #  * For production, as noted on the "Best practices for Standard brokers" page mentioned above, set RF to 3. (There might be other changes needed to this Terraform module for it to be used by a production environment, such as possibly setting num.partitions=3 and auto.create.topics.enable=false.)
-  #  * For non-production, if minimizing resource usage is more of a priority to you than simulating production behavior, then set RF=2 (and MinISR=1). Two AZs can be sufficient to achieve high availability, so long as MinISR is at most RF - 1.
+  #  * For non-production, if minimizing resource usage is more of a priority to you than simulating production behavior, then if 2 brokers is sufficient to support your number of partitions then set RF=2 (and MinISR=1). This can be sufficient to achieve high availability, so long as MinISR is at most RF - 1.
   #
   # More considerations for production environments:
   #  * https://repost.aws/knowledge-center/msk-avoid-disruption-during-patching
