@@ -131,7 +131,7 @@ resource "aws_msk_cluster" "this" {
 
   configuration_info {
     arn      = aws_msk_configuration.msk_configuration_environment[0].arn
-    revision = 1
+    revision = aws_msk_configuration.msk_configuration_environment[0].latest_revision
   }
 
   broker_node_group_info {
