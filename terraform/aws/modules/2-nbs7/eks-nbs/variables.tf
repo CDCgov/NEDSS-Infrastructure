@@ -72,10 +72,10 @@ variable "min_nodes_count" {
   default     = 3
 }
 
-variable "ami_release_version" { # e.g. value "1.35.4-20260423"
+variable "ami_release_version" {
   description = "The AMI release version for the Node Group of the EKS cluster"
   type        = string
-  default     = null
+  default     = "1.35.4-20260423"
 
   # This variable allows the user of this module to pin an "AMI release version" to be specified for the Node Group of their EKS cluster. If this variable is null, then every few weeks whenever AWS releases a new version of the AMI then for the user's Terraform code a `terraform plan` will report a change to their Node Group to the new AMI version.
 
