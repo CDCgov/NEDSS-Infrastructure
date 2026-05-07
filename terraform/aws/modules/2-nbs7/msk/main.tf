@@ -17,67 +17,6 @@ locals {
   total_number_of_brokers = local.base_number_of_brokers + var.additional_brokers_to_create
 }
 
-# Create an IAM role for MSK
-resource "aws_iam_role" "msk" {
-  count = var.create_msk ? 1 : 0
-
-  name = "${var.resource_prefix}-${var.environment}-msk-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "kafka.amazonaws.com"
-        }
-      }
-    ]
-  })
-  tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
-  }
-}
-
-# Create an IAM policy for MSK
-resource "aws_iam_policy" "msk" {
-  count = var.create_msk ? 1 : 0
-  name  = "${var.resource_prefix}-${var.environment}-msk-policy"
-  policy = jsonencode({
-    Version : "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "cloudwatch:PutMetricData",
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:DescribeLogStreams",
-          "logs:PutLogEvents",
-          "logs:GetLogEvents",
-          "logs:FilterLogEvents",
-          "ec2:CreateNetworkInterface",
-          "ec2:DescribeNetworkInterfaces",
-          "ec2:DeleteNetworkInterface",
-          "kms:Decrypt"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
-  tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
-  }
-}
-
-# Attach the IAM policy to the MSK role
-resource "aws_iam_role_policy_attachment" "msk" {
-  count      = var.create_msk ? 1 : 0
-  policy_arn = aws_iam_policy.msk[0].arn
-  role       = aws_iam_role.msk[0].name
-}
-
 resource "aws_cloudwatch_log_group" "test" {
   count = var.create_msk ? 1 : 0
   name  = "${var.resource_prefix}-msk-broker-logs"
@@ -139,7 +78,6 @@ resource "aws_msk_cluster" "this" {
   cluster_name           = "${var.resource_prefix}-${var.environment}-msk-cluster"
   kafka_version          = var.kafka_version
   number_of_broker_nodes = local.total_number_of_brokers
-  #iam_instance_profile = aws_iam_role.msk.arn
 
   configuration_info {
     arn      = aws_msk_configuration.msk_configuration_environment[0].arn
