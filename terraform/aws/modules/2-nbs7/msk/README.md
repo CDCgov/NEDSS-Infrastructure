@@ -11,7 +11,7 @@ Below are the input parameter variables for the MSK:
 | Key            | Type           | Default        | Description    |
 | -------------- | -------------- | -------------- | -------------- |
 | create_msk | bool | true | Create MSK cluser and required resources? |
-| environment | string | `development` | The environment - either 'development' or 'production', which means by default two brokers of size kafka.t3.small or three kafka.m5.large brokers, respectively. |
+| environment | string | `development` | The environment, either 'development' or 'production'; which means by default two brokers of size kafka.t3.small or three kafka.m5.large brokers, and RF=2 or RF=3, respectively. |
 | additional_brokers_to_create | number | `0` | How many additional brokers to create - beyond the default of two for 'development' or otherwise three. AWS MSK requires that the number of brokers must be a multiple of the number of Availability Zones. |
 | msk_ebs_volume_size | number |  | EBS volume size for the MSK broker nodes in GB |
 | msk_security_groups | list(string) |  | A list of security groups to use for the MSK cluster  |

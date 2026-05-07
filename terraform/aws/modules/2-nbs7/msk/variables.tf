@@ -12,7 +12,7 @@ variable "create_msk" {
 
 variable "environment" {
   type        = string
-  description = "The environment - either 'development' or 'production', which means by default two brokers of size kafka.t3.small or three kafka.m5.large brokers, respectively."
+  description = "The environment, either 'development' or 'production'; which means by default two brokers of size kafka.t3.small or three kafka.m5.large brokers, and RF=2 or RF=3, respectively."
   default     = "development"
   validation { # Note that `terraform validate` can only perform some checks, but all validation rules will be evaluated by `terraform plan`.
     condition     = contains(["development", "production"], var.environment)
