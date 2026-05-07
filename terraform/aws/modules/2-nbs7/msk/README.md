@@ -4,23 +4,22 @@
 
 This module is used to deploy and configure an Amazon Managed Streaming for Apache Kafka (MSK). 
 
-
 ## Inputs
 
 Below are the input parameter variables for the MSK:
 
-| Key | Type | Default | Description |
+| Key            | Type           | Default        | Description    |
 | -------------- | -------------- | -------------- | -------------- |
 | create_msk | bool | true | Create msk cluser and required resources? |
-| environment | string | `development` | The environment, either 'development' or 'production' |
-| modern-cidr | string |  | VPC CIDR to be used with cluster SG |
+| environment | string | `development` | The environment, either 'development' or 'production'. This module creates kafka.t3.small brokers for 'development', otherwise kafka.m5.large brokers are created. |
+| additional_brokers_to_create | number | `0` | How many additional brokers to create - beyond two for 'development' or otherwise three. |
 | msk_ebs_volume_size | number |  | EBS volume size for the MSK broker nodes in GB |
 | msk_security_groups | list(string) |  | A list of security groups to use for the MSK cluster  |
-| msk_subnet_ids | list(string) |  | A list of subnets to use for the MSK cluster. Must contain two subnets for 'development' otherwise three subnets for 'production', in order to match the number of brokers.  |
-| resource_prefix | string |  | Prefix for resource names |
+| msk_subnet_ids | list(string) |  | The list of subnets to use for the MSK cluster. There must be 2+ subnets for a 'development' environment, otherwise 3+ subnets. |
+| resource_prefix | string | `cdc-nbs` | Prefix for resource names |
 | vpc_id | string |  | VPC Id to be used with cluster |
-| vpn-cidr | string |  | VPN VPC CIDR to be used with cluster SG |
-
+| cidr_blocks | list(any) |  |  |
+| kafka_version | string | `3.6.0` | Version of Kafka to be deployed in cluster |
 
 ## Outputs
 
