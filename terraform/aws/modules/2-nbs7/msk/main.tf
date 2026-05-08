@@ -1,79 +1,20 @@
 locals {
   module_name          = "msk"
-  module_serial_number = "2026-05-06_01" # Update with each commit? Date plus two digit increment.
+  module_serial_number = "2026-05-07_01" # Update with each commit? Date plus two digit increment.
 
-  # The "Best practices for Standard brokers" page (https://docs.aws.amazon.com/msk/latest/developerguide/bestpractices.html) specifies how many partitions at most there should be per broker, for each broker size (https://docs.aws.amazon.com/msk/latest/developerguide/broker-instance-sizes.html).
-  # That page states the "recommended number of partitions are not enforced", but when running a `terraform apply` command to step-up your MSK cluster to a new configuration
-  # revision, if your cluster is not in compliance with the recommendation then the command will fail with:
+  # The "Best practices for Standard brokers" page (https://docs.aws.amazon.com/msk/latest/developerguide/bestpractices.html) specifies the max number of partitions per broker, for each broker size (https://docs.aws.amazon.com/msk/latest/developerguide/broker-instance-sizes.html).
+  # That page states if the number of partitions on any given broker "exceeds the maximum allowed value" then certain operations on the cluster will not be allowed - e.g. when
+  # running a `terraform apply` command to step-up your MSK cluster to a new configuration revision, the command will fail with:
   #   "api error HighPartitionCountException: The number of partitions per broker is above the recommended limit. Add more brokers and rearrange the partitions per broker to be below the recommended limit, then retry the request"
-  # Other options to resolve that error (by getting the number of partitions in your cluster below the limit) is to choose a larger broker size, or to delete unneeded topics.
-  # To get the number of partitions in your cluster: in the AWS Management Console go to CloudWatch, All metrics, search for "AWS/Kafka", click "Kafka > Broker ID, Cluster Name", and filter on your cluster name and on the PartitionCount metric.
-  #  * That metric is what AWS uses to determine whether the limit is exceeded, and when you make a change to your cluster such as deleting topics it can take up to 10 metrics for that metric to be updated accordingly.
+  # Other options to resolve that error (i.e. getting the number of partitions on each broker below the limit) are to choose a larger broker size, or to delete unneeded topics (if there are enough such topics).
+  # To get the number of partitions on each broker in your cluster: in the AWS Management Console go to CloudWatch, All metrics, search for "AWS/Kafka", click "Kafka > Broker ID, Cluster Name", and filter on your cluster name and on the PartitionCount metric.
+  #  * That metric is what AWS uses to determine whether the limit is exceeded on any broker, and when you make a change to your cluster such as deleting topics it can take up to 10 minutes for that metric to be updated accordingly.
   # For production: typically at minimum use kafka.m5.large, and for high-throughput environments consider using kafka.m5.2xlarge or higher.
   broker_instance_type = var.environment == "development" ? "kafka.t3.small" : "kafka.m5.large"
 
-  number_of_brokers = var.environment == "development" ? (2 + var.additional_brokers_to_create) : (3 + var.additional_brokers_to_create)
-}
-
-# Create an IAM role for MSK
-resource "aws_iam_role" "msk" {
-  count = var.create_msk ? 1 : 0
-
-  name = "${var.resource_prefix}-${var.environment}-msk-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "kafka.amazonaws.com"
-        }
-      }
-    ]
-  })
-  tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
-  }
-}
-
-# Create an IAM policy for MSK
-resource "aws_iam_policy" "msk" {
-  count = var.create_msk ? 1 : 0
-  name  = "${var.resource_prefix}-${var.environment}-msk-policy"
-  policy = jsonencode({
-    Version : "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "cloudwatch:PutMetricData",
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:DescribeLogStreams",
-          "logs:PutLogEvents",
-          "logs:GetLogEvents",
-          "logs:FilterLogEvents",
-          "ec2:CreateNetworkInterface",
-          "ec2:DescribeNetworkInterfaces",
-          "ec2:DeleteNetworkInterface",
-          "kms:Decrypt"
-        ],
-        Resource = "*"
-      }
-    ]
-  })
-  tags = {
-    ModuleVersion = "${local.module_name}-${local.module_serial_number}"
-  }
-}
-
-# Attach the IAM policy to the MSK role
-resource "aws_iam_role_policy_attachment" "msk" {
-  count      = var.create_msk ? 1 : 0
-  policy_arn = aws_iam_policy.msk[0].arn
-  role       = aws_iam_role.msk[0].name
+  # Do not include additional brokers as part of Replication Factor (explained further below).
+  base_number_of_brokers  = var.environment == "development" ? 2 : 3
+  total_number_of_brokers = local.base_number_of_brokers + var.additional_brokers_to_create
 }
 
 resource "aws_cloudwatch_log_group" "test" {
@@ -136,8 +77,7 @@ resource "aws_msk_cluster" "this" {
   count                  = var.create_msk ? 1 : 0
   cluster_name           = "${var.resource_prefix}-${var.environment}-msk-cluster"
   kafka_version          = var.kafka_version
-  number_of_broker_nodes = local.number_of_brokers
-  #iam_instance_profile = aws_iam_role.msk.arn
+  number_of_broker_nodes = local.total_number_of_brokers
 
   configuration_info {
     arn      = aws_msk_configuration.msk_configuration_environment[0].arn
@@ -149,7 +89,6 @@ resource "aws_msk_cluster" "this" {
 
     client_subnets = var.msk_subnet_ids
 
-    #security_groups = var.msk_security_groups
     security_groups = [aws_security_group.msk_cluster_sg[0].id]
     storage_info {
       ebs_storage_info {
@@ -209,13 +148,13 @@ locals {
   #  * https://repost.aws/knowledge-center/msk-avoid-disruption-during-patching
   #  * https://docs.aws.amazon.com/securityhub/latest/userguide/msk-controls.html
 
-  min_ISR = local.number_of_brokers - 1
+  min_ISR = local.base_number_of_brokers - 1
 
-  # unclean.leader.election.enable should almost always be set to false, to prevent out-of-sync replicas from becoming leaders (which could cause silent data loss).
+  # The unclean.leader.election.enable configuration setting should almost always be set to false, to prevent out-of-sync replicas from becoming leaders (which could cause silent data loss).
   server_properties = <<PROPERTIES
 auto.create.topics.enable = true
 delete.topic.enable = true
-default.replication.factor=${local.number_of_brokers}
+default.replication.factor=${local.base_number_of_brokers}
 min.insync.replicas=${local.min_ISR}
 num.io.threads=8
 num.network.threads=5
@@ -227,8 +166,8 @@ socket.request.max.bytes=104857600
 socket.send.buffer.bytes=102400
 unclean.leader.election.enable=false
 zookeeper.session.timeout.ms=18000
-offsets.topic.replication.factor=${local.number_of_brokers}
-transaction.state.log.replication.factor=${local.number_of_brokers}
+offsets.topic.replication.factor=${local.base_number_of_brokers}
+transaction.state.log.replication.factor=${local.base_number_of_brokers}
 PROPERTIES
 }
 
