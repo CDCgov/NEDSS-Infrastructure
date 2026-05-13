@@ -4,7 +4,7 @@ locals {
       name             = "vms"
       address_prefixes = ["10.1.0.0/29"]
     }
-    
+
     "db" = {
       name             = "db"
       address_prefixes = ["10.1.0.64/26"]
@@ -75,7 +75,6 @@ variable "address_space" {
 
 variable "subnets" {
   type = map(object({
-    address_prefix   = optional(string)
     address_prefixes = optional(list(string))
     name             = string
     ipam_pools = optional(list(object({
@@ -135,7 +134,6 @@ variable "subnets" {
   description = <<DESCRIPTION
 (Optional) A map of subnets to create
 
- - `address_prefix` - (Optional) The address prefix to use for the subnet. One of `address_prefix`, `address_prefixes`, or `ipam_pools` must be specified.
  - `address_prefixes` - (Optional) The address prefixes to use for the subnet. One of `address_prefix`, `address_prefixes`, or `ipam_pools` must be specified.
  - `ipam_pools` - (Optional) IPAM pools to allocate address space from. When specified, the subnet will request address space from these pools. Each pool configuration supports:
    - `pool_id`: Resource ID of the IPAM pool to allocate from
@@ -199,30 +197,4 @@ variable "subnets" {
 
 DESCRIPTION
 
-  validation {
-    condition = alltrue([
-      for _, subnet in var.subnets :
-      # IPAM subnets need ipam_pools configured
-      subnet.ipam_pools != null ||
-      # Non-IPAM subnets need one of these address configurations
-      subnet.address_prefix != null || subnet.address_prefixes != null
-    ])
-    error_message = "Each subnet must specify one of: ipam_pools (for IPAM allocation), address_prefix, or address_prefixes."
-  }
-  validation {
-    condition = alltrue([
-      for _, subnet in var.subnets :
-      # For IPAM subnets, only ipam_pools should be specified (not static addresses)
-      subnet.ipam_pools != null ? (
-        subnet.address_prefix == null && subnet.address_prefixes == null
-        ) : (
-        # For non-IPAM subnets, exactly one address method should be specified
-        (subnet.address_prefix != null && subnet.address_prefixes == null) ||
-        (subnet.address_prefix == null && subnet.address_prefixes != null)
-      )
-    ])
-    error_message = "IPAM subnets should only specify ipam_pools. Non-IPAM subnets must specify exactly one of: address_prefix or address_prefixes."
-  }
 }
-
-

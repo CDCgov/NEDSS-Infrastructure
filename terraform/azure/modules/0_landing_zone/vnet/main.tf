@@ -6,6 +6,6 @@ module "vnet" {
   location      = var.vnet_location
   name          = var.vnet_name
   address_space = var.address_space
-  subnets       = length(var.subnets) > 0 ? var.subnets : local.subnets
+  subnets       = length(tomap(var.subnets)) > 0 ? tomap(var.subnets) : tomap(local.subnets)
 
 }
