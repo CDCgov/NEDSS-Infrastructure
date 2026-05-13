@@ -23,6 +23,7 @@ you may skip the `1-nbs6` layer.
 - scripts: Contains optional scripts to help with layered terraform implementation.
   <details>
   <summary>list of scripts</summary>
+  
     - [layered_terraform_migration.py](./scripts/layered_terraform_migration.py): split terraform state from single module into layers.     
   </details>
 - archive: Contains previous deployment samples of NBS7 
