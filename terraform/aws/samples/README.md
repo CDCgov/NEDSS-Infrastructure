@@ -20,9 +20,14 @@ you may skip the `1-nbs6` layer.
   for this layer.
 - 3-applications: Provisions applications to a Kubernetes Clusters. For full list of modules please reference the [README](./3-applications/README.md) 
   for this layer.
+- scripts: Contains optional scripts to help with layered terraform implementation.
+  <details>
+  <summary>list of scripts</summary>
+    - [layered_terraform_migration.py](./scripts/layered_terraform_migration.py): split terraform state from single module into layers.     
+  </details>
 - archive: Contains previous deployment samples of NBS7 
   <details>
-  <summary><strong> directories</strong></summary>
+  <summary><strong> directories </strong></summary>
 
     - NBS7_standard: will create a new VPC and integrate with existing system  
     - NBS7_existing_network: assumes the network is created in advance outside of terraform  
