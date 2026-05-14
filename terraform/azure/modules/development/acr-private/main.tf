@@ -8,7 +8,6 @@ resource "azurerm_container_registry" "acr" {
   sku                           = "Premium" # Premium SKU is required for private endpoints
   public_network_access_enabled = false
   zone_redundancy_enabled       = true
-  admin_enabled                 = var.acr_admin_enabled
   retention_policy_in_days      = 30
   anonymous_pull_enabled        = true
   export_policy_enabled         = false

@@ -17,9 +17,3 @@ variable "acr_subnet_name" {
   description = "ACR Registry Subnet"
   type        = string
 }
-
-variable "acr_admin_enabled" {
-  description = "Required for ACI to pull image"
-  type = bool
-  default = false
-}
