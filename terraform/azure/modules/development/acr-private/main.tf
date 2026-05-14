@@ -11,6 +11,10 @@ resource "azurerm_container_registry" "acr" {
   retention_policy_in_days      = 30
   anonymous_pull_enabled        = true
   export_policy_enabled         = false
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
 # Private endpoint for ACR
