@@ -10,7 +10,8 @@ from pathlib import Path
 
 def migrate_terraform_state(layers_directory, unique_resources_found):
     """
-    Migrates terraform resources found in source.tfstate
+    Migrates terraform resources found in source.tfstate into multiple state files
+    corresponding to each layer in layers_directory.
 
     Returns: 
     resources_migrated: Dictionary of migrated resources and destination
@@ -27,49 +28,46 @@ def migrate_terraform_state(layers_directory, unique_resources_found):
    
     print(f"--- Migrating terraform state for layer {dir_obj.name} ---")
            
-    # Using 'with' ensures the file is closed even if an error occurs
-    try:
-        # glob("*.tf") handles the iteration for us
-        for tf_file in dir_obj.glob("*.tf"):
-            for resource in unique_resources_found:
-                with open(tf_file, 'r') as open_file:                
-                    split_resource = resource.split(".")                    
-                    file_content = open_file.read()
+    # Using 'with' ensures the file is closed even if an error occurs    
+    # glob("*.tf") handles the iteration for us
+    for tf_file in dir_obj.glob("*.tf"):
+        for resource in unique_resources_found:
+            with open(tf_file, 'r') as open_file:                
+                split_resource = resource.split(".")                    
+                file_content = open_file.read()
+                
+                # find module and migrate state
+                if f"{split_resource[0]} \"{split_resource[1]}\"" in file_content:
                     
-                    # find module and migrate state
-                    if f"{split_resource[0]} \"{split_resource[1]}\"" in file_content:
+                    try:
+                        # 'check=True' makes Python raise an error if Terraform fails
+                        # 'capture_output=True' grabs the text so you can process it
+
+                        cmd = f"terraform state mv -state=\"source.tfstate\" -state-out=\"{dir_obj.name}.tfstate\" \"{resource}\" \"{resource}\""                                                           
+                        subprocess.run(
+                            cmd,                
+                            check=True,
+                            shell=True,
+                            capture_output=True,
+                            text=True
+                        )
+
+                        print(f"✅ Migrated '{resource}' to file {dir_obj.name}.tfstate")
+                        resources_migrated[resource] =  f"{dir_obj.name}.tfstate"
                         
-                        try:
-                            # 'check=True' makes Python raise an error if Terraform fails
-                            # 'capture_output=True' grabs the text so you can process it
-
-                            cmd = f"terraform state mv -state=\"source.tfstate\" -state-out=\"{dir_obj.name}.tfstate\" \"{resource}\" \"{resource}\""                                                           
-                            subprocess.run(
-                                cmd,                
-                                check=True,
-                                shell=True,
-                                capture_output=True,
-                                text=True
-                            )
-
-                            print(f"✅ Migrated '{resource}' to file {dir_obj.name}.tfstate")
-                            resources_migrated[resource] =  f"{dir_obj.name}.tfstate"
-                            
-                            
-                            break                            
-                            
-                        except subprocess.CalledProcessError as e:        
-                            print(f"!!! EXIT CODE: {e.returncode}")
-                            print(f"!!! ERROR MESSAGE (STDERR):\n{e.stderr}")
-                            # Sometimes Terraform puts the error in stdout depending on the version
-                            print(f"!!! OUTPUT (STDOUT):\n{e.stdout}")
-                            sys.exit(e.returncode)
-                        except Exception as e:
-                            print(f"Error:\n{e}")
-                            sys.exit(e.returncode)
-    except Exception as e:
-        print(f"❌ Error processing files: {e}")
-        return False
+                        
+                        break                            
+                        
+                    except subprocess.CalledProcessError as e:        
+                        print(f"!!! EXIT CODE: {e.returncode}")
+                        print(f"!!! ERROR MESSAGE (STDERR):\n{e.stderr}")
+                        # Sometimes Terraform puts the error in stdout depending on the version
+                        print(f"!!! OUTPUT (STDOUT):\n{e.stdout}")
+                        sys.exit(e.returncode)
+                    except Exception as e:
+                        print(f"Error:\n{e}")
+                        sys.exit(e.returncode)
+    
 
     # Check resources, not migrated
     resources_remaining = []
@@ -85,7 +83,7 @@ def migrate_terraform_state(layers_directory, unique_resources_found):
 def get_unique_modules():    
     unique_resources_found = []
 
-    print(f"--- Checking terraform state for modules ---")
+    print("--- Checking terraform state for modules ---")
     
     try:
         # 'check=True' makes Python raise an error if Terraform fails
@@ -121,16 +119,16 @@ def get_unique_modules():
             unique_modules.add(module_name)
     
     # 4. Convert set back to a sorted list
-    unique_resources_found = sorted(list(unique_modules))
+    unique_resources_found = sorted(unique_modules)
 
-    print(f"Success gathering state resources --")  
+    print("Success gathering state resources --")  
     print(unique_resources_found, "\n---")      
    
     return unique_resources_found
 
-def split_terraform_state(target_dir_path, working_dir):
+def pull_terraform_state(target_dir_path, working_dir):
     """
-    Pulls terraform state from a specific directory.
+    Pulls terraform state from specific source directory and adds it to working directory.
     target_dir_path: A pathlib.Path object
     
     Returns success (bool)
@@ -149,7 +147,7 @@ def split_terraform_state(target_dir_path, working_dir):
     # Convert Path object to string for subprocess
     dir_str = Path(target_dir_path).resolve()
 
-    print(f"--- Pulling terraform state in", dir_str,"---\n")
+    print("--- Pulling terraform state in", dir_str,"---\n")
 
     if Path(f"{dir_str}/source.tfstate").exists():
         print("Error: source.tfstate already EXISTS! If you wish to pull a fresh copy please rename the existing source.tfstate.")
@@ -170,7 +168,7 @@ def split_terraform_state(target_dir_path, working_dir):
             # 'check=True' makes Python raise an error if Terraform fails
             # 'capture_output=True' grabs the text so you can process it
             
-            result = subprocess.run(
+            subprocess.run(
                 f"{cmd}",                
                 cwd=dir_str,
                 env=current_env,
@@ -179,7 +177,7 @@ def split_terraform_state(target_dir_path, working_dir):
                 capture_output=True,
                 text=True
             )
-            print(f"Success running command --", cmd)
+            print("Success running command --", cmd)
             
             # Success only True if all previous commands were successful
             if cmd == commands[-1]:
@@ -269,15 +267,14 @@ def main():
 
     # 4. Pathing Example
     # Works natively on Windows (C:\...) and Linux (/home/...)
-    base_path = os.getcwd()
-    log_file = os.path.join(base_path, "logs", "app.log")
+    base_path = os.getcwd()    
 
     # Migrate terraform state
     split_success = False
     resource_migrated = {}
     resources_remaining = []
     if args.pull_fresh == 'yes':
-        split_success = split_terraform_state(path_obj_source, working_dir)
+        split_success = pull_terraform_state(path_obj_source, working_dir)
 
     if split_success or args.pull_fresh == 'no':
         unique_resources_found = get_unique_modules()
@@ -293,13 +290,11 @@ def main():
     pprint.pprint(resource_migrated, compact=True, sort_dicts=True)
 
     print("\nResources NOT Migrated")    
-    pprint.pprint(resources_remaining, compact=True, sort_dicts=True)
-    # for migrated in resource_migrated:
-    #     print("  ",migrated,"   ", resource_migrated[migrated])
-    print(f"--------------------------")
+    pprint.pprint(resources_remaining, compact=True, sort_dicts=True)   
+    print("--------------------------")
     print(f"Terraform Source Directory:    {args.source}")
     print(f"Layered Terraform Target Directory:     {args.target}")    
-    print(f"--------------------------")
+    print("--------------------------")
 
 if __name__ == "__main__":
     main()

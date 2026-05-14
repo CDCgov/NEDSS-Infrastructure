@@ -47,6 +47,9 @@ The script uses local cloud credentials to pull a copy of the state file locally
 ## 🚀 Usage Example
 
 ```bash
-# Run a state pull in a specific directory with debugging enabled
-python3 layered_terraform_migration.py --pull-fresh="yes" 
+# Run a state pull using relative paths for source (all-in-one terraform deployment) using a relative path for the target (layered terraform)
+python3 layered_terraform_migration.py --pull-fresh="yes" --source="../archive/NBS7_standalone" --target="../samples"
+
+# Use a local state file and an absolute path for the target (layered terraform)
+python3 layered_terraform_migration.py --pull-fresh="no" --target="/Users/sampleUser/Documents/github/NEDSS-Infrastructure/terraform/aws/samples"
 
