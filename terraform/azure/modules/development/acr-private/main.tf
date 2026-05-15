@@ -8,13 +8,13 @@ resource "azurerm_container_registry" "acr" {
   sku                           = "Premium" # Premium SKU is required for private endpoints
   public_network_access_enabled = false
   zone_redundancy_enabled       = true
-  admin_enabled                 = true # Required for ACI to pull image
-  retention_policy = [{
-    enabled = true
-    days    = 30
-  }]
-  anonymous_pull_enabled = true
-  export_policy_enabled  = false
+  retention_policy_in_days      = 30
+  anonymous_pull_enabled        = true
+  export_policy_enabled         = false
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
 # Private endpoint for ACR
