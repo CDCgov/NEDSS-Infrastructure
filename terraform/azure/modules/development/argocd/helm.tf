@@ -21,22 +21,22 @@ resource "helm_release" "argocd" {
   set = [{
     name  = "global.image.repository"
     value = local.argocd_global_image_repo
-  },
-  {
-    name  = "redis.image.repository"
-    value = local.argocd_redis_main_image_repo
-  },
-  {
-    name  = "redis.exporter.image.repository"
-    value = local.argocd_redis_main_image_repo
-  },
-  {
-    name  = "redis-ha.image.repository"
-    value = local.argocd_redis_main_image_repo
-  },
-  {
-    name  = "redis-ha.exporter.image.repository"
-    value = local.argocd_redis_main_image_repo
+    },
+    {
+      name  = "redis.image.repository"
+      value = local.argocd_redis_main_image_repo
+    },
+    {
+      name  = "redis.exporter.image.repository"
+      value = local.argocd_redis_main_image_repo
+    },
+    {
+      name  = "redis-ha.image.repository"
+      value = local.argocd_redis_main_image_repo
+    },
+    {
+      name  = "redis-ha.exporter.image.repository"
+      value = local.argocd_redis_main_image_repo
   }]
 }
 
