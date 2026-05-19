@@ -1,49 +1,7 @@
-locals {
-  subnets = {
-    "vms" = {
-      name             = "vms"
-      address_prefixes = ["10.1.0.0/29"]
-    }
-
-    "db" = {
-      name             = "db"
-      address_prefixes = ["10.1.0.64/26"]
-    }
-
-    "aks" = {
-      name             = "aks"
-      address_prefixes = ["10.1.0.128/27"]
-    }
-
-    "hdikafka" = {
-      name             = "hdikafka"
-      address_prefixes = ["10.1.0.160/27"]
-    }
-
-    "endpoint" = {
-      name             = "endpoint"
-      address_prefixes = ["10.1.16.0/20"]
-    }
-
-    "public_gateways" = {
-      name             = "public_gateways"
-      address_prefixes = ["10.1.32.0/24"]
-      service_endpoints_with_location = [{
-        service   = "Microsoft.KeyVault"
-        locations = [var.vnet_location]
-      }]
-    }
-
-    "private_gateways" = {
-      name             = "private_gateways"
-      address_prefixes = ["10.1.33.0/24"]
-      service_endpoints_with_location = [{
-        service   = "Microsoft.KeyVault"
-        locations = [var.vnet_location]
-      }]
-    }
-
-  }
+variable "enabled" {
+  description = "Whether to create the vnet"
+  type        = bool
+  default     = true
 }
 
 variable "parent_id" {
