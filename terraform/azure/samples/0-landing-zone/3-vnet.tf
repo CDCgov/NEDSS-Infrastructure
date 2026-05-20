@@ -5,4 +5,5 @@ module "vnet" {
   vnet_location       = var.vnet_location
   vnet_name           = var.vnet_resource_prefix
   resource_group_name = var.vnet_resource_group_name
+  address_space       = var.vnet_address_space
 }
