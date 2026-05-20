@@ -1,5 +1,5 @@
 module "agw_public" {
-  source = "../../modules/0_landing_zone/agw-public"
+  source = "../../modules/0-landing-zone/agw-public"
 
   agw_aks_ip              = var.agw_aks_ip
   agw_backend_host        = var.agw_backend_host

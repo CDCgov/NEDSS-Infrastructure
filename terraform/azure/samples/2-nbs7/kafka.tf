@@ -1,5 +1,5 @@
 module "kafka" {
-  source = "../../modules/2_nbs7/hdi-kafka"
+  source = "../../modules/2-nbs7/hdi-kafka"
 
   gtwy_password        = var.kafka_gtwy_password
   gtwy_username        = var.kafka_gtwy_username

@@ -1,5 +1,5 @@
 module "nbs6-sqlmi" {
-  source = "../../modules/1_nbs6/sqlmi"
+  source = "../../modules/1-nbs6/sqlmi"
 
   resource_prefix                    = var.sqlmi_resource_prefix
   sqlmi_resource_group_name          = var.sqlmi_resource_group_name

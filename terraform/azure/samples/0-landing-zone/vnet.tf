@@ -1,5 +1,5 @@
 module "vnet" {
-  source = "../../modules/0_landing_zone/vnet"
+  source = "../../modules/0-landing-zone/vnet"
 
   parent_id           = var.vnet_parent_id
   vnet_location       = var.vnet_location

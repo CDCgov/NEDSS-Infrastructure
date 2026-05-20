@@ -1,5 +1,5 @@
 module "nbs6-agw-private" {
-  source = "../../modules/1_nbs6/agw-private"
+  source = "../../modules/1-nbs6/agw-private"
 
   resource_prefix         = var.agw_resource_prefix
   agw_resource_group_name = var.agw_resource_group_name
