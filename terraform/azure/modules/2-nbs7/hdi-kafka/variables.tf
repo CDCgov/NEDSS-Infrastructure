@@ -41,7 +41,7 @@ variable "kafka_cluster_name" {
 }
 variable "cluster_version" {
   type    = string
-  default = "4.0"
+  default = "5.1"
 }
 variable "cluster_tier" {
   type    = string
@@ -49,7 +49,7 @@ variable "cluster_tier" {
 }
 variable "component_version" {
   type    = string
-  default = "2.1"
+  default = "3.2"
 }
 
 variable "gtwy_username" {
@@ -130,4 +130,9 @@ variable "infrastructure_encryption_enabled" {
   type    = bool
   default = true
 }
-###########################################
+
+variable "nat_gateway_enabled" {
+  type        = bool
+  description = "Enable NAT gateway to allow VM helath checks to reach the management api"
+  default     = true
+}
