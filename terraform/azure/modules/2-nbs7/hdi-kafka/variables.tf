@@ -1,4 +1,8 @@
-
+variable "enabled" {
+  type        = bool
+  description = "Enable the module"
+  default     = true
+}
 variable "resource_prefix" {
   type    = string
   default = "dev"
@@ -130,6 +134,7 @@ variable "infrastructure_encryption_enabled" {
   type    = bool
   default = true
 }
+###########################################
 
 variable "nat_gateway_enabled" {
   type        = bool

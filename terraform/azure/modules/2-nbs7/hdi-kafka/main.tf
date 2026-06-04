@@ -1,8 +1,9 @@
 # Kafka HDinsight storage account
-resource "azurerm_storage_account" "kafka-storage-account" {
+resource "azurerm_storage_account" "kafka_storage_account" {
+  count                             = var.enabled ? 1 : 0
   name                              = "${var.resource_prefix}${var.storage_account_name}" # "hdinsightstor"
-  resource_group_name               = data.azurerm_resource_group.rg.name                 # azurerm_resource_group.kafka-rg.name
-  location                          = data.azurerm_resource_group.rg.location             #azurerm_resource_group.kafka-rg.location
+  resource_group_name               = data.azurerm_resource_group.rg.name                 # azurerm_resource_group.kafka_rg.name
+  location                          = data.azurerm_resource_group.rg.location             #azurerm_resource_group.kafka_rg.location
   account_tier                      = var.account_tier                                    # "Standard"
   account_replication_type          = var.account_replication_type                        # "LRS"
   infrastructure_encryption_enabled = var.infrastructure_encryption_enabled
@@ -33,14 +34,16 @@ resource "azurerm_storage_account" "kafka-storage-account" {
 }
 
 # # Kafka HDinsight storage container
-resource "azurerm_storage_container" "hdi-kafka-storage-container" {
+resource "azurerm_storage_container" "hdi_kafka_storage_container" {
+  count                 = var.enabled ? 1 : 0
   name                  = "${var.resource_prefix}-hdinsight-kafka-cluster-data"
-  storage_account_name  = azurerm_storage_account.kafka-storage-account.name
+  storage_account_name  = azurerm_storage_account.kafka_storage_account[count.index].name
   container_access_type = var.container_access_type
 }
 
 # # Kafka HDinsight network security group
-resource "azurerm_network_security_group" "hdi-kafka-sg" {
+resource "azurerm_network_security_group" "hdi_kafka_sg" {
+  count               = var.enabled ? 1 : 0
   name                = "${var.resource_prefix}-${var.sg_name}"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -65,6 +68,7 @@ resource "azurerm_network_security_group" "hdi-kafka-sg" {
 }
 
 resource "azurerm_network_security_rule" "allow_tag_custom_any_inbound_rule" {
+  count                       = var.enabled ? 1 : 0
   name                        = "AllowTagCustomAnyInbound"
   priority                    = 140
   direction                   = "Inbound"
@@ -74,11 +78,12 @@ resource "azurerm_network_security_rule" "allow_tag_custom_any_inbound_rule" {
   destination_port_range      = "*"
   source_address_prefix       = "HDInsight.EastUS"
   destination_address_prefix  = "*"
-  network_security_group_name = azurerm_network_security_group.hdi-kafka-sg.name
+  network_security_group_name = azurerm_network_security_group.hdi_kafka_sg[count.index].name
   resource_group_name         = data.azurerm_resource_group.rg.name
 }
 
 resource "azurerm_network_security_rule" "allow_hdinsight_outbound" {
+  count                       = var.enabled ? 1 : 0
   name                        = "AllowHDInsightOutbound"
   priority                    = 100
   direction                   = "Outbound"
@@ -88,11 +93,12 @@ resource "azurerm_network_security_rule" "allow_hdinsight_outbound" {
   destination_port_range      = "443"
   source_address_prefix       = "*"
   destination_address_prefix  = "AzureCloud"
-  network_security_group_name = azurerm_network_security_group.hdi-kafka-sg.name
+  network_security_group_name = azurerm_network_security_group.hdi_kafka_sg[count.index].name
   resource_group_name         = data.azurerm_resource_group.rg.name
 }
 
 resource "azurerm_network_security_rule" "allow_hdinsight_outbound_80" {
+  count                       = var.enabled ? 1 : 0
   name                        = "AllowHDInsightOutbound80"
   priority                    = 110
   direction                   = "Outbound"
@@ -102,21 +108,23 @@ resource "azurerm_network_security_rule" "allow_hdinsight_outbound_80" {
   destination_port_range      = "80"
   source_address_prefix       = "*"
   destination_address_prefix  = "AzureCloud"
-  network_security_group_name = azurerm_network_security_group.hdi-kafka-sg.name
+  network_security_group_name = azurerm_network_security_group.hdi_kafka_sg[count.index].name
   resource_group_name         = data.azurerm_resource_group.rg.name
 }
 
 
 ##########################################################################
 
-resource "azurerm_subnet_network_security_group_association" "kafka-subnet-sg" {
+resource "azurerm_subnet_network_security_group_association" "kafka_subnet_sg" {
+  count                     = var.enabled ? 1 : 0
   subnet_id                 = data.azurerm_subnet.kafka_subnet_name.id
-  network_security_group_id = azurerm_network_security_group.hdi-kafka-sg.id
+  network_security_group_id = azurerm_network_security_group.hdi_kafka_sg[count.index].id
 }
 
-resource "azurerm_hdinsight_kafka_cluster" "kafka-cluster" {
+resource "azurerm_hdinsight_kafka_cluster" "kafka_cluster" {
+  count                         = var.enabled ? 1 : 0
   name                          = "${var.resource_prefix}-${var.kafka_cluster_name}"
-  depends_on                    = [azurerm_storage_account.kafka-storage-account, azurerm_storage_container.hdi-kafka-storage-container]
+  depends_on                    = [azurerm_storage_account.kafka_storage_account, azurerm_storage_container.hdi_kafka_storage_container]
   resource_group_name           = data.azurerm_resource_group.rg.name
   location                      = data.azurerm_resource_group.rg.location
   cluster_version               = var.cluster_version
@@ -168,9 +176,9 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka-cluster" {
   }
 
   storage_account {
-    storage_resource_id  = azurerm_storage_account.kafka-storage-account.id
-    storage_container_id = azurerm_storage_container.hdi-kafka-storage-container.id
-    storage_account_key  = azurerm_storage_account.kafka-storage-account.primary_access_key
+    storage_resource_id  = azurerm_storage_account.kafka_storage_account[count.index].id
+    storage_container_id = azurerm_storage_container.hdi_kafka_storage_container[count.index].id
+    storage_account_key  = azurerm_storage_account.kafka_storage_account[count.index].primary_access_key
     is_default           = true
   }
 
@@ -204,6 +212,7 @@ resource "azurerm_hdinsight_kafka_cluster" "kafka-cluster" {
 }
 
 resource "azurerm_private_endpoint" "kafka_private_endpoint" {
+  count               = var.enabled ? 1 : 0
   name                = "${var.resource_prefix}-kafka-pe"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -211,7 +220,7 @@ resource "azurerm_private_endpoint" "kafka_private_endpoint" {
 
   private_service_connection {
     name                           = "kafka-privatelink-connection"
-    private_connection_resource_id = azurerm_hdinsight_kafka_cluster.kafka-cluster.id
+    private_connection_resource_id = azurerm_hdinsight_kafka_cluster.kafka_cluster[count.index].id
     is_manual_connection           = false
 
     subresource_names = ["gateway"]
@@ -222,7 +231,7 @@ resource "azurerm_private_endpoint" "kafka_private_endpoint" {
 ##################################################################
 
 resource "azurerm_public_ip" "nat" {
-  count               = var.nat_gateway_enabled ? 1 : 0
+  count               = var.enabled && var.nat_gateway_enabled ? 1 : 0
   name                = "${var.resource_prefix}-nat"
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -231,7 +240,7 @@ resource "azurerm_public_ip" "nat" {
 }
 
 resource "azurerm_nat_gateway" "kafka_nat_gw" {
-  count                   = var.nat_gateway_enabled ? 1 : 0
+  count                   = var.enabled && var.nat_gateway_enabled ? 1 : 0
   name                    = "${var.resource_prefix}-kafka-nat-gw"
   location                = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
@@ -240,13 +249,13 @@ resource "azurerm_nat_gateway" "kafka_nat_gw" {
 }
 
 resource "azurerm_nat_gateway_public_ip_association" "nat_assoc" {
-  count                = var.nat_gateway_enabled ? 1 : 0
-  nat_gateway_id       = azurerm_nat_gateway.kafka_nat_gw[0].id
-  public_ip_address_id = azurerm_public_ip.nat[0].id
+  count                = var.enabled && var.nat_gateway_enabled ? 1 : 0
+  nat_gateway_id       = azurerm_nat_gateway.kafka_nat_gw[count.index].id
+  public_ip_address_id = azurerm_public_ip.nat[count.index].id
 }
 
 resource "azurerm_subnet_nat_gateway_association" "kafka_subnet_nat_assoc" {
-  count          = var.nat_gateway_enabled ? 1 : 0
+  count          = var.enabled && var.nat_gateway_enabled ? 1 : 0
   subnet_id      = data.azurerm_subnet.kafka_subnet_name.id
-  nat_gateway_id = azurerm_nat_gateway.kafka_nat_gw[0].id
+  nat_gateway_id = azurerm_nat_gateway.kafka_nat_gw[count.index].id
 }
