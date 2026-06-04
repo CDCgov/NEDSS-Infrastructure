@@ -9,6 +9,10 @@ resource "azurerm_storage_account" "kafka_storage_account" {
   infrastructure_encryption_enabled = var.infrastructure_encryption_enabled
   tags                              = merge(tomap({ "Name" = "${var.resource_prefix}-${var.storage_account_name}" }), var.tags)
 
+  identity {
+    type = "SystemAssigned"
+  }
+  
   network_rules {
     default_action = "Allow"
     bypass         = ["AzureServices"]
