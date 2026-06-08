@@ -87,6 +87,7 @@ this include modifying security groups to allow operations involving the databas
 | readonly_role_arn | Optional AWS IAM Role arn used to authenticate into the EKS cluster for ReadOnly | `null` |
 | admin_role_arns | List of AWS IAM Role ARNs for admin access to the EKS cluster. If not provided, aws_role_arn will be used. | `[]` |
 | readonly_role_arns | List of AWS IAM Role ARNs for readonly access to the EKS cluster. If not provided, readonly_role_arn will be used if set. | `[]` |
+| eks_subnets | Override to use a desired subnets, default = use available subnets | `null` |
 | eks_disk_size | Size of EKS volumes in GB | `100` |
 | external_cidr_blocks | List of cidr blocks to add to security groups, e.g. vpn, admin | `[]` |
 | eks_cluster_version | Version of eks cluster | `1.32` |
@@ -100,6 +101,7 @@ this include modifying security groups to allow operations involving the databas
 | eks_allow_endpoint_public_access | Allow both public and private access to EKS api endpoint. If False, terraform must have access to AWS network containing EKS API. |  |
 | msk_ebs_volume_size | EBS volume size for the MSK broker nodes in GB | `100` |
 | msk_environment | The environment, either 'development' which provisions 2 brokers in 2 different subnets or 'production' which provisions 3 brokers in 3 different subnets. |  |
+| msk_subnets | Override to use a desired subnets for MSK, default = use available subnets. NOTE: msk_environment ='development' requires 2 different subnets and msk_environment = 'production'requires 3 different subnets. | `null` |
 | create_prometheus_vpc_endpoint | Create Prometheus VPC endpoint and security group? | `true` |
 | create_grafana_vpc_endpoint | Create Grafana VPC endpoint and security group? | `true` |
 | create_datacompare_resources | Create resources for DataCompare service? | `false` |
