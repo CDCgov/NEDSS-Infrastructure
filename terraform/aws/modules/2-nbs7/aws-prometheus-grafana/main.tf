@@ -33,7 +33,6 @@ module "prometheus-helm" {
   chart                           = var.chart
   workspace_id                    = module.prometheus-workspace.amp_workspace_id
   iam_proxy_prometheus_role_arn   = module.iam-role.prometheus_role_arn
-  values_file_path                = var.values_file_path
   dependency_update               = var.dependency_update
   lint                            = var.lint
   force_update                    = var.force_update
@@ -95,7 +94,8 @@ module "grafana-dashboard" {
   depends_on = [
     module.grafana-workspace,
     module.grafana-token-rotation,
-    null_resource.initial_token_rotation # Wait for first token to be created
+    aws_lambda_invocation.initial_token_rotation
+    #null_resource.initial_token_rotation # Wait for first token to be created
   ]
   providers = {
     grafana = grafana.cloud

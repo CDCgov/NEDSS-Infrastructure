@@ -45,12 +45,6 @@ variable "retention_in_days" {
   default     = 30
 }
 
-variable "values_file_path" {
-  type        = string
-  description = "path to the values.yaml file"
-  default     = "./.terraform/modules/prometheus/terraform/aws/app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
-}
-
 variable "data_sources" {
   type        = list(any)
   description = "the datasource for grafana; in this case Prometheus"

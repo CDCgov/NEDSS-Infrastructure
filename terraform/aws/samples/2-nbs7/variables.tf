@@ -52,6 +52,12 @@ variable "readonly_role_arns" {
   default     = []
 }
 
+variable "eks_subnets" {
+  description = "Override to use a desired subnets, default = use available subnets"
+  type        = list(string)
+  default     = null
+}
+
 variable "eks_disk_size" {
   description = "Size of EKS volumes in GB"
   type        = number
