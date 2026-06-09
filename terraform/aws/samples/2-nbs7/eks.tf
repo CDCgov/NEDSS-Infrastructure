@@ -1,11 +1,11 @@
 module "eks_nbs" {
   source                       = "../../modules/2-nbs7/eks-nbs"
-  subnets                      = data.aws_subnets.nbs7.ids
+  subnets                      = var.eks_subnets != null ? var.eks_subnets : data.aws_subnets.nbs7.ids
   vpc_id                       = data.aws_vpc.nbs7.id
   aws_role_arn                 = var.aws_role_arn
-  admin_role_arns              = concat(var.admin_role_arns, [var.aws_role_arn])
+  admin_role_arns              = var.admin_role_arns
   readonly_role_arn            = var.readonly_role_arn
-  readonly_role_arns           = concat(var.readonly_role_arns, [var.readonly_role_arn])
+  readonly_role_arns           = var.readonly_role_arns
   desired_nodes_count          = var.eks_desired_nodes_count
   max_nodes_count              = var.eks_max_nodes_count
   min_nodes_count              = var.eks_min_nodes_count

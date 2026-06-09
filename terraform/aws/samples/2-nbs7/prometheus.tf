@@ -7,7 +7,6 @@ module "prometheus_grafana" {
   eks_aws_role_arn                   = var.aws_role_arn
   oidc_provider_arn                  = module.eks_nbs.oidc_provider_arn
   oidc_provider_url                  = module.eks_nbs.cluster_oidc_issuer_url
-  region                             = data.aws_region.current
+  region                             = data.aws_region.current.region
   tags                               = {}
-  values_file_path                   = "${path.module}/../.terraform/modules/dev.prometheus_grafana/terraform/aws/app-infrastructure/aws-prometheus-grafana/modules/prometheus-helm/values.yaml"
 }

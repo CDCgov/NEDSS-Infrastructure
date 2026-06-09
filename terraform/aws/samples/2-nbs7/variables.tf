@@ -52,6 +52,12 @@ variable "readonly_role_arns" {
   default     = []
 }
 
+variable "eks_subnets" {
+  description = "Override to use a desired subnets, default = use available subnets"
+  type        = list(string)
+  default     = null
+}
+
 variable "eks_disk_size" {
   description = "Size of EKS volumes in GB"
   type        = number
@@ -135,6 +141,12 @@ variable "msk_ebs_volume_size" {
 variable "msk_environment" {
   description = "The environment, either 'development' which provisions 2 brokers in 2 different subnets or 'production' which provisions 3 brokers in 3 different subnets."
   type        = string
+}
+
+variable "msk_subnets" {
+  description = "Override to use a desired subnets for MSK, default = use available subnets. NOTE: msk_environment ='development' requires 2 different subnets and msk_environment = 'production'requires 3 different subnets."
+  type        = list(string)
+  default     = null
 }
 #-----------------------------------------------------------------
 
