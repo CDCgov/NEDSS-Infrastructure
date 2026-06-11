@@ -1,3 +1,4 @@
+""""
 Grafana Service Account Token Rotation Lambda
 
 This Lambda function:
@@ -98,17 +99,17 @@ def handler(event, context):
         }
         
     except grafana_client.exceptions.ValidationException as e:
-        logger.error(f"Grafana validation error: {str(e)}")
+        logger.exception(f"Grafana validation error: {str(e)}")
         raise e
     except grafana_client.exceptions.AccessDeniedException as e:
-        logger.error(f"Grafana access denied: {str(e)}")
-        logger.error("Check IAM permissions for grafana:CreateWorkspaceServiceAccountToken")
+        logger.exception(f"Grafana access denied: {str(e)}")
+        logger.exception("Check IAM permissions for grafana:CreateWorkspaceServiceAccountToken")
         raise e
     except secrets_client.exceptions.ResourceNotFoundException as e:
-        logger.error(f"Secret not found: {str(e)}")
+        logger.exception(f"Secret not found: {str(e)}")
         raise e
     except Exception as e:
-        logger.error(f"Error rotating Grafana token: {str(e)}")
+        logger.exception(f"Error rotating Grafana token: {str(e)}")
         raise e
 
 
