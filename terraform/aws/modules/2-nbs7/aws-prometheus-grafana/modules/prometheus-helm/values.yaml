@@ -660,12 +660,7 @@ serverFiles:
     ## Below two files are DEPRECATED will be removed from this default values file
       - /etc/config/rules
       - /etc/config/alerts
-
-    # scrape_configs:
-    #   - job_name: prometheus
-    #     static_configs:
-    #       - targets:
-    #         - localhost:9090
+ 
 
       # A scrape configuration for running Prometheus on a Kubernetes cluster.
       # This uses separate scrape configs for cluster components (i.e. API server, node)
