@@ -44,9 +44,9 @@ variable "efs_mount_targets" {
 
   # Sample input
   # {
-  # "eu-west-1a" = {subnet_id = "subnet-abcde012"},
-  # "eu-west-1b" = {subnet_id = "subnet-bcde012a"},
-  # "eu-west-1c" = {subnet_id = "subnet-fghi345a"}
+  # "us-west-1a" = {subnet_id = "subnet-abcde012"},
+  # "us-west-1b" = {subnet_id = "subnet-bcde012a"},
+  # "us-west-1c" = {subnet_id = "subnet-fghi345a"}
   # }
 }
 #-----------------------------------------------------------------
