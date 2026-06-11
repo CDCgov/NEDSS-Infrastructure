@@ -29,7 +29,7 @@ variable "vpc_id" {
 #-----------------------------------------------------------------
 
 #EFS Variables----------------------------------------------------
-variable "efs_vpc_cidrs" {
+variable "efs_subnet_cidrs" {
   description = "Optional override to EFS VPC subnet CIDR blocks. If used must match efs_mount_targets provided subnets."
   type        = list(string)
   default     = null
@@ -37,19 +37,17 @@ variable "efs_vpc_cidrs" {
 
 variable "efs_mount_targets" {
   description = "Optional override to EFS mount targets. If used must match provided efs_vpc_cidrs. Sample input below."
-  type        = map(string)
+  type        =  map(object({
+    subnet_id = string
+  }))
   default     = null
 
   # Sample input
-  #{
-  # "eu-west-1a" = {subnet_id = "subnet-abcde012"}
-  #},
-  #{
-  # "eu-west-1b" = {subnet_id = "subnet-bcde012a"}}
-  #},
-  #{
+  # {
+  # "eu-west-1a" = {subnet_id = "subnet-abcde012"},
+  # "eu-west-1b" = {subnet_id = "subnet-bcde012a"},
   # "eu-west-1c" = {subnet_id = "subnet-fghi345a"}
-  #},
+  # }
 }
 #-----------------------------------------------------------------
 

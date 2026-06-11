@@ -2,10 +2,10 @@ module "efs" {
   source          = "../../modules/2-nbs7/efs"
   resource_prefix = var.resource_prefix
   vpc_id          = data.aws_vpc.nbs7.id
-  vpc_cidrs = var.efs_vpc_cidrs == null ? [
+  vpc_cidrs = var.efs_subnet_cidrs == null ? [
     for subnet in data.aws_subnet.nbs7 :
     subnet.cidr_block
-  ] : var.efs_vpc_cidrs
+  ] : var.efs_subnet_cidrs
   kms_key_arn = module.kms.kms_key_arn
 
   mount_targets = var.efs_mount_targets == null ? {
