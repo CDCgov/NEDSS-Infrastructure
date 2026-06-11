@@ -1,3 +1,4 @@
+""""
 Grafana Service Account Token Rotation Lambda
 
 This Lambda function:
