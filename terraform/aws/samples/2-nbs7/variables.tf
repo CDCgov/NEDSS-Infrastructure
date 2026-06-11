@@ -28,6 +28,32 @@ variable "vpc_id" {
 }
 #-----------------------------------------------------------------
 
+#EFS Variables----------------------------------------------------
+variable "efs_vpc_cidrs" {
+  description = "Optional override to EFS VPC subnet CIDR blocks. If used must match efs_mount_targets provided subnets."
+  type        = list(string)
+  default     = null
+}
+
+variable "efs_mount_targets" {
+  description = "Optional override to EFS mount targets. If used must match provided efs_vpc_cidrs. Sample input below."
+  type        = map()
+  default     = null
+
+  # Sample input
+  #{
+  # "eu-west-1a" = {subnet_id = "subnet-abcde012"}
+  #},
+  #{
+  # "eu-west-1b" = {subnet_id = "subnet-bcde012a"}}
+  #},
+  #{
+  # "eu-west-1c" = {subnet_id = "subnet-fghi345a"}
+  #},
+}
+#-----------------------------------------------------------------
+
+
 #EKS Variables----------------------------------------------------
 variable "aws_role_arn" {
   description = "AWS IAM Role/USEr arn used to authenticate into the EKS cluster"
@@ -161,6 +187,18 @@ variable "create_grafana_vpc_endpoint" {
   description = "Create Grafana VPC endpoint and security group?"
   type        = bool
   default     = true
+}
+
+variable "endpoint_vpc_cidr_block" {
+  description = "Optional override for vpc cidr block provided to create interface endpoints."
+  type        = string
+  default     = null
+}
+
+variable "endpoint_private_subnet_ids" {
+  description = "Optional override for subnets provided to create interface endpoints. Note within the same VPC, each subnet must be within a unique availability zone."
+  type        = list(string)
+  default     = null
 }
 #-----------------------------------------------------------------
 
