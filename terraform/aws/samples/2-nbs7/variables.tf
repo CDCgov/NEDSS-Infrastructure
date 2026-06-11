@@ -37,7 +37,7 @@ variable "efs_vpc_cidrs" {
 
 variable "efs_mount_targets" {
   description = "Optional override to EFS mount targets. If used must match provided efs_vpc_cidrs. Sample input below."
-  type        = map()
+  type        = map(string)
   default     = null
 
   # Sample input
