@@ -37,10 +37,10 @@ variable "efs_subnet_cidrs" {
 
 variable "efs_mount_targets" {
   description = "Optional override to EFS mount targets. If used must match provided efs_vpc_cidrs. Sample input below."
-  type        =  map(object({
+  type = map(object({
     subnet_id = string
   }))
-  default     = null
+  default = null
 
   # Sample input
   # {
