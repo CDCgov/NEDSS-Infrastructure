@@ -106,7 +106,7 @@ variable "external_cidr_blocks" {
 variable "eks_cluster_version" {
   description = "Version of eks cluster"
   type        = string
-  default     = "1.32"
+  default     = "1.35"
 }
 
 variable "eks_instance_type" {
