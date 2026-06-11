@@ -83,6 +83,8 @@ this include modifying security groups to allow operations involving the databas
 | tags | Map(string) of tags to add to created resources | |
 | domain_name | Domain name associated with an AWS public hosted zone in current account? (e.g. nbspreview.com) |  |
 | vpc_id | VPC ID of virtual private cloud |  |
+| efs_subnet_cidrs | Optional override to EFS VPC subnet CIDR blocks. If used must match efs_mount_targets provided subnets. | `null` |
+| efs_mount_targets | Optional override to EFS mount targets. If used must match provided efs_vpc_cidrs. Sample input below. | `null` |
 | aws_role_arn | AWS IAM Role/USEr arn used to authenticate into the EKS cluster" |  |
 | readonly_role_arn | Optional AWS IAM Role arn used to authenticate into the EKS cluster for ReadOnly | `null` |
 | admin_role_arns | List of AWS IAM Role ARNs for admin access to the EKS cluster. If not provided, aws_role_arn will be used. | `[]` |
@@ -104,6 +106,8 @@ this include modifying security groups to allow operations involving the databas
 | msk_subnets | Override to use a desired subnets for MSK, default = use available subnets. NOTE: msk_environment ='development' requires 2 different subnets and msk_environment = 'production'requires 3 different subnets. | `null` |
 | create_prometheus_vpc_endpoint | Create Prometheus VPC endpoint and security group? | `true` |
 | create_grafana_vpc_endpoint | Create Grafana VPC endpoint and security group? | `true` |
+| endpoint_vpc_cidr_block | Optional override for vpc cidr block provided to create interface endpoints. | `null` |
+| endpoint_private_subnet_ids | Optional override for subnets provided to create interface endpoints. Note within the same VPC, each subnet must be within a unique availability zone. | `null` |
 | create_datacompare_resources | Create resources for DataCompare service? | `false` |
 | create_otel_collector_resources | Create resources for OTEL Collector log export? | `false` |
 </details>
