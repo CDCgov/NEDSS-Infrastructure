@@ -1,3 +1,9 @@
+variable "enabled" {
+  type        = bool
+  description = "Enable the module"
+  default     = true
+}
+
 variable "resource_group_name" {
   description = "The name of the resource group"
   type        = string
