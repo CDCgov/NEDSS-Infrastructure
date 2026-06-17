@@ -12,7 +12,7 @@ resource "azurerm_storage_account" "kafka_storage_account" {
   identity {
     type = "SystemAssigned"
   }
-  
+
   network_rules {
     default_action = "Allow"
     bypass         = ["AzureServices"]
