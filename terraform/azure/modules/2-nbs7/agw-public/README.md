@@ -58,7 +58,7 @@ No modules.
 | <a name="input_agw_subnet_name"></a> [agw\_subnet\_name](#input\_agw\_subnet\_name) | Subnet for Application Gateway deployment | `string` | n/a | yes |
 | <a name="input_agw_vnet_name"></a> [agw\_vnet\_name](#input\_agw\_vnet\_name) | The name of the Azure Virtual Network (VNet) containing the <br/>  Application Gateway subnet. | `string` | n/a | yes |
 | <a name="input_enable_dual_gateway"></a> [enable\_dual\_gateway](#input\_enable\_dual\_gateway) | Controls whether to share a single Application Gateway for NBS 7 <br/>  and NBS 6 traffic. When set to false, a separate gateway is required for<br/>  NBS 6 | `bool` | `true` | no |
-| <a name="input_nsg_akamai_ips"></a> [nsg\_akamai\_ips](#input\_nsg\_akamai\_ips) | List of Akamai IPs to allow inbound traffic on port 443. Supports<br/>    IPv4 addresses and CIDR blocks. | `list(string)` | n/a | yes |
+| <a name="input_nsg_akamai_ips"></a> [nsg\_akamai\_ips](#input\_nsg\_akamai\_ips) | List of Akamai IPs to allow inbound traffic on port 443. Supports<br/>    IPv4 addresses and CIDR blocks. | `list(string)` | `[]` | no |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Prefix used for naming module resources | `string` | n/a | yes |
 | <a name="input_role_based_kv"></a> [role\_based\_kv](#input\_role\_based\_kv) | Specifies whether the Key Vault uses Azure Role-Based Access Control <br/>(RBAC) instead of access policies. | `bool` | `false` | no |
 

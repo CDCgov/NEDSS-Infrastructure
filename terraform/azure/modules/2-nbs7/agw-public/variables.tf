@@ -85,6 +85,7 @@ variable "nsg_akamai_ips" {
     IPv4 addresses and CIDR blocks.
   EOT
   type        = list(string)
+  default     = []
   validation {
     condition = alltrue(
       [
@@ -100,20 +101,20 @@ variable "nsg_akamai_ips" {
 }
 
 variable "role_based_kv" {
-  type        = bool
   description = <<-EOT
   Specifies whether the Key Vault uses Azure Role-Based Access Control 
   (RBAC) instead of access policies.
 EOT
+  type        = bool
   default     = false
 }
 
 variable "agw_role_definition_name" {
-  type        = string
   description = <<EOT
   The Azure RBAC role definition name (e.g., 'Key Vault Secrets User') 
   assigned to the Application Gateway identity for secret access.
   EOT
+  type        = string
   default     = ""
 
   validation {
@@ -126,20 +127,20 @@ variable "agw_role_definition_name" {
 }
 
 variable "enable_dual_gateway" {
-  type        = bool
   description = <<EOT
   Controls whether to share a single Application Gateway for NBS 7 
   and NBS 6 traffic. When set to false, a separate gateway is required for
   NBS 6
   EOT
+  type        = bool
   default     = true
 }
 
 variable "agw_public_hostname" {
-  type        = string
   description = <<EOT
   The public FQDN mapped to the Application Gateway public listener.
   EOT
+  type        = string
 
   validation {
     condition = can(
@@ -152,12 +153,12 @@ variable "agw_public_hostname" {
 }
 
 variable "agw_private_ip" {
-  type        = string
-  default     = null
   description = <<EOT
     The static private IP address assigned to the Application Gateway
     frontend configuration.
   EOT
+  type        = string
+  default     = null
 
   validation {
     condition = var.enable_dual_gateway == true && (
@@ -173,12 +174,12 @@ variable "agw_private_ip" {
 }
 
 variable "agw_private_backend_host" {
-  type        = string
-  default     = null
   description = <<EOT
     The target backend host header/FQDN used for internal routing by
     the Application Gateway.
   EOT
+  type        = string
+  default     = null
 
   validation {
     condition = var.enable_dual_gateway == true && (
@@ -192,12 +193,12 @@ variable "agw_private_backend_host" {
 }
 
 variable "agw_nbs_ip_private" {
-  type        = string
-  default     = null
   description = <<-EOT
     Private IP address for the internal NBS 6 backend service target
     pool.
   EOT
+  type        = string
+  default     = null
 
   validation {
     condition = var.enable_dual_gateway == true && (
@@ -213,11 +214,11 @@ variable "agw_nbs_ip_private" {
 }
 
 variable "agw_private_hostname" {
-  type        = string
-  default     = null
   description = <<EOT
   The private FQDN mapped to the Application Gateway private listener
   EOT
+  type        = string
+  default     = null
 
   validation {
     condition = var.enable_dual_gateway == true && (
