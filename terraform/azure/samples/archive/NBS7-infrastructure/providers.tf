@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">=1.0"
+  required_version = ">= 1.13.3"
 
   required_providers {
     azapi = {
@@ -19,7 +19,6 @@ terraform {
       version = "0.9.1"
     }
   }
-
 
   backend "azurerm" {
     resource_group_name  = "terraform-storage-rg"
@@ -42,6 +41,4 @@ provider "azurerm" {
   client_secret   = var.client_secret
 }
 
-
 provider "azuread" {}
-

@@ -3,7 +3,7 @@ locals {
 }
 
 terraform {
-  required_version = ">=1.0"
+  required_version = ">= 1.13.3"
 
   required_providers {
     azurerm = {
@@ -11,13 +11,7 @@ terraform {
       version = ">=4.68, <5.0"
     }
   }
-}
 
-locals {
-  environment = "dev1"
-}
-
-terraform {
   backend "azurerm" {
     use_azuread_auth     = true
     tenant_id            = ""
@@ -25,11 +19,11 @@ terraform {
     container_name       = ""
     key                  = "/0-landing-zone.tfstate"
   }
-
-  required_version = ">= 1.13.3"
-
 }
 
+locals {
+  environment = "dev1"
+}
 
 provider "azurerm" {
   features {}
@@ -42,6 +36,4 @@ provider "helm" {
     client_key             = base64decode(local.admin_config.users[0].user["client-key-data"])
     cluster_ca_certificate = base64decode(local.admin_config.clusters[0].cluster["certificate-authority-data"])
   }
-
 }
-
