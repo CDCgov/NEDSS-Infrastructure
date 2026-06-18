@@ -28,10 +28,11 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_parent_id"></a> [parent\_id](#input\_parent\_id) | The name of the existing resource group | `string` | n/a | yes |
-| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group | `string` | n/a | yes |
-| <a name="input_vnet_location"></a> [vnet\_location](#input\_vnet\_location) | The Azure region (e.g., East US) | `string` | `"East US"` | no |
+| <a name="input_parent_id"></a> [parent\_id](#input\_parent\_id) | The ID of the existing resource group where the VNet will be provisioned | `string` | n/a | yes |
+| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the existing resource group | `string` | n/a | yes |
+| <a name="input_vnet_location"></a> [vnet\_location](#input\_vnet\_location) | The Azure region | `string` | `"eastus"` | no |
 | <a name="input_vnet_name"></a> [vnet\_name](#input\_vnet\_name) | Name of the vnet | `string` | `"nbs"` | no |
+| <a name="input_address_space"></a> [address\_space](#input\_address\_space) | Address space for the VNet | `list(string)` | n/a | yes |
 
 ## Outputs
 

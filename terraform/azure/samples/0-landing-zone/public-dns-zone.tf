@@ -1,7 +1,7 @@
-module "public_dns" {
-  source = "../../0_landing_zone/public-dns-zone"
+module "public_dns" { # Creates the public DNS zone in Azure portal in "DNS zones"
+  source  = "../../modules/0-landing-zone/public-dns-zone"
+  enabled = var.public_dns_zone_enabled
 
-  enabled             = var.enabled
   public_domain_name  = var.public_domain_name
-  resource_group_name = var.resource_group_name
+  resource_group_name = var.vnet_resource_group_name
 }

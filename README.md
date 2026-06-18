@@ -2,31 +2,33 @@
 
 ## Overview
 
-Infrastructure required by the NEDSS application is contained within. Currently, the main method of deployment is Terraform which is a compilation of independent modules that comprise an NBS7 environment.
+This repository has the Terraform code that provisions the infrastructure to your cloud provider for the NEDSS application (i.e. the infrastructure needed to [deploy the NBS 7 microservices
+](https://cdcgov.github.io/NEDSS-SystemAdminGuide/docs/deploy-nbs7/microservices-deployment/deploy-nbs7-microservices.html)). This code is a compilation of independent Terraform modules that comprise an NBS 7 environment.
+
+This Terraform code is arranged in layers, each of which groups together related resources that comprise the NBS 7 infrastructure. This is explained further in the "Samples" section below. 
+
+The NBS 7 System Administrator Guide in the [Deploy cloud infrastructure section](https://cdcgov.github.io/NEDSS-SystemAdminGuide/docs/deploy-nbs7/set-up-cloud-infrastructure.html) provides more info about how to use this repository.
 
 ## Modules
 
-### AWS
+All tested and released modules for AWS are contained within [this](terraform/aws/modules/) directory, and for Azure within [this](terraform/azure/modules/) directory. Within each of those two directories, more info about each module can be found in each module's `README.md`.
 
-All tested and released modules are contained under the [app-infrastructure](terraform/aws/app-infrastructure) directory.
+## Samples
 
-1. [aws-prometheus-grafana](terraform/aws/app-infrastructure/aws-prometheus-grafana) - Module for deploying AWS managed Prometheus and Grafana, including Helm chart components to be deployed into a Kubernetes cluster.
-2. [efs](terraform/aws/app-infrastructure/efs) - Module for deploying AWS managed Elastic FileSystem (EFS) and related EFS resources
-3. [eks-nbs](terraform/aws/app-infrastructure/eks-nbs) - Module for deploying AWS managed Kubernetes (EKS)and related EKS resources
-4. [fluentbit](terraform/aws/app-infrastructure/fluentbit) - Module for deploying the Fluenbit Helm chart in an EKS cluster
-5. [kms](terraform/aws/app-infrastructure/kms) - Module for deploying a single AWS Key Management Service (KMS)
-6. [linkerd](terraform/aws/app-infrastructure/linkerd) - Module for deploying the Linkerd Helm chart in an EKS cluster
-7. [msk](terraform/aws/app-infrastructure/msk) - Module for deploying AWS Managed Streaming for Apache Kafka (MSK)
-8. [s3-bucket](terraform/aws/app-infrastructure/s3-bucket) - Module for deploying a single S3 bucket
-9. [vpc](terraform/aws/app-infrastructure/vpc) - Module for deploying a single Virtual Private Network (VPC)
-10. [vpc-endpoints-nbs](terraform/aws/app-infrastructure/vpc-endpoints-nbs) - Module for deploying a private endpoints required for AWS managed Prometheus and Grafana
+As explained further in the aforementioned "Deploy cloud infrastructure" section, the following directories are a starting point of code you can copy and revise to deploy the infrastructure for an NBS 7 environment to your cloud provider.
 
-### Samples
+- AWS: [terraform/aws/samples/](terraform/aws/samples/)
 
-Samples for quick deployments into a cloud environment.
+- Azure: [terraform/azure/samples/](terraform/azure/samples/)
 
-- [AWS Sample Deployment](terraform/aws/samples/NBS7_standard/) - a directory containing a sample deploy of the modernized infrastructure into an environment containing NBS6.
-  
+### Terraform layers
+
+Within the `samples/` folder listed above for your cloud provider, there is a folder for each Terraform layer. 
+
+Each layer uses, and thus depends on, resources from the previous layer; where the ordering of layers is specified by the number that each layer's folder name begins with. Thus provisioning a given layer requires that the resources provisioned by any prerequisite layer(s) must already exist.
+
+You do not necessarily need to use Terraform to provision every layer - you can skip running Terraform for any layer for which you have already provisioned those resources by some means other than Terraform.
+
 ## Public Domain Standard Notice
 This repository constitutes a work of the United States Government and is not
 subject to domestic copyright protection under 17 USC § 105. This repository is in

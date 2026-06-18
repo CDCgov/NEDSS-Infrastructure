@@ -5,14 +5,14 @@ variable "enabled" {
 }
 
 variable "parent_id" {
-  description = "The name of the existing resource group"
+  description = "The ID of the existing resource group where the VNet will be provisioned"
   type        = string
 }
 
 variable "vnet_location" {
-  description = "The Azure region (e.g., East US)"
+  description = "The Azure region"
   type        = string
-  default     = "East US"
+  default     = "eastus"
 }
 
 variable "vnet_name" {
@@ -22,13 +22,13 @@ variable "vnet_name" {
 }
 
 variable "resource_group_name" {
-  description = "The name of the resource group"
+  description = "The name of the existing resource group"
   type        = string
 }
 
 variable "address_space" {
   type        = list(string)
-  description = "Address space for the virtual network"
+  description = "Address space for the VNet"
 }
 
 variable "subnets" {
