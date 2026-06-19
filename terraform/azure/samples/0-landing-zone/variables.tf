@@ -12,6 +12,9 @@ variable "vnet_name" {
 variable "vnet_address_space" {
   type        = list(string)
   description = "Address space for the VNet"
+  # For guidance on determining what value to set for this variable, please search for "address space" on the following pages:
+  #  * https://learn.microsoft.com/en-us/azure/virtual-network/concepts-and-best-practices
+  #  * https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-faq
 }
 variable "vnet_location" {
   type        = string
@@ -26,8 +29,7 @@ variable "vnet_resource_group_name" {
 variable "vnet_resource_group_id" {
   type        = string
   description = "The ID of the resource group where the VNet will be deployed."
-  # Retrieve this value by in the Azure portal going to the "Resource groups" service, click the name of the Resource group you are specifying for 'vnet_resource_group_name', click 'JSON View', and
-  # see the value of the "id" field.
+  # Retrieve this value by in the Azure portal going to the "Resource groups" service, click the name of the Resource group you are specifying for 'vnet_resource_group_name', click 'JSON View', and use the value of the "id" field for this variable.
 }
 
 variable "private_dns_zone_enabled" {

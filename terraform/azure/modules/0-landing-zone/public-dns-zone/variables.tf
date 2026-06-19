@@ -1,6 +1,6 @@
 variable "enabled" {
   type        = bool
-  description = "Whether to enable the module"
+  description = "Whether to have Terraform provision the resources from this module in your Azure subscription"
   default     = true
 }
 

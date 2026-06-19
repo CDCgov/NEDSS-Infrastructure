@@ -1,11 +1,14 @@
-# See the commentary in ./variables.tf for more info.
+# Please refer to the commentary in ./variables.tf for more info about the variables below.
+
+# The README.md at the top level/folder of this repository has info about how you take a copy of this file and revise it. 
+# Unless otherwise specified below, replace each of the strings below in angle brackets (i.e. "<some-string>") with info about the NBS 7 environment you are using this Terraform code to provision the infrastructure for.
 
 # These vars are used at least by the vnet module:
-vnet_name          = "nbs7-<environment-name>"
-vnet_address_space = ["xx.x.x.x/xx"]
-# vnet_location            = "your-region" # Uncomment this line and specify a value if you want a different region than the one specified by the default value in ./variables.tf
-vnet_resource_group_name = "nbs7-<environment-name>"
-vnet_resource_group_id   = "/subscriptions/<your-subscription-id>/resourceGroups/<vnet_resource_group_name>"
+vnet_name          = "nbs7-<your_environment_name>"
+vnet_address_space = ["<your_value>"] # Specify the address space you want for your VNet - an example is something of the format (where each "x" is a digit): ["xx.x.x.x/xx"]
+# vnet_location            = "<your_region>" # Uncomment this line and specify a value if you want a different region than the one specified by the default value in ./variables.tf
+vnet_resource_group_name = "nbs7-<your_environment_name>"
+vnet_resource_group_id   = "/subscriptions/<your_Azure_subscription_id>/resourceGroups/<vnet_resource_group_name>" # Replace "<vnet_resource_group_name>" with a copy of the value you specify on the line above for that variable.
 
 # If you change a *_dns_zone_enabled variable below to false, then the corresponding *_domain_name variable below is unused (in which case you do not need to specify a value for it).
 
