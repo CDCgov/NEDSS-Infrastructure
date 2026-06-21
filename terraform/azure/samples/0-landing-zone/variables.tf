@@ -26,10 +26,10 @@ variable "vnet_resource_group_name" {
   type        = string
   description = "The name of the Resource group that you have already created in your Azure subscription for the NBS 7 environment that this Terraform layer provisions."
 }
-variable "vnet_resource_group_id" {
+
+variable "subscription_id" {
   type        = string
-  description = "The ID of the resource group where the VNet will be deployed."
-  # Retrieve this value by in the Azure portal going to the "Resource groups" service, click the name of the Resource group you are specifying for 'vnet_resource_group_name', click 'JSON View', and use the value of the "id" field for this variable.
+  description = "The Azure subscription id."
 }
 
 variable "private_dns_zone_enabled" {
