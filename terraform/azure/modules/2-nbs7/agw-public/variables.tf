@@ -1,3 +1,12 @@
+variable "enabled" {
+  description = <<EOT
+  Whether to have Terraform provision the resources from this module 
+  in your Azure subscription
+  EOT
+  type        = bool
+  default     = true
+}
+
 variable "resource_prefix" {
   description = "Prefix used for naming module resources"
   type        = string

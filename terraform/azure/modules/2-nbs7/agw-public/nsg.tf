@@ -6,9 +6,10 @@ locals {
 }
 
 resource "azurerm_network_security_group" "nsg" {
+  count               = var.enabled ? 1 : 0
   name                = "${var.resource_prefix}-nsg-public-agw"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg[0].name
+  location            = data.azurerm_resource_group.rg[0].location
 
   lifecycle {
     ignore_changes = [
@@ -30,7 +31,7 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_network_security_rule" "allow_agw_frontend_traffic" {
-  for_each          = local.authorized_ips
+  for_each          = var.enabled ? local.authorized_ips : {}
   name              = "Allow-Traffic-To-AGW-Frontends-${each.value}"
   priority          = 100 + each.value
   direction         = "Inbound"
@@ -43,15 +44,16 @@ resource "azurerm_network_security_rule" "allow_agw_frontend_traffic" {
   source_address_prefix = each.key
 
   destination_address_prefixes = [
-    azurerm_public_ip.agw_public_ip.ip_address,
+    azurerm_public_ip.agw_public_ip[0].ip_address,
     var.agw_private_ip
   ]
 
   resource_group_name         = var.agw_resource_group_name
-  network_security_group_name = azurerm_network_security_group.nsg.name
+  network_security_group_name = azurerm_network_security_group.nsg[0].name
 }
 
 resource "azurerm_network_security_rule" "allow_gateway_manager" {
+  count                       = var.enabled ? 1 : 0
   name                        = "Allow-GatewayManager-Inbound"
   priority                    = 150
   direction                   = "Inbound"
@@ -62,10 +64,11 @@ resource "azurerm_network_security_rule" "allow_gateway_manager" {
   source_address_prefix       = "GatewayManager"
   destination_address_prefix  = "*"
   resource_group_name         = var.agw_resource_group_name
-  network_security_group_name = azurerm_network_security_group.nsg.name
+  network_security_group_name = azurerm_network_security_group.nsg[count.index].name
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsg_subnet_association" {
-  subnet_id                 = data.azurerm_subnet.agw_subnet.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
+  count                     = var.enabled ? 1 : 0
+  subnet_id                 = data.azurerm_subnet.agw_subnet[0].id
+  network_security_group_id = azurerm_network_security_group.nsg[count.index].id
 }

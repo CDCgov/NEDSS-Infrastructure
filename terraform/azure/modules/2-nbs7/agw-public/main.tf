@@ -27,9 +27,10 @@ locals {
 }
 
 resource "azurerm_public_ip" "agw_public_ip" {
+  count               = var.enabled ? 1 : 0
   name                = "${var.resource_prefix}-agw-public-ip"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg[0].name
+  location            = data.azurerm_resource_group.rg[0].location
   allocation_method   = "Static"
   sku                 = "Standard"
   lifecycle {
@@ -55,9 +56,10 @@ resource "azurerm_public_ip" "agw_public_ip" {
 
 # Create Managed Identity to allow AGW to read Certificate from KeyVault
 resource "azurerm_user_assigned_identity" "agw_mi" {
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  count               = var.enabled ? 1 : 0
   name                = "${var.resource_prefix}-agw-public-mi"
+  resource_group_name = data.azurerm_resource_group.rg[0].name
+  location            = data.azurerm_resource_group.rg[0].location
   lifecycle {
     ignore_changes = [
       tags["business_steward"],
@@ -79,34 +81,32 @@ resource "azurerm_user_assigned_identity" "agw_mi" {
 }
 
 resource "azurerm_key_vault_access_policy" "agw_mi_policy" {
-  depends_on         = [azurerm_user_assigned_identity.agw_mi]
-  key_vault_id       = data.azurerm_key_vault.key_vault.id
+  count              = var.enabled ? 1 : 0
+  key_vault_id       = data.azurerm_key_vault.key_vault[0].id
   tenant_id          = data.azurerm_client_config.current.tenant_id
-  object_id          = azurerm_user_assigned_identity.agw_mi.principal_id
+  object_id          = azurerm_user_assigned_identity.agw_mi[count.index].principal_id
   secret_permissions = ["Get", "List"]
+
+  depends_on = [azurerm_user_assigned_identity.agw_mi]
 }
 
 resource "azurerm_role_assignment" "agw" {
-  count                = var.role_based_kv ? 1 : 0
-  scope                = data.azurerm_key_vault.key_vault.id
+  count                = var.enabled && var.role_based_kv ? 1 : 0
+  scope                = data.azurerm_key_vault.key_vault[0].id
   role_definition_name = var.agw_role_definition_name
-  principal_id         = azurerm_user_assigned_identity.agw_mi.principal_id
+  principal_id         = azurerm_user_assigned_identity.agw_mi[count.index].principal_id
 }
 
 
 resource "azurerm_application_gateway" "agw_public" {
-  name = "${var.resource_prefix}-agw-public"
-  depends_on = [
-    azurerm_public_ip.agw_public_ip,
-    azurerm_key_vault_access_policy.agw_mi_policy,
-    azurerm_user_assigned_identity.agw_mi
-  ]
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
+  count               = var.enabled ? 1 : 0
+  name                = "${var.resource_prefix}-agw-public"
+  resource_group_name = data.azurerm_resource_group.rg[0].name
+  location            = data.azurerm_resource_group.rg[0].location
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.agw_mi.id]
+    identity_ids = [azurerm_user_assigned_identity.agw_mi[count.index].id]
   }
 
   sku {
@@ -117,7 +117,7 @@ resource "azurerm_application_gateway" "agw_public" {
 
   gateway_ip_configuration {
     name      = "${var.resource_prefix}-agw-ip-configuration"
-    subnet_id = data.azurerm_subnet.agw_subnet.id
+    subnet_id = data.azurerm_subnet.agw_subnet[0].id
   }
 
   # ---------------------------------------------------------------
@@ -125,14 +125,14 @@ resource "azurerm_application_gateway" "agw_public" {
   # ---------------------------------------------------------------
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name_public
-    public_ip_address_id = azurerm_public_ip.agw_public_ip.id
+    public_ip_address_id = azurerm_public_ip.agw_public_ip[count.index].id
   }
 
   frontend_ip_configuration {
     name                          = local.frontend_ip_configuration_name_private
     private_ip_address            = var.agw_private_ip
     private_ip_address_allocation = "Static"
-    subnet_id                     = data.azurerm_subnet.agw_subnet.id
+    subnet_id                     = data.azurerm_subnet.agw_subnet[0].id
   }
 
   # Shared ports
@@ -151,7 +151,7 @@ resource "azurerm_application_gateway" "agw_public" {
   # ---------------------------------------------------------------
   ssl_certificate {
     name                = local.cert_name_public
-    key_vault_secret_id = data.azurerm_key_vault_secret.agw_key_vault_cert_public.id
+    key_vault_secret_id = data.azurerm_key_vault_secret.agw_key_vault_cert_public[0].id
   }
 
   dynamic "ssl_certificate" {
@@ -344,6 +344,13 @@ resource "azurerm_application_gateway" "agw_public" {
       }
     }
   }
+
+  depends_on = [
+    azurerm_public_ip.agw_public_ip[0],
+    azurerm_key_vault_access_policy.agw_mi_policy[0],
+    azurerm_user_assigned_identity.agw_mi
+  ]
+
 
   lifecycle {
     ignore_changes = [
