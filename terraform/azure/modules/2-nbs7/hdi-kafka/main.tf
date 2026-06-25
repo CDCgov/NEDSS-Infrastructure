@@ -41,7 +41,7 @@ resource "azurerm_storage_account" "kafka_storage_account" {
 resource "azurerm_storage_container" "hdi_kafka_storage_container" {
   count                 = var.enabled ? 1 : 0
   name                  = "${var.resource_prefix}-hdinsight-kafka-cluster-data"
-  storage_account_id    = azurerm_storage_account.kafka_storage_account[count.index].id
+  storage_account_name  = azurerm_storage_account.kafka_storage_account[count.index].name
   container_access_type = var.container_access_type
 }
 
