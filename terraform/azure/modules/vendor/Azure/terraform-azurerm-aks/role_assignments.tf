@@ -90,21 +90,6 @@ resource "azurerm_role_assignment" "application_gateway_byo_vnet_network_contrib
   }
 }
 
-resource "azurerm_role_assignment" "existing_application_gateway_contributor" {
-  count = var.create_role_assignments_for_application_gateway && local.use_brown_field_gw_for_ingress ? 1 : 0
-
-  principal_id         = azurerm_kubernetes_cluster.main.ingress_application_gateway[0].ingress_application_gateway_identity[0].object_id
-  scope                = var.brown_field_application_gateway_for_ingress.id
-  role_definition_name = "Contributor"
-
-  lifecycle {
-    precondition {
-      condition     = var.brown_field_application_gateway_for_ingress == null ? true : data.azurerm_client_config.this.subscription_id == local.existing_application_gateway_subscription_id_for_ingress
-      error_message = "Application Gateway must be in the same subscription, or `var.create_role_assignments_for_application_gateway` must be set to `false`."
-    }
-  }
-}
-
 data "azurerm_resource_group" "ingress_gw" {
   count = var.create_role_assignments_for_application_gateway && local.use_brown_field_gw_for_ingress ? 1 : 0
 
