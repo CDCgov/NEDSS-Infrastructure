@@ -34,7 +34,7 @@ variable "agw_key_vault_cert_name" {
 }
 
 variable "agw_backend_host" {
-  description = "URL Expected by NGINX Ingress"
+  description = "URL Expected by Traefik Ingress"
   type        = string
 }
 

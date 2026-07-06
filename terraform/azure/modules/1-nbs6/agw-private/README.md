@@ -40,7 +40,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_agw_aci_ip"></a> [agw\_aci\_ip](#input\_agw\_aci\_ip) | ACI IP(s) List | `list(any)` | n/a | yes |
-| <a name="input_agw_backend_host"></a> [agw\_backend\_host](#input\_agw\_backend\_host) | URL Expected by NGINX Ingress | `string` | n/a | yes |
+| <a name="input_agw_backend_host"></a> [agw\_backend\_host](#input\_agw\_backend\_host) | URL Expected by Traefik Ingress | `string` | n/a | yes |
 | <a name="input_agw_key_vault_cert_name"></a> [agw\_key\_vault\_cert\_name](#input\_agw\_key\_vault\_cert\_name) | Key Vault Certificate Name | `string` | n/a | yes |
 | <a name="input_agw_key_vault_cert_rg"></a> [agw\_key\_vault\_cert\_rg](#input\_agw\_key\_vault\_cert\_rg) | Key Vault Certificate Resource Group | `string` | n/a | yes |
 | <a name="input_agw_key_vault_name"></a> [agw\_key\_vault\_name](#input\_agw\_key\_vault\_name) | Key Vault Name | `string` | n/a | yes |
