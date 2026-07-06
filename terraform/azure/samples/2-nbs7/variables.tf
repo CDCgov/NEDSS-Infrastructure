@@ -1,18 +1,22 @@
-## AGW Public
-variable "agw_resource_prefix" {
-  description = "Prefix used for naming all resources"
+#### Used by multiple modules: ####
+
+variable "vnet_name" {
+  description = "Name of the VNet created by Layer 0"
   type        = string
 }
 
-variable "agw_resource_group_name" {
+variable "vnet_resource_group_name" {
   description = "The name of the resource group"
   type        = string
 }
 
-variable "agw_vnet_name" {
-  description = "Name of vNet"
+variable "environment_name" {
+  description = "The name of the NBS 7 environment"
   type        = string
 }
+
+
+## AGW Public
 
 variable "agw_subnet_name" {
   description = "Subnet to deploy App Gateway in"
@@ -51,11 +55,6 @@ variable "agw_nsg_akamai_ips" {
 
 ## AKS
 
-variable "aks_modern_resource_group_name" {
-  type        = string
-  description = "This defines the modern resource group name"
-}
-
 variable "aks_k8_cluster_name" {
   type        = string
   description = "This defines the name for the k8 cluster"
@@ -68,11 +67,6 @@ variable "aks_k8_cluster_version" {
 
 variable "aks_modern_subnet" {
   type = list(any)
-}
-
-variable "aks_resource_prefix" {
-  type        = string
-  description = "Name to be used on all the resources as identifier. e.g. Project name, Application name"
 }
 
 variable "aks_rbac_aad_admin_group_object_ids" {
@@ -117,10 +111,6 @@ variable "kafka_password" {
   sensitive = true
 }
 
-variable "kafka_vnet_name" {
-  type = string
-}
-
 variable "kafka_vnet_rg" {
   type = string
 }
@@ -136,13 +126,6 @@ variable "kafka_infrastructure_encryption_enabled" {
 
 
 ## Observability
-
-variable "observability_resource_group_name" {
-  type        = string
-  description = "Resource group name for existing and to be deployed azure resources"
-
-}
-
 variable "observability_cluster_name" {
   type        = string
   description = "Name of AKS cluster for which monitoring will be set up"
@@ -151,12 +134,6 @@ variable "observability_cluster_name" {
 
 
 ## Private DNS Zone
-
-variable "private_dns_resource_group_name" {
-  type        = string
-  description = "Resource group name for existing and to be deployed azure resources"
-}
-
 variable "private_dns_virtual_network_name" {
   type        = list(string)
   description = "StringList of virtual network names to be associated as a virtual network link for the private dns zone."
@@ -164,12 +141,6 @@ variable "private_dns_virtual_network_name" {
 
 
 ## Storage Account
-
-variable "storage_account_resource_group_name" {
-  type        = string
-  description = "Resource group name for existing and to be deployed azure resources"
-
-}
 
 variable "storage_account_subnet_name" {
   type        = string
