@@ -22,27 +22,14 @@ variable "msi_id" {
   default     = null
 }
 
-/*
-variable "k8_admin_username" {
-  type        = string
-  description = "The admin username for the aks cluster."
-  default     = "cdcnbsadmin"
-}
-*/
 
-/*
-#Server Principal Name for Data Source
-variable "azuread_service_principal_display_name" {
-  type        = string
-  description = "Azure AD Service Principal Display Name"
-}
-*/
-
-#K8 cluster variables
 variable "modern_resource_group_name" {
   type        = string
   description = "This defines the modern resource group name"
 }
+
+
+# K8s cluster variables:
 
 variable "k8_cluster_name" {
   type        = string
@@ -60,15 +47,8 @@ variable "k8_cluster_location" {
   default     = "East US"
 }
 
-/*
-variable "k8_dns_prefix" {
-  type = string
-  description = "This defines the k8 dns prefix"
-}
-*/
 
-
-#k8 node pool variables
+# K8s node pool variables:
 
 variable "default_node_pool_name" {
   type        = string
@@ -128,6 +108,8 @@ variable "node_pool_load_balancer_sku" {
   default     = "standard"
 }
 
+
+
 variable "network_profile_pod_cidr" {
   type        = string
   description = "This defines the default value for pod CIDR"
@@ -160,13 +142,6 @@ variable "identity_type" {
   default     = "UserAssigned"
 
 }
-
-/*
-variable "service_principal_client_secret" {
-  type = string
-  description = "This defines service principal client secret"
-}
-*/
 
 variable "user_node_pool_name" {
   type        = string
