@@ -21,8 +21,8 @@ module "cert_manager_cni_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
   version = ">=6.2.3, <7.0.0"
 
-  create                     = var.enable_cert_manager
   name                       = "${local.eks_name}-cert-manager-cni" #defined in main.tf
+  create                     = var.enable_cert_manager
   attach_cert_manager_policy = true
 
   oidc_providers = {
