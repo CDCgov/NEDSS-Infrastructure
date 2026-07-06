@@ -1,5 +1,5 @@
 module "agw_public" {
-  source = "../../modules/1-nbs7/agw-public"
+  source = "../../modules/2-nbs7/agw-public"
 
   agw_aks_ip              = var.agw_aks_ip
   agw_backend_host        = var.agw_backend_host
@@ -11,5 +11,4 @@ module "agw_public" {
   agw_vnet_name           = var.agw_vnet_name
   nsg_akamai_ips          = var.agw_nsg_akamai_ips
   resource_prefix         = var.agw_resource_prefix
-
 }
