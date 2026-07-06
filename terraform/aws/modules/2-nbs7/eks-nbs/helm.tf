@@ -102,6 +102,7 @@ resource "helm_release" "argocd" {
 
 # create cert manager release
 resource "helm_release" "cert_manager" {
+  count            = var.enable_cert_manager ? 1 : 0
   provider         = helm
   name             = "cert-manager"
   namespace        = "cert-manager"
@@ -120,7 +121,7 @@ resource "helm_release" "cert_manager" {
     # Set values for OIDC
     {
       name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-      value = module.cert_manager_cni_irsa_role.arn
+      value = module.cert_manager_cni_irsa_role[count.index].arn
     },
     {
       name  = "securityContext.fsGroup"
