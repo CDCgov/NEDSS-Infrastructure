@@ -46,7 +46,6 @@
 | <a name="input_existing_modern_subnet_name"></a> [existing\_modern\_subnet\_name](#input\_existing\_modern\_subnet\_name) | Name of the existing aks subnet | `string` | `""` | no |
 | <a name="input_identity_type"></a> [identity\_type](#input\_identity\_type) | This defines the default value for identity type | `string` | `"UserAssigned"` | no |
 | <a name="input_k8_cluster_location"></a> [k8\_cluster\_location](#input\_k8\_cluster\_location) | This defines the default location for the k8 cluster | `string` | `"East US"` | no |
-| <a name="input_k8_cluster_name"></a> [k8\_cluster\_name](#input\_k8\_cluster\_name) | This defines the name for the k8 cluster | `string` | n/a | yes |
 | <a name="input_k8_cluster_version"></a> [k8\_cluster\_version](#input\_k8\_cluster\_version) | This defines the version of the k8 cluster | `string` | n/a | yes |
 | <a name="input_modern_resource_group_name"></a> [modern\_resource\_group\_name](#input\_modern\_resource\_group\_name) | This defines the modern resource group name | `string` | n/a | yes |
 | <a name="input_modern_subnet"></a> [modern\_subnet](#input\_modern\_subnet) | n/a | `list(any)` | `[]` | no |

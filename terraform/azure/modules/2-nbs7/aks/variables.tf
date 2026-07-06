@@ -25,11 +25,6 @@ variable "modern_resource_group_name" {
 
 # K8s cluster variables:
 
-variable "k8_cluster_name" {
-  type        = string
-  description = "This defines the name for the k8 cluster"
-}
-
 variable "k8_cluster_version" {
   type        = string
   description = "This defines the version of the k8 cluster"

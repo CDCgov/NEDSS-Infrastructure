@@ -1,7 +1,6 @@
 module "aks_nbs7" {
   source = "../../modules/2-nbs7/aks"
 
-  k8_cluster_name                 = var.aks_k8_cluster_name
   k8_cluster_version              = var.aks_k8_cluster_version
   modern_resource_group_name      = var.vnet_resource_group_name
   modern_subnet                   = var.aks_modern_subnet

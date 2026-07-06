@@ -16,7 +16,7 @@ module "aks" {
   source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/azure/modules/vendor/Azure/terraform-azurerm-aks/?depth=1&ref=v1.2.48"
 
   resource_group_name         = data.azurerm_resource_group.rg.name
-  cluster_name                = var.k8_cluster_name
+  cluster_name                = "${var.resource_prefix}-aks"
   location                    = var.k8_cluster_location
   kubernetes_version          = var.k8_cluster_version
   prefix                      = var.resource_prefix

@@ -55,11 +55,6 @@ variable "agw_nsg_akamai_ips" {
 
 ## AKS
 
-variable "aks_k8_cluster_name" {
-  type        = string
-  description = "This defines the name for the k8 cluster"
-}
-
 variable "aks_k8_cluster_version" {
   type        = string
   description = "This defines the version of the k8 cluster"
