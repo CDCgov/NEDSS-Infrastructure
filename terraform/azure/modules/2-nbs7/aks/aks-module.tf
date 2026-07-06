@@ -13,7 +13,7 @@ resource "azurerm_user_assigned_identity" "aks" {
 }
 
 module "aks" {
-  source  = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/azure/modules/vendor/Azure/terraform-azurerm-aks/?depth=1&ref=v1.2.48"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/azure/modules/vendor/Azure/terraform-azurerm-aks/?depth=1&ref=v1.2.48"
 
   resource_group_name         = data.azurerm_resource_group.rg.name
   cluster_name                = var.k8_cluster_name

@@ -165,8 +165,8 @@ variable "kms_key_enable_default_policy" {
 
 variable "enable_cert_manager" {
   description = "Create cert-manager helm release and associated IAM role"
-  type = bool
-  default = true
+  type        = bool
+  default     = true
 }
 
 variable "cert_manager_hosted_zone_arns" {
