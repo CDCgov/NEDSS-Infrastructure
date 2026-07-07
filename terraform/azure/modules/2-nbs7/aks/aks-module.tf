@@ -40,7 +40,6 @@ module "aks" {
   identity_type                     = var.identity_type
   log_analytics_workspace_enabled   = false
   os_sku                            = var.os_sku
-  # node_pools                        = merge(local.node_pools_default, var.node_pools) # TO-DO does this line need to be uncommented?
 
   # Required to be set for integration with monitor/prometheus/grafana, though values are not required to be null.
   monitor_metrics = {

@@ -102,6 +102,7 @@ resource "helm_release" "argocd" {
 
 # create cert manager release
 resource "helm_release" "cert_manager" {
+  count            = var.enable_cert_manager ? 1 : 0
   provider         = helm
   name             = "cert-manager"
   namespace        = "cert-manager"
