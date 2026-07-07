@@ -59,6 +59,21 @@ variable "agw_nsg_akamai_ips" {
   type        = list(string)
 }
 
+variable "agw_public_hostname" {
+  description = "The public FQDN mapped to the Application Gateway public listener."
+  type        = string
+}
+
+variable "agw_private_ip" {
+  description = "The static private IP address assigned to the Application Gateway frontend configuration."
+  type        = string
+}
+
+variable "agw_private_hostname" {
+  description = "The private FQDN mapped to the Application Gateway private listener"
+  type        = string
+}
+
 ## AKS
 
 variable "aks_k8_cluster_version" {

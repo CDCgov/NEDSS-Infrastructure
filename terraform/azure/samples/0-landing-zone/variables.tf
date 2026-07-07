@@ -68,3 +68,16 @@ variable "keyvault_role_assignments" {
   }))
   default = {}
 }
+
+variable "subnet__public_gateways__address_prefixes" {
+  type = list(string)
+}
+variable "subnet__aks__address_prefixes" {
+  type = list(string)
+}
+variable "subnet__hdikafka__address_prefixes" {
+  type = list(string)
+}
+variable "subnet__endpoint__address_prefixes" {
+  type = list(string)
+}

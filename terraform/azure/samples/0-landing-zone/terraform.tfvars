@@ -24,6 +24,7 @@ private_domain_name      = "az.<your_STLT_name>nbs.com"
 #keyvault_firewall_ip_rules = [] # List of IPv4 addresses or CIDR ranges allowed through the Key Vault firewall.
 #keyvault_role_assignments = {} # Map of Azure RBAC role assignments for the Key Vault data plane.
 
+# Set each of these variables to the address_prefixes to be used for the given subnet that will be provisioned.
 subnet__public_gateways__address_prefixes = ["00.0.00.0/00"]
 subnet__aks__address_prefixes             = ["00.0.00.0/00"]
 subnet__hdikafka__address_prefixes        = ["00.0.00.0/00"]
