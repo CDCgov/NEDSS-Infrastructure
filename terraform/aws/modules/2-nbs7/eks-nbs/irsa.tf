@@ -130,3 +130,70 @@ resource "aws_iam_policy" "datacompare_irsa_policy" {
     ]
   })
 }
+
+# ──────────────────────────────────────────────────────────
+# Cluster Autoscaler IRSA
+# ──────────────────────────────────────────────────────────
+
+module "cluster_autoscaler_irsa_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts"
+  version = ">=6.2.3, <7.0.0"
+
+  name   = "${local.eks_name}-cluster-autoscaler"
+  create = var.create_cluster_autoscaler_irsa
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:cluster-autoscaler-aws-cluster-autoscaler"]
+    }
+  }
+
+  policies = {
+    policy = try(aws_iam_policy.cluster_autoscaler_irsa_policy[0].arn, null)
+  }
+}
+
+resource "aws_iam_policy" "cluster_autoscaler_irsa_policy" {
+  count       = var.create_cluster_autoscaler_irsa ? 1 : 0
+  name        = "${local.eks_name}-cluster-autoscaler-policy"
+  description = "Cluster Autoscaler permissions for EKS node group scaling"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "ClusterAutoscalerDescribe"
+        Effect = "Allow"
+        Action = [
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeScalingActivities",
+          "autoscaling:DescribeTags",
+          "ec2:DescribeImages",
+          "ec2:DescribeInstanceTypes",
+          "ec2:DescribeLaunchTemplateVersions",
+          "ec2:GetInstanceTypesFromInstanceRequirements",
+          "eks:DescribeNodegroup"
+        ]
+        Resource = ["*"]
+      },
+      {
+        Sid    = "ClusterAutoscalerScale"
+        Effect = "Allow"
+        Action = [
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup"
+        ]
+        Resource = ["*"]
+        Condition = {
+          StringEquals = {
+            "aws:ResourceTag/k8s.io/cluster-autoscaler/enabled"                  = "true"
+            "aws:ResourceTag/k8s.io/cluster-autoscaler/${var.cluster_autoscaler_cluster_name}" = "owned"
+          }
+        }
+      }
+    ]
+  })
+}
