@@ -53,3 +53,18 @@ variable "public_domain_name" {
   description = "The name of the public DNS zone (if one is to be provisioned by Terraform)"
   default     = ""
 }
+
+variable "keyvault_firewall_ip_rules" {
+  type    = list(string)
+  default = []
+}
+
+variable "keyvault_role_assignments" {
+  type = map(object({
+    principal_id   = string
+    role           = string
+    principal_type = optional(string)
+    description    = optional(string)
+  }))
+  default = {}
+}
