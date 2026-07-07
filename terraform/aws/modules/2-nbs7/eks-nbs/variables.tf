@@ -163,6 +163,12 @@ variable "kms_key_enable_default_policy" {
   default     = false
 }
 
+variable "enable_cert_manager" {
+  description = "Create cert-manager helm release and associated IAM role"
+  type        = bool
+  default     = true
+}
+
 variable "cert_manager_hosted_zone_arns" {
   description = "ARNs for Route 53 hosted zones that Cert Manager can access"
   type        = list(string)
