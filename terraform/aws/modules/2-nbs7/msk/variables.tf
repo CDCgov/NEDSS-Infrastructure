@@ -70,5 +70,5 @@ variable "cidr_blocks" {
 variable "kafka_version" {
   description = "Version of Kafka to be deployed in cluster"
   type        = string
-  default     = "3.9.0"
+  default     = "3.9.x"
 }
