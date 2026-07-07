@@ -27,3 +27,15 @@ variable "vnet_name" {
   type        = string
   description = "vnet name"
 }
+
+variable "dns_records" {
+  description = "A map of DNS records to create"
+  type = map(object({
+    record_name  = string
+    record_type  = string
+    ttl          = optional(number, 300)
+    records      = optional(list(string))
+    cname_record = optional(string)
+  }))
+  default = {}
+}

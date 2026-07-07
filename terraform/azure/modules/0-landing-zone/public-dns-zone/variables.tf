@@ -23,3 +23,15 @@ variable "public_domain_name" {
     error_message = "public_domain_name must have a value if module is enabled"
   }
 }
+
+variable "dns_records" {
+  description = "A map of DNS records to create"
+  type = map(object({
+    record_name  = string
+    record_type  = string
+    ttl          = optional(number, 300)
+    records      = optional(list(string))
+    cname_record = optional(string)
+  }))
+  default = {}
+}
