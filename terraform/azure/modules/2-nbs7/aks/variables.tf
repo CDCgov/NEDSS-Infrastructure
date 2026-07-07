@@ -177,7 +177,7 @@ variable "existing_modern_subnet_name" {
   default     = ""
 
   validation {
-    condition     = !var.create_modern_subnet && var.existing_modern_subnet_name != ""
+    condition     = !var.create_modern_subnet || var.existing_modern_subnet_name != ""
     error_message = "existing_modern_subnet_name must be provided if create_modern_subnet is set to true"
   }
 }
