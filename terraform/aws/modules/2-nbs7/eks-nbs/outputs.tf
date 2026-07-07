@@ -46,5 +46,5 @@ output "otel_collector_role_arn" {
 
 output "cluster_autoscaler_irsa_role_arn" {
   description = "ARN of the Cluster Autoscaler IRSA role"
-  value       = var.create_cluster_autoscaler_irsa ? module.cluster_autoscaler_irsa_role.iam_role_arn : null
+  value       = var.create_cluster_autoscaler_irsa ? module.cluster_autoscaler_irsa_role.arn : null
 }
