@@ -33,8 +33,13 @@ variable "agw_key_vault_cert_rg" {
   type        = string
 }
 
-variable "agw_key_vault_cert_name" {
-  description = "Key Vault Certificate Name"
+variable "agw_key_vault_cert_name_public" {
+  description = "Name of the Key Vault secret that stores the public certificate"
+  type        = string
+}
+
+variable "agw_key_vault_cert_name_private" {
+  description = "Name of the Key Vault secret that stores the private certificate"
   type        = string
 }
 

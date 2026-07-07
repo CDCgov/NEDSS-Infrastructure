@@ -9,4 +9,12 @@ vnet_resource_group_name = "nbs7-<your_STLT_name>-<your_environment_name>" # The
 
 environment_name = "<your_environment_name>"
 
+# These existing certificates must already be created in the Key vault that was provisioned by Layer 0:
+agw_key_vault_cert_name_public  = "az-<your_STLT_name>nbs-wildcard-cert-secret"
+agw_key_vault_cert_name_private = "az-<your_STLT_name>nbs-wildcard-cert-private"
+
+agw_public_hostname  = "app-<your_environment_name>.az.<your_STLT_name>nbs.com"
+agw_private_ip       = "00.0.00.00"
+agw_private_hostname = "classic-<your_environment_name>.az.<your_STLT_name>nbs.com"
+
 # [NOTE: The rest of the contents of this file needs to be filled in yet.]
