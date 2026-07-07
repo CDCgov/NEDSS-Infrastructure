@@ -22,7 +22,7 @@ module "cert_manager_cni_irsa_role" {
   version = ">=6.2.3, <7.0.0"
 
   name                       = "${local.eks_name}-cert-manager-cni" #defined in main.tf
-  create                     = true
+  create                     = var.enable_cert_manager
   attach_cert_manager_policy = true
 
   oidc_providers = {
