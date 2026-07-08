@@ -25,4 +25,15 @@ agw_public_hostname  = "app-<your_environment_name>.az.<your_STLT_name>nbs.com"
 agw_private_ip       = "00.0.00.00"
 agw_private_hostname = "classic-<your_environment_name>.az.<your_STLT_name>nbs.com"
 
+################################################################################
+
+# Uncomment these variables if you wish to use a different version than the default value in ./variables.tf for these variables:
+
+# The control plane version of the Kubernetes cluster in AKS:
+#kubernetes_version_control_plane = "<your_desired_Kubernetes_minor_version>"
+# The orchestrator_version of the cluster's default_node_pool:
+#kubernetes_default_node_pool_orchestrator_version =  = "<your_desired_Kubernetes_minor_version>"
+
+################################################################################
+
 # [NOTE: The rest of the contents of this file needs to be filled in yet.]

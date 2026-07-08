@@ -49,9 +49,10 @@ variable "readonly_role_arns" {
   default     = []
 }
 
-variable "cluster_version" {
-  description = "Version of the AWS EKS cluster to provision"
+variable "kubernetes_version_control_plane" {
+  description = "Desired Kubernetes version for control plane in EKS cluster"
   default     = "1.35"
+  nullable    = false
 }
 
 variable "desired_nodes_count" {
@@ -72,10 +73,17 @@ variable "min_nodes_count" {
   default     = 3
 }
 
+variable "kubernetes_version_node_group" {
+  description = "Kubernetes version for node group in EKS cluster"
+  default     = "1.35"
+  nullable    = false
+}
+
 variable "ami_release_version" {
   description = "The AMI release version for the Node Group of the EKS cluster"
   type        = string
   default     = "1.35.4-20260423"
+  nullable    = false
 
   # This variable allows the user of this module to pin an "AMI release version" to be specified for the Node Group of their EKS cluster. If this variable is null, then every few weeks whenever AWS releases a new version of the AMI then for the user's Terraform code a `terraform plan` will report a change to their Node Group to the new AMI version.
 
@@ -93,7 +101,7 @@ variable "ami_release_version" {
   # Another way to get the latest recommended AMI is to look at: https://github.com/awslabs/amazon-eks-ami/blob/main/CHANGELOG.md
 
   # To summarize, for simplicity and ease of use (e.g. so users can have predictable and controlled output for their `terraform plan` commands) it is recommended:
-  # * that when you are writing new code to use this module, that you get the Release version of the latest recommended AMI for the version of Kubernetes you're using (i.e. the kubernetes_version variable above) and specify that Release version as the value you provide for this ami_release_version variable,
+  # * that when you are writing new code to use this module, that you get the Release version of the latest recommended AMI for the version of Kubernetes you're using (i.e. the kubernetes_version_control_plane variable above) and specify that Release version as the value you provide for this ami_release_version variable,
   # * and then going forward from there that you occasionally step-up to new AMI versions at least frequently enough to avoid using a version that has become deprecated.
 }
 
@@ -175,7 +183,7 @@ variable "cert_manager_hosted_zone_arns" {
 }
 
 variable "addons" {
-  description = "Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name`"
+  description = "Map of cluster addon configurations to enable for the cluster. Addon name can be the map keys or set with `name`."
   type = map(object({
     name                 = optional(string) # will fall back to map key
     before_compute       = optional(bool, false)
@@ -204,6 +212,7 @@ variable "addons" {
       before_compute = true
     }
   }
+  nullable = false
 }
 
 # OTEL Collector optional service

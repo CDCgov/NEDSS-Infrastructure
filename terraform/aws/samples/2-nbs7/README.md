@@ -92,7 +92,10 @@ this include modifying security groups to allow operations involving the databas
 | eks_subnets | Override to use a desired subnets, default = use available subnets | `null` |
 | eks_disk_size | Size of EKS volumes in GB | `100` |
 | external_cidr_blocks | List of cidr blocks to add to security groups, e.g. vpn, admin | `[]` |
-| eks_cluster_version | Version of eks cluster | `1.32` |
+| kubernetes_version_control_plane | Desired Kubernetes version for control plane in EKS cluster | n/a |
+| kubernetes_version_node_group | Kubernetes version for node group in EKS cluster | n/a |
+| kubernetes_ami_release_version | AMI version of the EKS Node Group | n/a |
+| kubernetes_addons | Map of cluster addon configurations to enable for the cluster | n/a |
 | eks_instance_type | Instance type to use in EKS cluster | `m5.large` |
 | eks_desired_nodes_count | Number of EKS nodes desired | `3` |
 | eks_max_nodes_count | Maximum number of EKS nodes | `5` |

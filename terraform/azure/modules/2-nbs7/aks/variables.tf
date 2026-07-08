@@ -27,7 +27,7 @@ variable "modern_resource_group_name" {
 
 variable "k8_cluster_version" {
   type        = string
-  description = "This defines the version of the k8 cluster"
+  description = "Which Kubernetes release to use for the K8s cluster"
 }
 
 variable "k8_cluster_location" {
@@ -43,6 +43,11 @@ variable "default_node_pool_name" {
   type        = string
   description = "This defines the default node pool names"
   default     = "systempool"
+}
+
+variable "k8_orchestrator_version" {
+  type        = string
+  description = "Which Kubernetes release to use for the nodes/agents in the default node pool of the K8s cluster"
 }
 
 variable "node_pool_vm_size" {
