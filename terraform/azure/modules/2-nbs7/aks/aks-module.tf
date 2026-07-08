@@ -13,13 +13,13 @@ resource "azurerm_user_assigned_identity" "aks" {
 }
 
 module "aks" {
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/azure/modules/vendor/Azure/terraform-azurerm-aks/?depth=1&ref=v1.2.48"
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/azure/modules/vendor/Azure/terraform-azurerm-aks/?depth=1&ref=v1.2.48" # TO-DO change this ref to v7.13.0
 
   resource_group_name         = data.azurerm_resource_group.rg.name
-  cluster_name                = var.k8_cluster_name
+  cluster_name                = "${var.resource_prefix}-aks"
   location                    = var.k8_cluster_location
   kubernetes_version          = var.k8_cluster_version
-  prefix                      = "prefix"
+  prefix                      = var.resource_prefix
   agents_availability_zones   = var.node_pool_zones
   auto_scaler_profile_enabled = true
   agents_min_count            = var.node_pool_min_count
@@ -40,7 +40,6 @@ module "aks" {
   identity_type                     = var.identity_type
   log_analytics_workspace_enabled   = false
   os_sku                            = var.os_sku
-  # node_pools                        = merge(local.node_pools_default, var.node_pools)
 
   # Required to be set for integration with monitor/prometheus/grafana, though values are not required to be null.
   monitor_metrics = {
@@ -64,5 +63,3 @@ module "aks" {
   }
   */
 }
-
-

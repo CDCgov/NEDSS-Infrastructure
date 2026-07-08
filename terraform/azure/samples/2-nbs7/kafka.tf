@@ -10,7 +10,6 @@ module "kafka" {
   sg_name              = var.kafka_sg_name
   storage_account_name = var.kafka_storage_account_name
   username             = var.kafka_username
-  vnet_name            = var.kafka_vnet_name
+  vnet_name            = var.vnet_name
   vnet_rg              = var.kafka_vnet_rg
 }
-
