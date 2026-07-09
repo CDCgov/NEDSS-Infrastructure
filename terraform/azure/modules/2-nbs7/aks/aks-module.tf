@@ -47,20 +47,4 @@ module "aks" {
     annotations_allowed = null
     labels_allowed      = null
   }
-
-
-  #disk_encryption_set_id = azurerm_key_vault_secret.new.id
-
-
-  /*  addon_profile {
-    oms_agent {
-      enabled                    = true
-      log_analytics_workspace_id = "your-log-analytics-workspace-id"
-    }
-  } */
-  /*
-  tags = {
-    Environment = "EQ-Dev"
-  }
-  */
 }
