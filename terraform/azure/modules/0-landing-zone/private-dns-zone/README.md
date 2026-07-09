@@ -14,7 +14,9 @@
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+| ---- | ------ | ------- |
+| <a name="module_dns_records"></a> [dns\_records](#module\_dns\_records) | ./modules/dns-record | n/a |
 
 ## Resources
 
@@ -28,6 +30,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_dns_records"></a> [dns\_records](#input\_dns\_records) | A map of DNS records to create | <pre>map(object({<br/>    record_name  = string<br/>    record_type  = string<br/>    ttl          = optional(number, 300)<br/>    records      = optional(list(string))<br/>    cname_record = optional(string)<br/>  }))</pre> | `{}` | no |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Whether to have Terraform provision the resources from this module in your Azure subscription | `bool` | `true` | no |
 | <a name="input_private_dns_zone_name"></a> [private\_dns\_zone\_name](#input\_private\_dns\_zone\_name) | Name for the private dns zone | `string` | `""` | no |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group | `string` | `""` | no |

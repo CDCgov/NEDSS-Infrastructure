@@ -12,3 +12,17 @@ resource "azurerm_private_dns_zone_virtual_network_link" "private" {
   virtual_network_id    = var.vnet_id
   registration_enabled  = true
 }
+
+module "dns_records" {
+  source   = "./modules/dns-record" # Update with your actual module path
+  for_each = var.dns_records
+
+  resource_group_name = var.resource_group_name
+  zone_name           = azurerm_private_dns_zone.private.name
+
+  record_name  = each.value.record_name
+  record_type  = each.value.record_type
+  ttl          = each.value.ttl
+  records      = each.value.records
+  cname_record = each.value.cname_record
+}
