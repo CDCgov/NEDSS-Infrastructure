@@ -83,21 +83,17 @@ variable "node_pool_type" {
   default     = "VirtualMachineScaleSets"
 }
 
-
 variable "node_pool_network_plugin" {
   type        = string
   description = "This defines the k8 network plugin"
   default     = "kubenet"
 }
 
-
 variable "node_pool_load_balancer_sku" {
   type        = string
   description = "This defines load balancer sku"
   default     = "standard"
 }
-
-
 
 variable "network_profile_pod_cidr" {
   type        = string
@@ -117,19 +113,16 @@ variable "net_profile_dns_service_ip" {
   default     = "10.96.0.10"
 }
 
-
 variable "temporary_name_for_rotation" {
   type        = string
   description = "This defines the default value for temp name for node rotation"
   default     = "tempnode"
-
 }
 
 variable "identity_type" {
   type        = string
   description = "This defines the default value for identity type"
   default     = "UserAssigned"
-
 }
 
 variable "user_node_pool_name" {
@@ -193,4 +186,15 @@ variable "os_sku" {
   Changing this forces a new resource to be created.
 EOT
   default     = "Ubuntu2204"
+}
+
+variable "enable_cert_manager" {
+  description = "Create cert-manager helm release and associated Managed Identity"
+  type        = bool
+  default     = true
+}
+
+variable "dns_zone_id" {
+  description = "Id for the associated DNS zone"
+  type = string
 }
