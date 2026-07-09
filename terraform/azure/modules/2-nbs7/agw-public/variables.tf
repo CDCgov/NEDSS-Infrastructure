@@ -191,13 +191,8 @@ variable "agw_private_backend_host" {
   default     = null
 
   validation {
-    condition = var.enable_dual_gateway == true && (
-      var.agw_private_backend_host != null
-    )
-    error_message = <<EOT
-    The agw_private_backend_host variable must not be null 
-    when enable_dual_gateway is true
-    EOT
+    condition     = !var.enable_dual_gateway == true || (var.agw_private_backend_host != null)
+    error_message = "The agw_private_backend_host variable must not be null when enable_dual_gateway is true"
   }
 }
 
@@ -210,15 +205,12 @@ variable "agw_nbs_ip_private" {
   default     = null
 
   validation {
-    condition = var.enable_dual_gateway == true && (
+    condition = !var.enable_dual_gateway == true || (
       var.agw_nbs_ip_private != null && (
         can(regex("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$", var.agw_nbs_ip_private))
       )
     )
-    error_message = <<EOT
-    The agw_nbs_ip_private variable must not be null and must be 
-    a valid IPv4 address when enable_dual_gateway is true
-    EOT
+    error_message = "The agw_nbs_ip_private variable must not be null and must be a valid IPv4 address when enable_dual_gateway is true"
   }
 }
 

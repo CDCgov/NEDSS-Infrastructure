@@ -1,3 +1,4 @@
+# Reference info: https://registry.terraform.io/providers/hashicorp/Azurerm/latest/docs/resources/subnet
 resource "azurerm_subnet" "this" {
   name                 = var.subnet.name
   resource_group_name  = var.resource_group_name

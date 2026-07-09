@@ -1,10 +1,6 @@
 
 # The "vnet_*" variables below are used by the Virtual network (VNet) in Azure that is provisioned by this Terraform layer.
 
-# For "vnet_name" and "vnet_resource_group_name" it is recommended:
-#  * that you specify a value of "nbs7-<environment-name>", 
-#  * or if there is more than one STLT using your Azure subscription then specify "nbs7-<STLT-name>-<environment-name>".
-
 variable "vnet_name" {
   type        = string
   description = "The name that will be given to your VNet"
@@ -52,4 +48,34 @@ variable "public_domain_name" {
   type        = string
   description = "The name of the public DNS zone (if one is to be provisioned by Terraform)"
   default     = ""
+}
+
+variable "keyvault_firewall_ip_rules" {
+  type        = list(string)
+  description = "List of IPv4 Addresses or CIDR Blocks to allow access to the Key Vault."
+  default     = []
+}
+
+variable "keyvault_role_assignments" {
+  type = map(object({
+    principal_id   = string
+    role           = string
+    principal_type = optional(string)
+    description    = optional(string) # The description for this Role Assignment.
+  }))
+  description = "Map of Azure RBAC role assignments for the Key Vault data plane."
+  default     = {}
+}
+
+variable "subnet__public_gateways__address_prefixes" {
+  type = list(string)
+}
+variable "subnet__aks__address_prefixes" {
+  type = list(string)
+}
+variable "subnet__hdikafka__address_prefixes" {
+  type = list(string)
+}
+variable "subnet__endpoint__address_prefixes" {
+  type = list(string)
 }
