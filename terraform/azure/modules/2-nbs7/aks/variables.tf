@@ -196,5 +196,5 @@ variable "enable_cert_manager" {
 
 variable "dns_zone_id" {
   description = "Id for the associated DNS zone"
-  type = string
+  type        = string
 }

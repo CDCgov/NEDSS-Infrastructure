@@ -16,13 +16,13 @@ resource "helm_release" "cert_manager" {
     },
     {
       name  = "serviceAccount.annotations.azure\\.workload\\.identity/client-id"
-      value = azurerm_user_assigned_identity.cert_manager.client_id
+      value = azurerm_user_assigned_identity.cert_manager[count.index].client_id
     },
     {
       name  = "securityContext.fsGroup"
       value = 1001
     }
   ]
-  
+
   depends_on = [module.aks]
 }

@@ -5,7 +5,7 @@ resource "azurerm_dns_zone" "public" {
 }
 
 module "dns_records" {
-  source   = "./modules/dns-record" 
+  source   = "./modules/dns-record"
   for_each = var.dns_records
 
   resource_group_name = var.resource_group_name
