@@ -21,6 +21,7 @@ variable "environment_name" {
 variable "agw_subnet_name" {
   description = "Subnet to deploy App Gateway in"
   type        = string
+  default     = "public_gateways" # Must be a subnet in the 'subnets' variable in ../0-landing-zone/subnet.tf
 }
 
 variable "agw_key_vault_name" {
@@ -33,8 +34,13 @@ variable "agw_key_vault_cert_rg" {
   type        = string
 }
 
-variable "agw_key_vault_cert_name" {
-  description = "Key Vault Certificate Name"
+variable "agw_key_vault_cert_name_public" {
+  description = "Name of the Key Vault secret that stores the public certificate"
+  type        = string
+}
+
+variable "agw_key_vault_cert_name_private" {
+  description = "Name of the Key Vault secret that stores the private certificate"
   type        = string
 }
 
@@ -53,6 +59,21 @@ variable "agw_nsg_akamai_ips" {
   type        = list(string)
 }
 
+variable "agw_public_hostname" {
+  description = "The public FQDN mapped to the Application Gateway public listener."
+  type        = string
+}
+
+variable "agw_private_ip" {
+  description = "The static private IP address assigned to the Application Gateway frontend configuration."
+  type        = string
+}
+
+variable "agw_private_hostname" {
+  description = "The private FQDN mapped to the Application Gateway private listener"
+  type        = string
+}
+
 ## AKS
 
 variable "aks_k8_cluster_version" {
@@ -61,7 +82,8 @@ variable "aks_k8_cluster_version" {
 }
 
 variable "aks_modern_subnet" {
-  type = list(any)
+  type    = list(any)
+  default = ["aks"] # Must be a subnet in the 'subnets' variable in ../0-landing-zone/subnet.tf
 }
 
 variable "aks_rbac_aad_admin_group_object_ids" {
@@ -111,7 +133,8 @@ variable "kafka_vnet_rg" {
 }
 
 variable "kafka_subnet_name" {
-  type = string
+  type    = string
+  default = "hdikafka" # Must be a subnet in the 'subnets' variable in ../0-landing-zone/subnet.tf
 }
 
 variable "kafka_infrastructure_encryption_enabled" {
@@ -140,6 +163,7 @@ variable "private_dns_virtual_network_name" {
 variable "storage_account_subnet_name" {
   type        = string
   description = "Name of subnet within virtual_network_name to be associated with storage account private endpoints."
+  default     = "endpoint" # Must be a subnet in the 'subnets' variable in ../0-landing-zone/subnet.tf
 }
 
 variable "storage_account_virtual_network_name" {

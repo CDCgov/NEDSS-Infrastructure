@@ -1,3 +1,4 @@
+# Reference info: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
 resource "azurerm_key_vault" "this" {
   count               = var.enabled ? 1 : 0
   name                = var.name
