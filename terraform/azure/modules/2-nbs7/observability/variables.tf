@@ -13,7 +13,11 @@ variable "resource_group_name" {
 variable "cluster_name" {
   type        = string
   description = "Name of AKS cluster for which monitoring will be set up"
+}
 
+variable "location" {
+  description = "Location for Azure resources"
+  type        = string
 }
 
 variable "update_admin_role_assignment" {

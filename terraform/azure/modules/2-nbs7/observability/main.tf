@@ -1,20 +1,20 @@
 resource "azurerm_monitor_workspace" "amw" {
   name                = "${var.resource_prefix}-monitor-workspace"
   resource_group_name = var.resource_group_name
-  location            = data.azurerm_kubernetes_cluster.main.location
+  location            = var.location
 }
 
 resource "azurerm_monitor_data_collection_endpoint" "dce" {
   name                = "${var.resource_prefix}-prom-${var.cluster_name}-dce"
   resource_group_name = var.resource_group_name
-  location            = data.azurerm_kubernetes_cluster.main.location
+  location            = var.location
   kind                = "Linux"
 }
 
 resource "azurerm_monitor_data_collection_rule" "dcr" {
   name                        = "${var.resource_prefix}-prom-${var.cluster_name}-dcr"
   resource_group_name         = var.resource_group_name
-  location                    = data.azurerm_kubernetes_cluster.main.location
+  location                    = var.location
   data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce.id
   kind                        = "Linux"
 
@@ -57,7 +57,7 @@ resource "azurerm_monitor_data_collection_rule_association" "dcra" {
 
 resource "azurerm_monitor_alert_prometheus_rule_group" "node_recording_rules_rule_group" {
   name                = "${var.resource_prefix}-prom-${var.cluster_name}-node-rule-group"
-  location            = data.azurerm_kubernetes_cluster.main.location
+  location            = var.location
   resource_group_name = var.resource_group_name
   cluster_name        = var.cluster_name
   description         = "Node Recording Rules Rule Group"
@@ -147,7 +147,7 @@ EOF
 
 resource "azurerm_monitor_alert_prometheus_rule_group" "kubernetes_recording_rules_rule_group" {
   name                = "${var.resource_prefix}-prom-${var.cluster_name}-rules-rule_group"
-  location            = data.azurerm_kubernetes_cluster.main.location
+  location            = var.location
   resource_group_name = var.resource_group_name
   cluster_name        = var.cluster_name
   description         = "Kubernetes Recording Rules Rule Group"
@@ -304,7 +304,7 @@ EOF
 
 resource "azurerm_monitor_alert_prometheus_rule_group" "amp_rule_group_namespace" {
   name                = "${var.resource_prefix}-prom-${var.cluster_name}-nbs-rule_group"
-  location            = data.azurerm_kubernetes_cluster.main.location
+  location            = var.location
   resource_group_name = var.resource_group_name
   cluster_name        = var.cluster_name
   description         = "NBS Recording Rules Rule Group"
