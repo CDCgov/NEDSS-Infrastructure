@@ -76,9 +76,18 @@ variable "agw_private_hostname" {
 
 ## AKS
 
-variable "aks_k8_cluster_version" {
+variable "kubernetes_version_control_plane" { # Reference info: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster#kubernetes_version-1
   type        = string
-  description = "This defines the version of the k8 cluster"
+  description = "The Kubernetes version to use for the control plane of the K8s cluster in AKS"
+  default     = "1.36"
+}
+
+# Reference info: https://learn.microsoft.com/en-us/azure/aks/supported-kubernetes-versions "Supported Kubernetes versions in Azure Kubernetes Service (AKS)"
+
+variable "kubernetes_default_node_pool_orchestrator_version" { # Reference info: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster#orchestrator_version-1
+  type        = string
+  description = "The Kubernetes version to use for the nodes/agents in the default node pool of the K8s cluster"
+  default     = "1.36" # Must not be a newer version than what is specified by the 'kubernetes_version_control_plane' variable above, and must not be more than three minor versions behind 'kubernetes_version_control_plane'.
 }
 
 variable "aks_modern_subnet" {

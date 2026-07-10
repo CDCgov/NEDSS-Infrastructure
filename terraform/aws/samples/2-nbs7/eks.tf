@@ -15,8 +15,13 @@ module "eks_nbs" {
   allow_endpoint_public_access = var.eks_allow_endpoint_public_access
   resource_prefix              = var.resource_prefix
   deploy_argocd_helm           = var.deploy_argocd_helm
-  cluster_version              = var.eks_cluster_version
-  kms_key_administrators       = var.kms_key_administrators
+
+  kubernetes_version_control_plane = var.kubernetes_version_control_plane
+  kubernetes_version_node_group    = var.kubernetes_version_node_group
+  ami_release_version              = var.kubernetes_ami_release_version
+  addons                           = var.kubernetes_addons
+
+  kms_key_administrators = var.kms_key_administrators
   cert_manager_hosted_zone_arns = [
     "arn:aws:route53:::hostedzone/${data.aws_route53_zone.root.zone_id}"
   ]
@@ -27,4 +32,3 @@ module "eks_nbs" {
   create_otel_collector_irsa    = var.create_otel_collector_resources
   otel_collector_s3_bucket_name = var.create_otel_collector_resources ? module.s3_otel_logs[0].bucket_name : ""
 }
-

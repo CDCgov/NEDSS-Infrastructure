@@ -38,7 +38,7 @@ private_domain_name      = "az.<your_STLT_name>nbs.com"
 
 ################################################################################
 
-# Used by the keyvault module (uncomment any variable you have a use case for):
+# Used by the keyvault module (uncomment any of these optional variables that you have a use case for):
 
 # keyvault_firewall_ip_rules = [
 #   "<your_CIDR_notation_value>",

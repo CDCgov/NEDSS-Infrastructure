@@ -103,10 +103,30 @@ variable "external_cidr_blocks" {
   }
 }
 
-variable "eks_cluster_version" {
-  description = "Version of eks cluster"
+variable "kubernetes_version_control_plane" { # Reference info: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster#version-1
   type        = string
-  default     = "1.35"
+  description = "Desired Kubernetes version for control plane in EKS cluster"
+  default     = null # This variable gets passed in as the value to a non-nullable variable in a module which defines a default value for that variable, so no non-null default value is needed here.
+}
+
+# Reference info: https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html "Understand the Kubernetes version lifecycle on EKS"
+
+variable "kubernetes_version_node_group" { # Reference info: https://registry.terraform.io/providers/-/aws/latest/docs/resources/eks_node_group#version-1
+  type        = string
+  description = "Kubernetes version for node group in EKS cluster"
+  default     = null
+}
+
+variable "kubernetes_ami_release_version" { # Reference info: https://registry.terraform.io/providers/-/aws/latest/docs/resources/eks_node_group#release_version-1
+  type        = string
+  description = "AMI version of the EKS Node Group"
+  default     = null
+}
+
+variable "kubernetes_addons" { # Reference info: https://registry.terraform.io/providers/-/aws/latest/docs/resources/eks_addon
+  type        = map(any)
+  description = "Map of cluster addon configurations to enable for the cluster"
+  default     = null
 }
 
 variable "eks_instance_type" {

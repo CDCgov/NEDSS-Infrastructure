@@ -20,6 +20,7 @@ module "aks" {
   location                    = var.k8_cluster_location
   kubernetes_version          = var.k8_cluster_version
   prefix                      = var.resource_prefix
+  orchestrator_version        = var.k8_orchestrator_version
   agents_availability_zones   = var.node_pool_zones
   auto_scaler_profile_enabled = true
   agents_min_count            = var.node_pool_min_count

@@ -24,7 +24,10 @@ admin_role_arns                  = []                                       # Us
 readonly_role_arns               = []                                       # Use list to provide multiple readonly roles
 kms_key_administrators           = ["EXAMPLE_IAM_ARN", "EXAMPLE_IAM_ARN_2"] # Used to create KMS key administrators for EKS 
 eks_allow_endpoint_public_access = true
+#kubernetes_version_control_plane = "<your_desired_Kubernetes_minor_version>"
+#kubernetes_version_node_group = "<your_desired_Kubernetes_minor_version>"
+#kubernetes_ami_release_version = "<your_desired_AMI_version>"
+#kubernetes_addons = "<your_desired_EKS_addons>"
 
 # MSK
 msk_environment = "production"
-
