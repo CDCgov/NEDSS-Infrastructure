@@ -20,6 +20,7 @@ For more details see the `README.md` files within these directories.
 - [scripts](./scripts): Contains optional scripts to help with layered Terraform implementation.
   <details>
   <summary>list of scripts</summary>
+
     - [layered_terraform_migration.py](./scripts/layered_terraform_migration.py): split Terraform state from single module into layers.     
   </details>
 - [archive](./archive): Contains previous deployment samples of NBS7
@@ -42,7 +43,7 @@ For more details see the `README.md` files within these directories.
 1. Create a copy of the directory layers provided (i.e. `0-landing-zone`, `1-nbs6`, `2-nbs7`, `3-applications`)
    - Ideally this copy will be your reference for future deployment and should be treated as you would any **code**
 
-2. Follow the steps for each directory (skipping undesired layers)
+2. Follow the steps for each directory (skipping any undesired layers)
 
   - Download desired GitHub release from https://github.com/CDCgov/NEDSS-Infrastructure/releases
   - `unzip <nbs-infrastructure-v<VERSION>.zip` # replace version with your downloaded version
