@@ -1,6 +1,7 @@
 # VPC for modernization application components
 module "modernization-vpc" {
-  source          = "../../modules/0-landing-zone/vpc"
+  source = "../../modules/0-landing-zone/vpc"
+
   resource_prefix = var.resource_prefix
   cidr            = var.cidr
   azs             = var.azs
@@ -14,5 +15,4 @@ module "modernization-vpc" {
 
   enable_dns_hostnames = var.enable_dns_hostnames
   enable_dns_support   = var.enable_dns_support
-
 }

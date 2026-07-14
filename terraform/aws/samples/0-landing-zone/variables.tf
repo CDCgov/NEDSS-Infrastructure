@@ -7,11 +7,13 @@
 #-----------------------------------------------------------------
 
 variable "resource_prefix" {
-  description = "Prefix for resource names"
+  description = "Prefix to be used on the names of all the resources as an identifier"
   type        = string
 }
 
-# VPC variables
+
+# VPC required variables:
+
 variable "cidr" {
   description = "CIDR block of your VPC"
 }
@@ -27,11 +29,13 @@ variable "private_subnets" {
 }
 
 variable "public_subnets" {
-  description = "List of CIDR blocks for each private subnets to be created"
+  description = "List of CIDR blocks for each public subnets to be created"
   type        = list(any)
 }
 
-# VPC option defaults
+
+# VPC optional variables:
+
 variable "create_igw" {
   description = "Create an internet gateway(requires public subnet)?"
   type        = bool
@@ -57,14 +61,13 @@ variable "one_nat_gateway_per_az" {
 }
 
 variable "enable_dns_hostnames" {
-  description = "Should be true to enable DNS hostnames in the VPC"
+  description = "Enable DNS hostnames in the VPC?"
   type        = bool
   default     = true
 }
 
 variable "enable_dns_support" {
-  description = "Should be true to enable DNS support in the VPC"
+  description = "Enable DNS support in the VPC?"
   type        = bool
   default     = true
 }
-#-----------------------------------------------------------------
