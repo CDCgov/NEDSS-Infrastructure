@@ -5,7 +5,7 @@ Terraform approach. Each layer deploys infrastructure or application components
 referenced in subsequent layers. If you select not to deploy a specific layer, you 
 must ensure the resources that layer would have provisioned exist and are accessible
 within your environment. These resources are ingested via Terraform `data` calls
-which query your environemnt. Each layer will by default deploy all modules contained within.
+which query your environment. Each layer will by default deploy all modules contained within.
 
 ## Assumptions
 The current deployment of NBS7 assumes there is a functional NBS6 installation. If NBS6 does exist
@@ -16,7 +16,7 @@ For more details see the `README.md` files within these directories.
 - [0-landing-zone](./0-landing-zone): Provisions network components.
 - [1-nbs6](./1-nbs6): Provisions NBS6 components (currently just Relation Database Service (RDS)).
 - [2-nbs7](./2-nbs7): Provision NBS7 components.
-- [3-applications](./3-applications): Provisions applications to a Kubernetes Clusters.
+- [3-applications](./3-applications): Deploys applications to a Kubernetes cluster.
 - [scripts](./scripts): Contains optional scripts to help with layered Terraform implementation.
   <details>
   <summary>list of scripts</summary>
