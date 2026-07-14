@@ -1,7 +1,7 @@
 variable "enabled" {
   type        = bool
   description = "Whether to have Terraform provision the resources from this module in your Azure subscription"
-  default     = true
+  default     = true # If this is false then all the other variables below are ignored
 }
 
 # Note that if "enabled" is true then a non-empty value must be specified for "resource_group_name" and also for "private_dns_zone_name", otherwise `terraform plan` will fail (because those variables are used by resources for args which do not allow an empty string).
@@ -29,7 +29,7 @@ variable "vnet_name" {
 }
 
 variable "dns_records" {
-  description = "A map of DNS records to create"
+  description = "A map of DNS records to create in the private dns zone. Only provide this if the 'enabled' variable is set to true."
   type = map(object({
     record_name  = string
     record_type  = string
