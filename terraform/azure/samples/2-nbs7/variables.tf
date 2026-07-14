@@ -15,6 +15,11 @@ variable "environment_name" {
   type        = string
 }
 
+variable "location" {
+  description = "Location for Azure resources"
+  type        = string
+}
+
 
 ## AGW Public
 
@@ -101,11 +106,6 @@ variable "aks_rbac_aad_admin_group_object_ids" {
 }
 
 ## Kafka
-
-variable "kafka_location" {
-  description = "Location for Azure resources"
-  type        = string
-}
 
 variable "kafka_storage_account_name" {
   type = string
