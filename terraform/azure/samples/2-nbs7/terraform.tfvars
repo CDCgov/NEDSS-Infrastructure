@@ -22,7 +22,7 @@ agw_key_vault_cert_name_public  = "az-<your_STLT_name>nbs-wildcard-cert-secret"
 agw_key_vault_cert_name_private = "az-<your_STLT_name>nbs-wildcard-cert-private"
 
 agw_public_hostname  = "app-<your_environment_name>.az.<your_STLT_name>nbs.com"
-agw_private_ip       = "00.0.00.00"
+agw_private_ip       = "<00.0.00.00>"
 agw_private_hostname = "classic-<your_environment_name>.az.<your_STLT_name>nbs.com"
 
 ################################################################################
@@ -32,7 +32,7 @@ agw_private_hostname = "classic-<your_environment_name>.az.<your_STLT_name>nbs.c
 # The control plane version of the Kubernetes cluster in AKS:
 #kubernetes_version_control_plane = "<your_desired_Kubernetes_minor_version>"
 # The orchestrator_version of the cluster's default_node_pool:
-#kubernetes_default_node_pool_orchestrator_version =  = "<your_desired_Kubernetes_minor_version>"
+#kubernetes_default_node_pool_orchestrator_version = "<your_desired_Kubernetes_minor_version>"
 
 ################################################################################
 
