@@ -41,6 +41,9 @@ module "aks" {
   identity_type                     = var.identity_type
   log_analytics_workspace_enabled   = false
   os_sku                            = var.os_sku
+  oidc_issuer_enabled               = var.enable_cert_manager
+  workload_identity_enabled         = var.enable_cert_manager
+
 
   # Required to be set for integration with monitor/prometheus/grafana, though values are not required to be null.
   monitor_metrics = {
