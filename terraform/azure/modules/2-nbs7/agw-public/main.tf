@@ -169,7 +169,7 @@ resource "azurerm_application_gateway" "agw_public" {
     name                = local.probe_name_public
     protocol            = "Https"
     path                = "/nbs/login"
-    host                = var.agw_backend_host
+    host                = var.agw_app_backend_host
     interval            = 30
     timeout             = 30
     unhealthy_threshold = 3
@@ -195,7 +195,10 @@ resource "azurerm_application_gateway" "agw_public" {
     frontend_port_name             = local.frontend_port_name
     protocol                       = "Https"
     ssl_certificate_name           = local.cert_name_public
-    host_name                      = var.agw_public_hostname
+    host_names = [
+      var.agw_app_public_hostname,
+      var.agw_data_public_hostname,
+    ]
   }
 
   http_listener {
@@ -203,7 +206,10 @@ resource "azurerm_application_gateway" "agw_public" {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name_public
     frontend_port_name             = local.frontend_port_name_http
     protocol                       = "Http"
-    host_name                      = var.agw_public_hostname
+    host_names = [
+      var.agw_app_public_hostname,
+      var.agw_data_public_hostname,
+    ]
   }
 
   redirect_configuration {
