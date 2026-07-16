@@ -65,7 +65,15 @@ variable "agw_key_vault_cert_name_private" {
   default     = null
 }
 
-variable "agw_backend_host" {
+variable "agw_app_backend_host" {
+  description = <<-EOT
+  The target host header or FQDN expected by the Traefik ingress 
+  controller for routing.
+EOT
+  type        = string
+}
+
+variable "agw_data_backend_host" {
   description = <<-EOT
   The target host header or FQDN expected by the Traefik ingress 
   controller for routing.
@@ -145,7 +153,7 @@ variable "enable_dual_gateway" {
   default     = true
 }
 
-variable "agw_public_hostname" {
+variable "agw_app_public_hostname" {
   description = <<EOT
   The public FQDN mapped to the Application Gateway public listener.
   EOT
@@ -153,10 +161,26 @@ variable "agw_public_hostname" {
 
   validation {
     condition = can(
-      regex("^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.agw_public_hostname)
+      regex("^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.agw_app_public_hostname)
     )
     error_message = <<EOT
-    The agw_public_hostname must be a valid fully qualified domain name (FQDN)
+    The agw_app_public_hostname must be a valid fully qualified domain name (FQDN)
+    EOT
+  }
+}
+
+variable "agw_data_public_hostname" {
+  description = <<EOT
+  The public FQDN mapped to the Application Gateway public listener.
+  EOT
+  type        = string
+
+  validation {
+    condition = can(
+      regex("^[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", var.agw_data_public_hostname)
+    )
+    error_message = <<EOT
+    The agw_data_public_hostname must be a valid fully qualified domain name (FQDN)
     EOT
   }
 }
