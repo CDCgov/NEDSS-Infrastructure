@@ -180,6 +180,12 @@ variable "existing_modern_subnet_name" {
   }
 }
 
+variable "auto_scaling_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable node pool autoscaling"
+}
+
 variable "os_sku" {
   type        = string
   description = <<-EOT
