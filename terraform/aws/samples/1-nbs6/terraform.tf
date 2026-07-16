@@ -1,4 +1,7 @@
 terraform {
+  # Reference info: https://developer.hashicorp.com/terraform/language/block/terraform#required_version
+  required_version = ">= 1.15.6"
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
