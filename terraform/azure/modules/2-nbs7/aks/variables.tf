@@ -202,4 +202,16 @@ variable "enable_cert_manager" {
 variable "dns_zone_id" {
   description = "Id for the associated DNS zone"
   type        = string
+  default     = ""
+
+  validation {
+    condition     = !var.enable_cert_manager || var.dns_zone_id != ""
+    error_message = "dns_zone_id must be provided if enable_cert_manager is set to true"
+  }
+}
+
+variable "auto_scaling_enabled" {
+  description = "Enable autoscaling on nodepools"
+  type = bool
+  default = true
 }
