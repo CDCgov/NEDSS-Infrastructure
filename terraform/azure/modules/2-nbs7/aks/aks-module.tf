@@ -15,7 +15,7 @@ resource "azurerm_user_assigned_identity" "aks" {
 module "aks" {
   # Replace sha with the latest commit if terraform/azure/modules/vendor/Azure/terraform-azurerm-aks is updated
   source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/azure/modules/vendor/Azure/terraform-azurerm-aks/?ref=942f77a605321c85abc73a243acd743c3eb99b37"
-  
+
   auto_scaling_enabled        = var.auto_scaling_enabled
   resource_group_name         = data.azurerm_resource_group.rg.name
   cluster_name                = "${var.resource_prefix}-aks"
