@@ -263,3 +263,15 @@ variable "datacompare_s3_bucket_keyname_prefix" {
     error_message = "The datacompare_s3_bucket_keyname_prefix variable must be an empty string or end with a forward slash (/). Example: 'myFolder/' or \"\"."
   }
 }
+
+variable "create_cluster_autoscaler_irsa" {
+  description = "Whether to create the Cluster Autoscaler IRSA role and policy"
+  type        = bool
+  default     = false
+}
+
+variable "cluster_autoscaler_cluster_name" {
+  description = "EKS cluster name for Cluster Autoscaler IAM policy tag-based scoping"
+  type        = string
+  default     = ""
+}

@@ -43,3 +43,8 @@ output "otel_collector_role_arn" {
   description = "OTEL Collector IRSA role ARN — pass to helm install via --set serviceAccount.annotations"
   value       = var.create_otel_collector_irsa ? module.otel_collector_irsa_role.arn : null
 }
+
+output "cluster_autoscaler_irsa_role_arn" {
+  description = "ARN of the Cluster Autoscaler IRSA role"
+  value       = var.create_cluster_autoscaler_irsa ? module.cluster_autoscaler_irsa_role.arn : null
+}
