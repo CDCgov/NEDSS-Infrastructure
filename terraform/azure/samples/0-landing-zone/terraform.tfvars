@@ -46,12 +46,16 @@ private_domain_name      = "az.<your_STLT_name>nbs.com"
 # ]
 
 # e.g. in Azure portal go to Groups, All groups, click on the given group and use its Object ID for 'principal_id' (and set 'principal_type' to "Group").
-# To see the built-in Roles: in Azure Portal go to Resource groups, click on any existing Resource group, Access control (IAM), Roles.
+# Info about each attribute in the object:
+#  * principal_id: The ID of the Principal (User, Group or Service Principal) to assign the Role Definition to.
+#  * role: Either The name of a built-in Role (e.g. Key Vault Administrator), or a full role definition resource ID for custom roles.
+#    ** To see the built-in Roles: in Azure Portal go to Resource groups, click on any existing Resource group, Access control (IAM), Roles.
+#  * principal_type: The type of the principal_id. Possible values are User, Group and ServicePrincipal.
 # keyvault_role_assignments = {
 #   "<name of Principal>" = {
-#     principal_id   = "<The ID of the Principal (User, Group or Service Principal) to assign the Role Definition to.>"
-#     role           = "<Either The name of a built-in Role (e.g. Key Vault Administrator), or a full role definition resource ID for custom roles.>"
-#     principal_type = "<The type of the principal_id. Possible values are User, Group and ServicePrincipal.>"
+#     principal_id   = "<principal_id>"
+#     role           = "<role>"
+#     principal_type = "<principal_type>"
 #   }
 # }
 
