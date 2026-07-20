@@ -3,6 +3,9 @@ locals {
   eks_iam_role_name   = var.name != "" ? "${var.name}-role" : "${var.resource_prefix}-eks-role"
   eks_node_group_name = var.name != "" ? "eks-nbs-main" : "${var.resource_prefix}-node-group-main"
 
+  kubernetes_version_control_plane = var.cluster_version != null ? var.cluster_version : var.kubernetes_version_control_plane
+  kubernetes_version_node_group    = var.cluster_version != null ? var.cluster_version : var.kubernetes_version_node_group
+
   # Merge old single-value variables with new list variables for backward compatibility
   admin_roles = length(var.admin_role_arns) > 0 ? var.admin_role_arns : [var.aws_role_arn]
 
