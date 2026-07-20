@@ -10,7 +10,7 @@ module "dns_records" {
   for_each = var.dns_records
 
   resource_group_name = var.resource_group_name
-  zone_name           = azurerm_dns_zone.public[0].name
+  zone_name           = azurerm_private_dns_zone.private[0].name
 
   record_name  = each.value.record_name
   record_type  = each.value.record_type

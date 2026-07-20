@@ -39,3 +39,9 @@ variable "dns_records" {
   }))
   default = {}
 }
+
+variable "registration_enabled" {
+  description = "Whether auto registration is enabled"
+  type        = bool
+  default     = false
+}

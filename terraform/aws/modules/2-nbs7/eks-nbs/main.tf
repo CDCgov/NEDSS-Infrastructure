@@ -7,7 +7,7 @@ module "eks" {
 
   # Set cluster info
   name                   = local.eks_name
-  kubernetes_version     = var.kubernetes_version_control_plane
+  kubernetes_version     = local.kubernetes_version_control_plane
   endpoint_public_access = var.allow_endpoint_public_access
 
   # Set VPC/Subnets
@@ -39,7 +39,7 @@ module "eks" {
       use_latest_ami_release_version = false
       ami_release_version            = var.ami_release_version
 
-      kubernetes_version = var.kubernetes_version_node_group
+      kubernetes_version = local.kubernetes_version_node_group
 
       block_device_mappings = {
         xvda = {
