@@ -1,7 +1,7 @@
 # NOTE: Please see the commentary in ../0-landing-zone/terraform.tf which is also applicable to this file.
 
 terraform {
-  required_version = ">= 1.13.3"
+  required_version = ">= 1.15.6"
 
   required_providers {
     azurerm = {

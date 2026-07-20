@@ -51,8 +51,15 @@ variable "readonly_role_arns" {
 
 variable "kubernetes_version_control_plane" {
   description = "Desired Kubernetes version for control plane in EKS cluster"
+  type        = string
   default     = "1.35"
   nullable    = false
+}
+
+variable "cluster_version" {
+  description = "(DEPRECATED) Version of the AWS EKS cluster to provision"
+  default     = null
+  deprecated  = "Use `kubernetes_version_control_plane` and `kubernetes_version_node_group` to set kubernetes versions"
 }
 
 variable "desired_nodes_count" {
@@ -75,6 +82,7 @@ variable "min_nodes_count" {
 
 variable "kubernetes_version_node_group" {
   description = "Kubernetes version for node group in EKS cluster"
+  type        = string
   default     = "1.35"
   nullable    = false
 }

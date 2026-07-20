@@ -13,8 +13,10 @@ resource "azurerm_user_assigned_identity" "aks" {
 }
 
 module "aks" {
-  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/azure/modules/vendor/Azure/terraform-azurerm-aks/?depth=1&ref=v1.2.48" # TO-DO change this ref to v7.13.0
+  # Replace sha with the latest commit if terraform/azure/modules/vendor/Azure/terraform-azurerm-aks is updated
+  source = "git::https://github.com/CDCgov/NEDSS-Infrastructure.git//terraform/azure/modules/vendor/Azure/terraform-azurerm-aks/?ref=942f77a605321c85abc73a243acd743c3eb99b37"
 
+  auto_scaling_enabled        = var.auto_scaling_enabled
   resource_group_name         = data.azurerm_resource_group.rg.name
   cluster_name                = "${var.resource_prefix}-aks"
   location                    = var.k8_cluster_location
@@ -41,26 +43,13 @@ module "aks" {
   identity_type                     = var.identity_type
   log_analytics_workspace_enabled   = false
   os_sku                            = var.os_sku
+  oidc_issuer_enabled               = var.enable_cert_manager
+  workload_identity_enabled         = var.enable_cert_manager
+
 
   # Required to be set for integration with monitor/prometheus/grafana, though values are not required to be null.
   monitor_metrics = {
     annotations_allowed = null
     labels_allowed      = null
   }
-
-
-  #disk_encryption_set_id = azurerm_key_vault_secret.new.id
-
-
-  /*  addon_profile {
-    oms_agent {
-      enabled                    = true
-      log_analytics_workspace_id = "your-log-analytics-workspace-id"
-    }
-  } */
-  /*
-  tags = {
-    Environment = "EQ-Dev"
-  }
-  */
 }
