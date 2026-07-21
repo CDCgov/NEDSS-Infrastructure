@@ -31,3 +31,6 @@ eks_allow_endpoint_public_access = true
 
 # MSK
 msk_environment = "production"
+
+# In ./variables.tf the following variable has a default value of false. You can enable the creation of the Data Compare resources by uncommenting the following line.
+#create_datacompare_resources=true
