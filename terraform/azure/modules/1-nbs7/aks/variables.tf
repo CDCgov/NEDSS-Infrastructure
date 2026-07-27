@@ -16,7 +16,6 @@ variable "msi_id" {
   default     = null
 }
 
-
 variable "modern_resource_group_name" {
   type        = string
   description = "This defines the modern resource group name"
@@ -62,13 +61,11 @@ variable "node_pool_zones" {
   default     = [1, 2, 3]
 }
 
-
 variable "node_pool_max_count" {
   type        = number
   description = "This defines the default node pool max count"
   default     = 5
 }
-
 
 variable "node_pool_min_count" {
   type        = number
@@ -208,4 +205,10 @@ variable "enable_cert_manager" {
 variable "dns_zone_id" {
   description = "Id for the associated DNS zone"
   type        = string
+  default     = ""
+
+  validation {
+    condition     = !var.enable_cert_manager || var.dns_zone_id != ""
+    error_message = "A valid dns_zone_id must be provided when enable_cert_manager is true."
+  }
 }

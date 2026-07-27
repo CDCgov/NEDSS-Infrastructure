@@ -5,4 +5,6 @@
 
 ################################################################################
 
-# [NOTE: The contents of this file needs to be filled in yet]
+environment_name = "<your_environment_name>"
+
+vnet_resource_group_name = "nbs7-<your_STLT_name>-<your_environment_name>"

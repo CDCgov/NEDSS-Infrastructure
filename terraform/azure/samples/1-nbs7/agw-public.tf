@@ -24,7 +24,7 @@ module "agw_public" {
   agw_aks_ip               = var.agw_aks_ip
 
   # Private Gateway Settings
-  enable_dual_gateway      = var.enable_dual_gateway
+  enable_dual_gateway      = var.agw_enable_dual_gateway
   agw_private_ip           = var.agw_private_ip
   agw_private_hostname     = var.agw_nbs_ip_private
   agw_private_backend_host = var.agw_private_backend_host
