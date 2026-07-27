@@ -9,7 +9,7 @@ module "kafka" {
   account_replication_type          = var.kafka_account_replication_type
   container_access_type             = var.kafka_container_access_type
   sg_name                           = var.kafka_sg_name
-  kafka_cluster_name                = var.kafka_cluster_name
+  kafka_cluster_name                = var.environment_name
   cluster_version                   = var.kafka_cluster_version
   cluster_tier                      = var.kafka_cluster_tier
   component_version                 = var.kafka_component_version
@@ -23,8 +23,8 @@ module "kafka" {
   encryption_in_transit_enabled     = var.kafka_encryption_in_transit_enabled
   number_of_disks_per_node          = var.kafka_number_of_disks_per_node
   target_instance_count             = var.kafka_target_instance_count
-  vnet_name                         = var.kafka_vnet_name
-  vnet_rg                           = var.kafka_vnet_rg
+  vnet_name                         = var.vnet_name
+  vnet_rg                           = var.vnet_resource_group_name
   kafka_subnet_name                 = var.kafka_subnet_name
   tls_min_version                   = var.kafka_tls_min_version
   destination_address_prefix        = var.kafka_destination_address_prefix

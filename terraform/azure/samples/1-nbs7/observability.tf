@@ -7,4 +7,6 @@ module "observability" {
   update_admin_role_assignment = var.observability_update_admin_role_assignment
   grafana_major_version        = var.observability_grafana_major_version
   cluster_name                 = "${var.aks_resource_prefix}-aks"
+
+  depends_on = [ module.aks_nbs7 ]
 }

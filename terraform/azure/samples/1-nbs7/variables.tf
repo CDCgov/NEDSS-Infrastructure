@@ -65,10 +65,6 @@ variable "kafka_sg_name" {
   type = string
 }
 
-variable "kafka_cluster_name" {
-  type = string
-}
-
 variable "kafka_cluster_version" {
   type    = string
   default = "5.1"
@@ -131,15 +127,6 @@ variable "kafka_target_instance_count" {
   type    = number
   default = 3
 }
-
-variable "kafka_vnet_name" {
-  type = string
-}
-
-variable "kafka_vnet_rg" {
-  type = string
-}
-
 
 variable "kafka_subnet_name" {
   type = string
@@ -206,13 +193,13 @@ variable "storage_account_create_dns_record" {
 
 variable "storage_account_blob_private_ip_address" {
   type        = string
-  description = "Private IP address to set for storage account file endpoint. (leave null to auto assign)"
+  description = "Private IP address to set for storage account file endpoint."
   default     = null
 }
 
 variable "storage_account_file_private_ip_address" {
   type        = string
-  description = "Private IP address to set for storage account file endpoint. (leave null to auto assign)"
+  description = "Private IP address to set for storage account file endpoint."
   default     = null
 }
 
@@ -330,6 +317,7 @@ variable "aks_msi_id" {
 variable "aks_k8_cluster_version" {
   type        = string
   description = "Which Kubernetes release to use for the K8s cluster"
+  default     = "1.35"
 }
 
 # K8s node pool variables:
@@ -343,6 +331,7 @@ variable "aks_default_node_pool_name" {
 variable "aks_k8_orchestrator_version" {
   type        = string
   description = "Which Kubernetes release to use for the nodes/agents in the default node pool of the K8s cluster"
+  default     = "1.35"
 }
 
 variable "aks_node_pool_vm_size" {

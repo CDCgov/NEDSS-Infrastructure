@@ -36,6 +36,6 @@ module "aks_nbs7" {
   subnet_name_aks                 = var.aks_subnet_name_aks
   temporary_name_for_rotation     = var.aks_temporary_name_for_rotation
   user_node_pool_name             = var.aks_user_node_pool_name
-  vnet_name                       = var.aks_vnet_name
+  vnet_name                       = var.vnet_name
 
 }
