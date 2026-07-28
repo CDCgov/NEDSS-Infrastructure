@@ -121,6 +121,8 @@ agw_vnet_name = "<>"
 # This defines the default value for identity type
 # aks_identity_type =
 
+# aks_agents_size = 
+
 # Which Kubernetes release to use for the K8s cluster
 aks_k8_cluster_version = "<>"
 

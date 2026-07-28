@@ -314,6 +314,12 @@ variable "aks_msi_id" {
 
 # K8s cluster variables:
 
+variable "aks_agents_size" {
+  type        = string
+  default     = "Standard_D2s_v3"
+  description = "The default virtual machine size for the Kubernetes agents. Changing this without specifying `var.temporary_name_for_rotation` forces a new resource to be created."
+}
+
 variable "aks_k8_cluster_version" {
   type        = string
   description = "Which Kubernetes release to use for the K8s cluster"

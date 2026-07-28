@@ -1,6 +1,7 @@
 module "agw_public" {
   source = "../../modules/1-nbs7/agw-public"
 
+  enabled         = var.agw_public_enabled
   resource_prefix = var.environment_name
 
   agw_resource_group_name  = var.vnet_resource_group_name
