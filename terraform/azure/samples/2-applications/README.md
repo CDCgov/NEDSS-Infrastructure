@@ -76,3 +76,48 @@ Please refer to [CDC's Template Repository](https://github.com/CDCgov/template)
 for more information about [contributing to this repository](https://github.com/CDCgov/template/blob/master/CONTRIBUTING.md),
 [public domain notices and disclaimers](https://github.com/CDCgov/template/blob/master/DISCLAIMER.md),
 and [code of conduct](https://github.com/CDCgov/template/blob/master/code-of-conduct.md).
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+| ---- | ------- |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.6 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.68, <5.0 |
+
+## Providers
+
+| Name | Version |
+| ---- | ------- |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=4.68, <5.0 |
+
+## Modules
+
+| Name | Source | Version |
+| ---- | ------ | ------- |
+| <a name="module_linkerd"></a> [linkerd](#module\_linkerd) | ../../modules/2-applications/linkerd | n/a |
+
+## Resources
+
+| Name | Type |
+| ---- | ---- |
+| [azurerm_kubernetes_cluster.aks](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/kubernetes_cluster) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+| ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_environment_name"></a> [environment\_name](#input\_environment\_name) | The name of the NBS 7 environment | `string` | n/a | yes |
+| <a name="input_linkerd_aks_cluster_name"></a> [linkerd\_aks\_cluster\_name](#input\_linkerd\_aks\_cluster\_name) | Name of the AKS cluster | `string` | `"dev-aks"` | no |
+| <a name="input_linkerd_chart"></a> [linkerd\_chart](#input\_linkerd\_chart) | Name of linkerd chart | `string` | `"linkerd-crds"` | no |
+| <a name="input_linkerd_controlplane_chart"></a> [linkerd\_controlplane\_chart](#input\_linkerd\_controlplane\_chart) | Name of linkerd control plane chart | `string` | `"linkerd-control-plane"` | no |
+| <a name="input_linkerd_create_linkerd_viz"></a> [linkerd\_create\_linkerd\_viz](#input\_linkerd\_create\_linkerd\_viz) | Whether to install linkerd viz | `bool` | `true` | no |
+| <a name="input_linkerd_namespace_name"></a> [linkerd\_namespace\_name](#input\_linkerd\_namespace\_name) | Name of linkerd namespace | `string` | `"linkerd"` | no |
+| <a name="input_linkerd_repository"></a> [linkerd\_repository](#input\_linkerd\_repository) | Repository to use when installing linkerd | `string` | `"https://helm.linkerd.io/stable"` | no |
+| <a name="input_linkerd_viz_chart"></a> [linkerd\_viz\_chart](#input\_linkerd\_viz\_chart) | Name of linkerd viz chart | `string` | `"linkerd-viz"` | no |
+| <a name="input_linkerd_viz_namespace_name"></a> [linkerd\_viz\_namespace\_name](#input\_linkerd\_viz\_namespace\_name) | Name of linkerd viz namespace | `string` | `"linkerd-viz"` | no |
+| <a name="input_vnet_resource_group_name"></a> [vnet\_resource\_group\_name](#input\_vnet\_resource\_group\_name) | The name of the resource group | `string` | n/a | yes |
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->

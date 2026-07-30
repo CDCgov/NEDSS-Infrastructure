@@ -331,5 +331,5 @@ storage_account_subnet_name = "<>"
 # Storage Account DNS Zone
 ################################################################################
 
-# StringList of virtual network names to be associated as a virtual network link for the private dns zone.
+# String of virtual network names to be associated as a virtual network link for the private dns zone.
 # storage_dns_zone_virtual_network_name =
