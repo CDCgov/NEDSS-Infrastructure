@@ -354,7 +354,9 @@ resource "azurerm_application_gateway" "agw_public" {
   depends_on = [
     azurerm_public_ip.agw_public_ip[0],
     azurerm_key_vault_access_policy.agw_mi_policy[0],
-    azurerm_user_assigned_identity.agw_mi
+    azurerm_user_assigned_identity.agw_mi,
+    azurerm_network_security_group.nsg[0],
+    azurerm_network_security_rule.allow_gateway_manager[0]
   ]
 
 

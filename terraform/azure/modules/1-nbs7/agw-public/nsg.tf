@@ -50,6 +50,8 @@ resource "azurerm_network_security_rule" "allow_agw_frontend_traffic" {
 
   resource_group_name         = var.agw_resource_group_name
   network_security_group_name = azurerm_network_security_group.nsg[0].name
+
+  depends_on = [azurerm_network_security_rule.allow_gateway_manager[0]]
 }
 
 resource "azurerm_network_security_rule" "allow_gateway_manager" {
