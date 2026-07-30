@@ -1,5 +1,5 @@
 module "linkerd" {
-  source = "../../modules/3-applications/linkerd"
+  source = "../../modules/2-applications/linkerd"
 
   resource_group_name        = var.vnet_resource_group_name
   aks_cluster_name           = var.linkerd_aks_cluster_name

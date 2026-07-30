@@ -2,7 +2,7 @@ module "kafka" {
   source = "../../modules/1-nbs7/hdi-kafka"
 
   enabled                           = var.kafka_enabled
-  resource_prefix                   = var.kafka_resource_prefix
+  resource_prefix                   = local.kafka_resource_prefix
   location                          = var.vnet_location
   storage_account_name              = var.kafka_storage_account_name
   account_tier                      = var.kafka_account_tier

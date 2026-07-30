@@ -35,7 +35,7 @@ variable "kafka_enabled" {
 
 variable "kafka_resource_prefix" {
   type    = string
-  default = "dev"
+  default = ""
 }
 
 variable "kafka_storage_account_name" {
@@ -100,17 +100,17 @@ variable "kafka_password" {
 
 variable "kafka_head_vm_size" {
   type    = string
-  default = "Standard_D3_V2"
+  default = "Standard_D2s_v7"
 }
 
 variable "kafka_worker_vm_size" {
   type    = string
-  default = "Standard_D3_V2"
+  default = "Standard_D2s_v7"
 }
 
 variable "kafka_zookeeper_vm_size" {
   type    = string
-  default = "Standard_D3_V2"
+  default = "Standard_D2s_v7"
 }
 
 variable "kafka_encryption_in_transit_enabled" {
@@ -281,7 +281,7 @@ variable "storage_dns_zone_virtual_network_name" {
 variable "observability_resource_prefix" {
   type        = string
   description = "Prefix for resource names"
-  default     = "nbs"
+  default     = ""
 }
 
 variable "observability_update_admin_role_assignment" {
@@ -316,7 +316,7 @@ variable "aks_msi_id" {
 
 variable "aks_agents_size" {
   type        = string
-  default     = "Standard_D2s_v3"
+  default     = "Standard_D2s_v7"
   description = "The default virtual machine size for the Kubernetes agents. Changing this without specifying `var.temporary_name_for_rotation` forces a new resource to be created."
 }
 
@@ -343,7 +343,7 @@ variable "aks_k8_orchestrator_version" {
 variable "aks_node_pool_vm_size" {
   type        = string
   description = "This defines the node pool size"
-  default     = "Standard_DS2_v4"
+  default     = "Standard_D2s_v7"
 }
 
 variable "aks_node_pool_zones" {
@@ -434,6 +434,7 @@ variable "aks_modern_subnet" {
 variable "aks_resource_prefix" {
   type        = string
   description = "Name to be used on all the resources as identifier. e.g. Project name, Application name"
+  default     = ""
 }
 
 variable "aks_vnet_name" {
@@ -495,6 +496,19 @@ variable "aks_dns_zone_id" {
   type        = string
   default     = ""
 }
+
+variable "create_datacompare_resources" {
+  description = "Create resources for DataCompare service?"
+  type        = bool
+  default     = false
+}
+
+variable "create_otel_collector_resources" {
+  description = "Create resources for OTEL Collector log export?"
+  type        = bool
+  default     = false
+}
+
 
 # ------------------------------------------------------------------------------
 # Source: NEDSS-Infrastructure/terraform/azure/modules/1-nbs7/agw-public/variables.tf

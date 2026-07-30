@@ -197,6 +197,11 @@ aks_resource_prefix = "<>"
 # Name of the existing vnet
 # aks_vnet_name =
 
+# Create resources for DataCompare service
+# create_datacompare_resources=
+
+# Create resources for OTEL Collector log export
+# create_otel_collector_resources =
 
 ################################################################################
 # HDInsights Kafka

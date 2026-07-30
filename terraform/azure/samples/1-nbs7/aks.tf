@@ -1,6 +1,7 @@
 module "aks_nbs7" {
   source = "../../modules/1-nbs7/aks"
 
+  agents_size                 = var.aks_agents_size
   auto_scaling_enabled        = var.aks_auto_scaling_enabled
   create_modern_subnet        = var.aks_create_modern_subnet
   default_node_pool_name      = var.aks_default_node_pool_name
@@ -32,8 +33,11 @@ module "aks_nbs7" {
 
   rbac_aad_admin_group_object_ids = var.aks_rbac_aad_admin_group_object_ids
   resource_group_location         = var.vnet_location
-  resource_prefix                 = var.aks_resource_prefix
+  resource_prefix                 = local.aks_resource_prefix
   subnet_name_aks                 = var.aks_subnet_name_aks
+  storage_account_name            = module.storage_account.storage_account_name
+  create_datacompare_resources    = var.create_datacompare_resources
+  create_otel_collector_resources = var.create_otel_collector_resources
   temporary_name_for_rotation     = var.aks_temporary_name_for_rotation
   user_node_pool_name             = var.aks_user_node_pool_name
   vnet_name                       = var.vnet_name
