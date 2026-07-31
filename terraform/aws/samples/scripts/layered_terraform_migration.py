@@ -196,7 +196,7 @@ def pull_terraform_state(target_dir_path, working_dir):
 def main():
 
     # Set variables (overrides?)
-    layers = ["0-landing-zone", "1-nbs6", "2-nbs7", "3-applications"]
+    layers = ["0-landing-zone", "1-nbs7", "2-applications"]
 
     # 1. Setup Argument Parser
     parser = argparse.ArgumentParser(

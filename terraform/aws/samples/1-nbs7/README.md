@@ -1,4 +1,4 @@
-# Terraform Module: 2-nbs7
+# Terraform Module: 1-nbs7
 
 This Terraform module layer provisions infrastructure required to run nbs7 and **expects certain upstream infrastructure
 to already exist** (VPCs, subnets, IAM roles etc.). This README explains **how those dependencies are referenced**.
@@ -12,7 +12,7 @@ This module:
 
 Typical usage:
 
-- 0-landing-zone → 1-nbs6 → **2-nbs7 \(this module)** → 3-applications
+- 0-landing-zone → **1-nbs7 \(this module)** → 2-applications
 - Environment-specific deployments (dev / stage / prod)
 
 ## 💻 System Prerequisites
@@ -27,8 +27,8 @@ Typical usage:
 <details>
 <summary><strong> Networking Dependencies</strong></summary>
 
-Networking including VPCs and public hosted zones **must already exist** and are referenced as described below. While 1-nbs6 components are expected to exist
-in order for NBS7 microservices to be deployed successfully, the 2-nbs7 infrastructure **does not** directly depend on functional NBS6 services. Exceptions to
+Networking including VPCs and public hosted zones **must already exist** and are referenced as described below. While nbs6 components are expected to exist
+in order for NBS7 microservices to be deployed successfully, the 1-nbs7 infrastructure **does not** directly depend on functional NBS6 services. Exceptions to
 this include modifying security groups to allow operations involving the database.
 
 | Resource    | Description                                                                                     | How It’s Referenced     |
@@ -126,7 +126,7 @@ this include modifying security groups to allow operations involving the databas
 ```bash
 # Download appropriate GitHub release from https://github.com/CDCgov/NEDSS-Infrastructure/releases
 unzip <nbs-infrastructure-v<VERSION>.zip # replace version with your downloaded version
-cd terraform/aws/samples/2-nbs7
+cd terraform/aws/samples/1-nbs7
 terraform init
 terraform plan
 terraform apply
