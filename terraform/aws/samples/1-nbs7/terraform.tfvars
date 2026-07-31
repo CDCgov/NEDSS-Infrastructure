@@ -1,4 +1,4 @@
-# 2-nbs7 parameter inputs
+# 1-nbs7 parameter inputs
 #
 # Search and replace variable values beginning with "EXAMPLE_" to appropriate values
 

@@ -1,4 +1,4 @@
-# Terraform Module: 3-applications
+# Terraform Module: 2-applications
 
 This Terraform module layer provisions applications being deployed to Kubernetes and **expects certain upstream infrastructure
 to already exist** (VPCs, subnets, IAM roles, AWS EKS etc.). This README explains **how those dependencies are referenced**.
@@ -13,7 +13,7 @@ This module:
 
 Typical usage:
 
-- 0-landing-zone → 1-nbs6 → 2-nbs7 → **3-applications \(this module)**
+- 0-landing-zone → 1-nbs7 → **2-applications \(this module)**
 - Environment-specific deployments (dev / stage / prod)
 
 ## 💻 System Prerequisites
@@ -72,7 +72,7 @@ A Kubernetes cluster **must already exist** and is referenced as described below
 ```bash
 # Download appropriate GitHub release from https://github.com/CDCgov/NEDSS-Infrastructure/releases
 unzip <nbs-infrastructure-v<VERSION>.zip # replace version with your downloaded version
-cd terraform/aws/samples/3-applications
+cd terraform/aws/samples/2-applications
 terraform init
 terraform plan
 terraform apply

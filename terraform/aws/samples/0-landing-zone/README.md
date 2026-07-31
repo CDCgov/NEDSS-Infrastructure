@@ -11,7 +11,7 @@ This module:
 
 Typical usage:
 
-- **0-landing-zone \(this module)** → 1-nbs6 → 2-nbs7 → 3-applications
+- **0-landing-zone \(this module)** → 1-nbs7 → 2-applications
 - Environment-specific deployments (dev / stage / prod)
 
 ## 💻 System Prerequisites
