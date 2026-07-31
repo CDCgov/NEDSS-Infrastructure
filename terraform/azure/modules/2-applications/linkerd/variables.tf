@@ -49,5 +49,5 @@ variable "resource_group_name" {
 variable "create_linkerd_viz" {
   description = "Whether to install linkerd viz"
   type        = bool
-  default     = true
+  default     = false
 }
