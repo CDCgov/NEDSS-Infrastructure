@@ -16,7 +16,6 @@ variable "msi_id" {
   default     = null
 }
 
-
 variable "modern_resource_group_name" {
   type        = string
   description = "This defines the modern resource group name"
@@ -50,6 +49,12 @@ variable "k8_orchestrator_version" {
   description = "Which Kubernetes release to use for the nodes/agents in the default node pool of the K8s cluster"
 }
 
+variable "agents_size" {
+  type        = string
+  default     = "Standard_D2s_v3"
+  description = "The default virtual machine size for the Kubernetes agents. Changing this without specifying `var.temporary_name_for_rotation` forces a new resource to be created."
+}
+
 variable "node_pool_vm_size" {
   type        = string
   description = "This defines the node pool size"
@@ -62,13 +67,11 @@ variable "node_pool_zones" {
   default     = [1, 2, 3]
 }
 
-
 variable "node_pool_max_count" {
   type        = number
   description = "This defines the default node pool max count"
   default     = 5
 }
-
 
 variable "node_pool_min_count" {
   type        = number
@@ -208,4 +211,67 @@ variable "enable_cert_manager" {
 variable "dns_zone_id" {
   description = "Id for the associated DNS zone"
   type        = string
+  default     = ""
+
+  validation {
+    condition     = !var.enable_cert_manager || var.dns_zone_id != ""
+    error_message = "A valid dns_zone_id must be provided when enable_cert_manager is true."
+  }
+}
+
+variable "datacompare_namespace_and_service" {
+  description = "List of Kubernetes namespace and services to be included in the datacompare federated credential"
+  type        = map(any)
+  default = {
+    "api" = {
+      "namespace" = "default"
+      "service"   = "data-compare-api-service"
+    }
+    "processor" = {
+      "namespace" = "default"
+      "service"   = "data-compare-processor-service"
+    }
+  }
+}
+
+variable "datacompare_blob_container_name" {
+  description = "Name of blob container to be used for datacompare role."
+  type        = string
+  default     = ""
+}
+
+variable "otel_collector_namespace_and_service" {
+  description = "List of Kubernetes namespace and service for the OTEL Collector federated credential"
+  type        = map(any)
+  default = {
+    "collector" = {
+      "namespace" = "observability"
+      "service"   = "splunk-otel-collector"
+    }
+  }
+}
+
+variable "otel_collector_blob_container_name" {
+  description = "Name of blob container to be used for OTEL Collector log storage."
+  type        = string
+  default     = ""
+}
+
+
+variable "storage_account_name" {
+  type        = string
+  description = "Name for storage account. (Names must be between 3 and 24 characters in length and may contain numbers and lowercase letters only)"
+  default     = "nbsstorageaccount"
+}
+
+variable "create_datacompare_resources" {
+  description = "Create resources for DataCompare service?"
+  type        = bool
+  default     = false
+}
+
+variable "create_otel_collector_resources" {
+  description = "Create resources for OTEL Collector log export?"
+  type        = bool
+  default     = false
 }

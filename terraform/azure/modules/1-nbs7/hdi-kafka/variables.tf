@@ -3,6 +3,7 @@ variable "enabled" {
   description = "Enable the module"
   default     = true
 }
+
 variable "resource_prefix" {
   type    = string
   default = "dev"
@@ -43,14 +44,17 @@ variable "sg_name" {
 variable "kafka_cluster_name" {
   type = string
 }
+
 variable "cluster_version" {
   type    = string
   default = "5.1"
 }
+
 variable "cluster_tier" {
   type    = string
   default = "Standard"
 }
+
 variable "component_version" {
   type    = string
   default = "3.2"
@@ -68,6 +72,7 @@ variable "gtwy_password" {
 variable "username" {
   type = string
 }
+
 variable "password" {
   type      = string
   sensitive = true
@@ -77,14 +82,17 @@ variable "head_vm_size" {
   type    = string
   default = "Standard_D3_V2"
 }
+
 variable "worker_vm_size" {
   type    = string
   default = "Standard_D3_V2"
 }
+
 variable "zookeeper_vm_size" {
   type    = string
   default = "Standard_D3_V2"
 }
+
 variable "encryption_in_transit_enabled" {
   type    = bool
   default = true

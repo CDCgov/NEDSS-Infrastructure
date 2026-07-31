@@ -5,4 +5,30 @@
 
 ################################################################################
 
-# [NOTE: The contents of this file needs to be filled in yet]
+environment_name = "<your_environment_name>"
+
+vnet_resource_group_name = "nbs7-<your_STLT_name>-<your_environment_name>"
+
+linkerd_aks_cluster_name = "<your_aks_cluster>"
+
+# Repository to use when installing linkerd
+# linkerd_repository = 
+
+# Name of linkerd chart
+# linkerd_chart = 
+
+# Name of linkerd namespace
+# linkerd_namespace_name = 
+
+# Name of linkerd control plane chart
+# linkerd_controlplane_chart = 
+
+# Name of linkerd viz chart
+# linkerd_viz_chart = 
+
+# Name of linkerd viz namespace
+# linkerd_viz_namespace_name = 
+
+# Whether to install linkerd viz
+# linkerd_create_linkerd_viz = 
+

@@ -1,11 +1,11 @@
 locals {
   subnets = {
-    "aks" = { # Used by the 'kafka_subnet_name' variable in ../2-nbs7/
+    "aks" = { # Used by the 'kafka_subnet_name' variable in ../1-nbs7/
       name             = "aks"
       address_prefixes = var.subnet__aks__address_prefixes
     }
 
-    "hdikafka" = { # Used by the 'aks_modern_subnet' variable in ../2-nbs7/
+    "hdikafka" = { # Used by the 'aks_modern_subnet' variable in ../1-nbs7/
       name                                          = "hdikafka"
       address_prefixes                              = var.subnet__hdikafka__address_prefixes
       private_endpoint_network_policies             = "Disabled"
@@ -31,12 +31,12 @@ locals {
 
     }
 
-    "endpoint" = { # Used by the 'storage_account_subnet_name' variable in ../2-nbs7/
+    "endpoint" = { # Used by the 'storage_account_subnet_name' variable in ../1-nbs7/
       name             = "endpoint"
       address_prefixes = var.subnet__endpoint__address_prefixes
     }
 
-    "public_gateways" = { # Used by the 'agw_subnet_name' variable in ../2-nbs7/
+    "public_gateways" = { # Used by the 'agw_subnet_name' variable in ../1-nbs7/
       name             = "public_gateways"
       address_prefixes = var.subnet__public_gateways__address_prefixes
       service_endpoints_with_location = [{

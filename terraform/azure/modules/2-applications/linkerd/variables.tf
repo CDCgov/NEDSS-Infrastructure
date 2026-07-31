@@ -1,33 +1,53 @@
 
 variable "aks_cluster_name" {
-  type    = string
-  default = "dev-aks"
+  description = "Name of the AKS cluster"
+  type        = string
+  default     = "dev-aks"
 }
 
 variable "linkerd_repository" {
-  default = "https://helm.linkerd.io/stable"
+  description = "Repository to use when installing linkerd"
+  type        = string
+  default     = "https://helm.linkerd.io/stable"
 }
+
 variable "linkerd_chart" {
-  default = "linkerd-crds"
+  description = "Name of linkerd chart"
+  type        = string
+  default     = "linkerd-crds"
 }
+
 variable "linkerd_namespace_name" {
-  default = "linkerd"
+  description = "Name of linkerd namespace"
+  type        = string
+  default     = "linkerd"
 }
+
 variable "linkerd_controlplane_chart" {
-  default = "linkerd-control-plane"
+  description = "Name of linkerd control plane chart"
+  type        = string
+  default     = "linkerd-control-plane"
 }
+
 variable "linkerd_viz_chart" {
-  default = "linkerd-viz"
+  description = "Name of linkerd viz chart"
+  type        = string
+  default     = "linkerd-viz"
 }
+
 variable "linkerd_viz_namespace_name" {
-  default = "linkerd-viz"
+  description = "Name of linkerd viz namespace"
+  type        = string
+  default     = "linkerd-viz"
 }
 
 variable "resource_group_name" {
-  type = string
+  description = "Name of the resource group"
+  type        = string
 }
 
 variable "create_linkerd_viz" {
-  type    = bool
-  default = true
+  description = "Whether to install linkerd viz"
+  type        = bool
+  default     = false
 }

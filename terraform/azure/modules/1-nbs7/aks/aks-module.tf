@@ -25,6 +25,7 @@ module "aks" {
   orchestrator_version        = var.k8_orchestrator_version
   agents_availability_zones   = var.node_pool_zones
   auto_scaler_profile_enabled = true
+  agents_size                 = var.agents_size
   agents_min_count            = var.node_pool_min_count
   agents_max_count            = var.node_pool_max_count
   temporary_name_for_rotation = var.temporary_name_for_rotation

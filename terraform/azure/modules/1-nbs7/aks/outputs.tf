@@ -22,3 +22,8 @@ output "kube_config" {
   value     = module.aks.kube_admin_config_raw
   sensitive = true
 }
+
+output "data_compare_identity_client_id" {
+  description = "Client ID to set as the azure.workload.identity/client-id annotation on the Kubernetes service account."
+  value       = try(azurerm_user_assigned_identity.data_compare[0].client_id, null)
+}
