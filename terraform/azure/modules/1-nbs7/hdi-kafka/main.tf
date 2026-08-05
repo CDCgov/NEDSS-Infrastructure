@@ -14,8 +14,10 @@ resource "azurerm_storage_account" "kafka_storage_account" {
   }
 
   network_rules {
-    default_action = "Allow"
+    default_action = "Deny"
     bypass         = ["AzureServices"]
+    ip_rules       = toset(var.storage_ip_rules)
+    virtual_network_subnet_ids = toset([data.azurerm_subnet.kafka_subnet_name.id])
   }
 
   lifecycle {

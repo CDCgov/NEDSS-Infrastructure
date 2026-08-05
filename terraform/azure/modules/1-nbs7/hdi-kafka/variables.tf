@@ -121,6 +121,12 @@ variable "kafka_subnet_name" {
   type = string
 }
 
+variable "storage_ip_rules" {
+  description = "List of ip addresses that can access the storage account"
+  type = list(string)
+  default = []
+}
+
 variable "tls_min_version" {
   type    = string
   default = "1.2"
