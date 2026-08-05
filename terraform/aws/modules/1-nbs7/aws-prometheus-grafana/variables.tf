@@ -1,5 +1,6 @@
 data "aws_caller_identity" "current" {}
 # variable "env" {}
+
 variable "resource_prefix" {
   type        = string
   description = "Prefix for resource names"
@@ -10,6 +11,7 @@ variable "oidc_provider_arn" {
   type        = string
   description = "the ARN of the OIDC provider"
 }
+
 variable "oidc_provider_url" {
   type        = string
   description = "the URL of the OIDC provider"
@@ -33,6 +35,7 @@ variable "repository" {
   description = "prometheus repository location"
   default     = "https://prometheus-community.github.io/helm-charts/"
 }
+
 variable "chart" {
   type        = string
   description = "prometheus helm chart name"

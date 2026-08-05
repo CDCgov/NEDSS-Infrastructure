@@ -3,6 +3,7 @@ variable "bucket_prefix" {
   description = "Bucket name prefix (result is guaranteed to be unique)."
   default     = "cdc-nbs"
 }
+
 variable "enable_default_bucket_lifecycle_policy" {
   type        = string
   description = "Whether the default rule is currently being applied. Valid values: Enabled or Disabled."

@@ -109,6 +109,7 @@ variable "db_snapshot_identifier" {
   #default     = "cdc-nbs-6-0-16-test"
   default = "cdc-nbs-legacy-rds-mssql-60161-2024-10-22-nokc"
 }
+
 variable "manage_master_user_password" {
   description = "Set to true to allow RDS to manage the master user password in Secrets Manager"
   type        = bool
@@ -135,6 +136,7 @@ variable "ec2_instance_type" {
   type        = string
   default     = "m5.large"
 }
+
 variable "deployment_package_key" {
   description = "Deployment package S3 key for NBS application, must match versioning DB snapshot"
   type        = string

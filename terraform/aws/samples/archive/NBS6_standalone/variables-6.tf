@@ -95,10 +95,12 @@ variable "db_instance_type" {
   description = "Databae instance type"
   type        = string
 }
+
 variable "db_snapshot_identifier" {
   description = "Database snapshot to use for RDS instance"
   type        = string
 }
+
 variable "manage_master_user_password" {
   description = "Set to true to allow RDS to manage the master user password in Secrets Manager"
   type        = bool
@@ -111,15 +113,18 @@ variable "ec2_key_name" {
   description = "Precreated EC2 key name to manage classic instance"
   type        = string
 }
+
 variable "ami" {
   description = "AMI for EC2 instance"
   type        = string
 }
+
 variable "ec2_instance_type" {
   description = "Instance type for EC2 instance"
   type        = string
   default     = "m5.large"
 }
+
 variable "deployment_package_key" {
   description = "Deployment package S3 key for NBS application"
   type        = string
@@ -259,6 +264,7 @@ variable "java_memory" {
   type        = string
   default     = "4g" ### this should be 4g for m5.large
 }
+
 variable "phcrimporter_user" {
   description = "User needed to run phcrimporter batch job (leave_default=preserve Wildfly default)"
   type        = string

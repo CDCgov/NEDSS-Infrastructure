@@ -72,6 +72,7 @@ variable "msk_ebs_volume_size" {
   type        = number
   default     = 20
 }
+
 variable "environment" {
   description = "The environment, either 'development' or 'production'"
   default     = "development"
@@ -143,6 +144,7 @@ variable "deploy_argocd_helm" {
   # SAMPLES
   # default     = "false"
 }
+
 variable "eks_allow_endpoint_public_access" {
   description = "Allow both public and private access to EKS api endpoint"
   type        = bool

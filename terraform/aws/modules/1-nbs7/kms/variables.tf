@@ -35,11 +35,13 @@ variable "key_administrators" {
   default     = []
   description = "A list of IAM ARNs for key administrators"
 }
+
 variable "key_users" {
   type        = list(any)
   default     = []
   description = "A list of IAM ARNs for key users"
 }
+
 variable "key_service_users" {
   type        = list(any)
   default     = []
