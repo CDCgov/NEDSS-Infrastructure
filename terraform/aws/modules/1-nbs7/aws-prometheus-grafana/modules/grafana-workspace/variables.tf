@@ -1,6 +1,6 @@
 variable "data_sources" {
-  type        = list(any)
   description = "the datasource for grafana; in this case Prometheus"
+  type        = list(any)
   default     = ["PROMETHEUS"]
 }
 variable "grafana_workspace_name" {}

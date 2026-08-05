@@ -1,6 +1,6 @@
 variable "resource_prefix" {
-  type        = string
   description = "Prefix for resource names"
+  type        = string
   default     = "cdc-nbs"
 }
 
@@ -12,6 +12,7 @@ variable "name" {
 
 variable "cidr" {
   description = "CIDR block of your VPC"
+  type        = string
 }
 
 variable "azs" {

@@ -1,6 +1,6 @@
 variable "enabled" {
-  type        = bool
   description = "Enable the module"
+  type        = bool
   default     = true
 }
 
@@ -145,7 +145,7 @@ variable "infrastructure_encryption_enabled" {
 ###########################################
 
 variable "nat_gateway_enabled" {
-  type        = bool
   description = "Enable NAT gateway to allow VM helath checks to reach the management api"
+  type        = bool
   default     = true
 }
