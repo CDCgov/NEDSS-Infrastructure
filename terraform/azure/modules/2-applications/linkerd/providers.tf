@@ -6,10 +6,13 @@ terraform {
       source  = "hashicorp/azurerm"
       version = ">=4.68, <5.0"
     }
-
     helm = {
       source  = "hashicorp/helm"
-      version = ">=3.1.1"
+      version = ">=3.1.1, <4.0"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = ">=4.3.0, < 5.0"
     }
   }
 }

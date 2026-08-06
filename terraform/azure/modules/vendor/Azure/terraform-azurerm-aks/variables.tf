@@ -379,8 +379,6 @@ variable "auto_scaler_profile_skip_nodes_with_system_pods" {
 
 variable "automatic_channel_upgrade" {
   description = <<-EOT
-  type        = string
-  default     = null
     (Optional) Defines the automatic upgrade channel for the AKS cluster.
     Possible values:
       * `"patch"`: Automatically upgrades to the latest patch version within the specified minor version in `kubernetes_version`. **If using "patch", `kubernetes_version` must be set only up to the minor version (e.g., "1.29").**
@@ -389,6 +387,9 @@ variable "automatic_channel_upgrade" {
     By default, automatic upgrades are disabled.
     More information: https://learn.microsoft.com/en-us/azure/aks/auto-upgrade-cluster
   EOT
+  type        = string
+  default     = null
+
 
   validation {
     condition = var.automatic_channel_upgrade == null ? true : contains([

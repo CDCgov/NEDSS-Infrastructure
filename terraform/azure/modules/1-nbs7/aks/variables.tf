@@ -139,7 +139,6 @@ variable "auto_scaling_enabled" {
 
 variable "os_sku" {
   description = <<-EOT
-  type        = string
   Specifies the OS SKU used by the agent pool. Possible values include: 
   `Ubuntu`, `Ubuntu2204`,`Ubuntu2404`, `CBLMariner`, `Mariner`, `Windows2019`, `Windows2022`. 
   If not specified, the default is `Ubuntu` if OSType=Linux or 
@@ -147,6 +146,7 @@ variable "os_sku" {
   will be changed to `Windows2022` after Windows2019 is deprecated. 
   Changing this forces a new resource to be created.
 EOT
+  type        = string
   default     = "Ubuntu2204"
 }
 
