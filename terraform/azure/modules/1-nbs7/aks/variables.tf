@@ -1,20 +1,3 @@
-variable "resource_group_location" {
-  description = "Location of the resource group."
-  type        = string
-  default     = "eastus"
-}
-
-variable "node_count" {
-  description = "The initial quantity of nodes for the node pool."
-  type        = number
-  default     = 3
-}
-
-variable "msi_id" {
-  description = "The Managed Service Identity ID. Set this value if you're running this example using Managed Identity as the authentication method."
-  type        = string
-  default     = null
-}
 
 variable "modern_resource_group_name" {
   description = "This defines the modern resource group name"
@@ -38,11 +21,6 @@ variable "k8_cluster_location" {
 
 # K8s node pool variables:
 
-variable "default_node_pool_name" {
-  description = "This defines the default node pool names"
-  type        = string
-  default     = "systempool"
-}
 
 variable "k8_orchestrator_version" {
   description = "Which Kubernetes release to use for the nodes/agents in the default node pool of the K8s cluster"
@@ -53,12 +31,6 @@ variable "agents_size" {
   description = "The default virtual machine size for the Kubernetes agents. Changing this without specifying `var.temporary_name_for_rotation` forces a new resource to be created."
   type        = string
   default     = "Standard_D2s_v3"
-}
-
-variable "node_pool_vm_size" {
-  description = "This defines the node pool size"
-  type        = string
-  default     = "Standard_DS2_v4"
 }
 
 variable "node_pool_zones" {
@@ -79,28 +51,10 @@ variable "node_pool_min_count" {
   default     = 2
 }
 
-variable "node_pool_disk_size_gb" {
-  description = "This defines the default node disk size"
-  type        = number
-  default     = 30
-}
-
-variable "node_pool_type" {
-  description = "This defines the default node pool type"
-  type        = string
-  default     = "VirtualMachineScaleSets"
-}
-
 variable "node_pool_network_plugin" {
   description = "This defines the k8 network plugin"
   type        = string
   default     = "kubenet"
-}
-
-variable "node_pool_load_balancer_sku" {
-  description = "This defines load balancer sku"
-  type        = string
-  default     = "standard"
 }
 
 variable "network_profile_pod_cidr" {
@@ -131,12 +85,6 @@ variable "identity_type" {
   description = "This defines the default value for identity type"
   type        = string
   default     = "UserAssigned"
-}
-
-variable "user_node_pool_name" {
-  description = "This defines the default node pool names"
-  type        = string
-  default     = "userlnxpool"
 }
 
 variable "modern_subnet" {
@@ -234,28 +182,6 @@ variable "datacompare_namespace_and_service" {
   }
 }
 
-variable "datacompare_blob_container_name" {
-  description = "Name of blob container to be used for datacompare role."
-  type        = string
-  default     = ""
-}
-
-variable "otel_collector_namespace_and_service" {
-  description = "List of Kubernetes namespace and service for the OTEL Collector federated credential"
-  type        = map(any)
-  default = {
-    "collector" = {
-      "namespace" = "observability"
-      "service"   = "splunk-otel-collector"
-    }
-  }
-}
-
-variable "otel_collector_blob_container_name" {
-  description = "Name of blob container to be used for OTEL Collector log storage."
-  type        = string
-  default     = ""
-}
 
 
 variable "storage_account_name" {

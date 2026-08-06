@@ -1,8 +1,7 @@
 
 locals {
-  argocd_global_image_repo         = "quay.io/argoproj/argocd"
-  argocd_redis_main_image_repo     = "public.ecr.aws/docker/library/redis"
-  argocd_redis_exporter_image_repo = "public.ecr.aws/bitnami/redis-exporter"
+  argocd_global_image_repo     = "quay.io/argoproj/argocd"
+  argocd_redis_main_image_repo = "public.ecr.aws/docker/library/redis"
 }
 
 # Create argocd for deployment

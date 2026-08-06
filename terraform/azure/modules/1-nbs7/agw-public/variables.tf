@@ -73,14 +73,6 @@ EOT
   type        = string
 }
 
-variable "agw_data_backend_host" {
-  description = <<-EOT
-  The target host header or FQDN expected by the Traefik ingress 
-  controller for routing.
-EOT
-  type        = string
-}
-
 variable "agw_aks_ip" {
   description = <<-EOT
   The private IP address of the Azure Kubernetes Service (AKS) internal 

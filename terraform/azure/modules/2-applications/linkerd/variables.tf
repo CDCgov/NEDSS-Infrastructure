@@ -1,9 +1,4 @@
 
-variable "aks_cluster_name" {
-  description = "Name of the AKS cluster"
-  type        = string
-  default     = "dev-aks"
-}
 
 variable "linkerd_repository" {
   description = "Repository to use when installing linkerd"
@@ -39,11 +34,6 @@ variable "linkerd_viz_namespace_name" {
   description = "Name of linkerd viz namespace"
   type        = string
   default     = "linkerd-viz"
-}
-
-variable "resource_group_name" {
-  description = "Name of the resource group"
-  type        = string
 }
 
 variable "create_linkerd_viz" {

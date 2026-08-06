@@ -9,11 +9,6 @@ variable "resource_prefix" {
   default = "dev"
 }
 
-variable "location" {
-  description = "Location for Azure resources"
-  type        = string
-}
-
 variable "storage_account_name" {
   type = string
 }
@@ -124,11 +119,6 @@ variable "kafka_subnet_name" {
 variable "tls_min_version" {
   type    = string
   default = "1.2"
-}
-
-variable "destination_address_prefix" {
-  type    = string
-  default = "VirtualNetwork"
 }
 
 variable "tags" {

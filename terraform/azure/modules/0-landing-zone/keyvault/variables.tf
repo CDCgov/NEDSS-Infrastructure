@@ -285,28 +285,6 @@ variable "access_policies" {
   }
 }
 
-variable "contacts" {
-  description = <<-EOT
-    List of certificate contacts notified on certificate lifecycle events
-    (e.g. expiry, auto-renewal failures). At least an email is required;
-    name and phone are optional.
-  EOT
-  type = list(object({
-    email = string
-    name  = optional(string)
-    phone = optional(string)
-  }))
-  default = []
-
-  validation {
-    condition = alltrue([
-      for c in var.contacts :
-      can(regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", c.email))
-    ])
-    error_message = "Each contact must have a valid email address."
-  }
-}
-
 variable "private_endpoint" {
   description = <<-EOT
     Optional configuration for a Private Endpoint that places the Key

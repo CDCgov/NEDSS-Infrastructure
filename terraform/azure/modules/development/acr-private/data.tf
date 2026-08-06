@@ -1,5 +1,3 @@
-# Get Client Config
-data "azurerm_client_config" "current" {}
 
 # Get Resource Group Data
 data "azurerm_resource_group" "rg" {

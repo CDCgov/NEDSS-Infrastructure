@@ -60,12 +60,6 @@ variable "virtual_network_name" {
   type        = string
 }
 
-variable "infrastructure_encryption_enabled" {
-  description = "Is infrastructure encryption enabled?"
-  type        = bool
-  default     = true
-}
-
 # Network
 variable "public_network_access_enabled" {
   description = "Whether the public network access is enabled?"
@@ -79,20 +73,8 @@ variable "dns_zone_id_blob" {
   default     = ""
 }
 
-variable "dns_zone_name_blob" {
-  description = "Name of DNS zone to which record will be added for blob storage. (create_dns_record must be true)"
-  type        = string
-  default     = ""
-}
-
 variable "dns_zone_id_file" {
   description = "Zone id of DNS to which record will be added for file storage. (create_dns_record must be true)"
-  type        = string
-  default     = ""
-}
-
-variable "dns_zone_name_file" {
-  description = "Name of DNS zone to which record will be added for file storage. (create_dns_record must be true)"
   type        = string
   default     = ""
 }

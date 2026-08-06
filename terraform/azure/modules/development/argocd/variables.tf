@@ -1,8 +1,3 @@
-variable "resource_prefix" {
-  description = "Prefix for resource names"
-  type        = string
-  default     = "cdc-nbs"
-}
 
 variable "deploy_argocd_helm" {
   description = "Do you wish to bootstrap ArgoCD with the EKS cluster deployment?"
