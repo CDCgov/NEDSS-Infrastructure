@@ -10,8 +10,9 @@ variable "deletion_window_in_days" {
 }
 
 variable "key_usage" {
-  default = "ENCRYPT_DECRYPT"
   type    = string
+  default = "ENCRYPT_DECRYPT"
+
   validation {
     condition = contains(
       ["ENCRYPT_DECRYPT", "SIGN_VERIFY", "GENERATE_VERIFY_MAC"],
@@ -26,8 +27,8 @@ variable "aliases" {
 }
 
 variable "enable_key_rotation" {
-  default = true
   type    = bool
+  default = true
 }
 
 variable "key_administrators" {
@@ -49,8 +50,8 @@ variable "key_service_users" {
 }
 
 variable "multi_region" {
-  default     = false
   description = " Indicates whether the KMS key is a multi-Region (`true`) or regional (`false`)"
+  default     = false
 }
 
 # Values to modify for custom policies
