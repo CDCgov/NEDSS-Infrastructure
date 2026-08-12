@@ -11,8 +11,8 @@ variable "vnet_resource_group_name" {
 }
 
 variable "vnet_location" {
-  type        = string
   description = "The Azure region"
+  type        = string
   default     = "eastus"
 }
 
@@ -28,8 +28,8 @@ variable "environment_name" {
 ################################################################################
 
 variable "kafka_enabled" {
-  type        = bool
   description = "Enable the module"
+  type        = bool
   default     = true
 }
 
@@ -155,8 +155,8 @@ variable "kafka_infrastructure_encryption_enabled" {
 }
 
 variable "kafka_nat_gateway_enabled" {
-  type        = bool
   description = "Enable NAT gateway to allow VM helath checks to reach the management api"
+  type        = bool
   default     = true
 }
 
@@ -166,103 +166,103 @@ variable "kafka_nat_gateway_enabled" {
 ################################################################################
 
 variable "storage_account_name" {
-  type        = string
   description = "Name for storage account. (Names must be between 3 and 24 characters in length and may contain numbers and lowercase letters only)"
+  type        = string
   default     = "nbsstorageaccount"
 }
 
 variable "storage_account_account_kind" {
-  type        = string
   description = "Defines the Kind of account. Valid options are BlobStorage, BlockBlobStorage, FileStorage, Storage and StorageV2."
+  type        = string
   default     = "StorageV2"
 
 }
 
 variable "storage_account_account_tier" {
-  type        = string
   description = "Defines the Tier to use for this storage account. Valid options are Standard and Premium. For BlockBlobStorage and FileStorage accounts only Premium is valid. Changing this forces a new resource to be created."
+  type        = string
   default     = "Standard"
 
 }
 
 variable "storage_account_create_dns_record" {
-  type        = bool
   description = "Create a DNS entry in an existing DNS zone? False requires manual addition of DNS configuration for private endpoint."
+  type        = bool
   default     = false
 }
 
 variable "storage_account_blob_private_ip_address" {
-  type        = string
   description = "Private IP address to set for storage account file endpoint."
+  type        = string
   default     = null
 }
 
 variable "storage_account_file_private_ip_address" {
-  type        = string
   description = "Private IP address to set for storage account file endpoint."
+  type        = string
   default     = null
 }
 
 # For definitions see https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy
 variable "storage_account_account_replication_type" {
-  type        = string
   description = "Defines the type of replication to use for this storage account. Valid options are LRS, GRS, RAGRS, ZRS, GZRS and RAGZRS. Changing this forces a new resource to be created when types LRS, GRS and RAGRS are changed to ZRS, GZRS or RAGZRS and vice versa."
+  type        = string
   default     = "GRS"
 
 }
 
 variable "storage_account_subnet_name" {
-  type        = string
   description = "Name of subnet within virtual_network_name to be associated with storage account private endpoints."
+  type        = string
 }
 
 variable "storage_account_infrastructure_encryption_enabled" {
-  type        = bool
   description = "Is infrastructure encryption enabled?"
+  type        = bool
   default     = true
 }
 
 # Network
 variable "storage_account_public_network_access_enabled" {
-  type        = bool
   description = "Whether the public network access is enabled?"
+  type        = bool
   default     = false
 }
 
 variable "storage_account_dns_zone_id_blob" {
-  type        = string
   description = "Zone id of DNS to which record will be added for blob storage.(create_dns_record must be true)"
+  type        = string
   default     = ""
 }
 
 variable "storage_account_dns_zone_name_blob" {
-  type        = string
   description = "Name of DNS zone to which record will be added for blob storage. (create_dns_record must be true)"
+  type        = string
   default     = ""
 }
 
 variable "storage_account_dns_zone_id_file" {
-  type        = string
   description = "Zone id of DNS to which record will be added for file storage. (create_dns_record must be true)"
+  type        = string
   default     = ""
 }
 
 variable "storage_account_dns_zone_name_file" {
-  type        = string
   description = "Name of DNS zone to which record will be added for file storage. (create_dns_record must be true)"
+  type        = string
   default     = ""
 }
 
 # Data retention
 variable "storage_account_blob_delete_retention_days" {
-  type        = number
   description = "Number of days to retain soft deleted blobs. Default 7 days."
+  type        = number
   default     = 7
 }
 
 variable "storage_account_blob_container_delete_retention_days" {
-  type        = number
   description = "Number of days to retain soft delete containers. Default 7 days."
+  type        = number
   default     = 7
 }
 
@@ -270,8 +270,8 @@ variable "storage_account_blob_container_delete_retention_days" {
 # Source: NEDSS-Infrastructure/terraform/azure/modules/1-nbs7/storage-dns-zone/variables.tf
 # ------------------------------------------------------------------------------
 variable "storage_dns_zone_virtual_network_name" {
-  type        = list(string)
   description = "List of virtual network names to be associated as a virtual network link for the private dns zone."
+  type        = list(string)
   default     = []
 }
 
@@ -279,20 +279,20 @@ variable "storage_dns_zone_virtual_network_name" {
 # Source: NEDSS-Infrastructure/terraform/azure/modules/1-nbs7/observability/variables.tf
 # ------------------------------------------------------------------------------
 variable "observability_resource_prefix" {
-  type        = string
   description = "Prefix for resource names"
+  type        = string
   default     = ""
 }
 
 variable "observability_update_admin_role_assignment" {
-  type        = bool
   description = "Allow observability to give deployment role admin permissions to the grafana dashboard"
+  type        = bool
   default     = true
 }
 
 variable "observability_grafana_major_version" {
-  type        = string
   description = "Major version number for Grafana"
+  type        = string
   default     = "12"
 }
 
@@ -300,14 +300,14 @@ variable "observability_grafana_major_version" {
 # Source: NEDSS-Infrastructure/terraform/azure/modules/1-nbs7/aks/variables.tf
 # ------------------------------------------------------------------------------
 variable "aks_node_count" {
-  type        = number
   description = "The initial quantity of nodes for the node pool."
+  type        = number
   default     = 3
 }
 
 variable "aks_msi_id" {
-  type        = string
   description = "The Managed Service Identity ID. Set this value if you're running this example using Managed Identity as the authentication method."
+  type        = string
   default     = null
 }
 
@@ -315,114 +315,114 @@ variable "aks_msi_id" {
 # K8s cluster variables:
 
 variable "aks_agents_size" {
+  description = "The default virtual machine size for the Kubernetes agents. Changing this without specifying `var.temporary_name_for_rotation` forces a new resource to be created."
   type        = string
   default     = "Standard_D2s_v7"
-  description = "The default virtual machine size for the Kubernetes agents. Changing this without specifying `var.temporary_name_for_rotation` forces a new resource to be created."
 }
 
 variable "aks_k8_cluster_version" {
-  type        = string
   description = "Which Kubernetes release to use for the K8s cluster"
+  type        = string
   default     = "1.35"
 }
 
 # K8s node pool variables:
 
 variable "aks_default_node_pool_name" {
-  type        = string
   description = "This defines the default node pool names"
+  type        = string
   default     = "systempool"
 }
 
 variable "aks_k8_orchestrator_version" {
-  type        = string
   description = "Which Kubernetes release to use for the nodes/agents in the default node pool of the K8s cluster"
+  type        = string
   default     = "1.35"
 }
 
 variable "aks_node_pool_vm_size" {
-  type        = string
   description = "This defines the node pool size"
+  type        = string
   default     = "Standard_D2s_v7"
 }
 
 variable "aks_node_pool_zones" {
-  type        = list(any)
   description = "AZs for the default node pool nodes"
+  type        = list(any)
   default     = [1, 2, 3]
 }
 
 
 variable "aks_node_pool_max_count" {
-  type        = number
   description = "This defines the default node pool max count"
+  type        = number
   default     = 5
 }
 
 
 variable "aks_node_pool_min_count" {
-  type        = number
   description = "This defines the default node pool min count"
+  type        = number
   default     = 2
 }
 
 variable "aks_node_pool_disk_size_gb" {
-  type        = number
   description = "This defines the default node disk size"
+  type        = number
   default     = 30
 }
 
 variable "aks_node_pool_type" {
-  type        = string
   description = "This defines the default node pool type"
+  type        = string
   default     = "VirtualMachineScaleSets"
 }
 
 variable "aks_node_pool_network_plugin" {
-  type        = string
   description = "This defines the k8 network plugin"
+  type        = string
   default     = "kubenet"
 }
 
 variable "aks_node_pool_load_balancer_sku" {
-  type        = string
   description = "This defines load balancer sku"
+  type        = string
   default     = "standard"
 }
 
 variable "aks_network_profile_pod_cidr" {
-  type        = string
   description = "This defines the default value for pod CIDR"
+  type        = string
   default     = "10.244.0.0/16"
 }
 
 variable "aks_net_profile_service_cidr" {
-  type        = string
   description = "This defines the default value for the service CIDR"
+  type        = string
   default     = "10.96.0.0/16"
 }
 
 variable "aks_net_profile_dns_service_ip" {
-  type        = string
   description = "This defines the default value for the dns service IP address"
+  type        = string
   default     = "10.96.0.10"
 }
 
 variable "aks_temporary_name_for_rotation" {
-  type        = string
   description = "This defines the default value for temp name for node rotation"
+  type        = string
   default     = "tempnode"
 }
 
 variable "aks_identity_type" {
-  type        = string
   description = "This defines the default value for identity type"
+  type        = string
   default     = "UserAssigned"
 }
 
 variable "aks_user_node_pool_name" {
-  type        = string
   description = "This defines the default node pool names"
+  type        = string
   default     = "userlnxpool"
 }
 
@@ -432,48 +432,47 @@ variable "aks_modern_subnet" {
 }
 
 variable "aks_resource_prefix" {
-  type        = string
   description = "Name to be used on all the resources as identifier. e.g. Project name, Application name"
+  type        = string
   default     = ""
 }
 
 variable "aks_vnet_name" {
-  type        = string
   description = "Name of the existing vnet"
+  type        = string
   default     = "csels-nbs-dev-low-modern-vnet"
 }
 
 variable "aks_subnet_name_aks" {
-  type        = string
   description = "Name of the aks subnet"
+  type        = string
   default     = "csels-nbs-dev-low-modern-vnet-sn"
 }
 
 variable "aks_rbac_aad_admin_group_object_ids" {
-  type        = list(string)
   description = "List of group ids with access to the AKS cluster control plane"
+  type        = list(string)
 }
 
 variable "aks_create_modern_subnet" {
-  type        = bool
   description = "Creates a new subnet for the AKS cluster"
+  type        = bool
   default     = false
 }
 
 variable "aks_existing_modern_subnet_name" {
-  type        = string
   description = "Name of the existing aks subnet"
+  type        = string
   default     = ""
 }
 
 variable "aks_auto_scaling_enabled" {
+  description = "Enable node pool autoscaling"
   type        = bool
   default     = true
-  description = "Enable node pool autoscaling"
 }
 
 variable "aks_os_sku" {
-  type        = string
   description = <<-EOT
   Specifies the OS SKU used by the agent pool. Possible values include: 
   `Ubuntu`, `Ubuntu2204`,`Ubuntu2404`, `CBLMariner`, `Mariner`, `Windows2019`, `Windows2022`. 
@@ -483,6 +482,7 @@ variable "aks_os_sku" {
   Changing this forces a new resource to be created.
 EOT
   default     = "Ubuntu2204"
+  type        = string
 }
 
 variable "aks_enable_cert_manager" {

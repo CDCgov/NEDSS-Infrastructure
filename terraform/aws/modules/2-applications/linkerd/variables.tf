@@ -18,22 +18,22 @@ variable "linkerd_viz_namespace_name" {
   default = "linkerd-viz"
 }
 variable "eks_cluster_name" {
-  type        = string
   description = "Name of the EKS cluster"
+  type        = string
 }
 
 variable "eks_cluster_endpoint" {
-  type        = string
   description = "Name of the EKS cluster"
+  type        = string
 }
 
 variable "cluster_certificate_authority_data" {
-  type        = string
   description = "TBase64 encoded certificate data required to communicate with the cluster"
+  type        = string
 }
 
 variable "linkerd_helm_version" {
+  description = "linkerd edge helm version"
   type        = string
   default     = "2025.7.3"
-  description = "linkerd edge helm version"
 }

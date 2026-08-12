@@ -1,6 +1,6 @@
 variable "enabled" {
-  type        = bool
   description = "Enable or disable the entire module without removing it."
+  type        = bool
   default     = true
 }
 

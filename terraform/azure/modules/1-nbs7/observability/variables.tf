@@ -1,18 +1,18 @@
 variable "resource_prefix" {
-  type        = string
   description = "Prefix for resource names"
+  type        = string
   default     = "nbs"
 }
 
 variable "resource_group_name" {
-  type        = string
   description = "Resource group name for existing and to be deployed azure resources"
+  type        = string
 
 }
 
 variable "cluster_name" {
-  type        = string
   description = "Name of AKS cluster for which monitoring will be set up"
+  type        = string
 }
 
 variable "location" {
@@ -21,13 +21,13 @@ variable "location" {
 }
 
 variable "update_admin_role_assignment" {
-  type        = bool
   description = "Allow observability to give deployment role admin permissions to the grafana dashboard"
+  type        = bool
   default     = true
 }
 
 variable "grafana_major_version" {
-  type        = string
   description = "Major version number for Grafana"
+  type        = string
   default     = "12"
 }

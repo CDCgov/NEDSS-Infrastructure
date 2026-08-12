@@ -2,8 +2,8 @@
 # Source: NEDSS-Infrastructure/terraform/azure/modules/0-landing-zone/keyvault/variables.tf
 ################################################################################
 variable "keyvault_enabled" {
-  type        = bool
   description = "Enable or disable the entire module without removing it."
+  type        = bool
   default     = true
 }
 
@@ -243,36 +243,36 @@ variable "keyvault_tags" {
 ################################################################################
 
 variable "subscription_id" {
-  type        = string
   description = "The Azure subscription id."
+  type        = string
 }
 
 variable "vnet_enabled" {
-  type        = bool
   description = "Whether to create the vnet"
+  type        = bool
   default     = true
 }
 
 variable "vnet_location" {
-  type        = string
   description = "The Azure region"
+  type        = string
   default     = "eastus"
 }
 
 variable "vnet_name" {
-  type        = string
   description = "Name of the vnet"
+  type        = string
   default     = "nbs"
 }
 
 variable "vnet_resource_group_name" {
-  type        = string
   description = "The name of the existing resource group"
+  type        = string
 }
 
 variable "vnet_address_space" {
-  type        = list(string)
   description = "Address space for the VNet"
+  type        = list(string)
 }
 
 variable "vnet_subnets" {
@@ -406,22 +406,22 @@ DESCRIPTION
 # Source: NEDSS-Infrastructure/terraform/azure/modules/0-landing-zone/private-dns-zone/variables.tf
 ################################################################################
 variable "private_dns_zone_enabled" {
-  type        = bool
   description = "Whether to have Terraform provision the resources from this module in your Azure subscription"
+  type        = bool
   default     = true # If this is false then all the other variables below are ignored
 }
 
 # Note that if "enabled" is true then a non-empty value must be specified for "resource_group_name" and also for "private_dns_zone_name", otherwise `terraform plan` will fail (because those variables are used by resources for args which do not allow an empty string).
 
 variable "private_dns_zone_resource_group_name" {
-  type        = string
   description = "The name of the resource group"
+  type        = string
   default     = ""
 }
 
 variable "private_domain_name" {
-  type        = string
   description = "The name of the Private DNS zone (if one is to be provisioned by Terraform)"
+  type        = string
   default     = ""
 }
 
@@ -448,14 +448,14 @@ variable "private_dns_zone_registration_enabled" {
 # Source: NEDSS-Infrastructure/terraform/azure/modules/0-landing-zone/public-dns-zone/variables.tf
 ################################################################################
 variable "public_dns_zone_enabled" {
-  type        = bool
   description = "Whether to have Terraform provision the resources from this module in your Azure subscription"
+  type        = bool
   default     = true
 }
 
 variable "public_domain_name" {
-  type        = string
   description = "The root domain (e.g., example.com)"
+  type        = string
   default     = ""
 }
 

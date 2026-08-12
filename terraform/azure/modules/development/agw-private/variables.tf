@@ -49,14 +49,14 @@ variable "agw_private_ip" {
 }
 
 variable "role_based_kv" {
+  description = "Keyvault uses roles"
   type        = bool
-  description = "Key Vault uses roles"
   default     = false
 }
 
 variable "agw_role_definition_name" {
-  type        = string
   description = "Name of the role to use with agw"
+  type        = string
   default     = ""
 
   validation {

@@ -1,12 +1,12 @@
 variable "description" {
-  type        = string
   description = "Give your key a description."
+  type        = string
 }
 
 variable "deletion_window_in_days" {
+  description = "Number of days to wait before deleting a KMS key range: 7-30"
   type        = number
   default     = 7
-  description = "Number of days to wait before deleting a KMS key range: 7-30"
 }
 
 variable "key_usage" {
@@ -31,19 +31,19 @@ variable "enable_key_rotation" {
 }
 
 variable "key_administrators" {
+  description = "A list of IAM ARNs for key administrators"
   type        = list(any)
   default     = []
-  description = "A list of IAM ARNs for key administrators"
 }
 variable "key_users" {
+  description = "A list of IAM ARNs for key users"
   type        = list(any)
   default     = []
-  description = "A list of IAM ARNs for key users"
 }
 variable "key_service_users" {
+  description = "A list of IAM ARNs for key service users"
   type        = list(any)
   default     = []
-  description = "A list of IAM ARNs for key service users"
 }
 
 variable "multi_region" {

@@ -1,18 +1,18 @@
 variable "resource_prefix" {
-  type        = string
   description = "Prefix for resource names"
+  type        = string
   default     = "cdc-nbs"
 }
 
 variable "create_msk" {
-  type        = bool
   description = "Create MSK cluser and required resources?"
+  type        = bool
   default     = true
 }
 
 variable "environment" {
-  type        = string
   description = "The environment, either 'development' or 'production'; which means by default two brokers of size kafka.t3.small or three kafka.m5.large brokers, and RF=2 or RF=3, respectively."
+  type        = string
   default     = "development"
   validation { # Note that `terraform validate` can only perform some checks, but all validation rules will be evaluated by `terraform plan`.
     condition     = contains(["development", "production"], var.environment)

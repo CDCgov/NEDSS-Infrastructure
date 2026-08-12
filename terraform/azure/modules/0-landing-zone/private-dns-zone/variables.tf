@@ -1,31 +1,31 @@
 variable "enabled" {
-  type        = bool
   description = "Whether to have Terraform provision the resources from this module in your Azure subscription"
+  type        = bool
   default     = true # If this is false then all the other variables below are ignored
 }
 
 # Note that if "enabled" is true then a non-empty value must be specified for "resource_group_name" and also for "private_dns_zone_name", otherwise `terraform plan` will fail (because those variables are used by resources for args which do not allow an empty string).
 
 variable "resource_group_name" {
-  type        = string
   description = "The name of the resource group"
+  type        = string
   default     = ""
 }
 
 variable "private_dns_zone_name" {
-  type        = string
   description = "Name for the private dns zone"
+  type        = string
   default     = ""
 }
 
 variable "vnet_id" {
-  type        = string
   description = "vnet id"
+  type        = string
 }
 
 variable "vnet_name" {
-  type        = string
   description = "vnet name"
+  type        = string
 }
 
 variable "dns_records" {

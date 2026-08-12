@@ -1,36 +1,36 @@
 variable "enabled" {
-  type        = bool
   description = "Whether to create the vnet"
+  type        = bool
   default     = true
 }
 
 variable "parent_id" {
-  type        = string
   description = "The ID of the existing resource group where the VNet will be provisioned"
+  type        = string
   # Retrieve this value by in the Azure portal going to the "Resource groups" service, click the name of the Resource group you
   # are specifying for 'vnet_resource_group_name', click 'JSON View', and use the value of the "id" field for this variable.
 }
 
 variable "vnet_location" {
-  type        = string
   description = "The Azure region"
+  type        = string
   default     = "eastus"
 }
 
 variable "vnet_name" {
-  type        = string
   description = "Name of the vnet"
+  type        = string
   default     = "nbs"
 }
 
 variable "resource_group_name" {
-  type        = string
   description = "The name of the existing resource group"
+  type        = string
 }
 
 variable "address_space" {
-  type        = list(string)
   description = "Address space for the VNet"
+  type        = list(string)
 }
 
 variable "subnets" {
