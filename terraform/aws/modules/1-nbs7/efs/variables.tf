@@ -13,6 +13,7 @@ variable "resource_prefix" {
 variable "vpc_id" {
   description = "VPC ID for EFS"
   type        = string
+
   validation {
     condition = (
       can(regex("^[a-zA-Z0-9]([a-zA-Z0-9]*-[a-zA-Z0-9])*[a-zA-Z0-9]+$", var.vpc_id)) &&

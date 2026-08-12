@@ -8,6 +8,7 @@ variable "resource_group_name" {
   description = "Resource group name"
   type        = string
   default     = ""
+
   validation { # The condition must evaluate to true for the validation to pass
     condition     = (!var.enabled) || (var.enabled && var.resource_group_name != "")
     error_message = "resource_group_name must have a value if module is enabled"
@@ -18,6 +19,7 @@ variable "public_domain_name" {
   description = "The root domain (e.g., example.com)"
   type        = string
   default     = ""
+
   validation {
     condition     = (!var.enabled) || (var.enabled && var.public_domain_name != "")
     error_message = "public_domain_name must have a value if module is enabled"

@@ -3,6 +3,7 @@ variable "synthetics_canary_bucket_name" {
   description = "bucket name for synthetics output"
   type        = string
 }
+
 variable "synthetics_canary_url" {
   description = "A URL to use for monitoring alerts"
   type        = string

@@ -14,6 +14,7 @@ variable "environment" {
   description = "The environment, either 'development' or 'production'; which means by default two brokers of size kafka.t3.small or three kafka.m5.large brokers, and RF=2 or RF=3, respectively."
   type        = string
   default     = "development"
+
   validation { # Note that `terraform validate` can only perform some checks, but all validation rules will be evaluated by `terraform plan`.
     condition     = contains(["development", "production"], var.environment)
     error_message = "This variable must be development or production."
@@ -23,6 +24,7 @@ variable "environment" {
 variable "msk_subnet_ids" {
   description = "The list of subnets to use, which determines how many AZs (Availability Zones) the cluster uses. There must be 2+ subnets for a 'development' environment, otherwise 3+ subnets."
   type        = list(string)
+
   validation {
     # AWS requires at least one broker per AZ. Thus checking the number of subnets here ensures the implementation of this module will create enough brokers.
     # Note that there is no advantage to providing more than the minimum required number of subnets, because this module only creates 2 or 3 brokers (plus additional_brokers_to_create).
@@ -37,6 +39,7 @@ variable "additional_brokers_to_create" {
   # The MSK requirement mentioned below is documented at https://docs.aws.amazon.com/msk/latest/developerguide/msk-update-broker-count.html
   description = "How many additional brokers to create - beyond the default of two for 'development' or otherwise three. AWS MSK requires that the number of brokers must be a multiple of the number of Availability Zones."
   default     = 0
+
   validation {
     condition     = ((var.environment == "development") && ((2 + var.additional_brokers_to_create) % length(var.msk_subnet_ids) == 0)) || ((var.environment == "production") && ((3 + var.additional_brokers_to_create) % length(var.msk_subnet_ids) == 0))
     error_message = "Invalid combo of number of subnets and brokers specified. AWS MSK requires that the number of brokers must be a multiple of the number of Availability Zones."

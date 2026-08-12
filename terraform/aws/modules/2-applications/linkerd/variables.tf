@@ -2,21 +2,27 @@
 variable "linkerd_repository" {
   default = "https://helm.linkerd.io/edge"
 }
+
 variable "linkerd_chart" {
   default = "linkerd-crds"
 }
+
 variable "linkerd_namespace_name" {
   default = "linkerd"
 }
+
 variable "linkerd_controlplane_chart" {
   default = "linkerd-control-plane"
 }
+
 variable "linkerd_viz_chart" {
   default = "linkerd-viz"
 }
+
 variable "linkerd_viz_namespace_name" {
   default = "linkerd-viz"
 }
+
 variable "eks_cluster_name" {
   description = "Name of the EKS cluster"
   type        = string

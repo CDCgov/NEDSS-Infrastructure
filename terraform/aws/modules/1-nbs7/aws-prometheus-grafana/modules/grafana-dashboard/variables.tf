@@ -3,9 +3,11 @@ variable "region" {
   description = "Infrastructure region"
   type        = string
 }
+
 variable "amg_api_token" {
   type = string
 }
+
 variable "grafana_workspace_url" {
   type = string
 }

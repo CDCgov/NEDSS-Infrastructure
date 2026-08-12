@@ -3,10 +3,12 @@ variable "bucket_prefix" {
   type        = string
   default     = "cdc-nbs"
 }
+
 variable "enable_default_bucket_lifecycle_policy" {
   description = "Whether the default rule is currently being applied. Valid values: Enabled or Disabled."
   type        = string
   default     = "Disabled"
+
   validation {
     condition     = var.enable_default_bucket_lifecycle_policy == "Enabled" || var.enable_default_bucket_lifecycle_policy == "Disabled"
     error_message = "enable_default_bucket_lifecycle_policy for the s3-bucket module must either \"Enabled\" or \"Disabled\""

@@ -38,10 +38,12 @@ variable "enable_nat_gateway" {
   description = "Create NAT Gateway?"
   type        = bool
 }
+
 variable "single_nat_gateway" {
   description = "Use a single NAT Gateway (low availability)?"
   type        = bool
 }
+
 variable "one_nat_gateway_per_az" {
   description = "Use a single NAT Gateway for each availability zone?"
   type        = bool
@@ -51,6 +53,7 @@ variable "enable_dns_hostnames" {
   description = "Should be true to enable DNS hostnames in the VPC"
   default     = false
 }
+
 variable "enable_dns_support" {
   description = "Should be true to enable DNS support in the VPC"
   default     = true
@@ -60,10 +63,12 @@ variable "manage_default_security_group" {
   description = "Should be true to adopt and manage default security group in the VPC"
   default     = false
 }
+
 variable "manage_default_route_table" {
   description = "Should be true to adopt and manage default route table in the VPC"
   default     = false
 }
+
 variable "manage_default_network_acl" {
   description = "Should be true to adopt and manage default network acl in the VPC"
   default     = false

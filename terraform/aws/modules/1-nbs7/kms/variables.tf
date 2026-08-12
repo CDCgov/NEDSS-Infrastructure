@@ -12,6 +12,7 @@ variable "deletion_window_in_days" {
 variable "key_usage" {
   default = "ENCRYPT_DECRYPT"
   type    = string
+
   validation {
     condition = contains(
       ["ENCRYPT_DECRYPT", "SIGN_VERIFY", "GENERATE_VERIFY_MAC"],
@@ -35,11 +36,13 @@ variable "key_administrators" {
   type        = list(any)
   default     = []
 }
+
 variable "key_users" {
   description = "A list of IAM ARNs for key users"
   type        = list(any)
   default     = []
 }
+
 variable "key_service_users" {
   description = "A list of IAM ARNs for key service users"
   type        = list(any)
