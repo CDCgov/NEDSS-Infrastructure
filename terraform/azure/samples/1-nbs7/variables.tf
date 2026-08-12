@@ -34,124 +34,149 @@ variable "kafka_enabled" {
 }
 
 variable "kafka_resource_prefix" {
-  type    = string
-  default = ""
+  description = "Prefix for all Kafka resources"
+  type        = string
+  default     = ""
 }
 
 variable "kafka_storage_account_name" {
-  type = string
+  description = "Name of the storage account to use with Kafka"
+  type        = string
 }
 
 variable "kafka_account_tier" {
-  type    = string
-  default = "Standard"
+  description = "The performance tier of the storage account"
+  type        = string
+  default     = "Standard"
 }
 
 variable "kafka_account_replication_type" {
-  type    = string
-  default = "LRS"
+  description = "The replication type of the storage account"
+  type        = string
+  default     = "LRS"
 }
 
-# variable "kafka_storage_container_name"{ 
-#     type = string
+# variable "kafka_storage_container_name" {
+#   description = "The name of the storage container"
+#   type        = string
 # }
 
 variable "kafka_container_access_type" {
-  type    = string
-  default = "private"
+  description = "The access type of the storage container"
+  type        = string
+  default     = "private"
 }
 
 variable "kafka_sg_name" {
-  type = string
+  description = "The name of the security group"
+  type        = string
 }
 
 variable "kafka_cluster_version" {
-  type    = string
-  default = "5.1"
+  description = "The version of the HDInsight cluster"
+  type        = string
+  default     = "5.1"
 }
 
 variable "kafka_cluster_tier" {
-  type    = string
-  default = "Standard"
+  description = "The tier of the HDInsight cluster"
+  type        = string
+  default     = "Standard"
 }
 
 variable "kafka_component_version" {
-  type    = string
-  default = "3.2"
+  description = "The version of the Kafka component"
+  type        = string
+  default     = "3.2"
 }
 
 variable "kafka_gtwy_username" {
-  type = string
+  description = "The username for the Ambari gateway"
+  type        = string
 }
 
 variable "kafka_gtwy_password" {
-  type      = string
-  sensitive = true
+  description = "The password for the Ambari gateway"
+  type        = string
+  sensitive   = true
 }
 
 variable "kafka_username" {
-  type = string
+  description = "The username for the Kafka cluster login"
+  type        = string
 }
 
 variable "kafka_password" {
-  type      = string
-  sensitive = true
+  description = "The password for the Kafka cluster login"
+  type        = string
+  sensitive   = true
 }
 
 variable "kafka_head_vm_size" {
-  type    = string
-  default = "Standard_D2s_v7"
+  description = "The VM size of the head node"
+  type        = string
+  default     = "Standard_D2s_v7"
 }
 
 variable "kafka_worker_vm_size" {
-  type    = string
-  default = "Standard_D2s_v7"
+  description = "The VM size of the worker node"
+  type        = string
+  default     = "Standard_D2s_v7"
 }
 
 variable "kafka_zookeeper_vm_size" {
-  type    = string
-  default = "Standard_D2s_v7"
+  description = "The VM size of the zookeeper node"
+  type        = string
+  default     = "Standard_D2s_v7"
 }
 
 variable "kafka_encryption_in_transit_enabled" {
-  type    = bool
-  default = true
+  description = "Set to true to enable encryption in transit"
+  type        = bool
+  default     = true
 }
 
 variable "kafka_number_of_disks_per_node" {
-  type    = number
-  default = 1
+  description = "The number of disks to attach to each worker node"
+  type        = number
+  default     = 1
 }
 
 variable "kafka_target_instance_count" {
-  type    = number
-  default = 3
+  description = "The target number of worker node instances"
+  type        = number
+  default     = 3
 }
 
 variable "kafka_subnet_name" {
-  type = string
+  description = "The name of the Kafka subnet"
+  type        = string
 }
 
 variable "kafka_tls_min_version" {
-  type    = string
-  default = "1.2"
+  description = "The minimum TLS version to allow"
+  type        = string
+  default     = "1.2"
 }
 
 variable "kafka_destination_address_prefix" {
-  type    = string
-  default = "VirtualNetwork"
+  description = "The destination address prefix for the network security rule"
+  type        = string
+  default     = "VirtualNetwork"
 }
 
 variable "kafka_tags" {
-  type = map(string)
+  description = "A map of tags to add to the resources"
+  type        = map(string)
   default = {
     createdby = "Terraform"
   }
 }
 
 variable "kafka_infrastructure_encryption_enabled" {
-  type    = bool
-  default = true
+  description = "Set to true to enable infrastructure encryption"
+  type        = bool
+  default     = true
 }
 
 variable "kafka_nat_gateway_enabled" {
@@ -427,8 +452,9 @@ variable "aks_user_node_pool_name" {
 }
 
 variable "aks_modern_subnet" {
-  type    = list(any)
-  default = []
+  description = "Name of AKS subnet if it exists"
+  type        = list(any)
+  default     = []
 }
 
 variable "aks_resource_prefix" {

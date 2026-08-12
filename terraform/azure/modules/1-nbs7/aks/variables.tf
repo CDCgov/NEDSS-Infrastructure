@@ -140,8 +140,9 @@ variable "user_node_pool_name" {
 }
 
 variable "modern_subnet" {
-  type    = list(any)
-  default = []
+  description = "Name of AKS subnet if it exists"
+  type        = list(any)
+  default     = []
 }
 
 variable "resource_prefix" {

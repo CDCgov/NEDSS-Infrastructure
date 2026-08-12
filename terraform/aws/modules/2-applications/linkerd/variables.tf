@@ -1,26 +1,37 @@
-
 variable "linkerd_repository" {
-  default = "https://helm.linkerd.io/edge"
+  description = "Repository to use when installing linkerd"
+  type        = string
+  default     = "https://helm.linkerd.io/stable"
 }
 
 variable "linkerd_chart" {
-  default = "linkerd-crds"
+  description = "Name of linkerd chart"
+  type        = string
+  default     = "linkerd-crds"
 }
 
 variable "linkerd_namespace_name" {
-  default = "linkerd"
+  description = "Name of linkerd namespace"
+  type        = string
+  default     = "linkerd"
 }
 
 variable "linkerd_controlplane_chart" {
-  default = "linkerd-control-plane"
+  description = "Name of linkerd control plane chart"
+  type        = string
+  default     = "linkerd-control-plane"
 }
 
 variable "linkerd_viz_chart" {
-  default = "linkerd-viz"
+  description = "Name of linkerd viz chart"
+  type        = string
+  default     = "linkerd-viz"
 }
 
 variable "linkerd_viz_namespace_name" {
-  default = "linkerd-viz"
+  description = "Name of linkerd viz namespace"
+  type        = string
+  default     = "linkerd-viz"
 }
 
 variable "eks_cluster_name" {
@@ -34,7 +45,7 @@ variable "eks_cluster_endpoint" {
 }
 
 variable "cluster_certificate_authority_data" {
-  description = "TBase64 encoded certificate data required to communicate with the cluster"
+  description = "Base64-encoded certificate data required to communicate with the cluster"
   type        = string
 }
 

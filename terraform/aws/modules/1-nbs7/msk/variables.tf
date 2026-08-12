@@ -35,9 +35,9 @@ variable "msk_subnet_ids" {
 }
 
 variable "additional_brokers_to_create" {
-  type = number
   # The MSK requirement mentioned below is documented at https://docs.aws.amazon.com/msk/latest/developerguide/msk-update-broker-count.html
   description = "How many additional brokers to create - beyond the default of two for 'development' or otherwise three. AWS MSK requires that the number of brokers must be a multiple of the number of Availability Zones."
+  type        = number
   default     = 0
 
   validation {
@@ -67,7 +67,8 @@ variable "vpc_id" {
 # }
 
 variable "cidr_blocks" {
-  type = list(any)
+  description = "CIDR blocks for allowing access to MSK via security group rules"
+  type        = list(any)
 }
 
 variable "kafka_version" {
