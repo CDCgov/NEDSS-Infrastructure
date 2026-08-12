@@ -4,14 +4,32 @@ variable "data_sources" {
   default     = ["PROMETHEUS"]
 }
 
-variable "grafana_workspace_name" {}
+variable "grafana_workspace_name" {
+  description = "The name of the Grafana workspace"
+  type        = string
+}
 
-variable "tags" {}
+variable "tags" {
+  description = "A map of tags to add to resources"
+  type        = map(string)
+}
 
-variable "endpoint_url" {}
+variable "endpoint_url" {
+  description = "The URL of the endpoint"
+  type        = string
+}
 
-variable "amp_workspace_id" {}
+variable "amp_workspace_id" {
+  description = "The ID of the Amazon Managed Prometheus workspace."
+  type        = string
+}
 
-variable "region" {}
+variable "region" {
+  description = "The AWS region to use for the resources"
+  type        = string
+}
 
-variable "resource_prefix" {}
+variable "resource_prefix" {
+  description = "The prefix text to add to the start of each resource name"
+  type        = string
+}
