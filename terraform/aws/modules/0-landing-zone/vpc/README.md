@@ -1,44 +1,64 @@
-# Deploying AWS Resource with Terraform
+# Terraform AWS Module: 0-landing-zone/vpc
 
 ## Description
 
-Contained within are modules for deploying baseline resources within a respoective AWS environment using Terraform. The below module is used for AWS VPC purposes.
+This module is used to deploy and configure AWS Virtual Private Cloud (VPC) and related resources for NBS7.
 
-## Values
+<!-- BEGIN_TF_DOCS -->
 
-Below are the available Variables contained within this VPC module.
+## Requirements
 
-| Key | Type | Default | Description |
-| -------------- | -------------- | -------------- | -------------- |
-| azs | list |  | List of AWS availability zones in current region |
-| cidr | string |  | CIDR block of your VPC |
-| create_igw | boolean |  | Create an internet gateway(requires public subnet)? |
-| enable_dns_hostnames | boolean | `false` | Should be true to enable DNS hostnames in the VPC |
-| enable_dns_support | boolean | `true` | Should be true to enable DNS support in the VPC |
-| enable_nat_gateway | boolean |  | Create NAT gateway |
-| manage_default_network_acl | boolean | `false` | Should be true to adopt and manage default network acl in the VPC |
-| manage_default_route_table | boolean | `false` | Should be true to adopt and manage default route table in the VPC |
-| manage_default_security_group | boolean | `false` | Should be true to adopt and manage default security group in the VPC |
-| map_public_ip_on_launch | boolean | `false` | Specify true to indicate that instances launched into the subnet should be assigned a public IP address |
-| name | string |  | Name of your VPC (an overwrite option to use a custom name) |
-| one_nat_gateway_per_az | boolean |  | Use a single NAT gateway for each availability zone |
-| private_subnets | list |  | List of CIDR blocks for each private subnets to be created |
-| public_subnets | list |  | List of CIDR blocks for each public subnets to be created |
-| resource_prefix | string |  | Prefix for resource names |
-| single_nat_gateway | boolean|  | Use a single NAT gateway (low availability) |
+| Name                                                                     | Version            |
+| ------------------------------------------------------------------------ | ------------------ |
+| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.15.6          |
+| <a name="requirement_aws"></a> [aws](#requirement_aws)                   | >= 6.21.0, < 7.0.0 |
 
-Below are the available Outputs contained within this DNS moudle:
+## Providers
 
-| Key | Type | Default | Description |
-| -------------- | -------------- | -------------- | -------------- |
-| private_route_table_id |  | `module.vpc.private_route_table_ids[0]` | Private VPC Route Table ID's |
-| private_subnets |  | `module.vpc.private_subnets` | Private VPC Subnets |
-| private_subnets_cidr_blocks |  | `module.vpc.private_subnets_cidr_blocks` | Private VPC Subnet CIDR Blocks |
-| public_route_table_id |  | `module.vpc.public_route_table_ids[0]` | Public VPC Route Table ID's |
-| public_subnets |  | `module.vpc.public_subnets` | Public VPC Subnets |
-| public_subnets_cidr_blocks |  | `module.vpc.public_subnets_cidr_blocks` | Public VPC Subnet CIDR Blocks |
-| vpc_cidr_block |  | `module.vpc.vpc_cidr_block` | VPC Cidr block |
-| vpc_id |  | `module.vpc.vpc_id` | VPC ID |
+No providers.
 
+## Modules
 
+| Name                                         | Source                        | Version         |
+| -------------------------------------------- | ----------------------------- | --------------- |
+| <a name="module_vpc"></a> [vpc](#module_vpc) | terraform-aws-modules/vpc/aws | >=6.5.1, <7.0.0 |
 
+## Resources
+
+No resources.
+
+## Inputs
+
+| Name                                                                                                                     | Description                                                                                                                 | Type        | Default     | Required |
+| ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------- | :------: |
+| <a name="input_azs"></a> [azs](#input_azs)                                                                               | List of AWS availability zones in current region                                                                            | `list(any)` | n/a         |   yes    |
+| <a name="input_cidr"></a> [cidr](#input_cidr)                                                                            | CIDR block of your VPC                                                                                                      | `any`       | n/a         |   yes    |
+| <a name="input_create_igw"></a> [create_igw](#input_create_igw)                                                          | Create an internet gateway(requires public subnet)?                                                                         | `bool`      | n/a         |   yes    |
+| <a name="input_enable_dns_hostnames"></a> [enable_dns_hostnames](#input_enable_dns_hostnames)                            | Should be true to enable DNS hostnames in the VPC                                                                           | `bool`      | `false`     |    no    |
+| <a name="input_enable_dns_support"></a> [enable_dns_support](#input_enable_dns_support)                                  | Should be true to enable DNS support in the VPC                                                                             | `bool`      | `true`      |    no    |
+| <a name="input_enable_nat_gateway"></a> [enable_nat_gateway](#input_enable_nat_gateway)                                  | Create NAT Gateway?                                                                                                         | `bool`      | n/a         |   yes    |
+| <a name="input_manage_default_network_acl"></a> [manage_default_network_acl](#input_manage_default_network_acl)          | Should be true to adopt and manage default network acl in the VPC                                                           | `bool`      | `false`     |    no    |
+| <a name="input_manage_default_route_table"></a> [manage_default_route_table](#input_manage_default_route_table)          | Should be true to adopt and manage default route table in the VPC                                                           | `bool`      | `false`     |    no    |
+| <a name="input_manage_default_security_group"></a> [manage_default_security_group](#input_manage_default_security_group) | Should be true to adopt and manage default security group in the VPC                                                        | `bool`      | `false`     |    no    |
+| <a name="input_map_public_ip_on_launch"></a> [map_public_ip_on_launch](#input_map_public_ip_on_launch)                   | Specify true to indicate that instances launched into the subnet should be assigned a public IP address. Default is `false` | `bool`      | `false`     |    no    |
+| <a name="input_name"></a> [name](#input_name)                                                                            | Name of your VPC (an overwrite option to use a custom name)                                                                 | `string`    | `""`        |    no    |
+| <a name="input_one_nat_gateway_per_az"></a> [one_nat_gateway_per_az](#input_one_nat_gateway_per_az)                      | Use a single NAT Gateway for each availability zone?                                                                        | `bool`      | n/a         |   yes    |
+| <a name="input_private_subnets"></a> [private_subnets](#input_private_subnets)                                           | List of CIDR blocks for each private subnets to be created                                                                  | `list(any)` | n/a         |   yes    |
+| <a name="input_public_subnets"></a> [public_subnets](#input_public_subnets)                                              | List of CIDR blocks for each private subnets to be created                                                                  | `list(any)` | n/a         |   yes    |
+| <a name="input_resource_prefix"></a> [resource_prefix](#input_resource_prefix)                                           | Prefix for resource names                                                                                                   | `string`    | `"cdc-nbs"` |    no    |
+| <a name="input_single_nat_gateway"></a> [single_nat_gateway](#input_single_nat_gateway)                                  | Use a single NAT Gateway (low availability)?                                                                                | `bool`      | n/a         |   yes    |
+
+## Outputs
+
+| Name                                                                                                                 | Description |
+| -------------------------------------------------------------------------------------------------------------------- | ----------- |
+| <a name="output_private_route_table_id"></a> [private_route_table_id](#output_private_route_table_id)                | n/a         |
+| <a name="output_private_subnets"></a> [private_subnets](#output_private_subnets)                                     | n/a         |
+| <a name="output_private_subnets_cidr_blocks"></a> [private_subnets_cidr_blocks](#output_private_subnets_cidr_blocks) | n/a         |
+| <a name="output_public_route_table_id"></a> [public_route_table_id](#output_public_route_table_id)                   | n/a         |
+| <a name="output_public_subnets"></a> [public_subnets](#output_public_subnets)                                        | n/a         |
+| <a name="output_public_subnets_cidr_blocks"></a> [public_subnets_cidr_blocks](#output_public_subnets_cidr_blocks)    | n/a         |
+| <a name="output_vpc_cidr_block"></a> [vpc_cidr_block](#output_vpc_cidr_block)                                        | n/a         |
+| <a name="output_vpc_id"></a> [vpc_id](#output_vpc_id)                                                                | n/a         |
+
+<!-- END_TF_DOCS -->
