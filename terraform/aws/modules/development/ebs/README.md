@@ -1,13 +1,39 @@
-# Deploying AWS Resource with Terraform
+# Terraform AWS Module: development/ebs
 
 ## Description
 
-Contained within are modules for deploying baseline resources within a respoective AWS environment using Terraform. The below module is used for AWS EBS purposes.
+This module is used to deploy and configure NBS7 development resources for AWS Elastic Block Store (EBS)
 
-## Values
+<!-- BEGIN_TF_DOCS -->
 
-Below are the available Variables contained within this EBS module:
+## Requirements
 
-| Key | Type | Default | Description |
-| -------------- | -------------- | -------------- | -------------- |
-| enable_ebs_encryption_by_default | boolean | `true` | Enable EBS Encryption by Default |
+No requirements.
+
+## Providers
+
+| Name                                             | Version |
+| ------------------------------------------------ | ------- |
+| <a name="provider_aws"></a> [aws](#provider_aws) | n/a     |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name                                                                                                                                           | Type     |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| [aws_ebs_encryption_by_default.example](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ebs_encryption_by_default) | resource |
+
+## Inputs
+
+| Name                                                                                                                              | Description                      | Type   | Default | Required |
+| --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ------ | ------- | :------: |
+| <a name="input_enable_ebs_encryption_by_default"></a> [enable_ebs_encryption_by_default](#input_enable_ebs_encryption_by_default) | Enable EBS Encryption by Default | `bool` | `true`  |    no    |
+
+## Outputs
+
+No outputs.
+
+<!-- END_TF_DOCS -->

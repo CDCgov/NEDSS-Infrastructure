@@ -1,35 +1,88 @@
-# Deploying AWS Resource with Terraform
+# Terraform AWS Module: development/eks
 
 ## Description
 
-Contained within are modules for deploying baseline resources within a respoective AWS environment using Terraform. The below module is used for AWS EKS purposes.
+This module is used to deploy and configure NBS7 development resources for AWS Elastic Kubernetes Service.
 
-## Values
+<!-- BEGIN_TF_DOCS -->
 
-Below are the available Variables contained within this EKS module:
+## Requirements
 
-| Key | Type | Default | Description |
-| -------------- | -------------- | -------------- | -------------- |
-| argocd_imageupdater_version | string | `map(string)` | Version of ArgoCDImageUpdater with which to bootstrap EKS cluster |
-| argocd_version | string | `5.23.3` | Version of ArgoCD with which to bootstrap EKS cluster |
-| argo_repo_login_data | map(string) |  | Pass stringData to set up argocd connection with repo see <https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/> |
-| aws_role_arn | string |  | AWS Role arn used to authenticate into EKS cluster |
-| bootstrap_extra_args | string | " " | Extra args to pass to the EKS bootstrap |
-| cluster_service_ipv4_cider | string | " " | An optional cluster service IPv4 CIDR |
-| ebs_delete_volume_on_termination | boolean | `true` | Delete EBS volume on termination |
-| ebs_encrypted | boolean | `true` | Encrypt EBS volume on creation |
-| ebs_volume_size | number | `100` | EBS volume size on creation |
-| ebs_volume_type | string | `gp3` | EBS volume typ eon creation |
-| eks_cluster_version | string | `1.24` | Version of EKS cluster to provision |
-| eks_desired_nodes_count | number | `2` | Number of EKS nodes desired (defaul = 2)
-| eks_disk_size | number | `20` | Size of EKS volumes in GB |
-| eks_instance_types | list(any) | `m5.large` | Instance type to use in EKS cluster |
-| eks_max_nodes_count | number | `5` | Maximum number of EKS nodes (defaul =5) |
-| eks_min_nodes_count | number | `1` | Number of EKS nodes desired (defaul = 1) |
-| enable_bootstrap_user_data | bool | `false` | Enable bootstrap user data |
-| post_bootstrap_user_data | string | " " | User data to be executed after the EKS bootstrap |
-| pre_bootstrap_user_data | string | " " | User data to be executed before the EKS bootstrap |
-| resource_prefix | string |  | Name to be used on all the resources as identifier. e.g. Project name, Application name |
-| subnet_ids | list(any) |  | Subnet Ids to be used when creating EKS cluster |
-| tags | map(string) |  | map(string) of tags to add to created hosted zone |
-| vpc_id | string |  | VPC Id to be used with cluster |
+No requirements.
+
+## Providers
+
+| Name                                                                  | Version |
+| --------------------------------------------------------------------- | ------- |
+| <a name="provider_aws"></a> [aws](#provider_aws)                      | n/a     |
+| <a name="provider_helm"></a> [helm](#provider_helm)                   | n/a     |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider_kubernetes) | n/a     |
+| <a name="provider_tls"></a> [tls](#provider_tls)                      | n/a     |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name                                                                                                                                                                             | Type        |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [aws_eks_addon.addons](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon)                                                                    | resource    |
+| [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)                                                                  | resource    |
+| [aws_eks_node_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)                                                            | resource    |
+| [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider)                         | resource    |
+| [aws_iam_policy.ecr_to_eks_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy)                                                       | resource    |
+| [aws_iam_policy.eks_ebs_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy)                                                      | resource    |
+| [aws_iam_policy.eks_efs_iam_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy)                                                      | resource    |
+| [aws_iam_role.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role)                                                                     | resource    |
+| [aws_iam_role.efs_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role)                                                                | resource    |
+| [aws_iam_role.eks_iam_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role)                                                                | resource    |
+| [aws_iam_role.node](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role)                                                                        | resource    |
+| [aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment)          | resource    |
+| [aws_iam_role_policy_attachment.node_AmazonEBSCSIDriverPolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment)           | resource    |
+| [aws_iam_role_policy_attachment.node_AmazonEC2ContainerRegistryReadOnly](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource    |
+| [aws_iam_role_policy_attachment.node_AmazonEFSCSIDriverPolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment)           | resource    |
+| [aws_iam_role_policy_attachment.node_AmazonEKSWorkerNodePolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment)          | resource    |
+| [aws_iam_role_policy_attachment.node_AmazonEKS_CNI_Policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment)               | resource    |
+| [aws_iam_role_policy_attachment.node_NodeInstancePolicy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment)                 | resource    |
+| [aws_iam_role_policy_attachment.node_NodeInstanceRole](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment)                   | resource    |
+| [aws_security_group.eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)                                                     | resource    |
+| [aws_security_group.eks_nodes](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group)                                                       | resource    |
+| [aws_security_group_rule.cluster_inbound](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)                                       | resource    |
+| [aws_security_group_rule.cluster_outbound](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)                                      | resource    |
+| [aws_security_group_rule.nodes_cluster_inbound](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)                                 | resource    |
+| [aws_security_group_rule.nodes_internal](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule)                                        | resource    |
+| [helm_release.argocd](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release)                                                                      | resource    |
+| [helm_release.efs](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release)                                                                         | resource    |
+| [kubernetes_service_account.this](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account)                                            | resource    |
+| [aws_iam_policy_document.eks_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document)                             | data source |
+| [tls_certificate.tls_cert](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate)                                                           | data source |
+
+## Inputs
+
+| Name                                                                                                                              | Description                                                                             | Type                                                                       | Default                                                                                                  | Required |
+| --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | :------: |
+| <a name="input_addons"></a> [addons](#input_addons)                                                                               | n/a                                                                                     | <pre>list(object({<br/> name = string<br/> version = string<br/> }))</pre> | <pre>[<br/> {<br/> "name": "aws-ebs-csi-driver",<br/> "version": "v1.15.0-eksbuild.1"<br/> }<br/>]</pre> |    no    |
+| <a name="input_argocd_imageupdater_version"></a> [argocd_imageupdater_version](#input_argocd_imageupdater_version)                | Version of ArgoCDImageUpdater with which to bootstrap EKS cluster                       | `string`                                                                   | `"0.8.4"`                                                                                                |    no    |
+| <a name="input_argocd_version"></a> [argocd_version](#input_argocd_version)                                                       | Version of ArgoCD with which to bootstrap EKS cluster                                   | `string`                                                                   | `"5.23.3"`                                                                                               |    no    |
+| <a name="input_aws_role_arn"></a> [aws_role_arn](#input_aws_role_arn)                                                             | AWS Role arn used to authenticate into EKS cluster                                      | `string`                                                                   | n/a                                                                                                      |   yes    |
+| <a name="input_ebs_delete_volume_on_termination"></a> [ebs_delete_volume_on_termination](#input_ebs_delete_volume_on_termination) | Delete EBS volume on termination                                                        | `bool`                                                                     | `true`                                                                                                   |    no    |
+| <a name="input_ebs_encrypted"></a> [ebs_encrypted](#input_ebs_encrypted)                                                          | Encrypt EBS volume on creation                                                          | `bool`                                                                     | `true`                                                                                                   |    no    |
+| <a name="input_ebs_volume_size"></a> [ebs_volume_size](#input_ebs_volume_size)                                                    | EBS volume size on creation                                                             | `number`                                                                   | `100`                                                                                                    |    no    |
+| <a name="input_ebs_volume_type"></a> [ebs_volume_type](#input_ebs_volume_type)                                                    | EBS volume type on creation                                                             | `string`                                                                   | `"gp3"`                                                                                                  |    no    |
+| <a name="input_eks_cluster_version"></a> [eks_cluster_version](#input_eks_cluster_version)                                        | Version of EKS cluster to provision                                                     | `string`                                                                   | `"1.24"`                                                                                                 |    no    |
+| <a name="input_eks_desired_nodes_count"></a> [eks_desired_nodes_count](#input_eks_desired_nodes_count)                            | Number of EKS nodes desired (defaul = 2)                                                | `number`                                                                   | `2`                                                                                                      |    no    |
+| <a name="input_eks_disk_size"></a> [eks_disk_size](#input_eks_disk_size)                                                          | Size of EKS volumes in GB                                                               | `number`                                                                   | `20`                                                                                                     |    no    |
+| <a name="input_eks_instance_types"></a> [eks_instance_types](#input_eks_instance_types)                                           | Instance type to use in EKS cluster                                                     | `list(any)`                                                                | <pre>[<br/> "m5.large"<br/>]</pre>                                                                       |    no    |
+| <a name="input_eks_max_nodes_count"></a> [eks_max_nodes_count](#input_eks_max_nodes_count)                                        | Maximum number of EKS nodes (defaul = 5)                                                | `number`                                                                   | `5`                                                                                                      |    no    |
+| <a name="input_eks_min_nodes_count"></a> [eks_min_nodes_count](#input_eks_min_nodes_count)                                        | Number of EKS nodes desired (defaul = 1)                                                | `number`                                                                   | `1`                                                                                                      |    no    |
+| <a name="input_resource_prefix"></a> [resource_prefix](#input_resource_prefix)                                                    | Name to be used on all the resources as identifier. e.g. Project name, Application name | `string`                                                                   | n/a                                                                                                      |   yes    |
+| <a name="input_subnet_ids"></a> [subnet_ids](#input_subnet_ids)                                                                   | Subnet Ids to be used when creating EKS cluster                                         | `list(any)`                                                                | n/a                                                                                                      |   yes    |
+| <a name="input_tags"></a> [tags](#input_tags)                                                                                     | A map of tags to add to all resources                                                   | `map(string)`                                                              | n/a                                                                                                      |   yes    |
+| <a name="input_vpc_id"></a> [vpc_id](#input_vpc_id)                                                                               | VPC Id to be used with cluster                                                          | `string`                                                                   | n/a                                                                                                      |   yes    |
+
+## Outputs
+
+No outputs.
+
+<!-- END_TF_DOCS -->
