@@ -4,45 +4,37 @@
 
 This submodule is used to deploy and configure the Grafana dashboard and related resources for NBS7.
 
+## Module Details
+
 <!-- BEGIN_TF_DOCS -->
+### Requirements
 
-## Requirements
+| Name | Version |
+| ---- | ------- |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.6 |
+| <a name="requirement_grafana"></a> [grafana](#requirement\_grafana) | >=4.19.0, < 5.0.0 |
 
-| Name                                                                     | Version           |
-| ------------------------------------------------------------------------ | ----------------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.15.6         |
-| <a name="requirement_grafana"></a> [grafana](#requirement_grafana)       | >=4.19.0, < 5.0.0 |
+### Providers
 
-## Providers
+| Name | Version |
+| ---- | ------- |
+| <a name="provider_grafana"></a> [grafana](#provider\_grafana) | >=4.19.0, < 5.0.0 |
 
-| Name                                                         | Version           |
-| ------------------------------------------------------------ | ----------------- |
-| <a name="provider_grafana"></a> [grafana](#provider_grafana) | >=4.19.0, < 5.0.0 |
+### Resources
 
-## Modules
-
-No modules.
-
-## Resources
-
-| Name                                                                                                                                             | Type     |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| Name | Type |
+| ---- | ---- |
 | [grafana_dashboard.prometheus-nginx-ingress-controller](https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/dashboard) | resource |
-| [grafana_data_source.prometheus](https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/data_source)                      | resource |
-| [grafana_folder.data](https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/folder)                                      | resource |
+| [grafana_data_source.prometheus](https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/data_source) | resource |
+| [grafana_folder.data](https://registry.terraform.io/providers/grafana/grafana/latest/docs/resources/folder) | resource |
 
-## Inputs
+### Inputs
 
-| Name                                                                                             | Description                                        | Type     | Default         | Required |
-| ------------------------------------------------------------------------------------------------ | -------------------------------------------------- | -------- | --------------- | :------: |
-| <a name="input_amg_api_token"></a> [amg_api_token](#input_amg_api_token)                         | The API token for Amazon Managed Grafana           | `string` | n/a             |   yes    |
-| <a name="input_amp_url"></a> [amp_url](#input_amp_url)                                           | The URL of the Amazon Managed Prometheus workspace | `string` | n/a             |   yes    |
-| <a name="input_data_source_uid"></a> [data_source_uid](#input_data_source_uid)                   | The UID to give the Prometheus data source         | `string` | `"prom_ds_uid"` |    no    |
-| <a name="input_grafana_workspace_url"></a> [grafana_workspace_url](#input_grafana_workspace_url) | The URL of the Grafana workspace                   | `string` | n/a             |   yes    |
-| <a name="input_region"></a> [region](#input_region)                                              | The AWS region to use for the resources            | `string` | n/a             |   yes    |
-
-## Outputs
-
-No outputs.
-
+| Name | Description | Type | Default | Required |
+| ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_amg_api_token"></a> [amg\_api\_token](#input\_amg\_api\_token) | The API token for Amazon Managed Grafana | `string` | n/a | yes |
+| <a name="input_amp_url"></a> [amp\_url](#input\_amp\_url) | The URL of the Amazon Managed Prometheus workspace | `string` | n/a | yes |
+| <a name="input_grafana_workspace_url"></a> [grafana\_workspace\_url](#input\_grafana\_workspace\_url) | The URL of the Grafana workspace | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | The AWS region to use for the resources | `string` | n/a | yes |
+| <a name="input_data_source_uid"></a> [data\_source\_uid](#input\_data\_source\_uid) | The UID to give the Prometheus data source | `string` | `"prom_ds_uid"` | no |
 <!-- END_TF_DOCS -->
