@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for Azure SQL Managed Instances.
+This module deploys and configures NBS 7 development resources for Azure SQL Managed Instances.
 
 ## Module Details
 

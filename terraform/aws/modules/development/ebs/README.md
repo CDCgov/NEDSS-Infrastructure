@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for AWS Elastic Block Store (EBS)
+This module deploys and configures NBS 7 development resources for AWS Elastic Block Store (EBS)
 
 ## Module Details
 

@@ -9,14 +9,14 @@ which query your environment. Each layer will by default deploy all modules cont
 
 ## Assumptions
 
-The current deployment of NBS7 assumes there is a functional NBS6 installation.
+The current deployment of NBS 7 assumes there is a functional NBS6 installation.
 
 ## Directories
 
 For more details see the `README.md` files within these directories.
 
 - [0-landing-zone](./0-landing-zone): Provisions network components.
-- [1-nbs7](./1-nbs7): Provision NBS7 components.
+- [1-nbs7](./1-nbs7): Provision NBS 7 components.
 - [2-applications](./2-applications): Deploys applications to a Kubernetes cluster.
 - [scripts](./scripts): Contains optional scripts to help with layered Terraform implementation.
   <details>

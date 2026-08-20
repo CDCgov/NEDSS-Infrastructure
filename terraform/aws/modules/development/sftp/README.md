@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for an SFTP service to load/validate/split/queue hl7 messages using AWS Transfer Family, S3, Lambda, DynamoDB, and SNS.
+This module deploys and configures NBS 7 development resources for an SFTP service to load/validate/split/queue hl7 messages using AWS Transfer Family, S3, Lambda, DynamoDB, and SNS.
 
 ---
 

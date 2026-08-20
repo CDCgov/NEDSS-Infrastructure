@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for Azure Application Gateway.
+This module deploys and configures NBS 7 development resources for Azure Application Gateway.
 
 ## Module Details
 

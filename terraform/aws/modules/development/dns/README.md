@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for AWS DNS services
+This module deploys and configures NBS 7 development resources for AWS DNS services
 
 ## Module Details
 

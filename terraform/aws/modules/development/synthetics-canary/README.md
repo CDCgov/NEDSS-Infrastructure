@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for synthetic check, cloudwatch events, an sns topic and email alerts
+This module deploys and configures NBS 7 development resources for synthetic check, cloudwatch events, an sns topic and email alerts
 Note: emails need to be confirmed before they will actually receive alerts,
 internal confirmation emails seem to get caught in spam filter, until those
 are tuned consider gmail addresses initially then manually add emails to

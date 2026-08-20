@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for SAS. It will deploy an EC2 from a preconfigured AMI with SAS installed
+This module deploys and configures NBS 7 development resources for SAS. It will deploy an EC2 from a preconfigured AMI with SAS installed
 
 There are some required scripts and files that need to be on the AMI
 for use in addition to the core SAS install

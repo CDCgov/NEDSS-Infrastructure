@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for AWS Relational Database Service (RDS)
+This module deploys and configures NBS 7 development resources for AWS Relational Database Service (RDS)
 
 ## Module Details
 

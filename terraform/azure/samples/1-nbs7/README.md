@@ -8,7 +8,7 @@ This Terraform module layer provisions infrastructure required to run nbs7 and *
 
 This module:
 
-- **Creates foundational NBS7 infrastructure**
+- **Creates foundational NBS 7 infrastructure**
 - **Consumes upstream resources via data sources or inputs**
 
 Typical usage:
@@ -29,7 +29,7 @@ Typical usage:
 <summary><strong> Networking Dependencies</strong></summary>
 
 Networking including VNets and public hosted zones **must already exist** and are referenced as described below. While NBS6 components are expected to exist
-in order for NBS7 microservices to be deployed successfully, the 1-nbs7 infrastructure **does not** directly depend on functional NBS6 services. Exceptions to
+in order for NBS 7 microservices to be deployed successfully, the 1-nbs7 infrastructure **does not** directly depend on functional NBS6 services. Exceptions to
 this include modifying security groups to allow operations involving the database.
 
 </details>

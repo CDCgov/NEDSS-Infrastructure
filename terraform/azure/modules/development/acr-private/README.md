@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for Azure Container Registry (ACR).
+This module deploys and configures NBS 7 development resources for Azure Container Registry (ACR).
 
 ## Module Details
 

@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for CSV to HL7 Transformer Lambda
+This module deploys and configures NBS 7 development resources for CSV to HL7 Transformer Lambda
 
 This module:
 

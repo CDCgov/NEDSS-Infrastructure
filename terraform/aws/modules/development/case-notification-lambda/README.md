@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures NBS7 development resources for case notification Lambda functions
+This module deploys and configures NBS 7 development resources for case notification Lambda functions
 
 ## Creating lambda layer for pyodbc and paramiko
 

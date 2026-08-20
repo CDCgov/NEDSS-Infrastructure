@@ -11,7 +11,7 @@ This module:
 
 - **Does not create foundational infrastructure**
 - **Consumes upstream resources via data sources or inputs**
-- Is intended to be used **after** core NBS7 layers
+- Is intended to be used **after** core NBS 7 layers
 
 Typical usage:
 

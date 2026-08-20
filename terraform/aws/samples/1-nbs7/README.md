@@ -9,7 +9,7 @@ to already exist** (VPCs, subnets, IAM roles etc.). This README explains **how t
 
 This module:
 
-- **Creates foundational NBS7 infrastructure**
+- **Creates foundational NBS 7 infrastructure**
 - **Consumes upstream resources via data sources or inputs**
 
 Typical usage:
@@ -30,7 +30,7 @@ Typical usage:
 <summary><strong> Networking Dependencies</strong></summary>
 
 Networking including VPCs and public hosted zones **must already exist** and are referenced as described below. While nbs6 components are expected to exist
-in order for NBS7 microservices to be deployed successfully, the 1-nbs7 infrastructure **does not** directly depend on functional NBS6 services. Exceptions to
+in order for NBS 7 microservices to be deployed successfully, the 1-nbs7 infrastructure **does not** directly depend on functional NBS6 services. Exceptions to
 this include modifying security groups to allow operations involving the database.
 
 </details>
