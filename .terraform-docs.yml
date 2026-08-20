@@ -1,0 +1,8 @@
+settings:
+  default: true
+  escape: true
+  hide-empty: true
+  indent: 3
+sort:
+  enabled: true
+  by: required

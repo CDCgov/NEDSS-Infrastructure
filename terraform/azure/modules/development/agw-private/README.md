@@ -1,22 +1,26 @@
+# Terraform Azure Module: development/agw-private
+
+## Description
+
+This module is used to deploy and configure NBS7 development resources for Azure Application Gateway.
+
+## Module Details
+
 <!-- BEGIN_TF_DOCS -->
-## Requirements
+### Requirements
 
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.6 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.68, <5.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=4.68, <5.0 |
 
-## Modules
-
-No modules.
-
-## Resources
+### Resources
 
 | Name | Type |
 | ---- | ---- |
@@ -35,7 +39,7 @@ No modules.
 | [azurerm_subnet.agw_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 | [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/virtual_network) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
@@ -46,13 +50,13 @@ No modules.
 | <a name="input_agw_key_vault_name"></a> [agw\_key\_vault\_name](#input\_agw\_key\_vault\_name) | Key Vault Name | `string` | n/a | yes |
 | <a name="input_agw_private_ip"></a> [agw\_private\_ip](#input\_agw\_private\_ip) | AGW Private IP Address | `string` | n/a | yes |
 | <a name="input_agw_resource_group_name"></a> [agw\_resource\_group\_name](#input\_agw\_resource\_group\_name) | The name of the resource group | `string` | n/a | yes |
-| <a name="input_agw_role_definition_name"></a> [agw\_role\_definition\_name](#input\_agw\_role\_definition\_name) | Name of the role to use with agw | `string` | `""` | no |
 | <a name="input_agw_subnet_name"></a> [agw\_subnet\_name](#input\_agw\_subnet\_name) | Subnet to deploy App Gateway in | `string` | n/a | yes |
 | <a name="input_agw_vnet_name"></a> [agw\_vnet\_name](#input\_agw\_vnet\_name) | Name of vNet | `string` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Prefix used for naming all resources | `string` | n/a | yes |
+| <a name="input_agw_role_definition_name"></a> [agw\_role\_definition\_name](#input\_agw\_role\_definition\_name) | Name of the role to use with agw | `string` | `""` | no |
 | <a name="input_role_based_kv"></a> [role\_based\_kv](#input\_role\_based\_kv) | Keyvault uses roles | `bool` | `false` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 | ---- | ----------- |

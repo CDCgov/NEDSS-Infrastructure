@@ -1,22 +1,26 @@
+# Terraform Azure Module: 1-nbs7/agw-public
+
+## Description
+
+This module is used to deploy and configure Azure Application Gateway and related resources for NBS7.
+
+## Module Details
+
 <!-- BEGIN_TF_DOCS -->
-## Requirements
+### Requirements
 
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.6 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.68, <5.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=4.68, <5.0 |
 
-## Modules
-
-No modules.
-
-## Resources
+### Resources
 
 | Name | Type |
 | ---- | ---- |
@@ -38,7 +42,7 @@ No modules.
 | [azurerm_subnet.agw_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 | [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/virtual_network) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
@@ -47,25 +51,25 @@ No modules.
 | <a name="input_agw_app_public_hostname"></a> [agw\_app\_public\_hostname](#input\_agw\_app\_public\_hostname) | The public FQDN mapped to the Application Gateway public listener. | `string` | n/a | yes |
 | <a name="input_agw_data_backend_host"></a> [agw\_data\_backend\_host](#input\_agw\_data\_backend\_host) | The target host header or FQDN expected by the Traefik ingress <br/>controller for routing. | `string` | n/a | yes |
 | <a name="input_agw_data_public_hostname"></a> [agw\_data\_public\_hostname](#input\_agw\_data\_public\_hostname) | The public FQDN mapped to the Application Gateway public listener. | `string` | n/a | yes |
-| <a name="input_agw_key_vault_cert_name_private"></a> [agw\_key\_vault\_cert\_name\_private](#input\_agw\_key\_vault\_cert\_name\_private) | Name of the Key Vault secret that stores the private certificate | `string` | `null` | no |
 | <a name="input_agw_key_vault_cert_name_public"></a> [agw\_key\_vault\_cert\_name\_public](#input\_agw\_key\_vault\_cert\_name\_public) | Name of the Key Vault secret that stores the public certificate | `string` | n/a | yes |
 | <a name="input_agw_key_vault_cert_rg"></a> [agw\_key\_vault\_cert\_rg](#input\_agw\_key\_vault\_cert\_rg) | Key Vault Certificate Resource Group | `string` | n/a | yes |
 | <a name="input_agw_key_vault_name"></a> [agw\_key\_vault\_name](#input\_agw\_key\_vault\_name) | Name of Existing Key Vault containing public/private <br/>  certificates stored as secrets | `string` | n/a | yes |
+| <a name="input_agw_resource_group_name"></a> [agw\_resource\_group\_name](#input\_agw\_resource\_group\_name) | The name of the Application Gateway resource group | `string` | n/a | yes |
+| <a name="input_agw_subnet_name"></a> [agw\_subnet\_name](#input\_agw\_subnet\_name) | Subnet for Application Gateway deployment | `string` | n/a | yes |
+| <a name="input_agw_vnet_name"></a> [agw\_vnet\_name](#input\_agw\_vnet\_name) | The name of the Azure Virtual Network (VNet) containing the <br/>  Application Gateway subnet. | `string` | n/a | yes |
+| <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Prefix used for naming module resources | `string` | n/a | yes |
+| <a name="input_agw_key_vault_cert_name_private"></a> [agw\_key\_vault\_cert\_name\_private](#input\_agw\_key\_vault\_cert\_name\_private) | Name of the Key Vault secret that stores the private certificate | `string` | `null` | no |
 | <a name="input_agw_nbs_ip_private"></a> [agw\_nbs\_ip\_private](#input\_agw\_nbs\_ip\_private) | Private IP address for the internal NBS 6 backend service target<br/>pool. | `string` | `null` | no |
 | <a name="input_agw_private_backend_host"></a> [agw\_private\_backend\_host](#input\_agw\_private\_backend\_host) | The target backend host header/FQDN used for internal routing by<br/>    the Application Gateway. | `string` | `null` | no |
 | <a name="input_agw_private_hostname"></a> [agw\_private\_hostname](#input\_agw\_private\_hostname) | The private FQDN mapped to the Application Gateway private listener | `string` | `null` | no |
 | <a name="input_agw_private_ip"></a> [agw\_private\_ip](#input\_agw\_private\_ip) | The static private IP address assigned to the Application Gateway<br/>    frontend configuration. | `string` | `null` | no |
-| <a name="input_agw_resource_group_name"></a> [agw\_resource\_group\_name](#input\_agw\_resource\_group\_name) | The name of the Application Gateway resource group | `string` | n/a | yes |
 | <a name="input_agw_role_definition_name"></a> [agw\_role\_definition\_name](#input\_agw\_role\_definition\_name) | The Azure RBAC role definition name (e.g., 'Key Vault Secrets User') <br/>  assigned to the Application Gateway identity for secret access. | `string` | `""` | no |
-| <a name="input_agw_subnet_name"></a> [agw\_subnet\_name](#input\_agw\_subnet\_name) | Subnet for Application Gateway deployment | `string` | n/a | yes |
-| <a name="input_agw_vnet_name"></a> [agw\_vnet\_name](#input\_agw\_vnet\_name) | The name of the Azure Virtual Network (VNet) containing the <br/>  Application Gateway subnet. | `string` | n/a | yes |
 | <a name="input_enable_dual_gateway"></a> [enable\_dual\_gateway](#input\_enable\_dual\_gateway) | Controls whether to share a single Application Gateway for NBS 7 <br/>  and NBS 6 traffic. When set to false, a separate gateway is required for<br/>  NBS 6 | `bool` | `true` | no |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Whether to have Terraform provision the resources from this module <br/>  in your Azure subscription | `bool` | `true` | no |
 | <a name="input_nsg_akamai_ips"></a> [nsg\_akamai\_ips](#input\_nsg\_akamai\_ips) | List of Akamai IPs to allow inbound traffic on port 443. Supports<br/>    IPv4 addresses and CIDR blocks. | `list(string)` | `[]` | no |
-| <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Prefix used for naming module resources | `string` | n/a | yes |
 | <a name="input_role_based_kv"></a> [role\_based\_kv](#input\_role\_based\_kv) | Specifies whether the Key Vault uses Azure Role-Based Access Control <br/>(RBAC) instead of access policies. | `bool` | `false` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 | ---- | ----------- |

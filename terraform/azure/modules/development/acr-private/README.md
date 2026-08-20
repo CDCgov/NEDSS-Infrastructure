@@ -1,22 +1,26 @@
+# Terraform Azure Module: development/acr-private
+
+## Description
+
+This module is used to deploy and configure NBS7 development resources for Azure Container Registry (ACR).
+
+## Module Details
+
 <!-- BEGIN_TF_DOCS -->
-## Requirements
+### Requirements
 
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.6 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.68, <5.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=4.68, <5.0 |
 
-## Modules
-
-No modules.
-
-## Resources
+### Resources
 
 | Name | Type |
 | ---- | ---- |
@@ -27,7 +31,7 @@ No modules.
 | [azurerm_subnet.acr_subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 | [azurerm_virtual_network.vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/virtual_network) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
@@ -36,7 +40,7 @@ No modules.
 | <a name="input_acr_vnet_name"></a> [acr\_vnet\_name](#input\_acr\_vnet\_name) | Name of vNet | `string` | n/a | yes |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Prefix used for naming all resources. Only alpha numeric characters are allowed | `string` | n/a | yes |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 | ---- | ----------- |

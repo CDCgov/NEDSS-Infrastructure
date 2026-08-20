@@ -1,30 +1,38 @@
+# Terraform Azure Module: 0-landing-zone/public-dns-zone
+
+## Description
+
+This module is used to deploy and configure Azure Public DNS Zones and related resources for NBS7.
+
+## Module Details
+
 <!-- BEGIN_TF_DOCS -->
-## Requirements
+### Requirements
 
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.6 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.68, <5.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=4.68, <5.0 |
 
-## Modules
+### Modules
 
 | Name | Source | Version |
 | ---- | ------ | ------- |
 | <a name="module_dns_records"></a> [dns\_records](#module\_dns\_records) | ./modules/dns-record | n/a |
 
-## Resources
+### Resources
 
 | Name | Type |
 | ---- | ---- |
 | [azurerm_dns_zone.public](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/dns_zone) | resource |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
@@ -33,7 +41,7 @@
 | <a name="input_public_domain_name"></a> [public\_domain\_name](#input\_public\_domain\_name) | The root domain (e.g., example.com) | `string` | `""` | no |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Resource group name | `string` | `""` | no |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 | ---- | ----------- |

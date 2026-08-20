@@ -1,14 +1,17 @@
-# HL7 SFTP Transfer Family Pipeline
+# Terraform AWS Module: development/sftp
 
-This Terraform module sets up a SFTP service to load/validate/split/queue hl7 messages using AWS Transfer Family, S3, Lambda, DynamoDB, and SNS.
+## Description
+
+This module is used to deploy and configure NBS7 development resources for an SFTP service to load/validate/split/queue hl7 messages using AWS Transfer Family, S3, Lambda, DynamoDB, and SNS.
 
 ---
+
 ## TODO:
 
 - fix homedir to include server name, when users added manually we pick the bucket and the site name populates
 - fix service managed accounts to use passwords from secrets manager, they should allow them automagically when naming convention is correct
 - name resources with a prefix or some way identify, not intended to be PART of core install but we MIGHT find cases of adding to full deployment
-- test lambdas and workflow using lambdas, create zip 
+- test lambdas and workflow using lambdas, create zip
 - data calls see comments in https://github.com/CDCgov/NEDSS-Infrastructure/pull/198
 
 ---
@@ -46,47 +49,73 @@ terraform apply
 
 ---
 
-##  Inputs (Terraform Flags)
+## Module Details
 
-- bucket_name
-- enable_sftp
-- enable_split_and_validate 
-- enable_error_notifications
-- enable_success_notifications
-- enable_summary_notifications
-- notification_emails
-- sites
-- summary_schedule_expression
+<!-- BEGIN_TF_DOCS -->
 
----
 
-## Outputs
+### Providers
 
-TBD – could include Transfer Server ID, SNS ARNs, etc.
+| Name | Version |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_local"></a> [local](#provider\_local) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
 
----
+### Resources
 
-## Folder Structure
+| Name | Type |
+| ---- | ---- |
+| [aws_dynamodb_table.hl7_errors](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table) | resource |
+| [aws_iam_role.sftp_user](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.transfer_logging](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy.sftp_user_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy_attachment.transfer_logging_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_s3_bucket.hl7](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_object.inbox_folders](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
+| [aws_s3_object.site_folders](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
+| [aws_secretsmanager_secret.admin_secrets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret.ssh_private_keys](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret.user_secrets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret_version.admin_secrets_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
+| [aws_secretsmanager_secret_version.ssh_private_keys_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
+| [aws_secretsmanager_secret_version.user_secrets_version](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
+| [aws_sns_topic.error](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_sns_topic.success](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_sns_topic.summary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_transfer_server.sftp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/transfer_server) | resource |
+| [aws_transfer_user.sftp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/transfer_user) | resource |
+| [aws_transfer_user.site_admin](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/transfer_user) | resource |
+| [local_file.sftp_credentials_csv](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [random_password.admin_passwords](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [random_password.user_passwords](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [tls_private_key.user_keys](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 
-```bash
-lambda/
-  copy_to_inbox.py         # HL7 validation, splitting, success/error notification
-  summary_report.py        # Scans DynamoDB and sends summary email
-main.tf                    # Core Terraform resources (S3, Lambda, Transfer Family, etc.)
-variables.tf               # Input variables and feature flags
-outputs.tf                 # Output values
-README.md                  # Documentation (you are here ✅)
-```
+### Inputs
 
----
+| Name | Description | Type | Default | Required |
+| ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | Name of the S3 bucket for HL7 uploads | `string` | n/a | yes |
+| <a name="input_notification_emails"></a> [notification\_emails](#input\_notification\_emails) | Map of notification types to lists of emails | <pre>object({<br/>    error   = list(string)<br/>    success = list(string)<br/>    summary = list(string)<br/>  })</pre> | n/a | yes |
+| <a name="input_enable_error_notifications"></a> [enable\_error\_notifications](#input\_enable\_error\_notifications) | Enable SNS notifications for errors | `bool` | `true` | no |
+| <a name="input_enable_sftp"></a> [enable\_sftp](#input\_enable\_sftp) | Enable AWS Transfer Family server + user setup | `bool` | `true` | no |
+| <a name="input_enable_split_and_validate"></a> [enable\_split\_and\_validate](#input\_enable\_split\_and\_validate) | Enable HL7 validation and OBR-splitting Lambda | `bool` | `true` | no |
+| <a name="input_enable_ssh_keys"></a> [enable\_ssh\_keys](#input\_enable\_ssh\_keys) | Enable SSH public key upload for SFTP users | `bool` | `false` | no |
+| <a name="input_enable_success_notifications"></a> [enable\_success\_notifications](#input\_enable\_success\_notifications) | Enable SNS notifications for success | `bool` | `true` | no |
+| <a name="input_enable_summary_notifications"></a> [enable\_summary\_notifications](#input\_enable\_summary\_notifications) | Enable daily summary notifications | `bool` | `true` | no |
+| <a name="input_sites"></a> [sites](#input\_sites) | Map of sites and their publishers/providers | `map(list(string))` | <pre>{<br/>  "siteA": [<br/>    "lab1",<br/>    "lab2"<br/>  ],<br/>  "siteB": [<br/>    "lab3"<br/>  ]<br/>}</pre> | no |
+| <a name="input_summary_schedule_expression"></a> [summary\_schedule\_expression](#input\_summary\_schedule\_expression) | EventBridge cron expression for summary notifications | `string` | `"cron(0 0 * * ? *)"` | no |
 
-## Next Steps
+### Outputs
 
-- [ ] Connect the `lambda/summary_report.py` Lambda to DynamoDB + SNS
-- [ ] Implement publisher-level filtering (e.g., include/exclude certain publishers)
-- [ ] Auto-expire DynamoDB records (TTL)
-- [ ] Connect downstream systems to consume inbox files
-- [ ] Add virus scanning or schema validation
-
----
-
+| Name | Description |
+| ---- | ----------- |
+| <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | The name of the S3 bucket used for HL7 file uploads |
+| <a name="output_dynamodb_table_name"></a> [dynamodb\_table\_name](#output\_dynamodb\_table\_name) | The name of the DynamoDB table for logging HL7 processing errors |
+| <a name="output_sftp_usernames_and_dirs"></a> [sftp\_usernames\_and\_dirs](#output\_sftp\_usernames\_and\_dirs) | n/a |
+| <a name="output_site_admins"></a> [site\_admins](#output\_site\_admins) | n/a |
+| <a name="output_sns_error_topic_arn"></a> [sns\_error\_topic\_arn](#output\_sns\_error\_topic\_arn) | n/a |
+| <a name="output_sns_success_topic_arn"></a> [sns\_success\_topic\_arn](#output\_sns\_success\_topic\_arn) | n/a |
+| <a name="output_sns_summary_topic_arn"></a> [sns\_summary\_topic\_arn](#output\_sns\_summary\_topic\_arn) | n/a |
+<!-- END_TF_DOCS -->

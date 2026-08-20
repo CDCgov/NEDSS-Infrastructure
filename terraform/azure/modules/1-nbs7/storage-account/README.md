@@ -1,22 +1,26 @@
+# Terraform Azure Module: 1-nbs7/storage-account
+
+## Description
+
+This module is used to deploy and configure Azure Storage Accounts and related resources for NBS7.
+
+## Module Details
+
 <!-- BEGIN_TF_DOCS -->
-## Requirements
+### Requirements
 
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.6 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.68, <5.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=4.68, <5.0 |
 
-## Modules
-
-No modules.
-
-## Resources
+### Resources
 
 | Name | Type |
 | ---- | ---- |
@@ -26,10 +30,13 @@ No modules.
 | [azurerm_resource_group.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) | data source |
 | [azurerm_subnet.endpoint](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subnet) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
+| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Resource group name for existing and to be deployed azure resources | `string` | n/a | yes |
+| <a name="input_subnet_name"></a> [subnet\_name](#input\_subnet\_name) | Name of subnet within virtual\_network\_name to be associated with storage account private endpoints. | `string` | n/a | yes |
+| <a name="input_virtual_network_name"></a> [virtual\_network\_name](#input\_virtual\_network\_name) | Name of virtual network to be associated with storage account private endpoints. | `string` | n/a | yes |
 | <a name="input_account_kind"></a> [account\_kind](#input\_account\_kind) | Defines the Kind of account. Valid options are BlobStorage, BlockBlobStorage, FileStorage, Storage and StorageV2. | `string` | `"StorageV2"` | no |
 | <a name="input_account_replication_type"></a> [account\_replication\_type](#input\_account\_replication\_type) | Defines the type of replication to use for this storage account. Valid options are LRS, GRS, RAGRS, ZRS, GZRS and RAGZRS. Changing this forces a new resource to be created when types LRS, GRS and RAGRS are changed to ZRS, GZRS or RAGZRS and vice versa. | `string` | `"GRS"` | no |
 | <a name="input_account_tier"></a> [account\_tier](#input\_account\_tier) | Defines the Tier to use for this storage account. Valid options are Standard and Premium. For BlockBlobStorage and FileStorage accounts only Premium is valid. Changing this forces a new resource to be created. | `string` | `"Standard"` | no |
@@ -44,12 +51,9 @@ No modules.
 | <a name="input_file_private_ip_address"></a> [file\_private\_ip\_address](#input\_file\_private\_ip\_address) | Private IP address to set for storage account file endpoint. (leave null to auto assign) | `string` | `null` | no |
 | <a name="input_infrastructure_encryption_enabled"></a> [infrastructure\_encryption\_enabled](#input\_infrastructure\_encryption\_enabled) | Is infrastructure encryption enabled? | `bool` | `true` | no |
 | <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled) | Whether the public network access is enabled? | `bool` | `false` | no |
-| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Resource group name for existing and to be deployed azure resources | `string` | n/a | yes |
 | <a name="input_storage_account_name"></a> [storage\_account\_name](#input\_storage\_account\_name) | Name for storage account. (Names must be between 3 and 24 characters in length and may contain numbers and lowercase letters only) | `string` | `"nbsstorageaccount"` | no |
-| <a name="input_subnet_name"></a> [subnet\_name](#input\_subnet\_name) | Name of subnet within virtual\_network\_name to be associated with storage account private endpoints. | `string` | n/a | yes |
-| <a name="input_virtual_network_name"></a> [virtual\_network\_name](#input\_virtual\_network\_name) | Name of virtual network to be associated with storage account private endpoints. | `string` | n/a | yes |
 
-## Outputs
+### Outputs
 
 | Name | Description |
 | ---- | ----------- |

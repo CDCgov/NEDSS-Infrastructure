@@ -1,40 +1,26 @@
-# Terraform Deployment of Fluenbit to Azure Kubernetes services (AKS)
+# Terraform Azure Module: 1-nbs7/observability
 
 ## Description
 
-This module is used to deploy and configure the observability module and onboard it to an existing Azure Kubernetes services (AKS). The observability stack consists of Azure Monitor, Azure Managed Prometheus, and Azure Managed Grafana
+This module is used to deploy and configure observability resources for NBS7.
 
-## Prerequisites
-
-The fluentbit module requires some Azure resource to exist before this module can be sucessfully deployed.
-
-1. An AKS cluster
-2. Azure CLI is required for the grafana dashboard configuration (https://learn.microsoft.com/en-us/cli/azure/).
-3. The proper permissions on the role used to deploy resources
-   - You require at least **Contributor** access to the cluster for onboarding.
-   - You require **Monitoring Reader** or **Monitoring Contributor** to view data after monitoring is enabled.
-4. Managed Prometheus prerequisites
-   - The cluster _must_ use **managed identity authentication**.
+## Module Details
 
 <!-- BEGIN_TF_DOCS -->
-## Requirements
+### Requirements
 
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.15.6 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >=4.68, <5.0 |
 
-## Providers
+### Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | >=4.68, <5.0 |
 
-## Modules
-
-No modules.
-
-## Resources
+### Resources
 
 | Name | Type |
 | ---- | ---- |
@@ -53,18 +39,14 @@ No modules.
 | [azurerm_kubernetes_cluster.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/kubernetes_cluster) | data source |
 | [azurerm_resource_group.main](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/resource_group) | data source |
 
-## Inputs
+### Inputs
 
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of AKS cluster for which monitoring will be set up | `string` | n/a | yes |
-| <a name="input_grafana_major_version"></a> [grafana\_major\_version](#input\_grafana\_major\_version) | Major version number for Grafana | `string` | `"12"` | no |
 | <a name="input_location"></a> [location](#input\_location) | Location for Azure resources | `string` | n/a | yes |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Resource group name for existing and to be deployed azure resources | `string` | n/a | yes |
+| <a name="input_grafana_major_version"></a> [grafana\_major\_version](#input\_grafana\_major\_version) | Major version number for Grafana | `string` | `"12"` | no |
 | <a name="input_resource_prefix"></a> [resource\_prefix](#input\_resource\_prefix) | Prefix for resource names | `string` | `"nbs"` | no |
 | <a name="input_update_admin_role_assignment"></a> [update\_admin\_role\_assignment](#input\_update\_admin\_role\_assignment) | Allow observability to give deployment role admin permissions to the grafana dashboard | `bool` | `true` | no |
-
-## Outputs
-
-No outputs.
 <!-- END_TF_DOCS -->

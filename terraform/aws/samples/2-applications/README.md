@@ -1,4 +1,6 @@
-# Terraform Module: 2-applications
+# Terraform Module Layer: 2-applications
+
+## Description
 
 This Terraform module layer provisions applications being deployed to Kubernetes and **expects certain upstream infrastructure
 to already exist** (VPCs, subnets, IAM roles, AWS EKS etc.). This README explains **how those dependencies are referenced**.
@@ -37,43 +39,41 @@ A Kubernetes cluster **must already exist** and is referenced as described below
 
 </details>
 
-## 🚀 Installation
+## Module Details
 
-<details>
-<summary><strong>Modules </strong></summary>
+<!-- BEGIN_TF_DOCS -->
 
-- Linkerd
-</details>
+### Requirements
 
-<details>
-<summary><strong>Required input varaibles (terraform.tfvars) </strong></summary>
+| Name                                                                     | Version            |
+| ------------------------------------------------------------------------ | ------------------ |
+| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.15.6          |
+| <a name="requirement_aws"></a> [aws](#requirement_aws)                   | >= 6.21.0, < 7.0.0 |
+| <a name="requirement_helm"></a> [helm](#requirement_helm)                | >= 3.1.1, < 4.0.0  |
 
-| Parameter       | Description                 | Default |
-| --------------- | --------------------------- | ------- |
-| resource_prefix | "Prefix for resource names" |         |
+### Providers
 
-</details>
+| Name                                             | Version            |
+| ------------------------------------------------ | ------------------ |
+| <a name="provider_aws"></a> [aws](#provider_aws) | >= 6.21.0, < 7.0.0 |
 
-<details>
-<summary><strong> All input variables (variables.tf)</strong></summary>
+### Modules
 
-| Parameter            | Description                                                                                                                                   | Default |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| resource_prefix      | "Prefix for resource names"                                                                                                                   |         |
-| aws_eks_cluster_name | "Name of EKS cluster. Usually naming follows convention 'var.resource_prefix-eks'. Leave as null to interpret from resource_prefix variables" | `null`  |
+| Name                                                     | Source                               | Version |
+| -------------------------------------------------------- | ------------------------------------ | ------- |
+| <a name="module_linkerd"></a> [linkerd](#module_linkerd) | ../../modules/2-applications/linkerd | n/a     |
 
-</details>
+### Resources
 
-<details>
-<summary><strong>Installation</strong></summary>
+| Name                                                                                                                   | Type        |
+| ---------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [aws_eks_cluster.selected](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 
-## Quick Steps
+### Inputs
 
-```bash
-# Download appropriate GitHub release from https://github.com/CDCgov/NEDSS-Infrastructure/releases
-unzip <nbs-infrastructure-v<VERSION>.zip # replace version with your downloaded version
-cd terraform/aws/samples/2-applications
-terraform init
-terraform plan
-terraform apply
-```
+| Name                                                                                          | Description                                                                                                                                 | Type     | Default | Required |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | :------: |
+| <a name="input_resource_prefix"></a> [resource_prefix](#input_resource_prefix)                | Prefix for resource names                                                                                                                   | `string` | n/a     |   yes    |
+| <a name="input_aws_eks_cluster_name"></a> [aws_eks_cluster_name](#input_aws_eks_cluster_name) | Name of EKS cluster. Usually naming follows convention 'var.resource_prefix-eks'. Leave as null to interpret from resource_prefix variables | `string` | `null`  |    no    |
+
+<!-- END_TF_DOCS -->
