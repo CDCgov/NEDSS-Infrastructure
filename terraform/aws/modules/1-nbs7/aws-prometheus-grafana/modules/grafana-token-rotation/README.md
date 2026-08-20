@@ -44,15 +44,15 @@ This module deploys and configures resources to support Grafana token rotation f
 
 ### Inputs
 
-| Name                                                                                                | Description                                                                        | Type          | Default | Required |
-| --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------- | ------- | :------: |
-| <a name="input_grafana_workspace_id"></a> [grafana_workspace_id](#input_grafana_workspace_id)       | The ID of the Grafana workspace                                                    | `string`      | n/a     |   yes    |
-| <a name="input_region"></a> [region](#input_region)                                                 | AWS region                                                                         | `string`      | n/a     |   yes    |
-| <a name="input_resource_prefix"></a> [resource_prefix](#input_resource_prefix)                      | Prefix for resource names                                                          | `string`      | n/a     |   yes    |
-| <a name="input_service_account_id"></a> [service_account_id](#input_service_account_id)             | The ID of the Grafana service account                                              | `string`      | n/a     |   yes    |
-| <a name="input_rotation_schedule_days"></a> [rotation_schedule_days](#input_rotation_schedule_days) | Number of days between token rotations (should be less than token_expiration_days) | `number`      | `25`    |    no    |
-| <a name="input_tags"></a> [tags](#input_tags)                                                       | Tags to apply to resources                                                         | `map(string)` | `{}`    |    no    |
-| <a name="input_token_expiration_days"></a> [token_expiration_days](#input_token_expiration_days)    | Number of days until the token expires                                             | `number`      | `30`    |    no    |
+| Name                                                                                                | Description                                                                  | Type          | Default | Required |
+| --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------- | ------- | :------: |
+| <a name="input_grafana_workspace_id"></a> [grafana_workspace_id](#input_grafana_workspace_id)       | The ID of the Grafana workspace                                              | `string`      | n/a     |   yes    |
+| <a name="input_region"></a> [region](#input_region)                                                 | AWS region                                                                   | `string`      | n/a     |   yes    |
+| <a name="input_resource_prefix"></a> [resource_prefix](#input_resource_prefix)                      | Prefix for resource names                                                    | `string`      | n/a     |   yes    |
+| <a name="input_service_account_id"></a> [service_account_id](#input_service_account_id)             | The ID of the Grafana service account                                        | `string`      | n/a     |   yes    |
+| <a name="input_rotation_schedule_days"></a> [rotation_schedule_days](#input_rotation_schedule_days) | Number of days between token rotations ( be less than token_expiration_days) | `number`      | `25`    |    no    |
+| <a name="input_tags"></a> [tags](#input_tags)                                                       | Tags to apply to resources                                                   | `map(string)` | `{}`    |    no    |
+| <a name="input_token_expiration_days"></a> [token_expiration_days](#input_token_expiration_days)    | Number of days until the token expires                                       | `number`      | `30`    |    no    |
 
 ### Outputs
 
