@@ -55,7 +55,7 @@ This module deploys and configures NBS 7 development resources for Azure Applica
 | <a name="input_agw_vnet_name"></a> [agw_vnet_name](#input_agw_vnet_name)                                  | Name of vNet                         | `string`    | n/a     |   yes    |
 | <a name="input_resource_prefix"></a> [resource_prefix](#input_resource_prefix)                            | Prefix used for naming all resources | `string`    | n/a     |   yes    |
 | <a name="input_agw_role_definition_name"></a> [agw_role_definition_name](#input_agw_role_definition_name) | Name of the role to use with agw     | `string`    | `""`    |    no    |
-| <a name="input_role_based_kv"></a> [role_based_kv](#input_role_based_kv)                                  | Keyvault uses roles                  | `bool`      | `false` |    no    |
+| <a name="input_role_based_kv"></a> [role_based_kv](#input_role_based_kv)                                  | Key Vault uses roles                 | `bool`      | `false` |    no    |
 
 ### Outputs
 

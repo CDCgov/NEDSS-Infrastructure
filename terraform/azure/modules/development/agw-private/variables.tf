@@ -50,7 +50,7 @@ variable "agw_private_ip" {
 
 variable "role_based_kv" {
   type        = bool
-  description = "Keyvault uses roles"
+  description = "Key Vault uses roles"
   default     = false
 }
 
