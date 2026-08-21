@@ -33,15 +33,15 @@ This module deploys and configures the Grafana workspace and related resources f
 
 ### Inputs
 
-| Name                                                                                                | Description                                               | Type          | Default                              | Required |
-| --------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------- | ------------------------------------ | :------: |
-| <a name="input_amp_workspace_id"></a> [amp_workspace_id](#input_amp_workspace_id)                   | The ID of the Amazon Managed Prometheus workspace.        | `string`      | n/a                                  |   yes    |
-| <a name="input_endpoint_url"></a> [endpoint_url](#input_endpoint_url)                               | The URL of the Prometheus workspace endpoint              | `string`      | n/a                                  |   yes    |
-| <a name="input_grafana_workspace_name"></a> [grafana_workspace_name](#input_grafana_workspace_name) | The name of the Grafana workspace                         | `string`      | n/a                                  |   yes    |
-| <a name="input_region"></a> [region](#input_region)                                                 | The AWS region to use for the resources                   | `string`      | n/a                                  |   yes    |
-| <a name="input_resource_prefix"></a> [resource_prefix](#input_resource_prefix)                      | The prefix text to add to the start of each resource name | `string`      | n/a                                  |   yes    |
-| <a name="input_tags"></a> [tags](#input_tags)                                                       | A map of tags to add to resources                         | `map(string)` | n/a                                  |   yes    |
-| <a name="input_data_sources"></a> [data_sources](#input_data_sources)                               | the datasource for grafana; in this case Prometheus       | `list(any)`   | <pre>[<br/> "PROMETHEUS"<br/>]</pre> |    no    |
+| Name                                                                                                | Description                                                | Type          | Default                              | Required |
+| --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------- | ------------------------------------ | :------: |
+| <a name="input_amp_workspace_id"></a> [amp_workspace_id](#input_amp_workspace_id)                   | The ID of the Amazon Managed Prometheus workspace.         | `string`      | n/a                                  |   yes    |
+| <a name="input_endpoint_url"></a> [endpoint_url](#input_endpoint_url)                               | The URL of the Prometheus workspace endpoint               | `string`      | n/a                                  |   yes    |
+| <a name="input_grafana_workspace_name"></a> [grafana_workspace_name](#input_grafana_workspace_name) | The name of the Grafana workspace                          | `string`      | n/a                                  |   yes    |
+| <a name="input_region"></a> [region](#input_region)                                                 | The AWS region to use for the resources                    | `string`      | n/a                                  |   yes    |
+| <a name="input_resource_prefix"></a> [resource_prefix](#input_resource_prefix)                      | The prefix text to add to the start of each resource name  | `string`      | n/a                                  |   yes    |
+| <a name="input_tags"></a> [tags](#input_tags)                                                       | A map of tags to add to resources                          | `map(string)` | n/a                                  |   yes    |
+| <a name="input_data_sources"></a> [data_sources](#input_data_sources)                               | The data source for Grafana. Only Prometheus is supported. | `list(any)`   | <pre>[<br/> "PROMETHEUS"<br/>]</pre> |    no    |
 
 ### Outputs
 
