@@ -1,11 +1,12 @@
 # SAMPLES
 
-This directory contains a sample for deploying NBS 7, using a layered
-Terraform approach. Each layer deploys infrastructure or application components
-referenced in subsequent layers. If you select not to deploy a specific layer, you
-must ensure the resources that layer would have provisioned exist and are accessible
-within your environment. These resources are ingested via Terraform `data` calls
-which query your environment. Each layer will by default deploy all modules contained within.
+This directory contains a sample for deploying NBS 7 using a layered
+Terraform approach. Each layer deploys infrastructure or application
+components that later layers reference. If you choose not to deploy a
+specific layer, you must make sure that layer's resources already exist
+and are accessible in your environment. Terraform `data` calls query
+your environment to reference these resources. By default, each layer
+deploys all modules that it contains.
 
 ## Assumptions
 
