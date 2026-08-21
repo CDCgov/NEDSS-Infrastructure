@@ -21,7 +21,7 @@ variable "token_expiration_days" {
 
 variable "rotation_schedule_days" {
   type        = number
-  description = "Number of days between token rotations ( be less than token_expiration_days)"
+  description = "Number of days between token rotations (must be less than token_expiration_days)"
   default     = 25
 }
 
