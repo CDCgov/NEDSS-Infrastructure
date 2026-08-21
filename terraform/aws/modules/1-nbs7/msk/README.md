@@ -6,7 +6,7 @@ This module deploys and configures AWS Managed Streaming for Apache Kafka (MSK) 
 
 ### References
 
-- [AWS Docs](https://aws.amazon.com)
+- [Amazon MSK Documentation](https://docs.aws.amazon.com/msk/latest/developerguide/what-is-msk.html)
 
 ## Module Details
 
