@@ -21,7 +21,7 @@ variable "mark_object_for_delete_days" {
 
 variable "delete_noncurrent_objects" {
   type        = number
-  description = "Number of days until a noncurrent object is PERMANENTLY deleted (total days before object deletion is calculated by mark_object_for_delete_days + delete_noncurrent_objects)."
+  description = "Number of days until the current object version is deleted and receives a delete marker, making the previous version noncurrent."
   default     = 60
 }
 
