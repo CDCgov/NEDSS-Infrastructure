@@ -2,7 +2,7 @@
 
 ## Description
 
-This module deploys and configures Azure Keyvault and related resources for NBS7.
+This module deploys and configures Azure Key Vault and related resources for NBS7.
 
 ## Module Details
 
