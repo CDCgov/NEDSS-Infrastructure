@@ -2,16 +2,16 @@
 
 ## Description
 
-This Terraform module layer provisions applications being deployed to Kubernetes and **expects certain upstream infrastructure
-to already exist** (VNet, subnets, RBAC, Azure AKS etc.). This README explains **how those dependencies are referenced**.
+This Terraform module layer provisions applications being deployed to Kubernetes and expects certain upstream infrastructure
+to already exist (VNet, subnets, RBAC, Azure AKS etc.). This README explains how those dependencies are referenced.
 
 ## 🧭 Purpose & Scope
 
 This module:
 
-- **Does not create foundational infrastructure**
-- **Consumes upstream resources via data sources or inputs**
-- Is intended to be used **after** core NBS 7 layers
+- Does not create foundational infrastructure
+- Consumes upstream resources via data sources or inputs
+- Is intended to be used after core NBS 7 layers
 
 Typical usage:
 
@@ -27,7 +27,7 @@ Typical usage:
 
 ## 🔗 Upstream Dependencies
 
-- A Kubernetes cluster **must already exist**
+- A Kubernetes cluster must already exist
 
 ## Module Details
 
