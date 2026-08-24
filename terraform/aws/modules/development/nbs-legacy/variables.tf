@@ -166,7 +166,7 @@ variable "create_cert" {
 }
 
 variable "certificate_arn" {
-  description = "If create_cert == false, provide a certificate_arn"
+  description = "Creates a public AWS certificate. If set to false (default), you must provide certificate_arn. Requires zone_id to be set."
   type        = string
   default     = ""
 }

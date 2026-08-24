@@ -47,7 +47,7 @@ variable "retention_in_days" {
 
 variable "data_sources" {
   type        = list(any)
-  description = "the datasource for grafana; in this case Prometheus"
+  description = "The data source for Grafana. Only Prometheus is supported."
   default     = ["PROMETHEUS"]
 }
 
