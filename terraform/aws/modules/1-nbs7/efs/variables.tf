@@ -5,14 +5,15 @@ variable "name" {
 }
 
 variable "resource_prefix" {
-  type        = string
   description = "Prefix for resource names"
+  type        = string
   default     = "cdc-nbs"
 }
 
 variable "vpc_id" {
   description = "VPC ID for EFS"
   type        = string
+
   validation {
     condition = (
       can(regex("^[a-zA-Z0-9]([a-zA-Z0-9]*-[a-zA-Z0-9])*[a-zA-Z0-9]+$", var.vpc_id)) &&

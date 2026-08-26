@@ -103,6 +103,7 @@ variable "nsg_akamai_ips" {
   EOT
   type        = list(string)
   default     = []
+
   validation {
     condition = alltrue(
       [

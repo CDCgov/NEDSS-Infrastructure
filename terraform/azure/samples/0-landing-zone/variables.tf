@@ -2,8 +2,8 @@
 # Source: NEDSS-Infrastructure/terraform/azure/modules/0-landing-zone/keyvault/variables.tf
 ################################################################################
 variable "keyvault_enabled" {
-  type        = bool
   description = "Enable or disable the entire module without removing it."
+  type        = bool
   default     = true
 }
 
@@ -243,97 +243,40 @@ variable "keyvault_tags" {
 ################################################################################
 
 variable "subscription_id" {
-  type        = string
   description = "The Azure subscription id."
+  type        = string
 }
 
 variable "vnet_enabled" {
-  type        = bool
   description = "Whether to create the vnet"
+  type        = bool
   default     = true
 }
 
 variable "vnet_location" {
-  type        = string
   description = "The Azure region"
+  type        = string
   default     = "eastus"
 }
 
 variable "vnet_name" {
-  type        = string
   description = "Name of the vnet"
+  type        = string
   default     = "nbs"
 }
 
 variable "vnet_resource_group_name" {
-  type        = string
   description = "The name of the existing resource group"
+  type        = string
 }
 
 variable "vnet_address_space" {
-  type        = list(string)
   description = "Address space for the VNet"
+  type        = list(string)
 }
 
 variable "vnet_subnets" {
-  type = map(object({
-    address_prefixes = optional(list(string))
-    name             = string
-    ipam_pools = optional(list(object({
-      pool_id         = string
-      prefix_length   = optional(number)
-      allocation_type = optional(string, "Static")
-    })))
-    nat_gateway = optional(object({
-      id = string
-    }))
-    network_security_group = optional(object({
-      id = string
-    }))
-    private_endpoint_network_policies             = optional(string, "Enabled")
-    private_link_service_network_policies_enabled = optional(bool, true)
-    route_table = optional(object({
-      id = string
-    }))
-    service_endpoint_policies = optional(map(object({
-      id = string
-    })))
-    service_endpoints_with_location = optional(list(object({
-      service   = string
-      locations = optional(list(string), ["*"])
-    })))
-    default_outbound_access_enabled = optional(bool, false)
-    sharing_scope                   = optional(string, null)
-    delegations = optional(list(object({
-      name = string
-      service_delegation = object({
-        name = string
-      })
-    })))
-    timeouts = optional(object({
-      create = optional(string, "30m")
-      read   = optional(string, "5m")
-      update = optional(string, "30m")
-      delete = optional(string, "30m")
-    }), {})
-    retry = optional(object({
-      error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
-      interval_seconds     = optional(number, 10)
-      max_interval_seconds = optional(number, 180)
-    }), {})
-    role_assignments = optional(map(object({
-      role_definition_id_or_name             = string
-      principal_id                           = string
-      description                            = optional(string, null)
-      skip_service_principal_aad_check       = optional(bool, false)
-      condition                              = optional(string, null)
-      condition_version                      = optional(string, null)
-      delegated_managed_identity_resource_id = optional(string, null)
-      principal_type                         = optional(string, null)
-    })))
-  }))
-  default     = {}
-  description = <<DESCRIPTION
+  description = <<-EOT
 (Optional) A map of subnets to create
 
  - `address_prefixes` - (Optional) The address prefixes to use for the subnet. One of `address_prefix`, `address_prefixes`, or `ipam_pools` must be specified.
@@ -397,8 +340,65 @@ variable "vnet_subnets" {
  - `delegated_managed_identity_resource_id` - (Optional) The delegated Azure Resource Id which contains a Managed Identity. Changing this forces a new resource to be created. This field is only used in cross-tenant scenario.
  - `principal_type` - (Optional) The type of the `principal_id`. Possible values are `User`, `Group` and `ServicePrincipal`. It is necessary to explicitly set this attribute when creating role assignments if the principal creating the assignment is constrained by ABAC rules that filters on the PrincipalType attribute.
 
-DESCRIPTION
+EOT
 
+  type = map(object({
+    address_prefixes = optional(list(string))
+    name             = string
+    ipam_pools = optional(list(object({
+      pool_id         = string
+      prefix_length   = optional(number)
+      allocation_type = optional(string, "Static")
+    })))
+    nat_gateway = optional(object({
+      id = string
+    }))
+    network_security_group = optional(object({
+      id = string
+    }))
+    private_endpoint_network_policies             = optional(string, "Enabled")
+    private_link_service_network_policies_enabled = optional(bool, true)
+    route_table = optional(object({
+      id = string
+    }))
+    service_endpoint_policies = optional(map(object({
+      id = string
+    })))
+    service_endpoints_with_location = optional(list(object({
+      service   = string
+      locations = optional(list(string), ["*"])
+    })))
+    default_outbound_access_enabled = optional(bool, false)
+    sharing_scope                   = optional(string, null)
+    delegations = optional(list(object({
+      name = string
+      service_delegation = object({
+        name = string
+      })
+    })))
+    timeouts = optional(object({
+      create = optional(string, "30m")
+      read   = optional(string, "5m")
+      update = optional(string, "30m")
+      delete = optional(string, "30m")
+    }), {})
+    retry = optional(object({
+      error_message_regex  = optional(list(string), ["ReferencedResourceNotProvisioned"])
+      interval_seconds     = optional(number, 10)
+      max_interval_seconds = optional(number, 180)
+    }), {})
+    role_assignments = optional(map(object({
+      role_definition_id_or_name             = string
+      principal_id                           = string
+      description                            = optional(string, null)
+      skip_service_principal_aad_check       = optional(bool, false)
+      condition                              = optional(string, null)
+      condition_version                      = optional(string, null)
+      delegated_managed_identity_resource_id = optional(string, null)
+      principal_type                         = optional(string, null)
+    })))
+  }))
+  default = {}
 }
 
 
@@ -406,22 +406,22 @@ DESCRIPTION
 # Source: NEDSS-Infrastructure/terraform/azure/modules/0-landing-zone/private-dns-zone/variables.tf
 ################################################################################
 variable "private_dns_zone_enabled" {
-  type        = bool
   description = "Whether to have Terraform provision the resources from this module in your Azure subscription"
+  type        = bool
   default     = true # If this is false then all the other variables below are ignored
 }
 
 # Note that if "enabled" is true then a non-empty value must be specified for "resource_group_name" and also for "private_dns_zone_name", otherwise `terraform plan` will fail (because those variables are used by resources for args which do not allow an empty string).
 
 variable "private_dns_zone_resource_group_name" {
-  type        = string
   description = "The name of the resource group"
+  type        = string
   default     = ""
 }
 
 variable "private_domain_name" {
-  type        = string
   description = "The name of the Private DNS zone (if one is to be provisioned by Terraform)"
+  type        = string
   default     = ""
 }
 
@@ -448,14 +448,14 @@ variable "private_dns_zone_registration_enabled" {
 # Source: NEDSS-Infrastructure/terraform/azure/modules/0-landing-zone/public-dns-zone/variables.tf
 ################################################################################
 variable "public_dns_zone_enabled" {
-  type        = bool
   description = "Whether to have Terraform provision the resources from this module in your Azure subscription"
+  type        = bool
   default     = true
 }
 
 variable "public_domain_name" {
-  type        = string
   description = "The root domain (e.g., example.com)"
+  type        = string
   default     = ""
 }
 
@@ -472,17 +472,21 @@ variable "public_dns_zone_dns_records" {
 }
 
 variable "subnet__public_gateways__address_prefixes" {
-  type = list(string)
+  description = "The list of address prefixes for the public gateways subnet"
+  type        = list(string)
 }
 
 variable "subnet__aks__address_prefixes" {
-  type = list(string)
+  description = "The list of address prefixes for the AKS subnet"
+  type        = list(string)
 }
 
 variable "subnet__hdikafka__address_prefixes" {
-  type = list(string)
+  description = "The list of address prefixes for the HDInsight Kafka subnet"
+  type        = list(string)
 }
 
 variable "subnet__endpoint__address_prefixes" {
-  type = list(string)
+  description = "The list of address prefixes for the endpoint subnet"
+  type        = list(string)
 }

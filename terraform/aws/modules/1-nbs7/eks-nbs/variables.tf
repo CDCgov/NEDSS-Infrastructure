@@ -1,6 +1,6 @@
 variable "resource_prefix" {
-  type        = string
   description = "Prefix for resource names"
+  type        = string
   default     = "cdc-nbs"
 }
 
@@ -260,6 +260,7 @@ variable "datacompare_s3_bucket_name" {
   type        = string
   default     = ""
 }
+
 variable "datacompare_s3_bucket_keyname_prefix" {
   description = "KeyName (folder structure) for s3 bucket to be used for datacompare IRSA role including trailing '/' (ex. myFolder/)."
   type        = string

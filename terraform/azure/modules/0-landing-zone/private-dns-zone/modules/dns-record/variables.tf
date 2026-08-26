@@ -16,6 +16,7 @@ variable "record_name" {
 variable "record_type" {
   description = "The type of record to create. Must be either 'A' or 'CNAME'."
   type        = string
+
   validation {
     condition     = contains(["A", "CNAME"], upper(var.record_type))
     error_message = "The record_type must be either 'A' or 'CNAME'."

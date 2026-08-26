@@ -1,17 +1,19 @@
 variable "description" {
-  type        = string
   description = "Give your key a description."
+  type        = string
 }
 
 variable "deletion_window_in_days" {
+  description = "Number of days to wait before deleting a KMS key range: 7-30"
   type        = number
   default     = 7
-  description = "Number of days to wait before deleting a KMS key range: 7-30"
 }
 
 variable "key_usage" {
-  default = "ENCRYPT_DECRYPT"
-  type    = string
+  description = "The intended use of the key"
+  type        = string
+  default     = "ENCRYPT_DECRYPT"
+
   validation {
     condition = contains(
       ["ENCRYPT_DECRYPT", "SIGN_VERIFY", "GENERATE_VERIFY_MAC"],
@@ -22,33 +24,38 @@ variable "key_usage" {
 }
 
 variable "aliases" {
-  type = list(string)
+  description = "The list of aliases to give the key"
+  type        = list(string)
 }
 
 variable "enable_key_rotation" {
-  default = true
-  type    = bool
+  description = "Set to true to enable automatic key rotation"
+  type        = bool
+  default     = true
 }
 
 variable "key_administrators" {
-  type        = list(any)
-  default     = []
   description = "A list of IAM ARNs for key administrators"
+  type        = list(any)
+  default     = []
 }
+
 variable "key_users" {
-  type        = list(any)
-  default     = []
   description = "A list of IAM ARNs for key users"
-}
-variable "key_service_users" {
   type        = list(any)
   default     = []
+}
+
+variable "key_service_users" {
   description = "A list of IAM ARNs for key service users"
+  type        = list(any)
+  default     = []
 }
 
 variable "multi_region" {
+  description = "Indicates whether the KMS key is a multi-Region (`true`) or regional (`false`)"
+  type        = bool
   default     = false
-  description = " Indicates whether the KMS key is a multi-Region (`true`) or regional (`false`)"
 }
 
 # Values to modify for custom policies
