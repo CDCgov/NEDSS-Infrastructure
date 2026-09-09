@@ -1,13 +1,12 @@
 # Deploys linkerd, linkerd control plane and linkerd visualization dashboard
-# #############################################################
-# linkerd helm release
+
 resource "helm_release" "linkerd_crds" {
   name             = "linkerd-crds"
   repository       = var.linkerd_repository
-  chart            = var.linkerd_chart
+  chart            = var.linkerd_chart != null ? var.linkerd_chart : var.linkerd_crds_chart
   namespace        = var.linkerd_namespace_name
   create_namespace = true
-  version          = var.linkerd_helm_version
+  version          = var.linkerd_helm_version != null ? var.linkerd_helm_version : var.linkerd_crds_chart_version
 }
 
 # linkerd self-signed certs
@@ -55,13 +54,12 @@ resource "tls_locally_signed_cert" "issuer" {
   ]
 }
 
-# linkerd control plane
 resource "helm_release" "linkerd_control_plane" {
   name       = "linkerd-control-plane"
   repository = var.linkerd_repository
   namespace  = var.linkerd_namespace_name
-  chart      = var.linkerd_controlplane_chart #"linkerd-control-plane"
-  version    = var.linkerd_helm_version
+  chart      = var.linkerd_controlplane_chart
+  version    = var.linkerd_controlplane_chart_version
 
   set = [
     {
@@ -83,14 +81,14 @@ resource "helm_release" "linkerd_control_plane" {
   ]
 }
 
-
-# deploy linkerd-viz
 resource "helm_release" "linkerd_viz" {
+  count = var.deploy_linkerd_viz ? 1 : 0
+
   name             = "linkerd-viz"
   repository       = var.linkerd_repository
   chart            = var.linkerd_viz_chart
   namespace        = var.linkerd_viz_namespace_name
   create_namespace = true
-  version          = var.linkerd_helm_version
+  version          = var.linkerd_viz_chart_version
   depends_on       = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
 }
