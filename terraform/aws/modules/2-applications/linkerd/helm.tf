@@ -3,10 +3,10 @@
 resource "helm_release" "linkerd_crds" {
   name             = "linkerd-crds"
   repository       = var.linkerd_repository
-  chart            = var.linkerd_crds_chart
+  chart            = var.linkerd_chart != null ? var.linkerd_chart : var.linkerd_crds_chart
   namespace        = var.linkerd_namespace_name
   create_namespace = true
-  version          = var.linkerd_crds_chart_version
+  version          = var.linkerd_helm_version != null ? var.linkerd_helm_version : var.linkerd_crds_chart_version
 }
 
 # linkerd self-signed certs

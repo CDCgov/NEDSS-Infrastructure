@@ -10,17 +10,35 @@ variable "linkerd_namespace_name" {
   default     = "linkerd"
 }
 
-variable "linkerd_crds_chart" {
+############ linkerd crds variables: ############
+
+variable "linkerd_chart" { # In a future release this deprecated variable will be removed (when it is replaced by 'linkerd_crds_chart').
+  description = "(DEPRECATED) Name of linkerd chart."
+  type        = string
+  default     = null
+  deprecated  = "Please use 'linkerd_crds_chart' instead."
+}
+
+variable "linkerd_crds_chart" { # Until 'linkerd_chart' is retired, this variable is only used when 'linkerd_chart' is null.
   description = "Name of linkerd crds chart"
   type        = string
   default     = "linkerd-crds"
 }
 
-variable "linkerd_crds_chart_version" {
+variable "linkerd_helm_version" { # In a future release this deprecated variable will be removed (when it is replaced by 'linkerd_crds_chart_version').
+  description = "(DEPRECATED) linkerd edge helm version"
+  type        = string
+  default     = null
+  deprecated  = "Please use 'linkerd_crds_chart_version' instead."
+}
+
+variable "linkerd_crds_chart_version" { # Until 'linkerd_helm_version' is retired, this variable is only used when 'linkerd_helm_version' is null.
   description = "Version of linkerd crds chart"
   type        = string
   default     = "1.8.0"
 }
+
+############ linkerd controlplane variables: ############
 
 variable "linkerd_controlplane_chart" {
   description = "Name of linkerd control plane chart"
@@ -33,6 +51,8 @@ variable "linkerd_controlplane_chart_version" {
   type        = string
   default     = "1.16.11"
 }
+
+############ linkerd viz variables: ############
 
 variable "linkerd_viz_chart" {
   description = "Name of linkerd viz chart"
@@ -51,6 +71,8 @@ variable "linkerd_viz_namespace_name" {
   type        = string
   default     = "linkerd-viz"
 }
+
+############ eks variables: ############
 
 variable "eks_cluster_name" {
   description = "Name of the EKS cluster"
