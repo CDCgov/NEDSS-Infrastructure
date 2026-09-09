@@ -4,16 +4,22 @@ variable "linkerd_repository" {
   default     = "https://helm.linkerd.io/stable"
 }
 
-variable "linkerd_chart" {
-  description = "Name of linkerd chart"
-  type        = string
-  default     = "linkerd-crds"
-}
-
 variable "linkerd_namespace_name" {
   description = "Name of linkerd namespace"
   type        = string
   default     = "linkerd"
+}
+
+variable "linkerd_crds_chart" {
+  description = "Name of linkerd crds chart"
+  type        = string
+  default     = "linkerd-crds"
+}
+
+variable "linkerd_crds_chart_version" {
+  description = "Version of linkerd crds chart"
+  type        = string
+  default     = "1.8.0"
 }
 
 variable "linkerd_controlplane_chart" {
@@ -22,10 +28,22 @@ variable "linkerd_controlplane_chart" {
   default     = "linkerd-control-plane"
 }
 
+variable "linkerd_controlplane_chart_version" {
+  description = "Version of linkerd control plane chart"
+  type        = string
+  default     = "1.16.11"
+}
+
 variable "linkerd_viz_chart" {
   description = "Name of linkerd viz chart"
   type        = string
   default     = "linkerd-viz"
+}
+
+variable "linkerd_viz_chart_version" {
+  description = "Version of linkerd viz chart"
+  type        = string
+  default     = "30.12.11"
 }
 
 variable "linkerd_viz_namespace_name" {
@@ -40,17 +58,13 @@ variable "eks_cluster_name" {
 }
 
 variable "eks_cluster_endpoint" {
-  description = "Name of the EKS cluster"
+  description = "The hostname (in form of URI) of the Kubernetes API."
   type        = string
+  # The endpoint can be retrieved via: `aws eks describe-cluster --name <cluster-name> --query "cluster.endpoint" --output text`
+  # Reference info: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
 }
 
 variable "cluster_certificate_authority_data" {
   description = "Base64-encoded certificate data required to communicate with the cluster"
   type        = string
-}
-
-variable "linkerd_helm_version" {
-  description = "linkerd edge helm version"
-  type        = string
-  default     = "2025.7.3"
 }
