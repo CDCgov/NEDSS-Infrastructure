@@ -82,6 +82,8 @@ resource "helm_release" "linkerd_control_plane" {
 }
 
 resource "helm_release" "linkerd_viz" {
+  count = var.deploy_linkerd_viz ? 1 : 0
+
   name             = "linkerd-viz"
   repository       = var.linkerd_repository
   chart            = var.linkerd_viz_chart

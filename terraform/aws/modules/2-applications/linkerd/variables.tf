@@ -54,6 +54,12 @@ variable "linkerd_controlplane_chart_version" {
 
 ############ linkerd viz variables: ############
 
+variable "deploy_linkerd_viz" {
+  description = "Whether to deploy the linkerd viz chart"
+  type        = bool
+  default     = false
+}
+
 variable "linkerd_viz_chart" {
   description = "Name of linkerd viz chart"
   type        = string
