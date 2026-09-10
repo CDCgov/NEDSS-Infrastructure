@@ -1,12 +1,24 @@
 # Deploys linkerd, linkerd control plane and linkerd visualization dashboard
 
+locals {
+  # The edge release channel (i.e. https://artifacthub.io/packages/helm/linkerd2-edge/linkerd-crds) is the only viable open source option of a repository for this chart. 
+  # (The Linkerd open-source project stopped publishing official open-source stable release (i.e. https://artifacthub.io/packages/helm/linkerd2/linkerd-crds) Helm charts and artifacts starting with Linkerd 2.15 in 2024.)
+  linkerd_repository = var.linkerd_repository != null ? var.linkerd_repository : "https://helm.linkerd.io/edge"
+
+  # The edge release channel (per https://linkerd.io/releases/) publishes new chart versions weekly which are production ready,
+  # so here we should not pin/specify any value for the 'version' arg on this resource.
+  # (With the edge release channel, the same given version number is published for all the linkerd charts.)
+  linkerd_charts_version = var.linkerd_helm_version != null ? var.linkerd_helm_version : null
+}
+
+# Reference info: https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release
 resource "helm_release" "linkerd_crds" {
   name             = "linkerd-crds"
-  repository       = var.linkerd_repository
-  chart            = var.linkerd_chart != null ? var.linkerd_chart : var.linkerd_crds_chart
+  repository       = local.linkerd_repository
+  chart            = var.linkerd_chart != null ? var.linkerd_chart : "linkerd-crds"
   namespace        = var.linkerd_namespace_name
   create_namespace = true
-  version          = var.linkerd_helm_version != null ? var.linkerd_helm_version : var.linkerd_crds_chart_version
+  version          = local.linkerd_charts_version
 }
 
 # linkerd self-signed certs
@@ -56,10 +68,10 @@ resource "tls_locally_signed_cert" "issuer" {
 
 resource "helm_release" "linkerd_control_plane" {
   name       = "linkerd-control-plane"
-  repository = var.linkerd_repository
+  repository = local.linkerd_repository
   namespace  = var.linkerd_namespace_name
-  chart      = var.linkerd_controlplane_chart
-  version    = var.linkerd_controlplane_chart_version
+  chart      = var.linkerd_controlplane_chart != null ? var.linkerd_controlplane_chart : "linkerd-control-plane"
+  version    = local.linkerd_charts_version
 
   set = [
     {
@@ -85,10 +97,10 @@ resource "helm_release" "linkerd_viz" {
   count = var.deploy_linkerd_viz ? 1 : 0
 
   name             = "linkerd-viz"
-  repository       = var.linkerd_repository
-  chart            = var.linkerd_viz_chart
+  repository       = local.linkerd_repository
+  chart            = var.linkerd_viz_chart != null ? var.linkerd_viz_chart : "linkerd-viz"
   namespace        = var.linkerd_viz_namespace_name
   create_namespace = true
-  version          = var.linkerd_viz_chart_version
+  version          = local.linkerd_charts_version
   depends_on       = [helm_release.linkerd_crds, helm_release.linkerd_control_plane]
 }

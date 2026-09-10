@@ -1,7 +1,12 @@
+# In a future release the deprecated variables below will be removed.
+
+############  linkerd miscellaneous variables: ############
+
 variable "linkerd_repository" {
-  description = "Repository to use when installing linkerd"
+  description = "(DEPRECATED) Repository to use when installing linkerd"
   type        = string
-  default     = "https://helm.linkerd.io/stable"
+  default     = null
+  deprecated  = "Nowadays https://helm.linkerd.io/edge is the only open source option of a repository for the Linkerd Helm charts."
 }
 
 variable "linkerd_namespace_name" {
@@ -10,46 +15,29 @@ variable "linkerd_namespace_name" {
   default     = "linkerd"
 }
 
-############ linkerd crds variables: ############
-
-variable "linkerd_chart" { # In a future release this deprecated variable will be removed (when it is replaced by 'linkerd_crds_chart').
-  description = "(DEPRECATED) Name of linkerd chart."
+variable "linkerd_helm_version" {
+  description = "(DEPRECATED) Version of linkerd charts"
   type        = string
   default     = null
-  deprecated  = "Please use 'linkerd_crds_chart' instead."
+  deprecated  = "There are new production ready versions of these charts released weekly, so there is no need (nor would it be practical) to specify a version of the charts to use."
 }
 
-variable "linkerd_crds_chart" { # Until 'linkerd_chart' is retired, this variable is only used when 'linkerd_chart' is null.
-  description = "Name of linkerd crds chart"
-  type        = string
-  default     = "linkerd-crds"
-}
+############ linkerd crds variable: ############
 
-variable "linkerd_helm_version" { # In a future release this deprecated variable will be removed (when it is replaced by 'linkerd_crds_chart_version').
-  description = "(DEPRECATED) linkerd edge helm version"
+variable "linkerd_chart" {
+  description = "(DEPRECATED) Name of linkerd crds chart"
   type        = string
   default     = null
-  deprecated  = "Please use 'linkerd_crds_chart_version' instead."
-}
-
-variable "linkerd_crds_chart_version" { # Until 'linkerd_helm_version' is retired, this variable is only used when 'linkerd_helm_version' is null.
-  description = "Version of linkerd crds chart"
-  type        = string
-  default     = "1.8.0"
+  deprecated  = "Per https://linkerd.io/docs/tasks/install-helm/ there is only one name/option for this chart."
 }
 
 ############ linkerd controlplane variables: ############
 
 variable "linkerd_controlplane_chart" {
-  description = "Name of linkerd control plane chart"
+  description = "(DEPRECATED) Name of linkerd control plane chart"
   type        = string
-  default     = "linkerd-control-plane"
-}
-
-variable "linkerd_controlplane_chart_version" {
-  description = "Version of linkerd control plane chart"
-  type        = string
-  default     = "1.16.11"
+  default     = null
+  deprecated  = "Per https://linkerd.io/docs/tasks/install-helm/ there is only one name/option for this chart."
 }
 
 ############ linkerd viz variables: ############
@@ -61,15 +49,10 @@ variable "deploy_linkerd_viz" {
 }
 
 variable "linkerd_viz_chart" {
-  description = "Name of linkerd viz chart"
+  description = "(DEPRECATED) Name of linkerd viz chart"
   type        = string
-  default     = "linkerd-viz"
-}
-
-variable "linkerd_viz_chart_version" {
-  description = "Version of linkerd viz chart"
-  type        = string
-  default     = "30.12.11"
+  default     = null
+  deprecated  = "Per https://linkerd.io/docs/tasks/install-helm/ there is only one name/option for this chart."
 }
 
 variable "linkerd_viz_namespace_name" {
