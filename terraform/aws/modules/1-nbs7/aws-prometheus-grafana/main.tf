@@ -47,7 +47,7 @@ module "grafana-workspace" {
   grafana_workspace_name = "${var.resource_prefix}-amg-metrics"
   endpoint_url           = module.prometheus-workspace.amp_workspace_endpoint
   amp_workspace_id       = module.prometheus-workspace.amp_workspace_id
-  region                 = data.aws_region.current
+  region                 = data.aws_region.current.region
   resource_prefix        = var.resource_prefix
 }
 
