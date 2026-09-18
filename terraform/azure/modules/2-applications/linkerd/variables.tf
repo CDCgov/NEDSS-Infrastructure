@@ -32,7 +32,7 @@ variable "linkerd_controlplane_chart" {
 variable "early_renewal_hours" {
   description = "The resource will consider the certificate to have expired the given number of hours before its actual expiry time."
   type        = number
-  default     = 30
+  default     = 720
 }
 
 variable "linkerd_viz_chart" {
