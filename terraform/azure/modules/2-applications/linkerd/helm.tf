@@ -27,6 +27,7 @@ resource "tls_self_signed_cert" "ca" {
   subject {
     common_name = "root.linkerd.cluster.local"
   }
+  early_renewal_hours = var.early_renewal_hours
 }
 
 resource "tls_private_key" "issuer" {

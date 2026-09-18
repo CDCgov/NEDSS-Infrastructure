@@ -64,6 +64,7 @@ resource "tls_locally_signed_cert" "issuer" {
     "cert_signing",
     "crl_signing"
   ]
+  early_renewal_hours = var.early_renewal_hours
 }
 
 resource "helm_release" "linkerd_control_plane" {

@@ -22,6 +22,12 @@ variable "linkerd_helm_version" {
   deprecated  = "There are new production ready versions of these charts released weekly, so there is no need (nor would it be practical) to specify a version of the charts to use."
 }
 
+variable "early_renewal_hours" {
+  description = "The resource will consider the certificate to have expired the given number of hours before its actual expiry time."
+  type        = number
+  default     = 720
+}
+
 ############ linkerd crds variable: ############
 
 variable "linkerd_chart" {
